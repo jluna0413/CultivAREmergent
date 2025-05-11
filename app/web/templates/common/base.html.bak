@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="CultivAR - Self-Hosted Cannabis Grow Journal">
+    <meta name="theme-color" content="#1a1a1a">
+    <title>{% block title %}CultivAR{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/all.min.css') }}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='images/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='images/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='images/favicon-16x16.png') }}">
+    {% block styles %}{% endblock %}
+</head>
+<body class="dark-theme">
+    <div class="app-container">
+        {% if current_user.is_authenticated %}
+        <div class="sidebar-overlay"></div>
+        <aside class="sidebar">
+            {% include 'common/sidebar.html' %}
+        </aside>
+        <!-- Fixed hamburger menu button for mobile -->
+        <button class="hamburger-menu" id="hamburger-menu">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <main class="main-content">
+            <header class="content-header">
+                <div class="header-left">
+                    <button class="menu-toggle" id="menu-toggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 class="page-title">{% block header %}{% endblock %}</h1>
+                </div>
+                <div class="header-right">
+                    <div class="user-menu dropdown">
+                        <button class="btn dropdown-toggle" type="button" id="userMenuDropdown" data-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user-circle"></i>
+                            <span class="username">{{ current_user.username }}</span>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userMenuDropdown">
+                            <a class="dropdown-item" href="{{ url_for('settings') }}">
+                                <i class="fas fa-cog"></i> Settings
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="{{ url_for('logout') }}">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <div class="content-body">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+        {% else %}
+        <div class="auth-container">
+            {% block auth_content %}{% endblock %}
+        </div>
+        {% endif %}
+    </div>
+
+    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+    <!-- Font Awesome is loaded via CSS only -->
+    <script src="{{ url_for('static', filename='js/chart.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        // Console log for debugging
+        console.log('Base template loaded');
+
+        // Additional hamburger menu handler
+        document.addEventListener('DOMContentLoaded', function() {
+            var hamburgerBtn = document.getElementById('hamburger-menu');
+            if (hamburgerBtn) {
+                hamburgerBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Hamburger clicked from inline script');
+                    document.querySelector('.app-container').classList.toggle('sidebar-collapsed');
+                    document.body.classList.toggle('sidebar-open');
+                });
+            }
+        });
+    </script>
+    <!-- Admin Diagnostics Script - Only loaded if enabled -->
+    <script>
+        // Theme toggle functionality\n        document.addEventListener('DOMContentLoaded', function() {\n            var darkThemeToggle = document.getElementById('dark-theme');\n            if (darkThemeToggle) {\n                darkThemeToggle.addEventListener('change', function() {\n                    if (this.checked) {\n                        document.body.classList.add('dark-theme');\n                        document.body.classList.remove('light-theme');\n                        localStorage.setItem('theme', 'dark');\n                        console.log('Dark theme enabled');\n                    } else {\n                        document.body.classList.add('light-theme');\n                        document.body.classList.remove('dark-theme');\n                        localStorage.setItem('theme', 'light');\n                        console.log('Light theme enabled');\n                    }\n                });\n                \n                // Apply saved theme on page load\n                var savedTheme = localStorage.getItem('theme');\n                if (savedTheme === 'light') {\n                    darkThemeToggle.checked = false;\n                    darkThemeToggle.dispatchEvent(new Event('change'));\n                } else if (savedTheme === 'dark') {\n                    darkThemeToggle.checked = true;\n                    darkThemeToggle.dispatchEvent(new Event('change'));\n                } else {\n                    // Default to dark theme if no theme is saved\n                    localStorage.setItem('theme', 'dark');\n                    darkThemeToggle.checked = true;\n                }\n            }\n        });\n        \n        // Check if diagnostics should be loaded
+        (function() {
+            if (localStorage.getItem('diagnostics_enabled') === 'true') {
+                const script = document.createElement('script');
+                script.src = "{{ url_for('static', filename='js/admin-diagnostics.js') }}";
+                document.body.appendChild(script);
+                console.log('Admin diagnostics enabled');
+            }
+        })();
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

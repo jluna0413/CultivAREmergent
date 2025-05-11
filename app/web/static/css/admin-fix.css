@@ -1,0 +1,26 @@
+/* Fix for the refresh button in the admin dashboard */
+.admin-card-header button {
+    position: relative;
+    z-index: 10;
+    pointer-events: auto;
+}
+
+/* Make sure the admin-card-header has proper z-index */
+.admin-card-header {
+    position: relative;
+    z-index: 5;
+}
+
+/* Ensure buttons are clickable */
+.btn {
+    cursor: pointer !important;
+    pointer-events: auto !important;
+}
+
+/* Fix for the refresh activities button specifically */
+#refresh-activities-btn {
+    position: relative;
+    z-index: 100;
+    cursor: pointer !important;
+    pointer-events: auto !important;
+}

@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="CultivAR Admin - Cannabis Grow Journal Management">
+    <meta name="theme-color" content="#1a1a1a">
+    <title>{% block title %}CultivAR Admin{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/all.min.css') }}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin-fix.css') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='images/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='images/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='images/favicon-16x16.png') }}">
+    <style>
+        :root {
+            --admin-primary: #4e73df;
+            --admin-secondary: #6c757d;
+            --admin-success: #1cc88a;
+            --admin-info: #36b9cc;
+            --admin-warning: #f6c23e;
+            --admin-danger: #e74a3b;
+            --admin-light: #f8f9fc;
+            --admin-dark: #5a5c69;
+            --admin-sidebar-width: 250px;
+        }
+
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .admin-sidebar {
+            width: var(--admin-sidebar-width);
+            background: linear-gradient(180deg, var(--admin-primary) 0%, #224abe 100%);
+            color: white;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 100;
+            transition: all 0.3s;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            overflow-y: auto;
+        }
+
+        .admin-sidebar-brand {
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .admin-sidebar-brand h2 {
+            color: white;
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .admin-sidebar-divider {
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            margin: 1rem 0;
+        }
+
+        .admin-sidebar-heading {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 0 1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .admin-nav-item {
+            position: relative;
+        }
+
+        .admin-nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .admin-nav-link:hover {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.1);
+            text-decoration: none;
+        }
+
+        .admin-nav-link.active {
+            color: white;
+            font-weight: 700;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .admin-nav-link i {
+            margin-right: 0.75rem;
+            font-size: 1rem;
+            width: 1.25rem;
+            text-align: center;
+        }
+
+        .admin-content {
+            flex: 1;
+            margin-left: var(--admin-sidebar-width);
+            padding: 1.5rem;
+            background-color: var(--bg-dark);
+        }
+
+        .admin-topbar {
+            height: 70px;
+            background-color: var(--bg-card);
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 0.5rem;
+        }
+
+        .admin-topbar-search {
+            width: 30rem;
+            max-width: 100%;
+        }
+
+        .admin-topbar-search input {
+            background-color: var(--bg-dark);
+            border-color: var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .admin-topbar-search input:focus {
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            border-color: var(--admin-primary);
+            box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+        }
+
+        .admin-topbar-search input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .admin-topbar-user {
+            display: flex;
+            align-items: center;
+        }
+
+        .admin-topbar-user .dropdown-toggle {
+            color: var(--text-primary);
+            background: none;
+            border: none;
+            display: flex;
+            align-items: center;
+        }
+
+        .admin-topbar-user .dropdown-toggle::after {
+            display: none;
+        }
+
+        .admin-topbar-user .dropdown-toggle img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+
+        .admin-topbar-user .dropdown-menu {
+            background-color: var(--bg-card);
+            border-color: var(--border-color);
+            right: 0;
+            left: auto;
+            min-width: 12rem;
+        }
+
+        .admin-topbar-user .dropdown-item {
+            color: var(--text-secondary);
+            padding: 0.5rem 1rem;
+        }
+
+        .admin-topbar-user .dropdown-item:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+        }
+
+        .admin-topbar-user .dropdown-divider {
+            border-top-color: var(--border-color);
+        }
+
+        .admin-card {
+            background-color: var(--bg-card);
+            border-radius: 0.5rem;
+            border: none;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            margin-bottom: 1.5rem;
+        }
+
+        .admin-card-header {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .admin-card-header h6 {
+            margin: 0;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .admin-card-body {
+            padding: 1.25rem;
+        }
+
+        .admin-card-footer {
+            background-color: rgba(255, 255, 255, 0.02);
+            border-top: 1px solid var(--border-color);
+            padding: 1rem 1.25rem;
+        }
+
+        .admin-stat-card {
+            border-left: 0.25rem solid;
+            border-radius: 0.5rem;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            margin-bottom: 1.5rem;
+            background-color: var(--bg-card);
+            padding: 1.25rem;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            word-wrap: break-word;
+        }
+
+        .admin-stat-card.primary {
+            border-left-color: var(--admin-primary);
+        }
+
+        .admin-stat-card.success {
+            border-left-color: var(--admin-success);
+        }
+
+        .admin-stat-card.info {
+            border-left-color: var(--admin-info);
+        }
+
+        .admin-stat-card.warning {
+            border-left-color: var(--admin-warning);
+        }
+
+        .admin-stat-card-body {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .admin-stat-card-content {
+            flex: 1;
+        }
+
+        .admin-stat-card-title {
+            color: var(--admin-primary);
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 0.25rem;
+        }
+
+        .admin-stat-card.success .admin-stat-card-title {
+            color: var(--admin-success);
+        }
+
+        .admin-stat-card.info .admin-stat-card-title {
+            color: var(--admin-info);
+        }
+
+        .admin-stat-card.warning .admin-stat-card-title {
+            color: var(--admin-warning);
+        }
+
+        .admin-stat-card-value {
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .admin-stat-card-icon {
+            font-size: 2rem;
+            color: var(--text-muted);
+        }
+
+        @media (max-width: 768px) {
+            .admin-sidebar {
+                transform: translateX(-100%);
+            }
+
+            .admin-content {
+                margin-left: 0;
+            }
+
+            .admin-sidebar.show {
+                transform: translateX(0);
+            }
+
+            .admin-topbar-search {
+                width: 100%;
+            }
+        }
+    </style>
+    {% block styles %}{% endblock %}
+</head>
+<body class="dark-theme">
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <div class="admin-sidebar">
+            <div class="admin-sidebar-brand">
+                <h2>CultivAR Admin</h2>
+            </div>
+
+            <div class="admin-sidebar-divider"></div>
+
+            <div class="admin-sidebar-heading">Core</div>
+            <div class="admin-nav-item">
+                <a class="admin-nav-link {% if request.path == '/admin' %}active{% endif %}" href="{{ url_for('admin_dashboard') }}">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </div>
+
+            <div class="admin-sidebar-divider"></div>
+
+            <div class="admin-sidebar-heading">Management</div>
+            <div class="admin-nav-item">
+                <a class="admin-nav-link {% if request.path == '/admin/users' %}active{% endif %}" href="{{ url_for('admin_users') }}">
+                    <i class="fas fa-fw fa-users"></i>
+                    <span>Users</span>
+                </a>
+            </div>
+            <div class="admin-nav-item">
+                <a class="admin-nav-link" href="#settings">
+                    <i class="fas fa-fw fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+            </div>
+
+            <div class="admin-sidebar-divider"></div>
+
+            <div class="admin-sidebar-heading">Diagnostics</div>
+            <div class="admin-nav-item">
+                <a class="admin-nav-link" href="#logs">
+                    <i class="fas fa-fw fa-file-alt"></i>
+                    <span>Logs</span>
+                </a>
+            </div>
+            <div class="admin-nav-item">
+                <a class="admin-nav-link" href="#system">
+                    <i class="fas fa-fw fa-server"></i>
+                    <span>System Info</span>
+                </a>
+            </div>
+            <div class="admin-nav-item">
+                <a class="admin-nav-link" href="#js-diagnostics">
+                    <i class="fas fa-fw fa-bug"></i>
+                    <span>JS Diagnostics</span>
+                </a>
+            </div>
+
+            <div class="admin-sidebar-divider"></div>
+
+            <div class="admin-nav-item">
+                <a class="admin-nav-link" href="{{ url_for('admin_logout') }}">
+                    <i class="fas fa-fw fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Content Wrapper -->
+        <div class="admin-content">
+            <!-- Topbar -->
+            <div class="admin-topbar">
+                <div class="admin-topbar-search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search for..." aria-label="Search">
+                        <div class="input-group-append">
+                            <button class="btn btn-primary" type="button">
+                                <i class="fas fa-search fa-sm"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="admin-topbar-user">
+                    <div class="dropdown">
+                        <button class="dropdown-toggle" type="button" id="userDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="mr-2 d-none d-lg-inline">Admin</span>
+                            <i class="fas fa-user-circle fa-2x"></i>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+                            <a class="dropdown-item" href="#profile">
+                                <i class="fas fa-user fa-sm fa-fw mr-2"></i>
+                                Profile
+                            </a>
+                            <a class="dropdown-item" href="#settings">
+                                <i class="fas fa-cogs fa-sm fa-fw mr-2"></i>
+                                Settings
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="{{ url_for('admin_logout') }}">
+                                <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2"></i>
+                                Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Begin Page Content -->
+            <div class="container-fluid">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                {% block content %}{% endblock %}
+            </div>
+            <!-- End Page Content -->
+
+            <!-- Footer -->
+            <footer class="mt-5">
+                <div class="container-fluid">
+                    <div class="text-center">
+                        <span class="text-muted">© 2025 CultivAR - By Eye Heart Hemp</span>
+                    </div>
+                </div>
+            </footer>
+            <!-- End Footer -->
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/chart.min.js') }}"></script>
+    <script>
+        // Toggle sidebar on mobile
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggleSidebarBtn = document.createElement('button');
+            toggleSidebarBtn.className = 'btn btn-link d-md-none rounded-circle mr-3';
+            toggleSidebarBtn.innerHTML = '<i class="fa fa-bars"></i>';
+            toggleSidebarBtn.style.position = 'fixed';
+            toggleSidebarBtn.style.top = '1rem';
+            toggleSidebarBtn.style.left = '1rem';
+            toggleSidebarBtn.style.zIndex = '1031';
+            toggleSidebarBtn.style.color = 'white';
+
+            toggleSidebarBtn.addEventListener('click', function() {
+                document.querySelector('.admin-sidebar').classList.toggle('show');
+            });
+
+            document.body.appendChild(toggleSidebarBtn);
+        });
+    </script>
+    <!-- Admin Diagnostics Script - Only loaded if enabled -->
+    <script>
+        // Check if diagnostics should be loaded
+        (function() {
+            if (localStorage.getItem('diagnostics_enabled') === 'true') {
+                const script = document.createElement('script');
+                script.src = "{{ url_for('static', filename='js/admin-diagnostics.js') }}";
+                document.body.appendChild(script);
+                console.log('Admin diagnostics enabled');
+            }
+        })();
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

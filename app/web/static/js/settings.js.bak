@@ -1,0 +1,30 @@
+/**
+ * Settings page JavaScript functionality
+ * CultivAR - Cannabis Grow Journal
+ * Version: 1.0.0
+ */
+
+// Wait for the DOM to be fully loaded
+document.addEventListener('DOMContentLoaded', function() {
+    console.log("Settings.js loaded successfully!");
+    
+    // Initialize Bootstrap tabs using jQuery
+    $('.list-group-item[data-toggle="list"]').on('click', function(e) {
+        e.preventDefault();
+        $(this).tab('show');
+    });
+    
+    // Handle URL hash for direct navigation to tabs
+    var hash = window.location.hash;
+    if (hash) {
+        $('.list-group-item[href="' + hash + '"]').tab('show');
+    } else {
+        // Default to General tab if no hash is provided
+        $('.list-group-item[href="#general"]').tab('show');
+    }
+    
+    // Change hash for page-reload
+    $('.list-group-item').on('shown.bs.tab', function(e) {
+        window.location.hash = e.target.hash;
+    });
+});

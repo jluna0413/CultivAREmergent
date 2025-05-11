@@ -1,0 +1,259 @@
+{% extends "common/base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card bg-dark text-white mb-4">
+                <div class="card-body">
+                    <h2 class="card-title">Welcome, {{ username }}!</h2>
+                    <p class="card-text">This is your personal cannabis grow journal dashboard.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Quick Actions Module -->
+        <div class="col-md-6 mb-4">
+            <div class="card bg-dark text-white h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6 col-md-4 mb-3">
+                            <a href="{{ url_for('plants') }}" class="btn btn-primary btn-block">
+                                <i class="fas fa-seedling mb-2 d-block" style="font-size: 24px;"></i>
+                                Add Plant
+                            </a>
+                        </div>
+                        <div class="col-6 col-md-4 mb-3">
+                            <a href="{{ url_for('plants') }}#log-activity" class="btn btn-success btn-block">
+                                <i class="fas fa-calendar-plus mb-2 d-block" style="font-size: 24px;"></i>
+                                Log Activity
+                            </a>
+                        </div>
+                        <div class="col-6 col-md-4 mb-3">
+                            <a href="{{ url_for('sensors') }}" class="btn btn-info btn-block">
+                                <i class="fas fa-thermometer-half mb-2 d-block" style="font-size: 24px;"></i>
+                                Record Data
+                            </a>
+                        </div>
+                        <div class="col-6 col-md-4 mb-3">
+                            <a href="{{ url_for('plants') }}#add-photo" class="btn btn-warning btn-block">
+                                <i class="fas fa-camera mb-2 d-block" style="font-size: 24px;"></i>
+                                Add Photo
+                            </a>
+                        </div>
+                        <div class="col-6 col-md-4 mb-3">
+                            <a href="{{ url_for('strains') }}" class="btn btn-secondary btn-block">
+                                <i class="fas fa-search mb-2 d-block" style="font-size: 24px;"></i>
+                                Browse Strains
+                            </a>
+                        </div>
+                        <div class="col-6 col-md-4 mb-3">
+                            <a href="{{ url_for('settings') }}#report-issue" class="btn btn-danger btn-block">
+                                <i class="fas fa-exclamation-triangle mb-2 d-block" style="font-size: 24px;"></i>
+                                Report Issue
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Environmental Data Module -->
+        <div class="col-md-6 mb-4">
+            <div class="card bg-dark text-white h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Environmental Data</h5>
+                    <button class="btn btn-sm btn-outline-light" id="refresh-env-data-btn">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="card bg-secondary">
+                                <div class="card-body text-center">
+                                    <h6 class="card-subtitle mb-2 text-light">Temperature</h6>
+                                    <p class="display-4 mb-0">78.5°F</p>
+                                    <small class="text-muted">Last updated: 10 minutes ago</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card bg-secondary">
+                                <div class="card-body text-center">
+                                    <h6 class="card-subtitle mb-2 text-light">Humidity</h6>
+                                    <p class="display-4 mb-0">65%</p>
+                                    <small class="text-muted">Last updated: 10 minutes ago</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card bg-secondary">
+                                <div class="card-body text-center">
+                                    <h6 class="card-subtitle mb-2 text-light">CO2 Level</h6>
+                                    <p class="display-4 mb-0">800ppm</p>
+                                    <small class="text-muted">Last updated: 10 minutes ago</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card bg-secondary">
+                                <div class="card-body text-center">
+                                    <h6 class="card-subtitle mb-2 text-light">Light Intensity</h6>
+                                    <p class="display-4 mb-0">650 PPFD</p>
+                                    <small class="text-muted">Last updated: 10 minutes ago</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- My Plants Module -->
+        <div class="col-md-8 mb-4">
+            <div class="card bg-dark text-white">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">My Plants</h5>
+                    <div>
+                        <button class="btn btn-sm btn-outline-light mr-2">
+                            <i class="fas fa-filter"></i> Filter
+                        </button>
+                        <a href="{{ url_for('plants') }}" class="btn btn-sm btn-primary">
+                            <i class="fas fa-plus"></i> Add Plant
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="card bg-secondary h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title">Blue Dream #1</h5>
+                                    <h6 class="card-subtitle mb-2 text-muted">Vegetative - Day 24</h6>
+                                    <p class="card-text">Healthy growth, recently topped.</p>
+                                    <a href="#" class="btn btn-sm btn-primary">View Details</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="card bg-secondary h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title">OG Kush #2</h5>
+                                    <h6 class="card-subtitle mb-2 text-muted">Flowering - Day 12</h6>
+                                    <p class="card-text">Showing first pistils, healthy development.</p>
+                                    <a href="#" class="btn btn-sm btn-primary">View Details</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="card bg-secondary h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title">Northern Lights #3</h5>
+                                    <h6 class="card-subtitle mb-2 text-muted">Seedling - Day 8</h6>
+                                    <p class="card-text">Healthy seedling, first true leaves forming.</p>
+                                    <a href="#" class="btn btn-sm btn-primary">View Details</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a href="{{ url_for('plants') }}" class="btn btn-link text-light">View All Plants <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activities Module -->
+        <div class="col-md-4 mb-4">
+            <div class="card bg-dark text-white">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Recent Activities</h5>
+                    <button class="btn btn-sm btn-outline-light" id="refresh-activities-btn">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush bg-dark">
+                        <li class="list-group-item bg-dark text-white border-secondary">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">Watered Blue Dream #1</h6>
+                                <small>2 hours ago</small>
+                            </div>
+                            <small>Added 1L of water with nutrients.</small>
+                        </li>
+                        <li class="list-group-item bg-dark text-white border-secondary">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">Topped OG Kush #2</h6>
+                                <small>Yesterday</small>
+                            </div>
+                            <small>Topped at the 5th node for better canopy development.</small>
+                        </li>
+                        <li class="list-group-item bg-dark text-white border-secondary">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">Added Northern Lights #3</h6>
+                                <small>1 week ago</small>
+                            </div>
+                            <small>Started from seed, germinated in paper towel method.</small>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-footer">
+                    <a href="{{ url_for('plants') }}#activities" class="btn btn-link text-light">View All Activities <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Refresh environmental data
+    document.getElementById('refresh-env-data-btn').addEventListener('click', function() {
+        const refreshBtn = this;
+        const originalContent = refreshBtn.innerHTML;
+
+        // Show loading indicator
+        refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing...';
+        refreshBtn.disabled = true;
+
+        // Simulate loading data
+        setTimeout(function() {
+            refreshBtn.innerHTML = originalContent;
+            refreshBtn.disabled = false;
+
+            // Show a success message
+            alert('Environmental data refreshed successfully!');
+        }, 1000);
+    });
+
+    // Refresh activities
+    document.getElementById('refresh-activities-btn').addEventListener('click', function() {
+        const refreshBtn = this;
+        const originalContent = refreshBtn.innerHTML;
+
+        // Show loading indicator
+        refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing...';
+        refreshBtn.disabled = true;
+
+        // Simulate loading data
+        setTimeout(function() {
+            refreshBtn.innerHTML = originalContent;
+            refreshBtn.disabled = false;
+
+            // Show a success message
+            alert('Activities refreshed successfully!');
+        }, 1000);
+    });
+</script>
+{% endblock %}

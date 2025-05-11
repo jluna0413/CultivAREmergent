@@ -1,0 +1,91 @@
+{% extends 'common/base.html' %}
+
+{% block title %}Add New Breeder - CultivAR{% endblock %}
+
+{% block header %}Add New Breeder{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2>Add New Breeder</h2>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('strains') }}">Collection</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Add New Breeder</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6 offset-lg-3">
+            <div class="card">
+                <div class="card-body">
+                    <form id="breeder-form">
+                        <div class="mb-3">
+                            <label for="breeder_name" class="form-label">Breeder Name</label>
+                            <input type="text" class="form-control" id="breeder_name" name="breeder_name" required>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('strains') }}" class="btn btn-secondary">Cancel</a>
+                            <button type="button" onclick="saveBreeder()" class="btn btn-primary">Save Breeder</button>
+                        </div>
+                    </form>
+
+                    <script>
+                        function saveBreeder() {
+                            const breederName = document.getElementById('breeder_name').value;
+
+                            if (!breederName) {
+                                alert('Please enter a breeder name');
+                                return;
+                            }
+
+                            const breederData = {
+                                name: breederName
+                            };
+
+                            fetch('/breeders', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Accept': 'application/json'
+                                },
+                                body: JSON.stringify(breederData)
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    alert('Breeder added successfully!');
+
+                                    // Check if we came from the add strain page
+                                    const referrer = document.referrer;
+                                    if (referrer.includes('/strains/add')) {
+                                        // Store the new breeder ID in sessionStorage
+                                        sessionStorage.setItem('newBreederId', data.breeder_id);
+                                        sessionStorage.setItem('newBreederName', data.name);
+
+                                        // Go back to the add strain page
+                                        window.location.href = '/strains/add';
+                                    } else {
+                                        // Otherwise go to the strains page
+                                        window.location.href = '/strains';
+                                    }
+                                } else {
+                                    alert('Error adding breeder: ' + (data.error || 'Unknown error'));
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                alert('Error adding breeder: ' + error);
+                            });
+                        }
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

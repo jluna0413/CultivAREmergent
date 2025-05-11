@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  app:
+    build: .
+    container_name: cultivar-app
+    restart: unless-stopped
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./uploads:/app/uploads
+      - ./logs:/app/logs
+    environment:
+      - SECRET_KEY=change_this_to_a_secure_key
+      - ISLEY_DB_DRIVER=postgres
+      - ISLEY_DB_HOST=db
+      - ISLEY_DB_PORT=5432
+      - ISLEY_DB_USER=cultivar
+      - ISLEY_DB_PASSWORD=cultivar
+      - ISLEY_DB_NAME=cultivardb
+      - ISLEY_PORT=4200
+      - DEBUG=false
+    depends_on:
+      - db
+
+  db:
+    image: postgres:13-alpine
+    container_name: cultivar-db
+    restart: unless-stopped
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=cultivar
+      - POSTGRES_PASSWORD=cultivar
+      - POSTGRES_DB=cultivardb
+
+volumes:
+  postgres_data:

@@ -1,0 +1,1531 @@
+{% extends 'common/base.html' %}
+
+{% block title %}{{ plant.name }} - CultivAR{% endblock %}
+
+{% block header %}Plant Details{% endblock %}
+
+{% block content %}
+<div class="plant-detail-header">
+    <div class="plant-detail-header-content">
+        <div class="plant-detail-info">
+            <h2 class="plant-detail-name">{{ plant.name }}</h2>
+            <div class="plant-detail-meta">
+                <span class="plant-status status-{{ plant.status|lower }}">{{ plant.status }}</span>
+                <span class="plant-detail-strain">{{ plant.strain_name }}</span>
+                <span class="plant-detail-age">{{ plant.age }} days old</span>
+            </div>
+        </div>
+        <div class="plant-detail-actions">
+            <div class="btn-group">
+                <button type="button" class="btn btn-success" id="water-plant-btn" data-plant-id="{{ plant.id }}">
+                    <i class="fas fa-tint"></i> Water
+                </button>
+                <button type="button" class="btn btn-info" id="feed-plant-btn" data-plant-id="{{ plant.id }}">
+                    <i class="fas fa-flask"></i> Feed
+                </button>
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editPlantModal">
+                    <i class="fas fa-edit"></i> Edit
+                </button>
+                <button type="button" class="btn btn-danger confirm-delete" data-plant-id="{{ plant.id }}">
+                    <i class="fas fa-trash"></i> Delete
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="plant-detail-content">
+    <ul class="nav nav-tabs" id="plantTabs" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="overview-tab" data-toggle="tab" href="#overview" role="tab" aria-controls="overview" aria-selected="true">
+                <i class="fas fa-info-circle"></i> Overview
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="activities-tab" data-toggle="tab" href="#activities" role="tab" aria-controls="activities" aria-selected="false">
+                <i class="fas fa-tasks"></i> Activities
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="images-tab" data-toggle="tab" href="#images" role="tab" aria-controls="images" aria-selected="false">
+                <i class="fas fa-images"></i> Images
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="notes-tab" data-toggle="tab" href="#notes" role="tab" aria-controls="notes" aria-selected="false">
+                <i class="fas fa-sticky-note"></i> Notes
+            </a>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="plantTabsContent">
+        <!-- Overview Tab -->
+        <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
+            <div class="tab-content-inner">
+                <div class="row">
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="overview-card">
+                            <div class="overview-card-header">
+                                <h4>Plant Information</h4>
+                            </div>
+                            <div class="overview-card-body">
+                                <div class="info-item">
+                                    <div class="info-label">Name</div>
+                                    <div class="info-value">{{ plant.name }}</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">Status</div>
+                                    <div class="info-value">
+                                        <span class="plant-status status-{{ plant.status|lower }}">{{ plant.status }}</span>
+                                    </div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">Start Date</div>
+                                    <div class="info-value">{{ plant.start_date }}</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">Age</div>
+                                    <div class="info-value">{{ plant.age }} days</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">Zone</div>
+                                    <div class="info-value">{{ plant.zone }}</div>
+                                </div>
+                                {% if plant.is_clone %}
+                                <div class="info-item">
+                                    <div class="info-label">Clone</div>
+                                    <div class="info-value">Yes, from {{ plant.parent_name }}</div>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="overview-card">
+                            <div class="overview-card-header">
+                                <h4>Strain Information</h4>
+                            </div>
+                            <div class="overview-card-body">
+                                <div class="info-item">
+                                    <div class="info-label">Strain</div>
+                                    <div class="info-value">{{ plant.strain_name }}</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">Breeder</div>
+                                    <div class="info-value">{{ plant.strain_breeder|default('Unknown') }}</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">Type</div>
+                                    <div class="info-value">{{ plant.strain_type|default('Unknown') }}</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">Flowering Time</div>
+                                    <div class="info-value">{{ plant.strain_flowering_time|default('Unknown') }}</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">Autoflower</div>
+                                    <div class="info-value">{{ 'Yes' if plant.strain_autoflower else 'No' }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="overview-card">
+                            <div class="overview-card-header">
+                                <h4>Growth Metrics</h4>
+                            </div>
+                            <div class="overview-card-body">
+                                <div class="info-item">
+                                    <div class="info-label">Current Week</div>
+                                    <div class="info-value">Week {{ plant.current_week }}</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">Last Watered</div>
+                                    <div class="info-value">
+                                        {% if plant.last_watered %}
+                                        {{ plant.last_watered }} ({{ plant.days_since_last_watering }} days ago)
+                                        {% else %}
+                                        Never
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">Last Fed</div>
+                                    <div class="info-value">
+                                        {% if plant.last_fed %}
+                                        {{ plant.last_fed }} ({{ plant.days_since_last_feeding }} days ago)
+                                        {% else %}
+                                        Never
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">Height</div>
+                                    <div class="info-value">{{ plant.height|default('Not recorded') }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-8 col-md-12 mb-4">
+                        <div class="overview-card">
+                            <div class="overview-card-header">
+                                <h4>Environmental Data</h4>
+                            </div>
+                            <div class="overview-card-body">
+                                {% if sensors %}
+                                <div class="sensor-grid">
+                                    {% for sensor in sensors %}
+                                    <div class="sensor-item">
+                                        <div class="sensor-card">
+                                            <div class="sensor-name">{{ sensor.name }}</div>
+                                            <div class="sensor-value">{{ sensor.value }} {{ sensor.unit }}</div>
+                                            <div class="sensor-date">Last updated: {{ sensor.last_updated }}</div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                {% else %}
+                                <div class="empty-state">
+                                    <div class="empty-state-icon">
+                                        <i class="fas fa-thermometer-half"></i>
+                                    </div>
+                                    <h4>No sensors linked</h4>
+                                    <p>Link sensors to this plant to monitor environmental conditions.</p>
+                                    <button type="button" class="btn btn-primary" id="link-sensors-btn">
+                                        <i class="fas fa-link"></i> Link Sensors
+                                    </button>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="overview-card">
+                            <div class="overview-card-header">
+                                <h4>Recent Activities</h4>
+                            </div>
+                            <div class="overview-card-body">
+                                {% if plant.recent_activities %}
+                                <div class="activity-list">
+                                    {% for activity in plant.recent_activities %}
+                                    <div class="activity-item">
+                                        <div class="activity-icon">
+                                            <i class="fas {{ activity.icon }}"></i>
+                                        </div>
+                                        <div class="activity-content">
+                                            <div class="activity-title">{{ activity.type }}</div>
+                                            <div class="activity-date">{{ activity.date }}</div>
+                                            {% if activity.notes %}
+                                            <div class="activity-notes">{{ activity.notes }}</div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="text-center mt-3">
+                                    <a href="#activities" class="btn btn-sm btn-outline-primary" data-toggle="tab" role="tab" aria-controls="activities">
+                                        View All Activities
+                                    </a>
+                                </div>
+                                {% else %}
+                                <div class="empty-state">
+                                    <div class="empty-state-icon">
+                                        <i class="fas fa-tasks"></i>
+                                    </div>
+                                    <h4>No activities yet</h4>
+                                    <p>Record activities like watering, feeding, or training.</p>
+                                    <button type="button" class="btn btn-primary" id="add-activity-btn">
+                                        <i class="fas fa-plus"></i> Add Activity
+                                    </button>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activities Tab -->
+        <div class="tab-pane fade" id="activities" role="tabpanel" aria-labelledby="activities-tab">
+            <div class="tab-content-inner">
+                <div class="activities-header">
+                    <h3 class="activities-title">Activity Timeline</h3>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addActivityModal">
+                        <i class="fas fa-plus"></i> Add Activity
+                    </button>
+                </div>
+
+                <div class="activities-filter">
+                    <div class="form-row">
+                        <div class="col-md-4 mb-3">
+                            <label for="activity-type-filter">Activity Type</label>
+                            <select class="form-control" id="activity-type-filter">
+                                <option value="all">All Activities</option>
+                                {% for activity_type in activity_types %}
+                                <option value="{{ activity_type }}">{{ activity_type }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="activity-date-from">From Date</label>
+                            <input type="text" class="form-control datepicker" id="activity-date-from" placeholder="From Date">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="activity-date-to">To Date</label>
+                            <input type="text" class="form-control datepicker" id="activity-date-to" placeholder="To Date">
+                        </div>
+                    </div>
+                </div>
+
+                {% if activities %}
+                <div class="timeline">
+                    {% for activity in activities %}
+                    <div class="timeline-item" data-activity-type="{{ activity.type|lower }}">
+                        <div class="timeline-marker">
+                            <div class="timeline-icon">
+                                <i class="fas {{ activity.icon }}"></i>
+                            </div>
+                        </div>
+                        <div class="timeline-content">
+                            <div class="timeline-header">
+                                <h4 class="timeline-title">{{ activity.type }}</h4>
+                                <div class="timeline-date">{{ activity.date }}</div>
+                            </div>
+                            <div class="timeline-body">
+                                {% if activity.details %}
+                                <div class="activity-details">
+                                    {% for key, value in activity.details.items() %}
+                                    <div class="activity-detail-item">
+                                        <span class="activity-detail-label">{{ key }}:</span>
+                                        <span class="activity-detail-value">{{ value }}</span>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+
+                                {% if activity.notes %}
+                                <div class="activity-notes">
+                                    {{ activity.notes }}
+                                </div>
+                                {% endif %}
+
+                                {% if activity.image_url %}
+                                <div class="activity-image">
+                                    <img src="{{ activity.image_url }}" alt="Activity Image" class="img-fluid rounded">
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="timeline-footer">
+                                <button type="button" class="btn btn-sm btn-outline-primary edit-activity" data-activity-id="{{ activity.id }}">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-danger delete-activity confirm-delete" data-activity-id="{{ activity.id }}">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <div class="empty-state-icon">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <h4>No activities recorded yet</h4>
+                    <p>Record activities like watering, feeding, training, or other plant care tasks.</p>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addActivityModal">
+                        <i class="fas fa-plus"></i> Add First Activity
+                    </button>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Add Activity Modal -->
+        <div class="modal fade" id="addActivityModal" tabindex="-1" role="dialog" aria-labelledby="addActivityModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addActivityModalLabel">Add Activity</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="activity-form">
+                            <input type="hidden" name="plant_id" value="{{ plant.id }}">
+                            <div class="form-group">
+                                <label for="activity-type">Activity Type</label>
+                                <select class="form-control" id="activity-type" name="activity_type" required>
+                                    <option value="">Select Activity Type</option>
+                                    {% for activity_type in activity_types %}
+                                    <option value="{{ activity_type }}">{{ activity_type }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="activity-date">Date</label>
+                                <input type="text" class="form-control datepicker" id="activity-date" name="activity_date" required>
+                            </div>
+
+                            <!-- Dynamic fields based on activity type -->
+                            <div id="watering-fields" class="activity-specific-fields" style="display: none;">
+                                <div class="form-group">
+                                    <label for="water-amount">Amount (liters)</label>
+                                    <input type="number" class="form-control" id="water-amount" name="water_amount" step="0.1" min="0">
+                                </div>
+                                <div class="form-group">
+                                    <label for="water-ph">pH Level</label>
+                                    <input type="number" class="form-control" id="water-ph" name="water_ph" step="0.1" min="0" max="14">
+                                </div>
+                            </div>
+
+                            <div id="feeding-fields" class="activity-specific-fields" style="display: none;">
+                                <div class="form-group">
+                                    <label for="nutrient-name">Nutrient Name</label>
+                                    <input type="text" class="form-control" id="nutrient-name" name="nutrient_name">
+                                </div>
+                                <div class="form-group">
+                                    <label for="nutrient-amount">Amount (ml)</label>
+                                    <input type="number" class="form-control" id="nutrient-amount" name="nutrient_amount" step="0.1" min="0">
+                                </div>
+                            </div>
+
+                            <div id="training-fields" class="activity-specific-fields" style="display: none;">
+                                <div class="form-group">
+                                    <label for="training-technique">Training Technique</label>
+                                    <select class="form-control" id="training-technique" name="training_technique">
+                                        <option value="">Select Technique</option>
+                                        <option value="LST">Low Stress Training (LST)</option>
+                                        <option value="HST">High Stress Training (HST)</option>
+                                        <option value="Topping">Topping</option>
+                                        <option value="FIMing">FIMing</option>
+                                        <option value="Defoliation">Defoliation</option>
+                                        <option value="Supercropping">Supercropping</option>
+                                        <option value="ScrOG">Screen of Green (ScrOG)</option>
+                                        <option value="Mainlining">Mainlining</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div id="measurement-fields" class="activity-specific-fields" style="display: none;">
+                                <div class="form-group">
+                                    <label for="measurement-type">Measurement Type</label>
+                                    <select class="form-control" id="measurement-type" name="measurement_type">
+                                        <option value="">Select Measurement</option>
+                                        <option value="Height">Height</option>
+                                        <option value="Width">Width</option>
+                                        <option value="Soil pH">Soil pH</option>
+                                        <option value="Runoff pH">Runoff pH</option>
+                                        <option value="Soil EC">Soil EC</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="measurement-value">Value</label>
+                                    <input type="number" class="form-control" id="measurement-value" name="measurement_value" step="0.01">
+                                </div>
+                                <div class="form-group">
+                                    <label for="measurement-unit">Unit</label>
+                                    <input type="text" class="form-control" id="measurement-unit" name="measurement_unit">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="activity-notes">Notes</label>
+                                <textarea class="form-control" id="activity-notes" name="activity_notes" rows="3"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="activity-image">Image (optional)</label>
+                                <div class="custom-file">
+                                    <input type="file" class="custom-file-input" id="activity-image" name="activity_image">
+                                    <label class="custom-file-label" for="activity-image">Choose file</label>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="save-activity-btn">Save Activity</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Images Tab -->
+        <div class="tab-pane fade" id="images" role="tabpanel" aria-labelledby="images-tab">
+            <div class="tab-content-inner">
+                <div class="images-header">
+                    <h3 class="images-title">Plant Gallery</h3>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addImageModal">
+                        <i class="fas fa-plus"></i> Add Image
+                    </button>
+                </div>
+
+                <div class="images-filter">
+                    <div class="form-row">
+                        <div class="col-md-4 mb-3">
+                            <label for="image-date-from">From Date</label>
+                            <input type="text" class="form-control datepicker" id="image-date-from" placeholder="From Date">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="image-date-to">To Date</label>
+                            <input type="text" class="form-control datepicker" id="image-date-to" placeholder="To Date">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="image-sort">Sort By</label>
+                            <select class="form-control" id="image-sort">
+                                <option value="newest">Newest First</option>
+                                <option value="oldest">Oldest First</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                {% if images %}
+                <div class="image-gallery">
+                    {% for image in images %}
+                    <div class="gallery-item" data-date="{{ image.date }}">
+                        <div class="gallery-image-container">
+                            <img src="{{ image.url }}" alt="{{ image.caption|default('Plant image') }}" class="gallery-image">
+                            <div class="gallery-image-overlay">
+                                <div class="gallery-image-date">{{ image.date }}</div>
+                                <div class="gallery-image-actions">
+                                    <button type="button" class="btn btn-sm btn-light view-image" data-image-id="{{ image.id }}" data-image-url="{{ image.url }}" data-image-caption="{{ image.caption|default('') }}" data-image-date="{{ image.date }}">
+                                        <i class="fas fa-search-plus"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-light edit-image" data-image-id="{{ image.id }}" data-image-caption="{{ image.caption|default('') }}">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-light delete-image confirm-delete" data-image-id="{{ image.id }}">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        {% if image.caption %}
+                        <div class="gallery-image-caption">{{ image.caption }}</div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <div class="empty-state-icon">
+                        <i class="fas fa-images"></i>
+                    </div>
+                    <h4>No images uploaded yet</h4>
+                    <p>Upload images to track your plant's growth and progress.</p>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addImageModal">
+                        <i class="fas fa-plus"></i> Add First Image
+                    </button>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Add Image Modal -->
+        <div class="modal fade" id="addImageModal" tabindex="-1" role="dialog" aria-labelledby="addImageModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addImageModalLabel">Add Image</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="image-form">
+                            <input type="hidden" name="plant_id" value="{{ plant.id }}">
+                            <div class="form-group">
+                                <label for="image-file">Image</label>
+                                <div class="custom-file">
+                                    <input type="file" class="custom-file-input" id="image-file" name="image_file" accept="image/*" required>
+                                    <label class="custom-file-label" for="image-file">Choose file</label>
+                                </div>
+                                <div id="image-preview-container" class="mt-3" style="display: none;">
+                                    <img id="image-preview" class="img-fluid rounded" alt="Image Preview">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="image-date">Date</label>
+                                <input type="text" class="form-control datepicker" id="image-date" name="image_date" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="image-caption">Caption (optional)</label>
+                                <textarea class="form-control" id="image-caption" name="image_caption" rows="2"></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="save-image-btn">Upload Image</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Image View Modal -->
+        <div class="modal fade" id="viewImageModal" tabindex="-1" role="dialog" aria-labelledby="viewImageModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="viewImageModalLabel">Plant Image</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="text-center">
+                            <img id="view-image" class="img-fluid" alt="Plant Image">
+                        </div>
+                        <div class="mt-3">
+                            <div id="view-image-date" class="text-muted"></div>
+                            <div id="view-image-caption" class="mt-2"></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Image Caption Modal -->
+        <div class="modal fade" id="editImageModal" tabindex="-1" role="dialog" aria-labelledby="editImageModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editImageModalLabel">Edit Image Caption</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="edit-image-form">
+                            <input type="hidden" id="edit-image-id" name="image_id">
+                            <div class="form-group">
+                                <label for="edit-image-caption">Caption</label>
+                                <textarea class="form-control" id="edit-image-caption" name="image_caption" rows="3"></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="save-edit-image-btn">Save Changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notes Tab -->
+        <div class="tab-pane fade" id="notes" role="tabpanel" aria-labelledby="notes-tab">
+            <div class="tab-content-inner">
+                <div class="notes-header">
+                    <h3 class="notes-title">Plant Notes</h3>
+                    <div class="notes-actions">
+                        <button type="button" class="btn btn-primary" id="edit-notes-btn">
+                            <i class="fas fa-edit"></i> Edit Notes
+                        </button>
+                        <button type="button" class="btn btn-success" id="save-notes-btn" style="display: none;">
+                            <i class="fas fa-save"></i> Save Notes
+                        </button>
+                        <button type="button" class="btn btn-secondary" id="cancel-notes-btn" style="display: none;">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                    </div>
+                </div>
+
+                <div class="notes-container">
+                    <div id="notes-display" class="notes-content">
+                        {% if plant.notes %}
+                        {{ plant.notes|nl2br }}
+                        {% else %}
+                        <div class="empty-notes">
+                            <p>No notes have been added for this plant yet. Click the Edit Notes button to add some.</p>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div id="notes-editor" class="notes-editor" style="display: none;">
+                        <div class="form-group">
+                            <textarea class="form-control" id="notes-textarea" rows="15">{{ plant.notes }}</textarea>
+                        </div>
+                        <div class="notes-editor-help">
+                            <p><strong>Tip:</strong> You can use Markdown formatting in your notes.</p>
+                            <ul>
+                                <li><code># Heading 1</code> for main headings</li>
+                                <li><code>## Heading 2</code> for subheadings</li>
+                                <li><code>**bold text**</code> for <strong>bold text</strong></li>
+                                <li><code>*italic text*</code> for <em>italic text</em></li>
+                                <li><code>- item</code> for bullet lists</li>
+                                <li><code>1. item</code> for numbered lists</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Plant Modal -->
+<div class="modal fade" id="editPlantModal" tabindex="-1" role="dialog" aria-labelledby="editPlantModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editPlantModalLabel">Edit Plant</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="edit-plant-form">
+                    <input type="hidden" id="edit-plant-id" name="id" value="{{ plant.id }}">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="edit-name">Plant Name</label>
+                                <input type="text" class="form-control" id="edit-name" name="name" value="{{ plant.name }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="edit-strain-id">Strain</label>
+                                <select class="form-control" id="edit-strain-id" name="strain_id" required>
+                                    {% for strain in strains %}
+                                    <option value="{{ strain.id }}" {% if strain.id == plant.strain_id %}selected{% endif %}>{{ strain.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="edit-zone">Zone</label>
+                                <select class="form-control" id="edit-zone" name="zone" required>
+                                    {% for zone in zones %}
+                                    <option value="{{ zone }}" {% if zone == plant.zone %}selected{% endif %}>{{ zone }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="edit-status">Status</label>
+                                <select class="form-control" id="edit-status" name="status" required>
+                                    {% for status in statuses %}
+                                    <option value="{{ status }}" {% if status == plant.status %}selected{% endif %}>{{ status }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="edit-start-date">Start Date</label>
+                                <input type="text" class="form-control datepicker" id="edit-start-date" name="start_date" value="{{ plant.start_date }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="edit-notes">Notes</label>
+                                <textarea class="form-control" id="edit-notes" name="notes" rows="3">{{ plant.notes }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="save-edit-plant-btn">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block styles %}
+<style>
+    /* Plant Detail Page Styles */
+    .plant-detail-header {
+        background-color: var(--bg-card);
+        border-radius: var(--border-radius);
+        border: 1px solid var(--border-color);
+        margin-bottom: 20px;
+        padding: 20px;
+    }
+
+    .plant-detail-header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .plant-detail-name {
+        font-size: 1.8rem;
+        font-weight: 600;
+        margin: 0 0 10px 0;
+        color: var(--text-primary);
+    }
+
+    .plant-detail-meta {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .plant-detail-strain {
+        color: var(--text-secondary);
+        font-size: 1rem;
+    }
+
+    .plant-detail-age {
+        color: var(--text-secondary);
+        font-size: 1rem;
+    }
+
+    .plant-detail-actions {
+        margin-left: 20px;
+    }
+
+    .plant-detail-content {
+        background-color: var(--bg-card);
+        border-radius: var(--border-radius);
+        border: 1px solid var(--border-color);
+        overflow: hidden;
+    }
+
+    .tab-content-inner {
+        padding: 20px;
+    }
+
+    /* Overview Card Styles */
+    .overview-card {
+        background-color: var(--bg-card);
+        border-radius: var(--border-radius);
+        border: 1px solid var(--border-color);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .overview-card-header {
+        padding: 15px;
+        border-bottom: 1px solid var(--border-color);
+        background-color: rgba(255, 255, 255, 0.02);
+    }
+
+    .overview-card-header h4 {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: var(--text-primary);
+    }
+
+    .overview-card-body {
+        padding: 15px;
+        flex: 1;
+    }
+
+    /* Info Item Styles */
+    .info-item {
+        margin-bottom: 12px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .info-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .info-label {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        margin-bottom: 4px;
+    }
+
+    .info-value {
+        font-size: 1rem;
+        color: var(--text-primary);
+    }
+
+    /* Activity List Styles */
+    .activity-list {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .activity-item {
+        display: flex;
+        align-items: flex-start;
+        padding-bottom: 15px;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .activity-item:last-child {
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+
+    .activity-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background-color: rgba(76, 175, 80, 0.1);
+        color: var(--accent-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 12px;
+        flex-shrink: 0;
+    }
+
+    .activity-content {
+        flex: 1;
+    }
+
+    .activity-title {
+        font-weight: 500;
+        color: var(--text-primary);
+        margin-bottom: 4px;
+    }
+
+    .activity-date {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        margin-bottom: 4px;
+    }
+
+    .activity-notes {
+        font-size: 0.9rem;
+        color: var(--text-primary);
+        background-color: rgba(255, 255, 255, 0.02);
+        padding: 8px;
+        border-radius: 4px;
+        margin-top: 8px;
+    }
+
+    /* Activities Tab Styles */
+    .activities-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .activities-title {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 500;
+    }
+
+    .activities-filter {
+        background-color: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        padding: 15px;
+        margin-bottom: 25px;
+    }
+
+    /* Timeline Styles */
+    .timeline {
+        position: relative;
+        padding-left: 40px;
+        margin-top: 30px;
+    }
+
+    .timeline::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 15px;
+        width: 2px;
+        background-color: var(--border-color);
+    }
+
+    .timeline-item {
+        position: relative;
+        margin-bottom: 30px;
+    }
+
+    .timeline-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .timeline-marker {
+        position: absolute;
+        top: 0;
+        left: -40px;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .timeline-icon {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background-color: var(--bg-card);
+        border: 2px solid var(--accent-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--accent-color);
+        z-index: 1;
+    }
+
+    .timeline-content {
+        background-color: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        overflow: hidden;
+    }
+
+    .timeline-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 15px;
+        background-color: rgba(255, 255, 255, 0.02);
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .timeline-title {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: var(--text-primary);
+    }
+
+    .timeline-date {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+    }
+
+    .timeline-body {
+        padding: 15px;
+    }
+
+    .timeline-footer {
+        padding: 10px 15px;
+        border-top: 1px solid var(--border-color);
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+
+    .activity-details {
+        margin-bottom: 15px;
+    }
+
+    .activity-detail-item {
+        margin-bottom: 5px;
+    }
+
+    .activity-detail-label {
+        font-weight: 500;
+        color: var(--text-secondary);
+        margin-right: 5px;
+    }
+
+    .activity-detail-value {
+        color: var(--text-primary);
+    }
+
+    .activity-image {
+        margin-top: 15px;
+    }
+
+    .activity-specific-fields {
+        background-color: rgba(255, 255, 255, 0.02);
+        border-radius: var(--border-radius);
+        padding: 15px;
+        margin-bottom: 15px;
+        border: 1px solid var(--border-color);
+    }
+
+    /* Images Tab Styles */
+    .images-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .images-title {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 500;
+    }
+
+    .images-filter {
+        background-color: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        padding: 15px;
+        margin-bottom: 25px;
+    }
+
+    .image-gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 20px;
+    }
+
+    .gallery-item {
+        position: relative;
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        background-color: var(--bg-card);
+        border: 1px solid var(--border-color);
+    }
+
+    .gallery-image-container {
+        position: relative;
+        width: 100%;
+        padding-top: 100%; /* 1:1 Aspect Ratio */
+        overflow: hidden;
+    }
+
+    .gallery-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .gallery-image-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 10px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .gallery-item:hover .gallery-image-overlay {
+        opacity: 1;
+    }
+
+    .gallery-item:hover .gallery-image {
+        transform: scale(1.05);
+    }
+
+    .gallery-image-date {
+        color: white;
+        font-size: 0.8rem;
+        font-weight: 500;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    }
+
+    .gallery-image-actions {
+        display: flex;
+        justify-content: center;
+        gap: 5px;
+    }
+
+    .gallery-image-caption {
+        padding: 10px;
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        border-top: 1px solid var(--border-color);
+        background-color: rgba(255, 255, 255, 0.02);
+    }
+
+    /* Notes Tab Styles */
+    .notes-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .notes-title {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 500;
+    }
+
+    .notes-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .notes-container {
+        background-color: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        overflow: hidden;
+    }
+
+    .notes-content {
+        padding: 20px;
+        min-height: 300px;
+        line-height: 1.6;
+        color: var(--text-primary);
+    }
+
+    .notes-content h1, .notes-content h2, .notes-content h3 {
+        margin-top: 1.5rem;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+    }
+
+    .notes-content h1 {
+        font-size: 1.5rem;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 0.5rem;
+    }
+
+    .notes-content h2 {
+        font-size: 1.3rem;
+    }
+
+    .notes-content h3 {
+        font-size: 1.1rem;
+    }
+
+    .notes-content p {
+        margin-bottom: 1rem;
+    }
+
+    .notes-content ul, .notes-content ol {
+        margin-bottom: 1rem;
+        padding-left: 1.5rem;
+    }
+
+    .notes-content li {
+        margin-bottom: 0.5rem;
+    }
+
+    .notes-content code {
+        background-color: rgba(255, 255, 255, 0.1);
+        padding: 2px 4px;
+        border-radius: 3px;
+        font-family: monospace;
+        font-size: 0.9em;
+    }
+
+    .notes-content pre {
+        background-color: rgba(255, 255, 255, 0.05);
+        padding: 15px;
+        border-radius: var(--border-radius);
+        overflow-x: auto;
+        margin-bottom: 1rem;
+    }
+
+    .notes-content blockquote {
+        border-left: 4px solid var(--accent-color);
+        padding-left: 1rem;
+        margin-left: 0;
+        margin-right: 0;
+        font-style: italic;
+        color: var(--text-secondary);
+    }
+
+    .empty-notes {
+        color: var(--text-secondary);
+        font-style: italic;
+        text-align: center;
+        padding: 40px 20px;
+    }
+
+    .notes-editor {
+        padding: 20px;
+    }
+
+    .notes-editor-help {
+        background-color: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        padding: 15px;
+        margin-top: 15px;
+        font-size: 0.9rem;
+    }
+
+    .notes-editor-help p {
+        margin-bottom: 10px;
+    }
+
+    .notes-editor-help ul {
+        padding-left: 20px;
+        margin-bottom: 0;
+    }
+
+    .notes-editor-help li {
+        margin-bottom: 5px;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .plant-detail-header-content {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .plant-detail-actions {
+            margin-left: 0;
+            margin-top: 15px;
+            width: 100%;
+        }
+
+        .plant-detail-actions .btn-group {
+            display: flex;
+            width: 100%;
+        }
+
+        .plant-detail-actions .btn {
+            flex: 1;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function() {
+        // Initialize date pickers
+        $('.datepicker').datepicker({
+            format: 'yyyy-mm-dd',
+            autoclose: true,
+            todayHighlight: true
+        });
+
+        // Water plant action
+        $('#water-plant-btn').click(function() {
+            const plantId = $(this).data('plant-id');
+            // This would be implemented in a real application
+            alert(`Water action for plant ID: ${plantId} would be recorded here`);
+        });
+
+        // Feed plant action
+        $('#feed-plant-btn').click(function() {
+            const plantId = $(this).data('plant-id');
+            // This would be implemented in a real application
+            alert(`Feed action for plant ID: ${plantId} would be recorded here`);
+        });
+
+        // Delete plant confirmation
+        $('.confirm-delete').click(function() {
+            const plantId = $(this).data('plant-id');
+            if (confirm('Are you sure you want to delete this plant? This action cannot be undone.')) {
+                // This would be implemented in a real application
+                alert(`Delete action for plant ID: ${plantId} would be performed here`);
+            }
+        });
+
+        // Save edited plant
+        $('#save-edit-plant-btn').click(function() {
+            const formData = $('#edit-plant-form').serialize();
+
+            // This would be implemented in a real application
+            alert('Plant edit would be saved here');
+            $('#editPlantModal').modal('hide');
+        });
+
+        // Activity type change handler
+        $('#activity-type').change(function() {
+            const activityType = $(this).val().toLowerCase();
+
+            // Hide all specific fields first
+            $('.activity-specific-fields').hide();
+
+            // Show the relevant fields based on activity type
+            if (activityType === 'watering') {
+                $('#watering-fields').show();
+            } else if (activityType === 'feeding') {
+                $('#feeding-fields').show();
+            } else if (activityType === 'training') {
+                $('#training-fields').show();
+            } else if (activityType === 'measurement') {
+                $('#measurement-fields').show();
+            }
+        });
+
+        // Save activity
+        $('#save-activity-btn').click(function() {
+            // This would be implemented in a real application
+            alert('Activity would be saved here');
+            $('#addActivityModal').modal('hide');
+        });
+
+        // Image file input change handler
+        $('#image-file').change(function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#image-preview').attr('src', e.target.result);
+                    $('#image-preview-container').show();
+                }
+                reader.readAsDataURL(file);
+
+                // Update the file input label
+                $(this).next('.custom-file-label').html(file.name);
+            }
+        });
+
+        // Save image
+        $('#save-image-btn').click(function() {
+            // This would be implemented in a real application
+            alert('Image would be uploaded here');
+            $('#addImageModal').modal('hide');
+        });
+
+        // View image
+        $('.view-image').click(function() {
+            const imageUrl = $(this).data('image-url');
+            const imageCaption = $(this).data('image-caption');
+            const imageDate = $(this).data('image-date');
+
+            $('#view-image').attr('src', imageUrl);
+            $('#view-image-date').text(imageDate);
+            $('#view-image-caption').text(imageCaption);
+
+            $('#viewImageModal').modal('show');
+        });
+
+        // Edit image caption
+        $('.edit-image').click(function() {
+            const imageId = $(this).data('image-id');
+            const imageCaption = $(this).data('image-caption');
+
+            $('#edit-image-id').val(imageId);
+            $('#edit-image-caption').val(imageCaption);
+
+            $('#editImageModal').modal('show');
+        });
+
+        // Save edited image caption
+        $('#save-edit-image-btn').click(function() {
+            // This would be implemented in a real application
+            alert('Image caption would be updated here');
+            $('#editImageModal').modal('hide');
+        });
+
+        // Notes tab functionality
+        $('#edit-notes-btn').click(function() {
+            // Switch to edit mode
+            $('#notes-display').hide();
+            $('#notes-editor').show();
+            $('#edit-notes-btn').hide();
+            $('#save-notes-btn, #cancel-notes-btn').show();
+        });
+
+        $('#cancel-notes-btn').click(function() {
+            // Switch back to display mode without saving
+            $('#notes-editor').hide();
+            $('#notes-display').show();
+            $('#save-notes-btn, #cancel-notes-btn').hide();
+            $('#edit-notes-btn').show();
+
+            // Reset textarea content to original
+            $('#notes-textarea').val($('#notes-textarea').data('original-content'));
+        });
+
+        $('#save-notes-btn').click(function() {
+            // Get the notes content
+            const notes = $('#notes-textarea').val();
+
+            // This would be implemented in a real application to save the notes
+            // For now, we'll just update the display
+            $('#notes-display').html(notes.replace(/\n/g, '<br>'));
+
+            // Switch back to display mode
+            $('#notes-editor').hide();
+            $('#notes-display').show();
+            $('#save-notes-btn, #cancel-notes-btn').hide();
+            $('#edit-notes-btn').show();
+
+            // Store the original content for cancel functionality
+            $('#notes-textarea').data('original-content', notes);
+
+            // Show success message
+            alert('Notes saved successfully!');
+        });
+
+        // Store original notes content for cancel functionality
+        $('#notes-textarea').data('original-content', $('#notes-textarea').val());
+
+        // Activity filter functionality
+        $('#activity-type-filter').change(function() {
+            const filterType = $(this).val().toLowerCase();
+
+            if (filterType === 'all') {
+                $('.timeline-item').show();
+            } else {
+                $('.timeline-item').hide();
+                $(`.timeline-item[data-activity-type="${filterType}"]`).show();
+            }
+        });
+
+        // Image filter functionality
+        function filterImages() {
+            const fromDate = $('#image-date-from').val();
+            const toDate = $('#image-date-to').val();
+            const sortOrder = $('#image-sort').val();
+
+            // Filter by date range if dates are provided
+            $('.gallery-item').each(function() {
+                const imageDate = $(this).data('date');
+                let show = true;
+
+                if (fromDate && imageDate < fromDate) {
+                    show = false;
+                }
+
+                if (toDate && imageDate > toDate) {
+                    show = false;
+                }
+
+                $(this).toggle(show);
+            });
+
+            // Sort images
+            const items = $('.gallery-item').get();
+            items.sort(function(a, b) {
+                const dateA = $(a).data('date');
+                const dateB = $(b).data('date');
+
+                if (sortOrder === 'newest') {
+                    return dateA > dateB ? -1 : 1;
+                } else {
+                    return dateA < dateB ? -1 : 1;
+                }
+            });
+
+            const gallery = $('.image-gallery');
+            $.each(items, function(i, item) {
+                gallery.append(item);
+            });
+        }
+
+        $('#image-date-from, #image-date-to').change(filterImages);
+        $('#image-sort').change(filterImages);
+
+        // Preserve active tab on page reload
+        const activeTab = localStorage.getItem('activeTab');
+        if (activeTab) {
+            $('#plantTabs a[href="' + activeTab + '"]').tab('show');
+        }
+
+        // Store active tab in localStorage
+        $('#plantTabs a').on('shown.bs.tab', function(e) {
+            localStorage.setItem('activeTab', $(e.target).attr('href'));
+        });
+    });
+</script>
+{% endblock %}

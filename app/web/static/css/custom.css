@@ -1,0 +1,20 @@
+
+/* Fix for select dropdowns */
+select.form-control {
+    -webkit-appearance: menulist !important;
+    -moz-appearance: menulist !important;
+    appearance: menulist !important;
+    background-image: none !important;
+    position: relative !important;
+    z-index: 1000 !important;
+}
+
+select.form-control:focus {
+    z-index: 1001 !important;
+}
+
+select.form-control option {
+    background-color: var(--bg-card);
+    color: var(--text-primary);
+}
+

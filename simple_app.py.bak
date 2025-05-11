@@ -1,0 +1,473 @@
+import os
+import json
+import datetime
+from flask import Flask, render_template, redirect, url_for, request, session, flash
+from flask_login import LoginManager, current_user, AnonymousUserMixin, UserMixin, login_user, logout_user
+
+# Create a simple User class
+class User(UserMixin):
+    def __init__(self, id, username, is_admin=False):
+        self.id = id
+        self.username = username
+        self.is_admin = is_admin
+
+# Create a simple Anonymous class
+class Anonymous(AnonymousUserMixin):
+    def __init__(self):
+        # AnonymousUserMixin already sets is_authenticated to False
+        self.username = 'Guest'
+
+# Create a simple user database
+users = {
+    'admin': User(1, 'admin', True),
+    'user': User(2, 'user', False),
+    'user1': User(3, 'user1', False),
+    'user2': User(4, 'user2', False),
+    'user3': User(5, 'user3', False)
+}
+
+app = Flask(__name__,
+            template_folder='app/web/templates',
+            static_folder='app/web/static')
+
+app.secret_key = 'cultivar_secret_key'
+
+# Initialize Flask-Login
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.anonymous_user = Anonymous
+
+# Create a simple activities storage
+ACTIVITIES_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'activities.json')
+
+# Initialize activities file if it doesn't exist
+if not os.path.exists(ACTIVITIES_FILE):
+    with open(ACTIVITIES_FILE, 'w') as f:
+        json.dump([], f)
+
+# Functions to handle activities
+def get_recent_activities(limit=10):
+    """Get recent activities."""
+    try:
+        with open(ACTIVITIES_FILE, 'r') as f:
+            activities = json.load(f)
+
+        # Sort activities by timestamp (newest first)
+        activities.sort(key=lambda x: x.get('timestamp', ''), reverse=True)
+
+        # Convert string timestamps to datetime objects
+        for activity in activities:
+            if 'timestamp' in activity and isinstance(activity['timestamp'], str):
+                activity['timestamp'] = datetime.datetime.fromisoformat(activity['timestamp'])
+
+        # Return the most recent activities
+        return activities[:limit]
+    except Exception as e:
+        print(f"Error getting activities: {e}")
+        return []
+
+def record_activity(activity_type, user=None, details=None):
+    """Record a new activity."""
+    try:
+        # Get the current user if not provided
+        if user is None and current_user and hasattr(current_user, 'username'):
+            user = current_user.username
+        elif user is None:
+            user = 'system'
+
+        # Create a new activity
+        activity = {
+            'type': activity_type,
+            'user': user,
+            'timestamp': datetime.datetime.now().isoformat()
+        }
+
+        # Add details if provided
+        if details:
+            activity.update(details)
+
+        # Load existing activities
+        try:
+            with open(ACTIVITIES_FILE, 'r') as f:
+                activities = json.load(f)
+        except:
+            activities = []
+
+        # Add the new activity
+        activities.append(activity)
+
+        # Save activities
+        with open(ACTIVITIES_FILE, 'w') as f:
+            json.dump(activities, f, default=str)
+
+        return True
+    except Exception as e:
+        print(f"Error recording activity: {e}")
+        return False
+
+def record_login_activity(username):
+    """Record a login activity."""
+    return record_activity('login', user=username)
+
+def record_plant_add_activity(plant_name, plant_id):
+    """Record a plant add activity."""
+    return record_activity('plant_add', details={'plant': plant_name, 'plant_id': plant_id})
+
+def record_strain_edit_activity(strain_name, strain_id):
+    """Record a strain edit activity."""
+    return record_activity('strain_edit', details={'strain': strain_name, 'strain_id': strain_id})
+
+def record_user_add_activity(new_username):
+    """Record a user add activity."""
+    return record_activity('user_add', details={'new_user': new_username})
+
+def record_sensor_reading_activity(sensor_name, value, unit):
+    """Record a sensor reading activity."""
+    return record_activity('sensor_reading', details={
+        'sensor': sensor_name,
+        'value': f"{value}{unit}"
+    })
+
+@login_manager.user_loader
+def load_user(user_id):
+    for user in users.values():
+        if user.id == int(user_id):
+            return user
+    return None
+
+@app.route('/admin/login', methods=['GET', 'POST'])
+def admin_login():
+    """Handle admin login."""
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+
+        # Check if admin credentials are valid
+        if username == 'admin' and password == 'cultivar_admin':
+            user = users.get('admin')
+            login_user(user)
+            session['admin'] = True
+
+            # Record login activity
+            record_login_activity(username)
+
+            flash('Admin login successful', 'success')
+            return redirect(url_for('admin_dashboard'))
+        else:
+            flash('Invalid admin credentials', 'danger')
+
+    # Use the admin_login.html template
+    return render_template('views/admin_login.html', admin_login=True, title='Admin Login')
+
+@app.route('/admin/login-test')
+def admin_login_test():
+    """A simple test page for admin login."""
+    return render_template('admin_login.html')
+
+@app.route('/admin')
+def admin_dashboard():
+    """Render the admin dashboard."""
+    if not current_user.is_authenticated or not session.get('admin'):
+        flash('Admin login required', 'danger')
+        return redirect(url_for('admin_login'))
+
+    # Get real activities
+    try:
+        # Get recent activities
+        recent_activities = get_recent_activities(limit=10)
+
+        # If no activities found, create some sample activities for demonstration
+        if not recent_activities:
+            # Create sample activities
+            sample_activities = [
+                {'type': 'login', 'user': 'admin'},
+                {'type': 'plant_add', 'user': 'john', 'plant': 'Blue Dream #4', 'plant_id': 1},
+                {'type': 'strain_edit', 'user': 'admin', 'strain': 'OG Kush', 'strain_id': 1},
+                {'type': 'sensor_reading', 'user': 'system', 'sensor': 'Temp-1', 'value': '78.5°F'},
+                {'type': 'user_add', 'user': 'admin', 'new_user': 'sarah'}
+            ]
+
+            # Add sample activities with different timestamps
+            for i, activity_data in enumerate(sample_activities):
+                activity_type = activity_data.pop('type')
+                user = activity_data.pop('user')
+
+                # Create the activity with a timestamp in the past
+                activity = {
+                    'type': activity_type,
+                    'user': user,
+                    'timestamp': (datetime.datetime.now() - datetime.timedelta(hours=i)).isoformat()
+                }
+
+                # Add the remaining details
+                activity.update(activity_data)
+
+                # Load existing activities
+                try:
+                    with open(ACTIVITIES_FILE, 'r') as f:
+                        activities = json.load(f)
+                except:
+                    activities = []
+
+                # Add the new activity
+                activities.append(activity)
+
+                # Save activities
+                with open(ACTIVITIES_FILE, 'w') as f:
+                    json.dump(activities, f, default=str)
+
+            # Get the activities we just created
+            recent_activities = get_recent_activities(limit=10)
+    except Exception as e:
+        print(f"Error getting activities: {e}")
+        # Fallback to sample activities if there's an error
+        recent_activities = [
+            {'type': 'login', 'user': 'admin', 'timestamp': datetime.datetime.now() - datetime.timedelta(minutes=5)},
+            {'type': 'plant_add', 'user': 'john', 'plant': 'Blue Dream #4', 'timestamp': datetime.datetime.now() - datetime.timedelta(hours=2)},
+            {'type': 'strain_edit', 'user': 'admin', 'strain': 'OG Kush', 'timestamp': datetime.datetime.now() - datetime.timedelta(hours=6)},
+            {'type': 'sensor_reading', 'sensor': 'Temp-1', 'value': '78.5°F', 'timestamp': datetime.datetime.now() - datetime.timedelta(hours=1)},
+            {'type': 'user_add', 'user': 'admin', 'new_user': 'sarah', 'timestamp': datetime.datetime.now() - datetime.timedelta(days=1)}
+        ]
+
+    return render_template('views/admin_dashboard.html',
+                          title='Admin Dashboard',
+                          python_version='3.13',
+                          flask_version='3.1.0',
+                          os_name='Windows',
+                          os_version='10',
+                          db_size_mb='0.5',
+                          plant_count=24,
+                          strain_count=12,
+                          user_count=3,
+                          sensor_count=8,
+                          recent_activities=recent_activities,
+                          uptime='1 day, 2 hours, 30 minutes')
+
+@app.route('/')
+@app.route('/dashboard')
+def dashboard():
+    """Render the dashboard."""
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
+
+    # Check if user is admin
+    if current_user.is_admin and session.get('admin'):
+        return redirect(url_for('admin_dashboard'))
+
+    # Render the user dashboard
+    return render_template('views/user_dashboard.html',
+                          title='User Dashboard',
+                          username=current_user.username,
+                          version='1.0.0')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    """Handle user login."""
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+
+        # Check if user credentials are valid
+        if username in users and password == 'password':
+            user = users.get(username)
+            login_user(user)
+
+            # Record login activity
+            record_login_activity(username)
+
+            flash('Login successful', 'success')
+            return redirect(url_for('dashboard'))
+        else:
+            flash('Invalid username or password', 'danger')
+
+    return render_template('views/new_login.html', admin_login=False, title='User Login')
+
+@app.route('/logout')
+def logout():
+    """Handle user logout."""
+    logout_user()
+    session.pop('admin', None)
+    flash('Logout successful', 'success')
+    return redirect(url_for('login'))
+
+@app.route('/admin/logout')
+def admin_logout():
+    """Handle admin logout."""
+    logout_user()
+    session.pop('admin', None)
+    flash('Admin logout successful', 'success')
+    return redirect(url_for('admin_login'))
+
+@app.route('/admin/users')
+def admin_users():
+    """Render the admin users page."""
+    if not current_user.is_authenticated or not session.get('admin'):
+        flash('Admin login required', 'danger')
+        return redirect(url_for('admin_login'))
+
+    # Create some sample users
+    sample_users = [
+        {'id': 1, 'username': 'admin', 'email': 'admin@cultivar.com', 'is_admin': True, 'is_active': True, 'last_login': '2025-04-20 12:30'},
+        {'id': 2, 'username': 'john', 'email': 'john@cultivar.com', 'is_admin': False, 'is_active': True, 'last_login': '2025-04-19 15:45'},
+        {'id': 3, 'username': 'sarah', 'email': 'sarah@cultivar.com', 'is_admin': False, 'is_active': True, 'last_login': '2025-04-18 09:20'}
+    ]
+
+    return render_template('views/admin_users.html',
+                          title='User Management',
+                          users=sample_users)
+
+@app.route('/admin/test')
+def admin_test():
+    """A simple test page to verify the server is running."""
+    return 'Admin test page is working!'
+
+@app.route('/api/admin/diagnostics/test', methods=['GET'])
+def diagnostics_test_api():
+    """A simple endpoint for testing the diagnostics functionality."""
+    import time
+    import random
+    import json
+
+    # Simulate a delay
+    time.sleep(0.5)
+
+    # Return a test response
+    return json.dumps({
+        'success': True,
+        'message': 'Diagnostics test successful',
+        'timestamp': time.time(),
+        'random_value': random.random(),
+        'test_array': [1, 2, 3, 4, 5],
+        'test_object': {
+            'name': 'Test Object',
+            'type': 'Diagnostics',
+            'enabled': True
+        }
+    })
+
+@app.route('/api/admin/activities', methods=['GET'])
+def get_activities_api():
+    """Get recent activities."""
+    import json
+
+    try:
+        # Get recent activities
+        activities = get_recent_activities(limit=10)
+
+        # Convert datetime objects to strings for JSON serialization
+        serialized_activities = []
+        for activity in activities:
+            serialized_activity = {}
+            for key, value in activity.items():
+                if isinstance(value, datetime.datetime):
+                    serialized_activity[key] = value.isoformat()
+                else:
+                    serialized_activity[key] = value
+            serialized_activities.append(serialized_activity)
+
+        return json.dumps({
+            'success': True,
+            'activities': serialized_activities
+        })
+    except Exception as e:
+        return json.dumps({
+            'success': False,
+            'error': str(e)
+        })
+
+# User routes
+@app.route('/plants')
+def plants():
+    """Render the plants page."""
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
+    return render_template('views/plants.html', title='My Plants', version='1.0.0')
+
+@app.route('/strains')
+def strains():
+    """Render the strains page."""
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
+    return render_template('views/strains.html', title='Strain Collection', version='1.0.0')
+
+@app.route('/market/seed-bank')
+def market_seed_bank():
+    """Render the seed bank page."""
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
+    return render_template('views/market/seed_bank.html', title='Seed Bank', version='1.0.0')
+
+@app.route('/market/extensions')
+def market_extensions():
+    """Render the extensions page."""
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
+    return render_template('views/market/extensions.html', title='Extensions', version='1.0.0')
+
+@app.route('/market/gear')
+def market_gear():
+    """Render the gear page."""
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
+    return render_template('views/market/gear.html', title='Grow Gear', version='1.0.0')
+
+@app.route('/sensors')
+def sensors():
+    """Render the sensors page."""
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
+    return render_template('views/sensors.html', title='Sensors', version='1.0.0')
+
+@app.route('/settings')
+def settings():
+    """Render the settings page."""
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
+
+    # Create a default settings object
+    default_settings = {
+        'dark_theme': True,
+        'accent_color': '#4CAF50',
+        'timezone': 'UTC',
+        'date_format': 'MM/DD/YYYY',
+        'temperature_unit': 'F',
+        'enable_notifications': False,
+        'enable_email': False,
+        'email_address': '',
+        'polling_interval': 60,
+        'enable_logging': True,
+        'data_retention': 30,
+        'aggregation_interval': 15,
+        'enable_acinfinity': False,
+        'acinfinity_username': '',
+        'acinfinity_password': '',
+        'enable_ecowitt': False,
+        'ecowitt_api_key': '',
+        'ecowitt_application_key': '',
+        'ecowitt_mac': '',
+        'enable_auto_backup': False,
+        'backup_frequency': 'weekly',
+        'backup_time': '02:00',
+        'backup_retention': 7,
+        'backup_location': './backups'
+    }
+
+    # Create a sample users list
+    sample_users = [
+        {'id': 1, 'username': 'admin', 'active': True, 'is_admin': True, 'last_login': '2025-04-20 12:30'},
+        {'id': 2, 'username': current_user.username, 'active': True, 'is_admin': False, 'last_login': '2025-04-19 15:45'}
+    ]
+
+    return render_template('views/settings.html',
+                          title='Settings',
+                          version='1.0.0',
+                          settings=default_settings,
+                          users=sample_users)
+
+@app.route('/test')
+def test_page():
+    """Render a simple test page."""
+    return render_template('views/test.html')
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=4200, debug=True)

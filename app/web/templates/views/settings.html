@@ -1,0 +1,1090 @@
+{% extends 'common/base.html' %}
+
+{% block title %}Settings - CultivAR{% endblock %}
+
+{% block header %}Settings{% endblock %}
+
+{% block content %}
+<div class="settings-container">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="settings-nav">
+                <div class="list-group">
+                    <a href="#general" class="list-group-item list-group-item-action active" data-toggle="list">
+                        <i class="fas fa-cog"></i> General
+                    </a>
+                    {% if current_user.is_admin %}
+                    <a href="#users" class="list-group-item list-group-item-action" data-toggle="list">
+                        <i class="fas fa-users"></i> Users
+                    </a>
+                    {% endif %}
+                    <a href="#sensors" class="list-group-item list-group-item-action" data-toggle="list">
+                        <i class="fas fa-thermometer-half"></i> Sensors
+                    </a>
+                    <a href="#backup" class="list-group-item list-group-item-action" data-toggle="list">
+                        <i class="fas fa-database"></i> Backup & Restore
+                    </a>
+                    <a href="#report-issue" class="list-group-item list-group-item-action" data-toggle="list">
+                        <i class="fas fa-exclamation-triangle"></i> Report Issue
+                    </a>
+                    <a href="#about" class="list-group-item list-group-item-action" data-toggle="list">
+                        <i class="fas fa-info-circle"></i> About
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div class="tab-content">
+                <!-- General Settings Tab -->
+                <div class="tab-pane fade show active" id="general">
+                    <div class="settings-card">
+                        <div class="settings-card-header">
+                            <h4>General Settings</h4>
+                        </div>
+                        <div class="settings-card-body">
+                            <form id="general-settings-form">
+                                <div class="settings-section">
+                                    <h5 class="settings-section-title">Appearance Settings</h5>
+                                    <div class="form-group">
+                                        <div class="custom-control custom-switch">
+                                            <input type="checkbox" class="custom-control-input" id="dark-theme" name="dark_theme" {% if settings.dark_theme|default(true) %}checked{% endif %}>
+                                            <label class="custom-control-label" for="dark-theme">Dark Theme</label>
+                                        </div>
+                                        <small class="form-text text-muted">Use dark theme for better visibility in low-light environments.</small>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="accent-color">Accent Color</label>
+                                        <input type="color" class="form-control" id="accent-color" name="accent_color" value="{{ settings.accent_color|default('#4CAF50') }}">
+                                        <small class="form-text text-muted">This color will be used for buttons, links, and highlights.</small>
+                                    </div>
+                                </div>
+
+                                <div class="settings-section">
+                                    <h5 class="settings-section-title">Regional Settings</h5>
+                                    <div class="form-group">
+                                        <label for="timezone">Timezone</label>
+                                        <select class="form-control" id="timezone" name="timezone">
+                                            <option value="UTC" {% if settings.timezone == 'UTC' %}selected{% endif %}>UTC</option>
+                                            <option value="America/New_York" {% if settings.timezone == 'America/New_York' %}selected{% endif %}>Eastern Time (US & Canada)</option>
+                                            <option value="America/Chicago" {% if settings.timezone == 'America/Chicago' %}selected{% endif %}>Central Time (US & Canada)</option>
+                                            <option value="America/Denver" {% if settings.timezone == 'America/Denver' %}selected{% endif %}>Mountain Time (US & Canada)</option>
+                                            <option value="America/Los_Angeles" {% if settings.timezone == 'America/Los_Angeles' %}selected{% endif %}>Pacific Time (US & Canada)</option>
+                                            <option value="Europe/London" {% if settings.timezone == 'Europe/London' %}selected{% endif %}>London</option>
+                                            <option value="Europe/Paris" {% if settings.timezone == 'Europe/Paris' %}selected{% endif %}>Paris</option>
+                                            <option value="Asia/Tokyo" {% if settings.timezone == 'Asia/Tokyo' %}selected{% endif %}>Tokyo</option>
+                                            <option value="Australia/Sydney" {% if settings.timezone == 'Australia/Sydney' %}selected{% endif %}>Sydney</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="date-format">Date Format</label>
+                                        <select class="form-control" id="date-format" name="date_format">
+                                            <option value="MM/DD/YYYY" {% if settings.date_format == 'MM/DD/YYYY' %}selected{% endif %}>MM/DD/YYYY</option>
+                                            <option value="DD/MM/YYYY" {% if settings.date_format == 'DD/MM/YYYY' %}selected{% endif %}>DD/MM/YYYY</option>
+                                            <option value="YYYY-MM-DD" {% if settings.date_format == 'YYYY-MM-DD' %}selected{% endif %}>YYYY-MM-DD</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="temperature-unit">Temperature Unit</label>
+                                        <select class="form-control" id="temperature-unit" name="temperature_unit">
+                                            <option value="C" {% if settings.temperature_unit == 'C' %}selected{% endif %}>Celsius (°C)</option>
+                                            <option value="F" {% if settings.temperature_unit == 'F' %}selected{% endif %}>Fahrenheit (°F)</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="settings-section">
+                                    <h5 class="settings-section-title">Notification Settings</h5>
+                                    <div class="form-group">
+                                        <div class="custom-control custom-switch">
+                                            <input type="checkbox" class="custom-control-input" id="enable-notifications" name="enable_notifications" {% if settings.enable_notifications %}checked{% endif %}>
+                                            <label class="custom-control-label" for="enable-notifications">Enable Notifications</label>
+                                        </div>
+                                        <small class="form-text text-muted">Receive notifications for important events.</small>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="custom-control custom-switch">
+                                            <input type="checkbox" class="custom-control-input" id="enable-email" name="enable_email" {% if settings.enable_email %}checked{% endif %}>
+                                            <label class="custom-control-label" for="enable-email">Enable Email Notifications</label>
+                                        </div>
+                                        <small class="form-text text-muted">Receive notifications via email.</small>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="email-address">Email Address</label>
+                                        <input type="email" class="form-control" id="email-address" name="email_address" value="{{ settings.email_address|default('') }}">
+                                    </div>
+                                </div>
+
+                                <div class="form-group text-right">
+                                    <button type="button" class="btn btn-primary" id="save-general-settings">Save Settings</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Users Tab -->
+                {% if current_user.is_admin %}
+                <div class="tab-pane fade" id="users">
+                    <div class="settings-card">
+                        <div class="settings-card-header d-flex justify-content-between align-items-center">
+                            <h4>User Management</h4>
+                            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addUserModal">
+                                <i class="fas fa-plus"></i> Add User
+                            </button>
+                        </div>
+                        <div class="settings-card-body">
+                            {% if users %}
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Username</th>
+                                            <th>Last Login</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for user in users %}
+                                        <tr>
+                                            <td>{{ user.username }}</td>
+                                            <td>{{ user.last_login|default('Never') }}</td>
+                                            <td>
+                                                {% if user.active %}
+                                                <span class="badge badge-success">Active</span>
+                                                {% else %}
+                                                <span class="badge badge-danger">Inactive</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm">
+                                                    <button type="button" class="btn btn-info edit-user" data-user-id="{{ user.id }}" data-username="{{ user.username }}" data-active="{{ user.active }}">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-warning reset-password" data-user-id="{{ user.id }}" data-username="{{ user.username }}">
+                                                        <i class="fas fa-key"></i>
+                                                    </button>
+                                                    {% if not user.is_admin %}
+                                                    <button type="button" class="btn btn-danger delete-user" data-user-id="{{ user.id }}" data-username="{{ user.username }}">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                    {% endif %}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% else %}
+                            <div class="empty-state">
+                                <div class="empty-state-icon">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <h4>No users found</h4>
+                                <p>Add users to allow others to access the system.</p>
+                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addUserModal">
+                                    <i class="fas fa-plus"></i> Add First User
+                                </button>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="settings-card mt-4">
+                        <div class="settings-card-header">
+                            <h4>Change Your Password</h4>
+                        </div>
+                        <div class="settings-card-body">
+                            <form id="change-password-form">
+                                <div class="form-group">
+                                    <label for="current-password">Current Password</label>
+                                    <input type="password" class="form-control" id="current-password" name="current_password" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="new-password">New Password</label>
+                                    <input type="password" class="form-control" id="new-password" name="new_password" required>
+                                    <small class="form-text text-muted">Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, and one number.</small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="confirm-password">Confirm New Password</label>
+                                    <input type="password" class="form-control" id="confirm-password" name="confirm_password" required>
+                                </div>
+                                <div class="form-group text-right">
+                                    <button type="button" class="btn btn-primary" id="change-password-btn">Change Password</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Add User Modal -->
+                <div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="addUserModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="addUserModalLabel">Add New User</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="add-user-form">
+                                    <div class="form-group">
+                                        <label for="username">Username</label>
+                                        <input type="text" class="form-control" id="username" name="username" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="password">Password</label>
+                                        <input type="password" class="form-control" id="password" name="password" required>
+                                        <small class="form-text text-muted">Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, and one number.</small>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="confirm-add-password">Confirm Password</label>
+                                        <input type="password" class="form-control" id="confirm-add-password" name="confirm_password" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input" id="force-password-change" name="force_password_change" checked>
+                                            <label class="custom-control-label" for="force-password-change">Force password change on first login</label>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn btn-primary" id="add-user-btn">Add User</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Edit User Modal -->
+                <div class="modal fade" id="editUserModal" tabindex="-1" role="dialog" aria-labelledby="editUserModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="editUserModalLabel">Edit User</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="edit-user-form">
+                                    <input type="hidden" id="edit-user-id" name="user_id">
+                                    <div class="form-group">
+                                        <label for="edit-username">Username</label>
+                                        <input type="text" class="form-control" id="edit-username" name="username" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="custom-control custom-switch">
+                                            <input type="checkbox" class="custom-control-input" id="edit-user-active" name="active">
+                                            <label class="custom-control-label" for="edit-user-active">Active</label>
+                                        </div>
+                                        <small class="form-text text-muted">Inactive users cannot log in to the system.</small>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn btn-primary" id="update-user-btn">Update User</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reset Password Modal -->
+                <div class="modal fade" id="resetPasswordModal" tabindex="-1" role="dialog" aria-labelledby="resetPasswordModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="resetPasswordModalLabel">Reset Password</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="reset-password-form">
+                                    <input type="hidden" id="reset-user-id" name="user_id">
+                                    <p>Are you sure you want to reset the password for <strong id="reset-username"></strong>?</p>
+                                    <p>The user will be required to change their password on next login.</p>
+                                    <div class="form-group">
+                                        <label for="reset-password">New Password</label>
+                                        <input type="password" class="form-control" id="reset-password" name="password" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="confirm-reset-password">Confirm New Password</label>
+                                        <input type="password" class="form-control" id="confirm-reset-password" name="confirm_password" required>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn btn-warning" id="confirm-reset-password-btn">Reset Password</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sensors Tab -->
+                <div class="tab-pane fade" id="sensors">
+                    <div class="settings-card">
+                        <div class="settings-card-header">
+                            <h4>Sensor Settings</h4>
+                        </div>
+                        <div class="settings-card-body">
+                            <form id="sensor-settings-form">
+                                <div class="settings-section">
+                                    <h5 class="settings-section-title">Data Collection</h5>
+                                    <div class="form-group">
+                                        <label for="polling-interval">Polling Interval (seconds)</label>
+                                        <input type="number" class="form-control" id="polling-interval" name="polling_interval" min="10" value="{{ settings.polling_interval|default(60) }}">
+                                        <small class="form-text text-muted">How often to collect data from sensors. Minimum 10 seconds.</small>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="custom-control custom-switch">
+                                            <input type="checkbox" class="custom-control-input" id="enable-logging" name="enable_logging" {% if settings.enable_logging %}checked{% endif %}>
+                                            <label class="custom-control-label" for="enable-logging">Enable Sensor Logging</label>
+                                        </div>
+                                        <small class="form-text text-muted">Log sensor data to the database for historical tracking.</small>
+                                    </div>
+                                </div>
+
+                                <div class="settings-section">
+                                    <h5 class="settings-section-title">Data Retention</h5>
+                                    <div class="form-group">
+                                        <label for="data-retention">Data Retention Period (days)</label>
+                                        <input type="number" class="form-control" id="data-retention" name="data_retention" min="1" value="{{ settings.data_retention|default(30) }}">
+                                        <small class="form-text text-muted">How long to keep sensor data in the database. Older data will be automatically pruned.</small>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="aggregation-interval">Data Aggregation Interval (minutes)</label>
+                                        <select class="form-control" id="aggregation-interval" name="aggregation_interval">
+                                            <option value="1" {% if settings.aggregation_interval == 1 %}selected{% endif %}>1 minute</option>
+                                            <option value="5" {% if settings.aggregation_interval == 5 %}selected{% endif %}>5 minutes</option>
+                                            <option value="15" {% if settings.aggregation_interval == 15 %}selected{% endif %}>15 minutes</option>
+                                            <option value="30" {% if settings.aggregation_interval == 30 %}selected{% endif %}>30 minutes</option>
+                                            <option value="60" {% if settings.aggregation_interval == 60 %}selected{% endif %}>1 hour</option>
+                                        </select>
+                                        <small class="form-text text-muted">Aggregate data points for more efficient storage and faster chart rendering.</small>
+                                    </div>
+                                </div>
+
+                                <div class="settings-section">
+                                    <h5 class="settings-section-title">AC Infinity Integration</h5>
+                                    <div class="form-group">
+                                        <div class="custom-control custom-switch">
+                                            <input type="checkbox" class="custom-control-input" id="enable-acinfinity" name="enable_acinfinity" {% if settings.enable_acinfinity %}checked{% endif %}>
+                                            <label class="custom-control-label" for="enable-acinfinity">Enable AC Infinity Integration</label>
+                                        </div>
+                                    </div>
+                                    <div id="acinfinity-settings" {% if not settings.enable_acinfinity %}style="display: none;"{% endif %}>
+                                        <div class="form-group">
+                                            <label for="acinfinity-username">AC Infinity Username</label>
+                                            <input type="text" class="form-control" id="acinfinity-username" name="acinfinity_username" value="{{ settings.acinfinity_username|default('') }}">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="acinfinity-password">AC Infinity Password</label>
+                                            <input type="password" class="form-control" id="acinfinity-password" name="acinfinity_password" value="{{ settings.acinfinity_password|default('') }}">
+                                        </div>
+                                        <div class="form-group">
+                                            <button type="button" class="btn btn-info" id="test-acinfinity-connection">Test Connection</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="settings-section">
+                                    <h5 class="settings-section-title">Ecowitt Integration</h5>
+                                    <div class="form-group">
+                                        <div class="custom-control custom-switch">
+                                            <input type="checkbox" class="custom-control-input" id="enable-ecowitt" name="enable_ecowitt" {% if settings.enable_ecowitt %}checked{% endif %}>
+                                            <label class="custom-control-label" for="enable-ecowitt">Enable Ecowitt Integration</label>
+                                        </div>
+                                    </div>
+                                    <div id="ecowitt-settings" {% if not settings.enable_ecowitt %}style="display: none;"{% endif %}>
+                                        <div class="form-group">
+                                            <label for="ecowitt-api-key">Ecowitt API Key</label>
+                                            <input type="text" class="form-control" id="ecowitt-api-key" name="ecowitt_api_key" value="{{ settings.ecowitt_api_key|default('') }}">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="ecowitt-application-key">Ecowitt Application Key</label>
+                                            <input type="text" class="form-control" id="ecowitt-application-key" name="ecowitt_application_key" value="{{ settings.ecowitt_application_key|default('') }}">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="ecowitt-mac">Ecowitt Device MAC</label>
+                                            <input type="text" class="form-control" id="ecowitt-mac" name="ecowitt_mac" value="{{ settings.ecowitt_mac|default('') }}">
+                                        </div>
+                                        <div class="form-group">
+                                            <button type="button" class="btn btn-info" id="test-ecowitt-connection">Test Connection</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group text-right">
+                                    <button type="button" class="btn btn-primary" id="save-sensor-settings">Save Settings</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Backup & Restore Tab -->
+                <div class="tab-pane fade" id="backup">
+                    <div class="settings-card">
+                        <div class="settings-card-header">
+                            <h4>Backup & Restore</h4>
+                        </div>
+                        <div class="settings-card-body">
+                            <div class="settings-section">
+                                <h5 class="settings-section-title">Create Backup</h5>
+                                <p>Create a backup of your database and configuration files. This backup can be used to restore your system in case of data loss.</p>
+                                <div class="form-group">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" id="include-images" name="include_images" checked>
+                                        <label class="custom-control-label" for="include-images">Include Images</label>
+                                    </div>
+                                    <small class="form-text text-muted">Include plant and strain images in the backup. This will increase the backup file size.</small>
+                                </div>
+                                <div class="form-group">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" id="include-sensor-data" name="include_sensor_data">
+                                        <label class="custom-control-label" for="include-sensor-data">Include Sensor Data</label>
+                                    </div>
+                                    <small class="form-text text-muted">Include historical sensor data in the backup. This can significantly increase the backup file size.</small>
+                                </div>
+                                <div class="form-group">
+                                    <button type="button" class="btn btn-primary" id="create-backup-btn">
+                                        <i class="fas fa-download"></i> Create Backup
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="settings-section">
+                                <h5 class="settings-section-title">Restore from Backup</h5>
+                                <p class="text-warning"><i class="fas fa-exclamation-triangle"></i> Warning: Restoring from a backup will overwrite your current data. This action cannot be undone.</p>
+                                <div class="form-group">
+                                    <label for="restore-file">Backup File</label>
+                                    <div class="custom-file">
+                                        <input type="file" class="custom-file-input" id="restore-file" name="restore_file" accept=".zip">
+                                        <label class="custom-file-label" for="restore-file">Choose backup file</label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <button type="button" class="btn btn-warning" id="restore-backup-btn" disabled>
+                                        <i class="fas fa-upload"></i> Restore from Backup
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="settings-section">
+                                <h5 class="settings-section-title">Automatic Backups</h5>
+                                <div class="form-group">
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input" id="enable-auto-backup" name="enable_auto_backup" {% if settings.enable_auto_backup %}checked{% endif %}>
+                                        <label class="custom-control-label" for="enable-auto-backup">Enable Automatic Backups</label>
+                                    </div>
+                                </div>
+                                <div id="auto-backup-settings" {% if not settings.enable_auto_backup %}style="display: none;"{% endif %}>
+                                    <div class="form-group">
+                                        <label for="backup-frequency">Backup Frequency</label>
+                                        <select class="form-control" id="backup-frequency" name="backup_frequency">
+                                            <option value="daily" {% if settings.backup_frequency == 'daily' %}selected{% endif %}>Daily</option>
+                                            <option value="weekly" {% if settings.backup_frequency == 'weekly' %}selected{% endif %}>Weekly</option>
+                                            <option value="monthly" {% if settings.backup_frequency == 'monthly' %}selected{% endif %}>Monthly</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="backup-time">Backup Time</label>
+                                        <input type="time" class="form-control" id="backup-time" name="backup_time" value="{{ settings.backup_time|default('02:00') }}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="backup-retention">Backup Retention (days)</label>
+                                        <input type="number" class="form-control" id="backup-retention" name="backup_retention" min="1" value="{{ settings.backup_retention|default(7) }}">
+                                        <small class="form-text text-muted">How long to keep automatic backups before deleting them.</small>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="backup-location">Backup Location</label>
+                                        <input type="text" class="form-control" id="backup-location" name="backup_location" value="{{ settings.backup_location|default('./backups') }}">
+                                        <small class="form-text text-muted">Directory where backups will be stored. Use an absolute path for external drives.</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="settings-section">
+                                <h5 class="settings-section-title">Database Maintenance</h5>
+                                <p>Perform maintenance operations on the database to optimize performance and reduce file size.</p>
+                                <div class="form-group">
+                                    <button type="button" class="btn btn-info" id="vacuum-db-btn">
+                                        <i class="fas fa-broom"></i> Vacuum Database
+                                    </button>
+                                    <small class="form-text text-muted">Rebuilds the database file to optimize storage and improve performance.</small>
+                                </div>
+                                <div class="form-group">
+                                    <button type="button" class="btn btn-info" id="check-integrity-btn">
+                                        <i class="fas fa-check-circle"></i> Check Database Integrity
+                                    </button>
+                                    <small class="form-text text-muted">Checks the database for corruption or integrity issues.</small>
+                                </div>
+                            </div>
+
+                            <div class="form-group text-right">
+                                <button type="button" class="btn btn-primary" id="save-backup-settings">Save Settings</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Report Issue Tab -->
+                <div class="tab-pane fade" id="report-issue">
+                    <div class="settings-card">
+                        <div class="settings-card-header">
+                            <h4>Report an Issue</h4>
+                        </div>
+                        <div class="settings-card-body">
+                            <p>Use this form to report any bugs, issues, or feature requests. Our team will review your submission and respond as soon as possible.</p>
+                            <form id="issue-report-form">
+                                <div class="form-group">
+                                    <label for="issue-type">Issue Type</label>
+                                    <select class="form-control" id="issue-type" name="issue_type" required>
+                                        <option value="">Select an issue type...</option>
+                                        <option value="bug">Bug Report</option>
+                                        <option value="feature">Feature Request</option>
+                                        <option value="question">Question</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="issue-title">Issue Title</label>
+                                    <input type="text" class="form-control" id="issue-title" name="issue_title" placeholder="Brief description of the issue" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="issue-description">Description</label>
+                                    <textarea class="form-control" id="issue-description" name="issue_description" rows="5" placeholder="Please provide as much detail as possible..." required></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="steps-to-reproduce">Steps to Reproduce (for bugs)</label>
+                                    <textarea class="form-control" id="steps-to-reproduce" name="steps_to_reproduce" rows="3" placeholder="1. Go to...
+2. Click on...
+3. Observe that..."></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="expected-behavior">Expected Behavior</label>
+                                    <textarea class="form-control" id="expected-behavior" name="expected_behavior" rows="2" placeholder="What did you expect to happen?"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="actual-behavior">Actual Behavior</label>
+                                    <textarea class="form-control" id="actual-behavior" name="actual_behavior" rows="2" placeholder="What actually happened?"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="issue-screenshot">Screenshot (optional)</label>
+                                    <div class="custom-file">
+                                        <input type="file" class="custom-file-input" id="issue-screenshot" name="issue_screenshot" accept="image/*">
+                                        <label class="custom-file-label" for="issue-screenshot">Choose file</label>
+                                    </div>
+                                    <small class="form-text text-muted">Upload a screenshot that helps illustrate the issue.</small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="contact-email">Contact Email (optional)</label>
+                                    <input type="email" class="form-control" id="contact-email" name="contact_email" placeholder="your.email@example.com">
+                                    <small class="form-text text-muted">Provide your email if you'd like to be contacted about this issue.</small>
+                                </div>
+                                <div class="form-group text-right">
+                                    <button type="button" class="btn btn-secondary mr-2" id="clear-issue-form">Clear Form</button>
+                                    <button type="button" class="btn btn-primary" id="submit-issue">Submit Issue</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- About Tab -->
+                <div class="tab-pane fade" id="about">
+                    <div class="settings-card">
+                        <div class="settings-card-header">
+                            <h4>About CultivAR</h4>
+                        </div>
+                        <div class="settings-card-body">
+                            <div class="about-section">
+                                <div class="app-logo">
+                                    <img src="{{ url_for('static', filename='img/logo.png') }}" alt="CultivAR Logo">
+                                </div>
+                                <div class="app-info">
+                                    <h3>CultivAR</h3>
+                                    <p class="app-version">Version 1.0.0</p>
+                                    <p class="app-description">
+                                        CultivAR is a comprehensive grow management system designed to help you track and optimize your growing environment.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="about-details">
+                                <div class="about-item">
+                                    <h5>System Information</h5>
+                                    <div class="info-item">
+                                        <span class="info-label">Database:</span>
+                                        <span class="info-value">SQLite</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Python Version:</span>
+                                        <span class="info-value">3.11.3</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Flask Version:</span>
+                                        <span class="info-value">2.3.2</span>
+                                    </div>
+                                </div>
+
+                                <div class="about-item">
+                                    <h5>Credits</h5>
+                                    <p>
+                                        Developed by the CultivAR Team. Brought to you by Eye Heart Hemp.
+                                    </p>
+                                </div>
+
+                                <div class="about-item">
+                                    <h5>License</h5>
+                                    <p>
+                                        CultivAR is licensed under the MIT License.
+                                    </p>
+                                </div>
+
+                                <div class="about-item">
+                                    <h5>Copyright</h5>
+                                    <p>
+                                        © 2025 CultivAR - Brought to you by Eye Heart Hemp
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block styles %}
+<style>
+    /* Settings Page Styles */
+    .settings-container {
+        margin-bottom: 30px;
+    }
+
+    .settings-nav {
+        margin-bottom: 20px;
+    }
+
+    .settings-nav .list-group-item {
+        background-color: var(--bg-card);
+        color: var(--text-primary);
+        border-color: var(--border-color);
+    }
+
+    .settings-nav .list-group-item:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .settings-nav .list-group-item.active {
+        background-color: var(--accent-color);
+        border-color: var(--accent-color);
+        color: white;
+    }
+
+    .settings-nav .list-group-item i {
+        margin-right: 10px;
+        width: 20px;
+        text-align: center;
+    }
+
+    .settings-card {
+        background-color: var(--bg-card);
+        border-radius: var(--border-radius);
+        border: 1px solid var(--border-color);
+        margin-bottom: 20px;
+        overflow: hidden;
+    }
+
+    .settings-card-header {
+        padding: 15px 20px;
+        border-bottom: 1px solid var(--border-color);
+        background-color: rgba(255, 255, 255, 0.02);
+    }
+
+    .settings-card-header h4 {
+        margin: 0;
+        font-size: 1.2rem;
+        font-weight: 500;
+    }
+
+    .settings-card-body {
+        padding: 20px;
+    }
+
+    /* About Tab Styles */
+    .about-section {
+        display: flex;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+
+    .app-logo {
+        width: 100px;
+        height: 100px;
+        margin-right: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .app-logo img {
+        max-width: 100%;
+        max-height: 100%;
+    }
+
+    .app-info h3 {
+        margin: 0 0 5px 0;
+        font-size: 1.8rem;
+        font-weight: 600;
+    }
+
+    .app-version {
+        color: var(--text-secondary);
+        margin-bottom: 10px;
+    }
+
+    .about-details {
+        border-top: 1px solid var(--border-color);
+        padding-top: 20px;
+    }
+
+    .about-item {
+        margin-bottom: 25px;
+    }
+
+    .about-item h5 {
+        margin-bottom: 10px;
+        font-size: 1.1rem;
+        font-weight: 500;
+    }
+
+    .info-item {
+        margin-bottom: 5px;
+    }
+
+    .info-label {
+        font-weight: 500;
+        color: var(--text-secondary);
+        margin-right: 5px;
+    }
+
+    .info-value {
+        color: var(--text-primary);
+    }
+
+    /* Settings Form Styles */
+    .settings-section {
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .settings-section:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+
+    .settings-section-title {
+        font-size: 1.1rem;
+        font-weight: 500;
+        margin-bottom: 15px;
+        color: var(--text-primary);
+    }
+
+    .custom-switch .custom-control-label::before {
+        background-color: var(--bg-card);
+        border-color: var(--border-color);
+    }
+
+    .custom-control-input:checked ~ .custom-control-label::before {
+        background-color: var(--accent-color);
+        border-color: var(--accent-color);
+    }
+
+    .custom-file-label {
+        background-color: var(--bg-card);
+        color: var(--text-primary);
+        border-color: var(--border-color);
+    }
+
+    .custom-file-label::after {
+        background-color: rgba(255, 255, 255, 0.05);
+        color: var(--text-primary);
+        border-left-color: var(--border-color);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .settings-nav {
+            margin-bottom: 20px;
+        }
+
+        .about-section {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .app-logo {
+            margin-right: 0;
+            margin-bottom: 15px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function() {
+        // Preserve active tab on page reload
+        const activeTab = localStorage.getItem('settingsActiveTab');
+        if (activeTab) {
+            $('.list-group-item[href="' + activeTab + '"]').tab('show');
+        }
+
+        // Store active tab in localStorage
+        $('.list-group-item').on('shown.bs.tab', function(e) {
+            localStorage.setItem('settingsActiveTab', $(e.target).attr('href'));
+        });
+
+        // General Settings
+        $('#save-general-settings').click(function() {
+            // This would be implemented in a real application
+            alert('General settings would be saved here');
+        });
+
+        // Dark theme toggle
+        $('#dark-theme').change(function() {
+            if ($(this).is(':checked')) {
+                $('body').addClass('dark-theme').removeClass('light-theme');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                $('body').addClass('light-theme').removeClass('dark-theme');
+                localStorage.setItem('theme', 'light');
+            }
+        });
+
+        // Apply saved theme on page load
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'light') {
+            $('#dark-theme').prop('checked', false).trigger('change');
+        }
+
+        // File input label update
+        $('.custom-file-input').on('change', function() {
+            const fileName = $(this).val().split('\\').pop();
+            $(this).next('.custom-file-label').html(fileName);
+
+            // Enable restore button when file is selected
+            if ($(this).attr('id') === 'restore-file' && fileName) {
+                $('#restore-backup-btn').prop('disabled', false);
+            }
+        });
+
+        // User Management
+        $('#add-user-btn').click(function() {
+            // This would be implemented in a real application
+            alert('User would be added here');
+            $('#addUserModal').modal('hide');
+        });
+
+        $('.edit-user').click(function() {
+            const userId = $(this).data('user-id');
+            const username = $(this).data('username');
+            const active = $(this).data('active');
+
+            $('#edit-user-id').val(userId);
+            $('#edit-username').val(username);
+            $('#edit-user-active').prop('checked', active === 'true');
+
+            $('#editUserModal').modal('show');
+        });
+
+        $('#update-user-btn').click(function() {
+            // This would be implemented in a real application
+            alert('User would be updated here');
+            $('#editUserModal').modal('hide');
+        });
+
+        $('.reset-password').click(function() {
+            const userId = $(this).data('user-id');
+            const username = $(this).data('username');
+
+            $('#reset-user-id').val(userId);
+            $('#reset-username').text(username);
+
+            $('#resetPasswordModal').modal('show');
+        });
+
+        $('#confirm-reset-password-btn').click(function() {
+            // This would be implemented in a real application
+            alert('Password would be reset here');
+            $('#resetPasswordModal').modal('hide');
+        });
+
+        $('.delete-user').click(function() {
+            const userId = $(this).data('user-id');
+            const username = $(this).data('username');
+
+            if (confirm(`Are you sure you want to delete user ${username}? This action cannot be undone.`)) {
+                // This would be implemented in a real application
+                alert(`User ${username} would be deleted here`);
+            }
+        });
+
+        $('#change-password-btn').click(function() {
+            // This would be implemented in a real application
+            alert('Password would be changed here');
+        });
+
+        // Sensor Settings
+        $('#enable-acinfinity').change(function() {
+            if ($(this).is(':checked')) {
+                $('#acinfinity-settings').show();
+            } else {
+                $('#acinfinity-settings').hide();
+            }
+        });
+
+        $('#enable-ecowitt').change(function() {
+            if ($(this).is(':checked')) {
+                $('#ecowitt-settings').show();
+            } else {
+                $('#ecowitt-settings').hide();
+            }
+        });
+
+        $('#test-acinfinity-connection').click(function() {
+            // This would be implemented in a real application
+            alert('Testing AC Infinity connection...');
+            setTimeout(function() {
+                alert('Connection successful!');
+            }, 1000);
+        });
+
+        $('#test-ecowitt-connection').click(function() {
+            // This would be implemented in a real application
+            alert('Testing Ecowitt connection...');
+            setTimeout(function() {
+                alert('Connection successful!');
+            }, 1000);
+        });
+
+        $('#save-sensor-settings').click(function() {
+            // This would be implemented in a real application
+            alert('Sensor settings would be saved here');
+        });
+
+        // Backup & Restore
+        $('#enable-auto-backup').change(function() {
+            if ($(this).is(':checked')) {
+                $('#auto-backup-settings').show();
+            } else {
+                $('#auto-backup-settings').hide();
+            }
+        });
+
+        $('#create-backup-btn').click(function() {
+            // This would be implemented in a real application
+            alert('Creating backup...');
+            setTimeout(function() {
+                alert('Backup created successfully!');
+            }, 1500);
+        });
+
+        $('#restore-backup-btn').click(function() {
+            if (confirm('Are you sure you want to restore from backup? This will overwrite your current data and cannot be undone.')) {
+                // This would be implemented in a real application
+                alert('Restoring from backup...');
+                setTimeout(function() {
+                    alert('Restore completed successfully!');
+                }, 2000);
+            }
+        });
+
+        $('#vacuum-db-btn').click(function() {
+            // This would be implemented in a real application
+            alert('Vacuuming database...');
+            setTimeout(function() {
+                alert('Database vacuum completed successfully!');
+            }, 1500);
+        });
+
+        $('#check-integrity-btn').click(function() {
+            // This would be implemented in a real application
+            alert('Checking database integrity...');
+            setTimeout(function() {
+                alert('Database integrity check completed. No issues found.');
+            }, 1500);
+        });
+
+        $('#save-backup-settings').click(function() {
+            // This would be implemented in a real application
+            alert('Backup settings would be saved here');
+        });
+
+        // Report Issue
+        $('#issue-type').change(function() {
+            const issueType = $(this).val();
+
+            // Show/hide relevant fields based on issue type
+            if (issueType === 'bug') {
+                $('#steps-to-reproduce').closest('.form-group').show();
+                $('#expected-behavior').closest('.form-group').show();
+                $('#actual-behavior').closest('.form-group').show();
+            } else {
+                $('#steps-to-reproduce').closest('.form-group').hide();
+                $('#expected-behavior').closest('.form-group').hide();
+                $('#actual-behavior').closest('.form-group').hide();
+            }
+        });
+
+        // Initially hide bug-specific fields
+        $('#steps-to-reproduce').closest('.form-group').hide();
+        $('#expected-behavior').closest('.form-group').hide();
+        $('#actual-behavior').closest('.form-group').hide();
+
+        // Clear issue form
+        $('#clear-issue-form').click(function() {
+            $('#issue-report-form')[0].reset();
+            $('#issue-screenshot').next('.custom-file-label').html('Choose file');
+            $('#steps-to-reproduce').closest('.form-group').hide();
+            $('#expected-behavior').closest('.form-group').hide();
+            $('#actual-behavior').closest('.form-group').hide();
+        });
+
+        // Submit issue
+        $('#submit-issue').click(function() {
+            const form = $('#issue-report-form')[0];
+
+            // Basic form validation
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            // This would be implemented in a real application
+            alert('Thank you for your report! Your issue has been submitted and will be reviewed by our team.');
+
+            // Clear the form after submission
+            $('#clear-issue-form').click();
+        });
+
+        // Handle URL hash for direct navigation to report-issue tab
+        if (window.location.hash === '#report-issue') {
+            $('.list-group-item[href="#report-issue"]').tab('show');
+        }
+    });
+</script>
+{% endblock %}

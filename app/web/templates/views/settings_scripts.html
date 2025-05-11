@@ -1,0 +1,74 @@
+{% block scripts %}
+<script>
+    // Debug information
+    console.log("Settings page script loaded");
+    console.log("jQuery version:", typeof $ !== 'undefined' ? $.fn.jquery : "jQuery not loaded");
+    console.log("Bootstrap version:", typeof bootstrap !== 'undefined' ? bootstrap.version : "Bootstrap not loaded");
+    
+    // Wait for the DOM to be fully loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("DOM fully loaded");
+        
+        // Test a simple button click
+        var testButton = document.createElement('button');
+        testButton.textContent = 'Test Button';
+        testButton.className = 'btn btn-primary mt-2';
+        testButton.addEventListener('click', function() {
+            alert('Test button clicked!');
+        });
+        document.querySelector('.container-fluid').prepend(testButton);
+        
+        // Initialize tab navigation
+        var tabLinks = document.querySelectorAll('.list-group-item[data-toggle="list"]');
+        console.log("Found tab links:", tabLinks.length);
+        
+        tabLinks.forEach(function(tabLink) {
+            console.log("Setting up click handler for tab:", tabLink.getAttribute('href'));
+            tabLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log("Tab clicked:", this.getAttribute('href'));
+                
+                // Remove active class from all tabs
+                document.querySelectorAll('.list-group-item').forEach(function(tab) {
+                    tab.classList.remove('active');
+                });
+                
+                // Add active class to clicked tab
+                this.classList.add('active');
+                
+                // Hide all tab panes
+                document.querySelectorAll('.tab-pane').forEach(function(pane) {
+                    pane.classList.remove('show', 'active');
+                });
+                
+                // Show the target tab pane
+                var targetId = this.getAttribute('href');
+                var targetPane = document.querySelector(targetId);
+                if (targetPane) {
+                    targetPane.classList.add('show', 'active');
+                    console.log("Activated tab pane:", targetId);
+                } else {
+                    console.error("Could not find tab pane:", targetId);
+                }
+            });
+        });
+        
+        // Handle URL hash for direct navigation to tabs
+        var hash = window.location.hash;
+        if (hash && document.querySelector('.list-group-item[href="' + hash + '"]')) {
+            console.log("Showing tab from hash:", hash);
+            // Trigger a click on the tab link
+            document.querySelector('.list-group-item[href="' + hash + '"]').click();
+        } else {
+            // Default to General tab if no hash is provided
+            console.log("No hash or invalid hash, showing general tab");
+            var defaultTab = document.querySelector('.list-group-item[href="#general"]');
+            if (defaultTab) {
+                defaultTab.click();
+            } else {
+                console.error("Could not find default tab");
+            }
+        }
+    });
+</script>
+{% endblock %}

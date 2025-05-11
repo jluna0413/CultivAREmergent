@@ -1,0 +1,1370 @@
+{% extends 'common/base.html' %}
+
+{% block title %}Collection - CultivAR{% endblock %}
+
+{% block header %}Collection{% endblock %}
+
+{% block content %}
+
+
+<div class="row mb-4">
+    <div class="col-md-8">
+        <div class="filter-bar">
+            <div class="filter-group">
+                <label for="filter-type">Type</label>
+                <select id="filter-type" class="form-control form-control-sm">
+                    <option value="all">All</option>
+                    <option value="indica">Indica</option>
+                    <option value="sativa">Sativa</option>
+                    <option value="hybrid">Hybrid</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="filter-breeder">Breeder</label>
+                <select id="filter-breeder" class="form-control form-control-sm">
+                    <option value="all">All</option>
+                    {% for breeder in breeders %}
+                    <option value="{{ breeder.id }}">{{ breeder.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="filter-autoflower">Autoflower</label>
+                <select id="filter-autoflower" class="form-control form-control-sm">
+                    <option value="all">All</option>
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="search-strains">Search</label>
+                <input type="text" id="search-strains" class="form-control form-control-sm" placeholder="Search strains...">
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 text-end">
+        <div class="view-toggle mb-2">
+            <div class="btn-group" role="group" aria-label="View toggle">
+                <button type="button" onclick="setGridView()" id="grid-view-btn" class="btn btn-sm btn-outline-secondary active">
+                    <i class="fas fa-th"></i> Grid
+                </button>
+                <button type="button" onclick="setListView()" id="list-view-btn" class="btn btn-sm btn-outline-secondary">
+                    <i class="fas fa-list"></i> List
+                </button>
+            </div>
+        </div>
+        <a href="/strains/add" class="btn btn-primary" id="add-strain-btn">
+            <i class="fas fa-plus"></i> Add Strain
+        </a>
+    </div>
+</div>
+
+<div id="strains-container">
+    {% if strains %}
+    <div class="strains-grid">
+        {% for strain in strains %}
+        <div class="strain-item"
+             data-type="{{ strain.type|lower }}"
+             data-breeder="{{ strain.breeder_id }}"
+             data-autoflower="{{ strain.autoflower|lower }}">
+            <div class="strain-card">
+                <div class="strain-header">
+                    <h4 class="strain-name">{{ strain.name }}</h4>
+                    <div class="strain-type">
+                        {% if strain.indica > strain.sativa %}
+                        <span class="badge badge-indica">Indica Dominant</span>
+                        {% elif strain.sativa > strain.indica %}
+                        <span class="badge badge-sativa">Sativa Dominant</span>
+                        {% else %}
+                        <span class="badge badge-hybrid">Hybrid</span>
+                        {% endif %}
+
+                        {% if strain.autoflower %}
+                        <span class="badge badge-auto">Auto</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="strain-body">
+                    <div class="strain-info">
+                        <div class="strain-info-item">
+                            <span class="strain-info-label">Breeder:</span>
+                            <span class="strain-info-value">{{ strain.breeder_name|default('Unknown') }}</span>
+                        </div>
+                        <div class="strain-info-item">
+                            <span class="strain-info-label">Genetics:</span>
+                            <span class="strain-info-value">{{ strain.indica }}% Indica / {{ strain.sativa }}% Sativa</span>
+                        </div>
+                        <div class="strain-info-item">
+                            <span class="strain-info-label">Flowering Time:</span>
+                            <span class="strain-info-value">{{ strain.cycle_time|default('Unknown') }}</span>
+                        </div>
+                        <div class="strain-info-item">
+                            <span class="strain-info-label">Seeds:</span>
+                            <span class="strain-info-value">{{ strain.seed_count }}</span>
+                        </div>
+                    </div>
+                    {% if strain.short_description %}
+                    <div class="strain-description">
+                        {{ strain.short_description }}
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="strain-footer">
+                    <a href="{{ url_for('strain', strain_id=strain.id) }}" class="btn btn-sm btn-primary">
+                        <i class="fas fa-eye"></i> View
+                    </a>
+                    <button type="button" onclick="editStrain({{ strain.id }})" class="btn btn-sm btn-info edit-strain" data-strain-id="{{ strain.id }}">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+                    <button type="button" onclick="deleteStrain({{ strain.id }})" class="btn btn-sm btn-danger delete-strain" data-strain-id="{{ strain.id }}">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-state-icon">
+            <i class="fas fa-seedling"></i>
+        </div>
+        <h4>No strains found</h4>
+        <p>Add your first strain to start tracking genetics.</p>
+        <a href="/strains/add" class="btn btn-primary" id="add-first-strain-btn">
+            <i class="fas fa-plus"></i> Add Strain
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Add Strain Modal -->
+<div class="modal fade" id="addStrainModal" tabindex="-1" aria-labelledby="addStrainModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addStrainModalLabel">Add New Strain</h5>
+                <button type="button" class="btn-close" onclick="closeModal('addStrainModal')" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="strain-form">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="name">Strain Name</label>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="breeder_id">Breeder</label>
+                                <select class="form-select" id="breeder_id" name="breeder_id">
+                                    <option value="">Select Breeder</option>
+                                    {% for breeder in breeders %}
+                                    <option value="{{ breeder.id }}">{{ breeder.name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <small class="form-text text-muted">
+                                    <a href="#" onclick="showAddBreederModal(); return false;">Add new breeder</a>
+                                </small>
+                            </div>
+                            <div class="form-group">
+                                <label>Genetics</label>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <label for="indica">Indica %</label>
+                                        <input type="number" class="form-control" id="indica" name="indica" min="0" max="100" value="50">
+                                    </div>
+                                    <div class="col-6">
+                                        <label for="sativa">Sativa %</label>
+                                        <input type="number" class="form-control" id="sativa" name="sativa" min="0" max="100" value="50">
+                                    </div>
+                                </div>
+                                <div class="genetics-slider mt-2">
+                                    <div class="genetics-slider-bar">
+                                        <div class="genetics-slider-fill"></div>
+                                    </div>
+                                    <div class="genetics-labels">
+                                        <span>Indica</span>
+                                        <span>Sativa</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="autoflower" name="autoflower">
+                                    <label class="custom-control-label" for="autoflower">Autoflowering</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="cycle_time">Flowering Time (days)</label>
+                                <input type="number" class="form-control" id="cycle_time" name="cycle_time" min="1">
+                            </div>
+                            <div class="form-group">
+                                <label for="seed_count">Seed Count</label>
+                                <input type="number" class="form-control" id="seed_count" name="seed_count" min="0" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="url">Strain URL (optional)</label>
+                                <input type="url" class="form-control" id="url" name="url" placeholder="https://...">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('addStrainModal')">Cancel</button>
+                <button type="button" onclick="saveStrain()" class="btn btn-primary" id="save-strain-btn">Save Strain</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Breeder Modal -->
+<div class="modal fade" id="addBreederModal" tabindex="-1" aria-labelledby="addBreederModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addBreederModalLabel">Add New Breeder</h5>
+                <button type="button" class="btn-close" onclick="closeModal('addBreederModal')" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="breeder-form">
+                    <div class="form-group">
+                        <label for="breeder_name">Breeder Name</label>
+                        <input type="text" class="form-control" id="breeder_name" name="breeder_name" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('addBreederModal')">Cancel</button>
+                <button type="button" onclick="saveBreeder()" class="btn btn-primary" id="save-breeder-btn">Save Breeder</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block styles %}
+<style>
+    /* Modal styles - using Bootstrap's default modal styles */
+    /* Strains page specific styles */
+    .filter-bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .filter-group {
+        flex: 1;
+        min-width: 150px;
+    }
+
+    .filter-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-size: 0.8rem;
+    }
+
+    .view-toggle .btn {
+        border-radius: 4px;
+    }
+
+    .view-toggle .btn.active {
+        background-color: var(--accent-color);
+        border-color: var(--accent-color);
+        color: white;
+    }
+
+    .strains-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+    }
+
+    .strain-item {
+        width: 100%;
+    }
+
+    .strain-card {
+        background-color: var(--bg-card);
+        border-radius: var(--border-radius);
+        border: 1px solid var(--border-color);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+    }
+
+    .strain-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .strain-header {
+        padding: 15px;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .strain-name {
+        margin: 0;
+        font-size: 1.2rem;
+        font-weight: 500;
+        color: var(--text-primary);
+    }
+
+    .strain-type {
+        display: flex;
+        gap: 5px;
+    }
+
+    .badge-indica {
+        background-color: rgba(76, 175, 80, 0.2);
+        color: #4CAF50;
+    }
+
+    .badge-sativa {
+        background-color: rgba(255, 152, 0, 0.2);
+        color: #FF9800;
+    }
+
+    .badge-hybrid {
+        background-color: rgba(156, 39, 176, 0.2);
+        color: #9C27B0;
+    }
+
+    .badge-auto {
+        background-color: rgba(33, 150, 243, 0.2);
+        color: #2196F3;
+    }
+
+    .strain-body {
+        padding: 15px;
+        flex: 1;
+    }
+
+    .strain-info {
+        margin-bottom: 15px;
+    }
+
+    .strain-info-item {
+        margin-bottom: 5px;
+        font-size: 0.9rem;
+    }
+
+    .strain-info-label {
+        color: var(--text-secondary);
+        margin-right: 5px;
+    }
+
+    .strain-info-value {
+        color: var(--text-primary);
+    }
+
+    .strain-description {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        border-top: 1px solid var(--border-color);
+        padding-top: 10px;
+    }
+
+    .strain-footer {
+        padding: 15px;
+        border-top: 1px solid var(--border-color);
+        display: flex;
+        gap: 5px;
+    }
+
+    /* Genetics Slider */
+    .genetics-slider {
+        margin-top: 10px;
+    }
+
+    .genetics-slider-bar {
+        height: 10px;
+        background-color: rgba(255, 152, 0, 0.2);
+        border-radius: 5px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .genetics-slider-fill {
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        background-color: rgba(76, 175, 80, 0.5);
+        width: 50%;
+    }
+
+    .genetics-labels {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        margin-top: 5px;
+    }
+
+    /* Strains List View */
+    .strains-grid.strains-list {
+        grid-template-columns: 1fr;
+    }
+
+    .strains-grid.strains-list .strain-card {
+        flex-direction: row;
+        height: auto;
+    }
+
+    .strains-grid.strains-list .strain-header {
+        width: 250px;
+        border-bottom: none;
+        border-right: 1px solid var(--border-color);
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .strains-grid.strains-list .strain-type {
+        margin-top: 10px;
+    }
+
+    .strains-grid.strains-list .strain-body {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .strains-grid.strains-list .strain-footer {
+        width: auto;
+        border-top: none;
+        border-left: 1px solid var(--border-color);
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 5px;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 992px) {
+        .strains-grid {
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        }
+    }
+
+    @media (max-width: 768px) {
+        .filter-bar {
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .filter-group {
+            width: 100%;
+        }
+
+        .strains-grid.strains-list .strain-card {
+            flex-direction: column;
+        }
+
+        .strains-grid.strains-list .strain-header {
+            width: 100%;
+            border-right: none;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .strains-grid.strains-list .strain-footer {
+            width: 100%;
+            border-left: none;
+            border-top: 1px solid var(--border-color);
+            flex-direction: row;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .strains-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<!-- Diagnostics Scripts (only loaded if enabled in admin panel) -->
+{% if session.get('admin') or request.cookies.get('diagnostics_enabled') == 'true' %}
+<script src="{{ url_for('static', filename='js/diagnostics.js') }}"></script>
+<script src="{{ url_for('static', filename='js/strains-diagnostics.js') }}"></script>
+{% endif %}
+<script>
+    // Global functions for button clicks
+
+    function closeModal(modalId) {
+        console.log('Closing modal:', modalId);
+        try {
+            // Hide the modal using jQuery
+            $('#' + modalId).modal('hide');
+            console.log('Modal closed successfully');
+        } catch (error) {
+            console.error('Error closing modal:', error);
+            alert('Error closing modal: ' + error.message);
+        }
+    }
+
+    function setGridView() {
+        console.log('Grid view function called');
+        try {
+            // Update button states
+            document.getElementById('grid-view-btn').classList.add('active');
+            document.getElementById('list-view-btn').classList.remove('active');
+
+            // Find all elements with class strains-grid and remove strains-list class
+            const gridElements = document.getElementsByClassName('strains-grid');
+            console.log('Found grid elements:', gridElements.length);
+
+            for (let i = 0; i < gridElements.length; i++) {
+                gridElements[i].classList.remove('strains-list');
+                console.log('Removed strains-list class from element', i);
+            }
+
+            // Save view preference in localStorage
+            localStorage.setItem('strainViewMode', 'grid');
+            console.log('Grid view applied and saved to localStorage');
+        } catch (error) {
+            console.error('Error in setGridView:', error);
+        }
+    }
+
+    function setListView() {
+        console.log('List view function called');
+        try {
+            // Update button states
+            document.getElementById('list-view-btn').classList.add('active');
+            document.getElementById('grid-view-btn').classList.remove('active');
+
+            // Find all elements with class strains-grid and add strains-list class
+            const gridElements = document.getElementsByClassName('strains-grid');
+            console.log('Found grid elements:', gridElements.length);
+
+            for (let i = 0; i < gridElements.length; i++) {
+                gridElements[i].classList.add('strains-list');
+                console.log('Added strains-list class to element', i);
+            }
+
+            // Save view preference in localStorage
+            localStorage.setItem('strainViewMode', 'list');
+            console.log('List view applied and saved to localStorage');
+        } catch (error) {
+            console.error('Error in setListView:', error);
+        }
+    }
+
+    function showAddStrainModal() {
+        console.log('Show add strain modal function called');
+        try {
+            // Reset form
+            document.getElementById('strain-form').reset();
+
+            // Reset indica/sativa values to 50/50
+            document.getElementById('indica').value = 50;
+            document.getElementById('sativa').value = 50;
+            updateGeneticsSlider();
+
+            // Reset modal title and button text
+            document.getElementById('addStrainModalLabel').textContent = 'Add New Strain';
+            const saveButton = document.getElementById('save-strain-btn');
+            saveButton.textContent = 'Save Strain';
+            saveButton.removeAttribute('data-strain-id');
+
+            // Show modal using jQuery
+            $('#addStrainModal').modal('show');
+
+            console.log('Modal should be visible now');
+        } catch (error) {
+            console.error('Error showing modal:', error);
+            alert('Error showing modal: ' + error.message);
+        }
+    }
+
+    // Function to update genetics slider
+    function updateGeneticsSlider() {
+        const indica = parseInt(document.getElementById('indica').value) || 0;
+        const sativa = parseInt(document.getElementById('sativa').value) || 0;
+
+        // Normalize to 100%
+        const total = indica + sativa;
+        let indicaPercent = 50;
+
+        if (total > 0) {
+            indicaPercent = (indica / total) * 100;
+        }
+
+        document.querySelector('.genetics-slider-fill').style.width = indicaPercent + '%';
+    }
+
+    function editStrain(strainId) {
+        console.log('Edit strain function called for strain ID:', strainId);
+
+        try {
+            // Use XMLHttpRequest instead of fetch for better compatibility
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', `/strains/${strainId}`, true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        try {
+                            var strain = JSON.parse(xhr.responseText);
+                            console.log('Strain data received:', strain);
+
+                            // Populate form with strain data
+                            document.getElementById('name').value = strain.name || '';
+                            document.getElementById('breeder_id').value = strain.breeder_id || '';
+                            document.getElementById('indica').value = strain.indica || 50;
+                            document.getElementById('sativa').value = strain.sativa || 50;
+                            document.getElementById('autoflower').checked = !!strain.autoflower;
+                            document.getElementById('cycle_time').value = strain.cycle_time || '';
+                            document.getElementById('seed_count').value = strain.seed_count || 0;
+                            document.getElementById('url').value = strain.url || '';
+                            document.getElementById('description').value = strain.description || '';
+
+                            // Update genetics slider
+                            updateGeneticsSlider();
+
+                            // Change modal title and button text
+                            document.getElementById('addStrainModalLabel').textContent = 'Edit Strain';
+                            const saveButton = document.getElementById('save-strain-btn');
+                            saveButton.textContent = 'Update Strain';
+                            saveButton.setAttribute('data-strain-id', strainId);
+
+                            // Show modal using jQuery
+                            $('#addStrainModal').modal('show');
+
+                            console.log('Edit modal should be visible now');
+                        } catch (parseError) {
+                            console.error('Error parsing strain data:', parseError);
+                            alert('Error parsing strain data: ' + parseError.message);
+                        }
+                    } else {
+                        console.error('Error loading strain data. Status:', xhr.status);
+                        alert('Error loading strain data. Status: ' + xhr.status);
+                    }
+                }
+            };
+            xhr.send();
+        } catch (error) {
+            console.error('Error in editStrain function:', error);
+            alert('Error in editStrain function: ' + error.message);
+        }
+    }
+
+    function deleteStrain(strainId) {
+        console.log('Delete strain function called for strain ID:', strainId);
+
+        if (confirm('Are you sure you want to delete this strain? This action cannot be undone.')) {
+            try {
+                // Use XMLHttpRequest instead of fetch for better compatibility
+                var xhr = new XMLHttpRequest();
+                xhr.open('DELETE', `/strains/${strainId}`, true);
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4) {
+                        if (xhr.status === 200) {
+                            try {
+                                var data = JSON.parse(xhr.responseText);
+                                console.log('Delete response:', data);
+
+                                if (data.success) {
+                                    // Show success message
+                                    alert('Strain deleted successfully!');
+
+                                    // Reload the page to update the strain list
+                                    window.location.reload();
+                                } else {
+                                    // Show error message
+                                    alert('Error deleting strain: ' + (data.error || 'Unknown error'));
+                                }
+                            } catch (parseError) {
+                                console.error('Error parsing delete response:', parseError);
+                                alert('Error parsing delete response: ' + parseError.message);
+                            }
+                        } else {
+                            console.error('Error deleting strain. Status:', xhr.status);
+                            alert('Error deleting strain. Status: ' + xhr.status);
+                        }
+                    }
+                };
+                xhr.send();
+            } catch (error) {
+                console.error('Error in deleteStrain function:', error);
+                alert('Error in deleteStrain function: ' + error.message);
+            }
+        }
+    }
+
+    function saveStrain() {
+        console.log('Save strain function called');
+
+        try {
+            // Get form data
+            const name = document.getElementById('name').value;
+            const breeder_id = document.getElementById('breeder_id').value;
+            const indica = parseInt(document.getElementById('indica').value) || 0;
+            const sativa = parseInt(document.getElementById('sativa').value) || 0;
+            const autoflower = document.getElementById('autoflower').checked;
+            const cycle_time = document.getElementById('cycle_time').value ? parseInt(document.getElementById('cycle_time').value) : null;
+            const seed_count = parseInt(document.getElementById('seed_count').value) || 0;
+            const url = document.getElementById('url').value;
+            const description = document.getElementById('description').value;
+
+            // Validate form
+            if (!name) {
+                alert('Please enter a strain name');
+                return;
+            }
+
+            // Prepare data for API
+            const strainData = {
+                name: name,
+                breeder_id: breeder_id || null,
+                indica: indica,
+                sativa: sativa,
+                autoflower: autoflower,
+                cycle_time: cycle_time,
+                seed_count: seed_count,
+                url: url,
+                description: description,
+                short_description: description.substring(0, 100) + (description.length > 100 ? '...' : '')
+            };
+
+            console.log('Strain data to save:', strainData);
+
+            // Check if we're adding or updating
+            const saveButton = document.getElementById('save-strain-btn');
+            const strainId = saveButton.getAttribute('data-strain-id');
+            let apiUrl = '/strains';
+            let method = 'POST';
+            let successMessage = 'Strain added successfully!';
+
+            if (strainId) {
+                // We're updating an existing strain
+                apiUrl = `/strains/${strainId}`;
+                method = 'PUT';
+                successMessage = 'Strain updated successfully!';
+            }
+
+            // Use jQuery AJAX which handles content types better
+            $.ajax({
+                url: apiUrl,
+                type: method,
+                contentType: 'application/json',
+                data: JSON.stringify(strainData),
+                success: function(response) {
+                    console.log('Save response:', response);
+
+                    if (response.success) {
+                        // Close the modal
+                        $('#addStrainModal').modal('hide');
+
+                        // Show success message
+                        alert(successMessage);
+
+                        // Reload the page to show the updated strain
+                        window.location.reload();
+                    } else {
+                        // Show error message
+                        alert('Error saving strain: ' + (response.error || 'Unknown error'));
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error saving strain. Status:', xhr.status);
+                    console.error('Error details:', error);
+                    console.error('Response text:', xhr.responseText);
+                    alert('Error saving strain: ' + error + '\nStatus: ' + xhr.status + '\nResponse: ' + xhr.responseText);
+                }
+            });
+
+            console.log('Save request sent using jQuery AJAX');
+        } catch (error) {
+            console.error('Error in saveStrain function:', error);
+            alert('Error in saveStrain function: ' + error.message);
+        }
+    }
+
+    function showAddBreederModal() {
+        console.log('Show add breeder modal function called');
+
+        try {
+            // Hide strain modal if it's open
+            $('#addStrainModal').modal('hide');
+
+            // Reset form
+            document.getElementById('breeder-form').reset();
+
+            // Show breeder modal using jQuery
+            $('#addBreederModal').modal('show');
+
+            console.log('Breeder modal should be visible now');
+        } catch (error) {
+            console.error('Error showing breeder modal:', error);
+            alert('Error showing breeder modal: ' + error.message);
+        }
+    }
+
+    function saveBreeder() {
+        console.log('Save breeder function called');
+
+        try {
+            // Get form data
+            const breederName = document.getElementById('breeder_name').value;
+
+            // Validate form
+            if (!breederName) {
+                alert('Please enter a breeder name');
+                return;
+            }
+
+            // Prepare data for API
+            const breederData = {
+                name: breederName
+            };
+
+            console.log('Breeder data to save:', breederData);
+
+            // Use fetch API with explicit headers
+            fetch('/breeders', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(breederData)
+            })
+            .then(response => {
+                console.log('Breeder save response status:', response.status);
+                return response.json();
+            })
+            .then(data => {
+                console.log('Breeder save response data:', data);
+
+                if (data.success) {
+                    // Add the new breeder to the dropdown
+                    const breederSelect = document.getElementById('breeder_id');
+                    const newOption = document.createElement('option');
+                    newOption.value = data.breeder_id;
+                    newOption.text = data.name;
+                    breederSelect.add(newOption);
+
+                    // Select the new breeder
+                    breederSelect.value = data.breeder_id;
+
+                    // Show success message
+                    alert('Breeder added successfully!');
+
+                    // Hide breeder modal
+                    $('#addBreederModal').modal('hide');
+
+                    // Show strain modal after a short delay
+                    setTimeout(function() {
+                        $('#addStrainModal').modal('show');
+                        console.log('Strain modal should be visible again');
+                    }, 500); // Small delay to ensure proper modal transition
+                } else {
+                    // Show error message
+                    alert('Error adding breeder: ' + (data.error || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                console.error('Error saving breeder:', error);
+                alert('Error saving breeder: ' + error);
+            });
+
+            console.log('Breeder save request sent using fetch API');
+        } catch (error) {
+            console.error('Error in saveBreeder function:', error);
+            alert('Error in saveBreeder function: ' + error.message);
+        }
+    }
+
+    // Initialize view mode from localStorage
+    function initializeViewMode() {
+        try {
+            const savedViewMode = localStorage.getItem('strainViewMode');
+            console.log('Saved view mode:', savedViewMode);
+
+            if (savedViewMode === 'list') {
+                setListView();
+            } else {
+                setGridView(); // Default to grid view
+            }
+        } catch (error) {
+            console.error('Error initializing view mode:', error);
+            // Default to grid view on error
+            setGridView();
+        }
+    }
+
+    $(document).ready(function() {
+        // Initialize view mode
+        initializeViewMode();
+        // Add Strain button click handler
+        $('#add-strain-btn, #add-first-strain-btn').click(function() {
+            // Show the modal
+            $('#addStrainModal').modal('show');
+
+            // Reset form
+            $('#strain-form')[0].reset();
+
+            // Reset indica/sativa values to 50/50
+            $('#indica').val(50);
+            $('#sativa').val(50);
+            updateGeneticsSlider();
+
+            // Reset modal title and button text
+            $('#addStrainModalLabel').text('Add New Strain');
+            $('#save-strain-btn').text('Save Strain').removeData('strain-id');
+        });
+
+        // Reset form when Add Strain button is clicked (legacy code for backward compatibility)
+        $('button[data-bs-target="#addStrainModal"]').click(function() {
+            // Reset form
+            $('#strain-form')[0].reset();
+
+            // Reset indica/sativa values to 50/50
+            $('#indica').val(50);
+            $('#sativa').val(50);
+            updateGeneticsSlider();
+
+            // Reset modal title and button text
+            $('#addStrainModalLabel').text('Add New Strain');
+            $('#save-strain-btn').text('Save Strain').removeData('strain-id');
+        });
+        // Toggle view (grid/list)
+        $('#grid-view-btn').click(function(e) {
+            e.preventDefault();
+            console.log('Grid view clicked');
+            $(this).addClass('active');
+            $('#list-view-btn').removeClass('active');
+            $('.strains-grid').removeClass('strains-list');
+        });
+
+        $('#list-view-btn').click(function(e) {
+            e.preventDefault();
+            console.log('List view clicked');
+            $(this).addClass('active');
+            $('#grid-view-btn').removeClass('active');
+            $('.strains-grid').addClass('strains-list');
+        });
+
+        // Initialize view based on active button
+        if ($('#grid-view-btn').hasClass('active')) {
+            $('.strains-grid').removeClass('strains-list');
+        } else if ($('#list-view-btn').hasClass('active')) {
+            $('.strains-grid').addClass('strains-list');
+        }
+
+        // Filter strains
+        function filterStrains() {
+            const type = $('#filter-type').val();
+            const breeder = $('#filter-breeder').val();
+            const autoflower = $('#filter-autoflower').val();
+            const search = $('#search-strains').val().toLowerCase();
+
+            $('.strain-item').each(function() {
+                const $item = $(this);
+                const itemType = $item.data('type');
+                const itemBreeder = $item.data('breeder');
+                const itemAutoflower = $item.data('autoflower');
+                const itemName = $item.find('.strain-name').text().toLowerCase();
+
+                let show = true;
+
+                if (type !== 'all' && itemType !== type) {
+                    show = false;
+                }
+
+                if (breeder !== 'all' && itemBreeder != breeder) {
+                    show = false;
+                }
+
+                if (autoflower !== 'all' && itemAutoflower !== (autoflower === 'true')) {
+                    show = false;
+                }
+
+                if (search !== '' && !itemName.includes(search)) {
+                    show = false;
+                }
+
+                if (show) {
+                    $item.show();
+                } else {
+                    $item.hide();
+                }
+            });
+
+            // Show empty state if no strains are visible
+            if ($('.strain-item:visible').length === 0) {
+                if (!$('#no-results-message').length) {
+                    $('#strains-container').append(`
+                        <div id="no-results-message" class="empty-state">
+                            <div class="empty-state-icon">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <h4>No strains match your filters</h4>
+                            <p>Try adjusting your filter criteria or add a new strain.</p>
+                            <button type="button" class="btn btn-secondary" id="reset-filters-btn">
+                                <i class="fas fa-undo"></i> Reset Filters
+                            </button>
+                        </div>
+                    `);
+
+                    // Reset filters button
+                    $('#reset-filters-btn').click(function() {
+                        $('#filter-type').val('all');
+                        $('#filter-breeder').val('all');
+                        $('#filter-autoflower').val('all');
+                        $('#search-strains').val('');
+                        filterStrains();
+                    });
+                }
+                $('.strains-grid').hide();
+                $('#no-results-message').show();
+            } else {
+                $('.strains-grid').show();
+                $('#no-results-message').hide();
+            }
+        }
+
+        // Attach filter events
+        $('#filter-type, #filter-breeder, #filter-autoflower').change(filterStrains);
+        $('#search-strains').on('input', filterStrains);
+
+        // Genetics slider
+        function updateGeneticsSlider() {
+            const indica = parseInt($('#indica').val()) || 0;
+            const sativa = parseInt($('#sativa').val()) || 0;
+
+            // Normalize to 100%
+            const total = indica + sativa;
+            let indicaPercent = 50;
+
+            if (total > 0) {
+                indicaPercent = (indica / total) * 100;
+            }
+
+            $('.genetics-slider-fill').css('width', indicaPercent + '%');
+        }
+
+        $('#indica, #sativa').on('input', function() {
+            // Ensure the other value adjusts to maintain 100% total
+            const indica = parseInt($('#indica').val()) || 0;
+            const sativa = parseInt($('#sativa').val()) || 0;
+
+            if ($(this).attr('id') === 'indica') {
+                $('#sativa').val(100 - indica);
+            } else {
+                $('#indica').val(100 - sativa);
+            }
+
+            updateGeneticsSlider();
+        });
+
+        // Initialize genetics slider
+        updateGeneticsSlider();
+
+        // Add breeder link
+        $('#add-breeder-link').click(function(e) {
+            e.preventDefault();
+            const addStrainModal = bootstrap.Modal.getInstance(document.getElementById('addStrainModal'));
+            if (addStrainModal) {
+                addStrainModal.hide();
+            } else {
+                $('#addStrainModal').modal('hide');
+            }
+
+            // Show breeder modal
+            const addBreederModal = new bootstrap.Modal(document.getElementById('addBreederModal'));
+            addBreederModal.show();
+        });
+
+        // Save breeder
+        $('#save-breeder-btn').click(function() {
+            const breederName = $('#breeder_name').val();
+
+            if (!breederName) {
+                alert('Please enter a breeder name');
+                return;
+            }
+
+            // Prepare data for API
+            const breederData = {
+                name: breederName
+            };
+
+            // Send data to API
+            $.ajax({
+                url: '/breeders',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(breederData),
+                success: function(response) {
+                    if (response.success) {
+                        // Add the new breeder to the dropdown
+                        const newOption = new Option(response.name, response.breeder_id);
+                        $('#breeder_id').append(newOption);
+
+                        // Select the new breeder
+                        $('#breeder_id').val(response.breeder_id);
+
+                        // Show success message
+                        alert('Breeder added successfully!');
+
+                        // Close the modal
+                        const addBreederModal = bootstrap.Modal.getInstance(document.getElementById('addBreederModal'));
+                        if (addBreederModal) {
+                            addBreederModal.hide();
+                        } else {
+                            $('#addBreederModal').modal('hide');
+                        }
+
+                        // Reopen the strain modal
+                        const addStrainModal = new bootstrap.Modal(document.getElementById('addStrainModal'));
+                        addStrainModal.show();
+                    } else {
+                        // Show error message
+                        alert('Error adding breeder: ' + response.error);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    // Show error message
+                    alert('Error adding breeder: ' + error);
+                }
+            });
+        });
+
+        // Save strain
+        $('#save-strain-btn').click(function() {
+            // Get form data
+            const name = $('#name').val();
+            const breeder_id = $('#breeder_id').val();
+            const indica = parseInt($('#indica').val()) || 0;
+            const sativa = parseInt($('#sativa').val()) || 0;
+            const autoflower = $('#autoflower').is(':checked');
+            const cycle_time = $('#cycle_time').val() ? parseInt($('#cycle_time').val()) : null;
+            const seed_count = parseInt($('#seed_count').val()) || 0;
+            const url = $('#url').val();
+            const description = $('#description').val();
+
+            // Validate form
+            if (!name) {
+                alert('Please enter a strain name');
+                return;
+            }
+
+            // Prepare data for API
+            const strainData = {
+                name: name,
+                breeder_id: breeder_id || null,
+                indica: indica,
+                sativa: sativa,
+                autoflower: autoflower,
+                cycle_time: cycle_time,
+                seed_count: seed_count,
+                url: url,
+                description: description,
+                short_description: description.substring(0, 100) + (description.length > 100 ? '...' : '')
+            };
+
+            // Check if we're adding or updating
+            const strainId = $(this).data('strain-id');
+            let url = '/strains';
+            let method = 'POST';
+            let successMessage = 'Strain added successfully!';
+
+            if (strainId) {
+                // We're updating an existing strain
+                url = `/strains/${strainId}`;
+                method = 'PUT';
+                successMessage = 'Strain updated successfully!';
+            }
+
+            // Send data to API
+            $.ajax({
+                url: url,
+                type: method,
+                contentType: 'application/json',
+                data: JSON.stringify(strainData),
+                success: function(response) {
+                    if (response.success) {
+                        // Show success message
+                        alert(successMessage);
+
+                        // Reload the page to show the updated strain
+                        window.location.reload();
+                    } else {
+                        // Show error message
+                        alert('Error saving strain: ' + response.error);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    // Show error message
+                    alert('Error saving strain: ' + error);
+                }
+            });
+        });
+
+        // Edit strain
+        $(document).on('click', '.edit-strain', function() {
+            const strainId = $(this).data('strain-id');
+            console.log('Edit strain clicked for ID:', strainId);
+
+            // Get strain data from API
+            $.ajax({
+                url: `/strains/${strainId}`,
+                type: 'GET',
+                success: function(strain) {
+                    console.log('Strain data received:', strain);
+
+                    // Populate form with strain data
+                    $('#name').val(strain.name);
+                    $('#breeder_id').val(strain.breeder_id);
+                    $('#indica').val(strain.indica);
+                    $('#sativa').val(strain.sativa);
+                    $('#autoflower').prop('checked', strain.autoflower);
+                    $('#cycle_time').val(strain.cycle_time);
+                    $('#seed_count').val(strain.seed_count);
+                    $('#url').val(strain.url);
+                    $('#description').val(strain.description);
+
+                    // Update genetics slider
+                    updateGeneticsSlider();
+
+                    // Change modal title and button text
+                    $('#addStrainModalLabel').text('Edit Strain');
+                    $('#save-strain-btn').text('Update Strain').data('strain-id', strainId);
+
+                    // Show modal using direct DOM manipulation for better compatibility
+                    $('#addStrainModal').css('display', 'block');
+                    $('#addStrainModal').addClass('show');
+                    $('body').addClass('modal-open');
+                    $('<div class="modal-backdrop fade show"></div>').appendTo('body');
+
+                    console.log('Edit modal should be visible now');
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error loading strain data:', error);
+                    alert('Error loading strain data: ' + error);
+                }
+            });
+        });
+
+        // Delete strain
+        $(document).on('click', '.delete-strain', function() {
+            const strainId = $(this).data('strain-id');
+            console.log('Delete strain clicked for ID:', strainId);
+
+            if (confirm('Are you sure you want to delete this strain? This action cannot be undone.')) {
+                // Send delete request to API
+                $.ajax({
+                    url: `/strains/${strainId}`,
+                    type: 'DELETE',
+                    success: function(response) {
+                        console.log('Delete response:', response);
+
+                        if (response.success) {
+                            // Show success message
+                            alert('Strain deleted successfully!');
+
+                            // Reload the page to update the strain list
+                            window.location.reload();
+                        } else {
+                            // Show error message
+                            alert('Error deleting strain: ' + response.error);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error deleting strain:', error);
+                        // Show error message
+                        alert('Error deleting strain: ' + error);
+                    }
+                });
+            }
+        });
+
+        // Direct test function for debugging
+        function testStrainButtons() {
+            console.log('Testing strain buttons...');
+
+            // Check if buttons exist
+            const editButtons = document.querySelectorAll('.edit-strain');
+            const deleteButtons = document.querySelectorAll('.delete-strain');
+
+            console.log('Found edit buttons:', editButtons.length);
+            console.log('Found delete buttons:', deleteButtons.length);
+
+            if (editButtons.length > 0) {
+                const firstEditButton = editButtons[0];
+                console.log('First edit button:', firstEditButton);
+                console.log('onclick attribute:', firstEditButton.getAttribute('onclick'));
+                console.log('data-strain-id:', firstEditButton.getAttribute('data-strain-id'));
+
+                // Test if the function exists
+                if (typeof editStrain === 'function') {
+                    console.log('editStrain function exists');
+
+                    // Try to call it directly
+                    try {
+                        const strainId = firstEditButton.getAttribute('data-strain-id');
+                        console.log('Calling editStrain with ID:', strainId);
+                        editStrain(strainId);
+                    } catch (error) {
+                        console.error('Error calling editStrain:', error);
+                    }
+                } else {
+                    console.error('editStrain function does not exist!');
+                }
+            }
+
+            // Check jQuery modal functionality
+            if (typeof jQuery !== 'undefined') {
+                console.log('jQuery version:', jQuery.fn.jquery);
+
+                if (typeof jQuery.fn.modal !== 'undefined') {
+                    console.log('jQuery modal plugin is available');
+                } else {
+                    console.error('jQuery modal plugin is NOT available');
+                }
+            } else {
+                console.error('jQuery is not loaded!');
+            }
+
+            // Check Bootstrap
+            if (typeof bootstrap !== 'undefined') {
+                console.log('Bootstrap is loaded');
+                console.log('Bootstrap version:', bootstrap.Modal ? bootstrap.Modal.VERSION : 'unknown');
+            } else {
+                console.error('Bootstrap is not loaded or not available in global scope');
+            }
+        }
+
+        // Add a test button to the page
+        const testButton = document.createElement('button');
+        testButton.className = 'btn btn-primary';
+        testButton.innerHTML = 'Test Strain Buttons';
+        testButton.style.position = 'fixed';
+        testButton.style.top = '60px';
+        testButton.style.right = '10px';
+        testButton.style.zIndex = '9999';
+
+        testButton.addEventListener('click', function() {
+            testStrainButtons();
+        });
+
+        document.body.appendChild(testButton);
+        console.log('Test button added to page');
+    });
+</script>
+{% endblock %}

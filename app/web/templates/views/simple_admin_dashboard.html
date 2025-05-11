@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - CultivAR</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/all.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body {
+            background-color: #1a1a1a;
+            color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .admin-card {
+            background-color: #2a2a2a;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+        }
+        .admin-card-header {
+            border-bottom: 1px solid #444;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .admin-card-header h6 {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+        .btn-primary:hover {
+            background-color: #0069d9;
+            border-color: #0062cc;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            border-color: #545b62;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3 mb-0">Admin Dashboard</h1>
+            <a href="{{ url_for('admin_logout') }}" class="btn btn-outline-secondary btn-sm">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-6 mb-4">
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <h6>System Information</h6>
+                    </div>
+                    <div class="admin-card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered" width="100%" cellspacing="0">
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Python Version</strong></td>
+                                        <td>{{ python_version }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Flask Version</strong></td>
+                                        <td>{{ flask_version }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Database</strong></td>
+                                        <td>SQLite ({{ db_size_mb }} MB)</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Operating System</strong></td>
+                                        <td>{{ os_name }} {{ os_version }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Server Time</strong></td>
+                                        <td id="server-time">Loading...</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>System Uptime</strong></td>
+                                        <td>{{ uptime }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 mb-4">
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <h6>JavaScript Diagnostics</h6>
+                    </div>
+                    <div class="admin-card-body">
+                        <p>Enable JavaScript diagnostics to debug client-side issues. This will add a diagnostics panel to all pages.</p>
+                        <div class="d-flex">
+                            <button id="enable-diagnostics-btn" class="btn btn-primary mr-2">Enable Diagnostics</button>
+                            <button id="disable-diagnostics-btn" class="btn btn-secondary">Disable Diagnostics</button>
+                        </div>
+                        <hr>
+                        <h6 class="mt-4">Diagnostics Status</h6>
+                        <div class="alert alert-info" id="diagnostics-status">
+                            Checking status...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-6 mb-4">
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <h6>Diagnostics Tools</h6>
+                    </div>
+                    <div class="admin-card-body">
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <h6>API Diagnostics</h6>
+                                <div class="form-group">
+                                    <label for="api-endpoint">API Endpoint</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="api-endpoint" placeholder="e.g., /api/admin/diagnostics/test">
+                                        <div class="input-group-append">
+                                            <button class="btn btn-primary" id="test-api-endpoint">Test</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <h6>API Response</h6>
+                            <div class="alert alert-secondary">
+                                <pre id="api-response" style="margin: 0; font-size: 0.8rem;">No response yet. Test an endpoint to see results.</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+    <script>
+        // Update server time
+        function updateServerTime() {
+            const now = new Date();
+            document.getElementById('server-time').textContent = now.toLocaleString();
+        }
+
+        // Update server time every second
+        updateServerTime();
+        setInterval(updateServerTime, 1000);
+
+        // Check diagnostics status
+        function checkDiagnosticsStatus() {
+            const diagnosticsEnabled = localStorage.getItem('diagnostics_enabled');
+            const statusElement = document.getElementById('diagnostics-status');
+
+            if (diagnosticsEnabled === 'true') {
+                statusElement.className = 'alert alert-success';
+                statusElement.innerHTML = '<i class="fas fa-check-circle"></i> JavaScript diagnostics are <strong>enabled</strong>.';
+
+                // Add a visual indicator that diagnostics are enabled
+                const indicator = document.getElementById('diagnostics-indicator') || document.createElement('div');
+                if (!document.getElementById('diagnostics-indicator')) {
+                    indicator.id = 'diagnostics-indicator';
+                    indicator.style.position = 'fixed';
+                    indicator.style.bottom = '5px';
+                    indicator.style.right = '5px';
+                    indicator.style.width = '15px';
+                    indicator.style.height = '15px';
+                    indicator.style.borderRadius = '50%';
+                    indicator.style.backgroundColor = '#00ff00';
+                    indicator.style.boxShadow = '0 0 10px rgba(0, 255, 0, 0.7)';
+                    indicator.style.zIndex = '9998';
+                    indicator.title = 'Diagnostics Enabled - Click to open panel';
+                    indicator.style.cursor = 'pointer';
+                    indicator.onclick = function() {
+                        const panel = document.getElementById('diagnostics-panel');
+                        if (panel) {
+                            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+                        } else {
+                            // Try to load the diagnostics script if not already loaded
+                            if (!document.getElementById('admin-diagnostics-script')) {
+                                const script = document.createElement('script');
+                                script.id = 'admin-diagnostics-script';
+                                script.src = "{{ url_for('static', filename='js/admin-diagnostics.js') }}";
+                                document.body.appendChild(script);
+                            }
+                        }
+                    };
+                    document.body.appendChild(indicator);
+                }
+            } else {
+                statusElement.className = 'alert alert-secondary';
+                statusElement.innerHTML = '<i class="fas fa-times-circle"></i> JavaScript diagnostics are <strong>disabled</strong>.';
+
+                // Remove the indicator if it exists
+                const indicator = document.getElementById('diagnostics-indicator');
+                if (indicator) {
+                    indicator.remove();
+                }
+            }
+        }
+
+        // Check diagnostics status on page load
+        checkDiagnosticsStatus();
+
+        // JavaScript Diagnostics Controls
+        document.getElementById('enable-diagnostics-btn').addEventListener('click', function() {
+            localStorage.setItem('diagnostics_enabled', 'true');
+            checkDiagnosticsStatus();
+
+            // Show success message
+            alert('JavaScript diagnostics enabled. The diagnostics panel should appear shortly.');
+
+            // Dynamically load the diagnostics script
+            if (!document.getElementById('admin-diagnostics-script')) {
+                const script = document.createElement('script');
+                script.id = 'admin-diagnostics-script';
+                script.src = "{{ url_for('static', filename='js/admin-diagnostics.js') }}";
+                document.body.appendChild(script);
+            }
+        });
+
+        document.getElementById('disable-diagnostics-btn').addEventListener('click', function() {
+            localStorage.setItem('diagnostics_enabled', 'false');
+            checkDiagnosticsStatus();
+
+            // Show info message
+            alert('JavaScript diagnostics disabled.');
+
+            // Remove the diagnostics panel if it exists
+            const panel = document.getElementById('diagnostics-panel');
+            if (panel) {
+                panel.remove();
+            }
+        });
+
+        // API Test Button
+        document.getElementById('test-api-endpoint').addEventListener('click', function() {
+            const apiEndpoint = document.getElementById('api-endpoint').value;
+            const apiResponse = document.getElementById('api-response');
+
+            if (!apiEndpoint) {
+                alert('Please enter an API endpoint');
+                return;
+            }
+
+            // Show loading message
+            apiResponse.textContent = 'Loading...';
+
+            // Construct the full URL if needed
+            let url = apiEndpoint;
+            if (!url.startsWith('http') && !url.startsWith('/')) {
+                url = '/' + url;
+            }
+
+            // Make a GET request to the API endpoint
+            fetch(url)
+                .then(response => {
+                    return response.json().then(data => ({
+                        status: response.status,
+                        statusText: response.statusText,
+                        data: data
+                    }));
+                })
+                .then(result => {
+                    apiResponse.textContent = JSON.stringify(result, null, 2);
+                })
+                .catch(error => {
+                    apiResponse.textContent = 'Error: ' + error.message;
+                });
+        });
+    </script>
+</body>
+</html>

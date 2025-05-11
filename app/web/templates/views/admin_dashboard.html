@@ -1,0 +1,730 @@
+{% extends 'common/admin_base.html' %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<!-- Page Heading -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">Dashboard</h1>
+</div>
+
+<!-- Content Row -->
+<div class="row">
+    <!-- Total Plants Card -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="admin-stat-card primary">
+            <div class="admin-stat-card-body">
+                <div class="admin-stat-card-content">
+                    <div class="admin-stat-card-title">Total Plants</div>
+                    <div class="admin-stat-card-value">{{ plant_count }}</div>
+                </div>
+                <div class="admin-stat-card-icon">
+                    <i class="fas fa-seedling"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Strains Card -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="admin-stat-card success">
+            <div class="admin-stat-card-body">
+                <div class="admin-stat-card-content">
+                    <div class="admin-stat-card-title">Active Strains</div>
+                    <div class="admin-stat-card-value">{{ strain_count }}</div>
+                </div>
+                <div class="admin-stat-card-icon">
+                    <i class="fas fa-dna"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sensors Card -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="admin-stat-card info">
+            <div class="admin-stat-card-body">
+                <div class="admin-stat-card-content">
+                    <div class="admin-stat-card-title">Sensors</div>
+                    <div class="admin-stat-card-value">{{ sensor_count }}</div>
+                </div>
+                <div class="admin-stat-card-icon">
+                    <i class="fas fa-thermometer-half"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Users Card -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="admin-stat-card warning">
+            <div class="admin-stat-card-body">
+                <div class="admin-stat-card-content">
+                    <div class="admin-stat-card-title">Users</div>
+                    <div class="admin-stat-card-value">{{ user_count }}</div>
+                </div>
+                <div class="admin-stat-card-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Content Row -->
+<div class="row">
+    <!-- System Information Card -->
+    <div class="col-lg-6 mb-4">
+        <div class="admin-card">
+            <div class="admin-card-header">
+                <h6>System Information</h6>
+            </div>
+            <div class="admin-card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" width="100%" cellspacing="0">
+                        <tbody>
+                            <tr>
+                                <td><strong>Python Version</strong></td>
+                                <td>{{ python_version }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Flask Version</strong></td>
+                                <td>{{ flask_version }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Database</strong></td>
+                                <td>SQLite ({{ db_size_mb }} MB)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Operating System</strong></td>
+                                <td>{{ os_name }} {{ os_version }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Server Time</strong></td>
+                                <td id="server-time">Loading...</td>
+                            </tr>
+                            <tr>
+                                <td><strong>System Uptime</strong></td>
+                                <td>{{ uptime }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Diagnostics Card -->
+    <div class="col-lg-6 mb-4">
+        <div class="admin-card">
+            <div class="admin-card-header">
+                <h6>JavaScript Diagnostics</h6>
+            </div>
+            <div class="admin-card-body">
+                <p>Enable JavaScript diagnostics to debug client-side issues. This will add a diagnostics panel to all pages.</p>
+                <div class="d-flex">
+                    <button id="enable-diagnostics-btn" class="btn btn-primary mr-2">Enable Diagnostics</button>
+                    <button id="disable-diagnostics-btn" class="btn btn-secondary">Disable Diagnostics</button>
+                </div>
+                <hr>
+                <h6 class="mt-4">Diagnostics Status</h6>
+                <div class="alert alert-info" id="diagnostics-status">
+                    Checking status...
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Content Row -->
+<div class="row">
+    <!-- Recent Activities Card -->
+    <div class="col-lg-6 mb-4">
+        <div class="admin-card">
+            <div class="admin-card-header">
+                <h6>Recent Activities</h6>
+                <button id="refresh-activities-btn" class="btn btn-sm btn-primary">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
+            <div class="admin-card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="recent-activities-table">
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>Details</th>
+                                <th>User</th>
+                                <th>Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for activity in recent_activities %}
+                            <tr>
+                                <td>
+                                    {% if activity.type == 'login' %}
+                                    <span class="badge bg-info"><i class="fas fa-sign-in-alt"></i> Login</span>
+                                    {% elif activity.type == 'plant_add' %}
+                                    <span class="badge bg-success"><i class="fas fa-seedling"></i> Plant Added</span>
+                                    {% elif activity.type == 'strain_edit' %}
+                                    <span class="badge bg-warning"><i class="fas fa-dna"></i> Strain Edited</span>
+                                    {% elif activity.type == 'sensor_reading' %}
+                                    <span class="badge bg-primary"><i class="fas fa-thermometer-half"></i> Sensor</span>
+                                    {% elif activity.type == 'user_add' %}
+                                    <span class="badge bg-secondary"><i class="fas fa-user-plus"></i> User Added</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary"><i class="fas fa-cog"></i> Other</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if activity.type == 'login' %}
+                                    User login
+                                    {% elif activity.type == 'plant_add' %}
+                                    Added {{ activity.plant }}
+                                    {% elif activity.type == 'strain_edit' %}
+                                    Edited {{ activity.strain }}
+                                    {% elif activity.type == 'sensor_reading' %}
+                                    {{ activity.sensor }}: {{ activity.value }}
+                                    {% elif activity.type == 'user_add' %}
+                                    Added user {{ activity.new_user }}
+                                    {% else %}
+                                    System activity
+                                    {% endif %}
+                                </td>
+                                <td>{{ activity.user }}</td>
+                                <td>{{ activity.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Logs Card -->
+    <div class="col-lg-6 mb-4">
+        <div class="admin-card">
+            <div class="admin-card-header">
+                <h6>Recent Logs</h6>
+                <button id="view-logs-btn" class="btn btn-sm btn-primary">View All Logs</button>
+            </div>
+            <div class="admin-card-body">
+                <div class="log-preview" style="max-height: 300px; overflow-y: auto;">
+                    <pre id="log-preview" style="font-size: 0.8rem;">Loading logs...</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Diagnostics Tools Card -->
+    <div class="col-lg-6 mb-4">
+        <div class="admin-card">
+            <div class="admin-card-header">
+                <h6>Diagnostics Tools</h6>
+            </div>
+            <div class="admin-card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <h6>Page Diagnostics</h6>
+                        <div class="form-group">
+                            <label for="page-url">Page URL</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="page-url" placeholder="e.g., /strains" value="/admin">
+                                <div class="input-group-append">
+                                    <button class="btn btn-primary" id="run-page-diagnostics">Run</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>API Diagnostics</h6>
+                        <div class="form-group">
+                            <label for="api-endpoint">API Endpoint</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="api-endpoint" placeholder="e.g., /strains/1" value="/api/admin/diagnostics/test">
+                                <div class="input-group-append">
+                                    <button class="btn btn-primary" id="test-api-endpoint">Test</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <h6>API Response</h6>
+                    <div class="alert alert-secondary">
+                        <pre id="api-response" style="margin: 0; font-size: 0.8rem;">No response yet. Test an endpoint to see results.</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Logs Modal -->
+<div class="modal fade" id="logsModal" tabindex="-1" aria-labelledby="logsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="logsModalLabel">Application Logs</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <pre id="logs-content" style="max-height: 400px; overflow-y: auto;"></pre>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Update server time
+    function updateServerTime() {
+        const now = new Date();
+        document.getElementById('server-time').textContent = now.toLocaleString();
+    }
+
+    // Update server time every second
+    updateServerTime();
+    setInterval(updateServerTime, 1000);
+
+    // Check diagnostics status
+    function checkDiagnosticsStatus() {
+        const diagnosticsEnabled = localStorage.getItem('diagnostics_enabled');
+        const statusElement = document.getElementById('diagnostics-status');
+
+        if (diagnosticsEnabled === 'true') {
+            statusElement.className = 'alert alert-success';
+            statusElement.innerHTML = '<i class="fas fa-check-circle"></i> JavaScript diagnostics are <strong>enabled</strong>.';
+
+            // Add a visual indicator that diagnostics are enabled
+            const indicator = document.getElementById('diagnostics-indicator') || document.createElement('div');
+            if (!document.getElementById('diagnostics-indicator')) {
+                indicator.id = 'diagnostics-indicator';
+                indicator.style.position = 'fixed';
+                indicator.style.bottom = '5px';
+                indicator.style.right = '5px';
+                indicator.style.width = '15px';
+                indicator.style.height = '15px';
+                indicator.style.borderRadius = '50%';
+                indicator.style.backgroundColor = '#00ff00';
+                indicator.style.boxShadow = '0 0 10px rgba(0, 255, 0, 0.7)';
+                indicator.style.zIndex = '9998';
+                indicator.title = 'Diagnostics Enabled - Click to open panel';
+                indicator.style.cursor = 'pointer';
+                indicator.onclick = function() {
+                    const panel = document.getElementById('diagnostics-panel');
+                    if (panel) {
+                        panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+                    } else {
+                        // Try to load the diagnostics script if not already loaded
+                        if (!document.getElementById('admin-diagnostics-script')) {
+                            const script = document.createElement('script');
+                            script.id = 'admin-diagnostics-script';
+                            script.src = "{{ url_for('static', filename='js/admin-diagnostics.js') }}";
+                            document.body.appendChild(script);
+                        }
+                    }
+                };
+                document.body.appendChild(indicator);
+            }
+        } else {
+            statusElement.className = 'alert alert-secondary';
+            statusElement.innerHTML = '<i class="fas fa-times-circle"></i> JavaScript diagnostics are <strong>disabled</strong>.';
+
+            // Remove the indicator if it exists
+            const indicator = document.getElementById('diagnostics-indicator');
+            if (indicator) {
+                indicator.remove();
+            }
+        }
+    }
+
+    // Check diagnostics status on page load
+    checkDiagnosticsStatus();
+
+    // JavaScript Diagnostics Controls
+    document.getElementById('enable-diagnostics-btn').addEventListener('click', function() {
+        localStorage.setItem('diagnostics_enabled', 'true');
+        checkDiagnosticsStatus();
+
+        // Show success message with alert instead of toast
+        alert('JavaScript diagnostics enabled. The diagnostics panel should appear shortly.');
+
+        // Dynamically load the diagnostics script
+        if (!document.getElementById('admin-diagnostics-script')) {
+            const script = document.createElement('script');
+            script.id = 'admin-diagnostics-script';
+            script.src = "{{ url_for('static', filename='js/admin-diagnostics.js') }}";
+            document.body.appendChild(script);
+        }
+    });
+
+    document.getElementById('disable-diagnostics-btn').addEventListener('click', function() {
+        localStorage.setItem('diagnostics_enabled', 'false');
+        checkDiagnosticsStatus();
+
+        // Show info message with alert instead of toast
+        alert('JavaScript diagnostics disabled.');
+
+        // Remove the diagnostics panel if it exists
+        const panel = document.getElementById('diagnostics-panel');
+        if (panel) {
+            panel.remove();
+        }
+    });
+
+    // Load log preview
+    function loadLogPreview() {
+        const logPreview = document.getElementById('log-preview');
+        logPreview.textContent = 'Loading logs...';
+
+        // Simulate fetching logs
+        setTimeout(function() {
+            const logs = [
+                '[2023-05-01 12:34:56] INFO: Application started',
+                '[2023-05-01 12:35:01] INFO: User login successful',
+                '[2023-05-01 12:36:12] ERROR: Database connection failed',
+                '[2023-05-01 12:36:15] INFO: Database connection restored',
+                '[2023-05-01 12:40:22] INFO: Plant added: Blue Dream',
+                '[2023-05-01 12:45:33] INFO: Sensor reading: Temp=78.5°F, Humidity=65%',
+                '[2023-05-01 13:01:45] WARN: High temperature detected: 85.2°F'
+            ];
+
+            logPreview.textContent = logs.join('\n');
+        }, 500);
+    }
+
+    // Load recent activities
+    function loadRecentActivities() {
+        const activitiesTable = document.querySelector('#recent-activities-table tbody');
+        if (!activitiesTable) return;
+
+        // Show loading indicator
+        activitiesTable.innerHTML = '<tr><td colspan="4" class="text-center">Loading activities...</td></tr>';
+
+        // Fetch activities from the API
+        fetch('/api/admin/activities')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.activities && data.activities.length > 0) {
+                    // Clear the table
+                    activitiesTable.innerHTML = '';
+
+                    // Add each activity to the table
+                    data.activities.forEach(activity => {
+                        const row = document.createElement('tr');
+
+                        // Type column with badge
+                        const typeCell = document.createElement('td');
+                        let badgeClass = 'bg-secondary';
+                        let badgeIcon = 'fa-cog';
+                        let badgeText = 'Other';
+
+                        if (activity.type === 'login') {
+                            badgeClass = 'bg-info';
+                            badgeIcon = 'fa-sign-in-alt';
+                            badgeText = 'Login';
+                        } else if (activity.type === 'plant_add') {
+                            badgeClass = 'bg-success';
+                            badgeIcon = 'fa-seedling';
+                            badgeText = 'Plant Added';
+                        } else if (activity.type === 'strain_edit') {
+                            badgeClass = 'bg-warning';
+                            badgeIcon = 'fa-dna';
+                            badgeText = 'Strain Edited';
+                        } else if (activity.type === 'sensor_reading') {
+                            badgeClass = 'bg-primary';
+                            badgeIcon = 'fa-thermometer-half';
+                            badgeText = 'Sensor';
+                        } else if (activity.type === 'user_add') {
+                            badgeClass = 'bg-secondary';
+                            badgeIcon = 'fa-user-plus';
+                            badgeText = 'User Added';
+                        } else if (activity.type === 'plant_activity') {
+                            badgeClass = 'bg-info';
+                            badgeIcon = 'fa-leaf';
+                            badgeText = 'Plant Activity';
+                        }
+
+                        typeCell.innerHTML = `<span class="badge ${badgeClass}"><i class="fas ${badgeIcon}"></i> ${badgeText}</span>`;
+                        row.appendChild(typeCell);
+
+                        // Details column
+                        const detailsCell = document.createElement('td');
+                        let detailsText = 'System activity';
+
+                        if (activity.type === 'login') {
+                            detailsText = 'User login';
+                        } else if (activity.type === 'plant_add' && activity.plant) {
+                            detailsText = `Added ${activity.plant}`;
+                        } else if (activity.type === 'strain_edit' && activity.strain) {
+                            detailsText = `Edited ${activity.strain}`;
+                        } else if (activity.type === 'sensor_reading' && activity.sensor) {
+                            detailsText = `${activity.sensor}: ${activity.value}`;
+                        } else if (activity.type === 'user_add' && activity.new_user) {
+                            detailsText = `Added user ${activity.new_user}`;
+                        } else if (activity.type === 'plant_activity' && activity.plant && activity.activity) {
+                            detailsText = `${activity.activity} for ${activity.plant}`;
+                            if (activity.note) {
+                                detailsText += `: ${activity.note}`;
+                            }
+                        }
+
+                        detailsCell.textContent = detailsText;
+                        row.appendChild(detailsCell);
+
+                        // User column
+                        const userCell = document.createElement('td');
+                        userCell.textContent = activity.user;
+                        row.appendChild(userCell);
+
+                        // Time column
+                        const timeCell = document.createElement('td');
+                        const timestamp = new Date(activity.timestamp);
+                        timeCell.textContent = timestamp.toLocaleString();
+                        row.appendChild(timeCell);
+
+                        activitiesTable.appendChild(row);
+                    });
+                } else {
+                    activitiesTable.innerHTML = '<tr><td colspan="4" class="text-center">No activities found</td></tr>';
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching activities:', error);
+                activitiesTable.innerHTML = `<tr><td colspan="4" class="text-center text-danger">Error loading activities: ${error.message}</td></tr>`;
+            });
+    }
+
+    // Load log preview on page load
+    loadLogPreview();
+
+    // Load recent activities on page load
+    loadRecentActivities();
+
+    // Refresh activities button
+    document.getElementById('refresh-activities-btn').addEventListener('click', function() {
+        const refreshBtn = this;
+        const originalContent = refreshBtn.innerHTML;
+
+        // Show loading indicator
+        refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing...';
+        refreshBtn.disabled = true;
+
+        // Load activities
+        loadRecentActivities();
+
+        // Reset button after a short delay
+        setTimeout(function() {
+            refreshBtn.innerHTML = originalContent;
+            refreshBtn.disabled = false;
+        }, 1000);
+    });
+
+    // View Logs Button
+    document.getElementById('view-logs-btn').addEventListener('click', function() {
+        // In a real application, this would fetch logs from the server
+        const logsContent = document.getElementById('logs-content');
+        logsContent.textContent = 'Loading logs...';
+
+        // Simulate fetching logs
+        setTimeout(function() {
+            const fullLogs = [];
+
+            // Generate 50 log entries
+            const types = ['INFO', 'WARN', 'ERROR', 'DEBUG'];
+            const messages = [
+                'Application started',
+                'User login successful',
+                'Database connection failed',
+                'Database connection restored',
+                'Plant added: {strain}',
+                'Sensor reading: Temp={temp}°F, Humidity={humidity}%',
+                'High temperature detected: {temp}°F',
+                'User logged out',
+                'Image uploaded for plant #{id}',
+                'API request to /strains',
+                'New user registered: {user}',
+                'Password reset requested for user {user}',
+                'System backup completed',
+                'Notification sent to user {user}'
+            ];
+
+            const strains = ['Blue Dream', 'OG Kush', 'Sour Diesel', 'Girl Scout Cookies', 'White Widow'];
+            const users = ['admin', 'john', 'sarah', 'mike', 'emma'];
+
+            for (let i = 0; i < 50; i++) {
+                const date = new Date();
+                date.setMinutes(date.getMinutes() - i * 10);
+                const timestamp = date.toISOString().replace('T', ' ').substring(0, 19);
+
+                const type = types[Math.floor(Math.random() * types.length)];
+                let message = messages[Math.floor(Math.random() * messages.length)];
+
+                // Replace placeholders
+                message = message.replace('{strain}', strains[Math.floor(Math.random() * strains.length)]);
+                message = message.replace('{temp}', (70 + Math.random() * 20).toFixed(1));
+                message = message.replace('{humidity}', (50 + Math.random() * 40).toFixed(0));
+                message = message.replace('{user}', users[Math.floor(Math.random() * users.length)]);
+                message = message.replace('{id}', Math.floor(Math.random() * 100) + 1);
+
+                fullLogs.push(`[${timestamp}] ${type}: ${message}`);
+            }
+
+            logsContent.textContent = fullLogs.join('\n');
+        }, 1000);
+
+        // Show the modal
+        var logsModal = new bootstrap.Modal(document.getElementById('logsModal'));
+        logsModal.show();
+    });
+
+    // Page Diagnostics Button
+    document.getElementById('run-page-diagnostics').addEventListener('click', function() {
+        const pageUrl = document.getElementById('page-url').value;
+        if (!pageUrl) {
+            alert('Please enter a page URL');
+            return;
+        }
+
+        // Store the URL in localStorage for the diagnostics script to use
+        localStorage.setItem('diagnostics_page', pageUrl);
+        localStorage.setItem('diagnostics_enabled', 'true');
+        checkDiagnosticsStatus();
+
+        // Show feedback to the user
+        const apiResponse = document.getElementById('api-response');
+        apiResponse.textContent = `Diagnostics enabled for page: ${pageUrl}\n\nA new tab will open with the requested page. The diagnostics panel should appear automatically.`;
+
+        // Load the diagnostics script if not already loaded
+        if (!document.getElementById('admin-diagnostics-script')) {
+            const script = document.createElement('script');
+            script.id = 'admin-diagnostics-script';
+            script.src = "{{ url_for('static', filename='js/admin-diagnostics.js') }}";
+            document.body.appendChild(script);
+        }
+
+        // Open the page in a new tab
+        window.open(pageUrl, '_blank');
+    });
+
+    // API Test Button
+    document.getElementById('test-api-endpoint').addEventListener('click', function() {
+        const apiEndpoint = document.getElementById('api-endpoint').value;
+        const apiResponse = document.getElementById('api-response');
+
+        if (!apiEndpoint) {
+            alert('Please enter an API endpoint');
+            return;
+        }
+
+        // Show loading message
+        apiResponse.textContent = 'Loading...';
+        apiResponse.style.color = 'inherit';
+
+        // Construct the full URL if needed
+        let url = apiEndpoint;
+        if (!url.startsWith('http') && !url.startsWith('/')) {
+            url = '/' + url;
+        }
+
+        // Add a timestamp to prevent caching
+        const separator = url.includes('?') ? '&' : '?';
+        url = `${url}${separator}_t=${Date.now()}`;
+
+        // Show the URL being tested
+        console.log(`Testing API endpoint: ${url}`);
+
+        // Make a GET request to the API endpoint
+        fetch(url)
+            .then(response => {
+                // Try to parse as JSON first
+                return response.json()
+                    .then(data => ({
+                        status: response.status,
+                        statusText: response.statusText,
+                        data: data
+                    }))
+                    .catch(error => {
+                        // If JSON parsing fails, get the text instead
+                        return response.text().then(text => ({
+                            status: response.status,
+                            statusText: response.statusText,
+                            data: text
+                        }));
+                    });
+            })
+            .then(result => {
+                // Format the response
+                if (typeof result.data === 'string') {
+                    apiResponse.textContent = `Status: ${result.status} ${result.statusText}\n\nResponse:\n${result.data}`;
+                } else {
+                    apiResponse.textContent = JSON.stringify(result, null, 2);
+                }
+
+                // Add color based on status code
+                if (result.status >= 200 && result.status < 300) {
+                    apiResponse.style.color = '#28a745'; // Success green
+                } else if (result.status >= 400) {
+                    apiResponse.style.color = '#dc3545'; // Error red
+                } else {
+                    apiResponse.style.color = '#ffc107'; // Warning yellow
+                }
+
+                // Log the response to the diagnostics panel if it exists
+                if (window.diagnosticsLog) {
+                    window.diagnosticsLog(`API Test: ${url} - ${result.status} ${result.statusText}`);
+                }
+            })
+            .catch(error => {
+                apiResponse.textContent = `Error: ${error.message}\n\nMake sure the endpoint exists and returns valid data.`;
+                apiResponse.style.color = '#dc3545'; // Error red
+                console.error('API test error:', error);
+            });
+    });
+
+    // Close button for toasts
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('close') && e.target.closest('.toast')) {
+            e.target.closest('.toast').remove();
+        }
+    });
+</script>
+{% endblock %}
+
+{% block styles %}
+<style>
+    .card {
+        margin-bottom: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-header {
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+
+    .list-group-item {
+        background-color: var(--bg-card);
+        border-color: var(--border-color);
+    }
+
+    .badge {
+        font-weight: normal;
+        font-size: 0.8rem;
+    }
+
+    pre {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 5px;
+        color: #333;
+    }
+</style>
+{% endblock %}

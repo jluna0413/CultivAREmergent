@@ -1,0 +1,277 @@
+{% extends 'common/base.html' %}
+
+{% block title %}Add New Strain - CultivAR{% endblock %}
+
+{% block header %}Add New Strain{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2>Add New Strain</h2>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('strains') }}">Collection</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Add New Strain</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8 offset-lg-2">
+            <div class="card">
+                <div class="card-body">
+                    <form id="strain-form">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">Strain Name</label>
+                                    <input type="text" class="form-control" id="name" name="name" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="breeder_id" class="form-label">Breeder</label>
+                                    <select class="form-select" id="breeder_id" name="breeder_id">
+                                        <option value="">Select Breeder</option>
+                                        {% for breeder in breeders %}
+                                        <option value="{{ breeder.id }}">{{ breeder.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <div class="mt-2">
+                                        <a href="{{ url_for('add_breeder') }}" class="btn btn-sm btn-outline-secondary">
+                                            <i class="fas fa-plus"></i> Add New Breeder
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Genetics</label>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <label for="indica" class="form-label">Indica %</label>
+                                            <input type="number" class="form-control" id="indica" name="indica" min="0" max="100" value="50" onchange="updateGeneticsSlider()">
+                                        </div>
+                                        <div class="col-6">
+                                            <label for="sativa" class="form-label">Sativa %</label>
+                                            <input type="number" class="form-control" id="sativa" name="sativa" min="0" max="100" value="50" onchange="updateGeneticsSlider()">
+                                        </div>
+                                    </div>
+                                    <div class="genetics-slider mt-2">
+                                        <div class="genetics-slider-bar">
+                                            <div class="genetics-slider-fill" style="width: 50%"></div>
+                                        </div>
+                                        <div class="genetics-labels">
+                                            <span>Indica</span>
+                                            <span>Sativa</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3 form-check">
+                                    <input type="checkbox" class="form-check-input" id="autoflower" name="autoflower">
+                                    <label class="form-check-label" for="autoflower">Autoflowering</label>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="cycle_time" class="form-label">Flowering Time (days)</label>
+                                    <input type="number" class="form-control" id="cycle_time" name="cycle_time" min="1">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="seed_count" class="form-label">Seed Count</label>
+                                    <input type="number" class="form-control" id="seed_count" name="seed_count" min="0" value="0">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="url" class="form-label">Strain URL (optional)</label>
+                                    <input type="url" class="form-control" id="url" name="url" placeholder="https://...">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('strains') }}" class="btn btn-secondary">Cancel</a>
+                            <button type="button" onclick="saveStrain()" class="btn btn-primary">Save Strain</button>
+                        </div>
+                    </form>
+
+                    <script>
+                        // Function to load breeders into the dropdown
+                        function loadBreeders() {
+                            fetch('/breeders', {
+                                method: 'GET',
+                                headers: {
+                                    'Accept': 'application/json'
+                                }
+                            })
+                            .then(response => response.json())
+                            .then(breeders => {
+                                const breederSelect = document.getElementById('breeder_id');
+
+                                // Check if we have a newly added breeder from sessionStorage
+                                const newBreederId = sessionStorage.getItem('newBreederId');
+
+                                // If no new breeder, save the currently selected value
+                                const currentValue = newBreederId || breederSelect.value;
+
+                                // Clear existing options except the first one
+                                while (breederSelect.options.length > 1) {
+                                    breederSelect.remove(1);
+                                }
+
+                                // Add breeders to the dropdown (they're already sorted alphabetically from the server)
+                                breeders.forEach(breeder => {
+                                    const option = document.createElement('option');
+                                    option.value = breeder.id;
+                                    option.text = breeder.name;
+                                    breederSelect.add(option);
+                                });
+
+                                // Select the new breeder if it exists, otherwise restore the previous selection
+                                if (currentValue) {
+                                    breederSelect.value = currentValue;
+                                }
+
+                                // Clear the sessionStorage after using it
+                                if (newBreederId) {
+                                    sessionStorage.removeItem('newBreederId');
+                                    sessionStorage.removeItem('newBreederName');
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error loading breeders:', error);
+                            });
+                        }
+
+                        // Load breeders when the page loads
+                        document.addEventListener('DOMContentLoaded', function() {
+                            loadBreeders();
+                        });
+
+                        // Also reload breeders when the page becomes visible again (e.g., after returning from add_breeder)
+                        document.addEventListener('visibilitychange', function() {
+                            if (document.visibilityState === 'visible') {
+                                loadBreeders();
+                            }
+                        });
+
+                        function saveStrain() {
+                            // Get form data
+                            const name = document.getElementById('name').value;
+                            const breederId = document.getElementById('breeder_id').value;
+                            const indica = parseInt(document.getElementById('indica').value) || 0;
+                            const sativa = parseInt(document.getElementById('sativa').value) || 0;
+                            const autoflower = document.getElementById('autoflower').checked;
+                            const cycleTime = document.getElementById('cycle_time').value ? parseInt(document.getElementById('cycle_time').value) : null;
+                            const seedCount = parseInt(document.getElementById('seed_count').value) || 0;
+                            const url = document.getElementById('url').value;
+                            const description = document.getElementById('description').value;
+
+                            // Validate form
+                            if (!name) {
+                                alert('Please enter a strain name');
+                                return;
+                            }
+
+                            // Prepare data for API
+                            const strainData = {
+                                name: name,
+                                breeder_id: breederId || null,
+                                indica: indica,
+                                sativa: sativa,
+                                autoflower: autoflower,
+                                cycle_time: cycleTime,
+                                seed_count: seedCount,
+                                url: url,
+                                description: description,
+                                short_description: description.substring(0, 100) + (description.length > 100 ? '...' : '')
+                            };
+
+                            // Send data to API
+                            fetch('/strains', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Accept': 'application/json'
+                                },
+                                body: JSON.stringify(strainData)
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    alert('Strain added successfully!');
+                                    window.location.href = '/strains';
+                                } else {
+                                    alert('Error adding strain: ' + (data.error || 'Unknown error'));
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                alert('Error adding strain: ' + error);
+                            });
+                        }
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function updateGeneticsSlider() {
+        const indica = parseInt(document.getElementById('indica').value) || 0;
+        const sativa = parseInt(document.getElementById('sativa').value) || 0;
+
+        // Normalize to 100%
+        const total = indica + sativa;
+        let indicaPercent = 50;
+
+        if (total > 0) {
+            indicaPercent = (indica / total) * 100;
+        }
+
+        document.querySelector('.genetics-slider-fill').style.width = indicaPercent + '%';
+    }
+
+    // Initialize the slider
+    document.addEventListener('DOMContentLoaded', function() {
+        updateGeneticsSlider();
+    });
+</script>
+{% endblock %}
+
+{% block styles %}
+<style>
+    /* Genetics Slider */
+    .genetics-slider {
+        margin-top: 10px;
+    }
+
+    .genetics-slider-bar {
+        height: 10px;
+        background-color: rgba(255, 152, 0, 0.2);
+        border-radius: 5px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .genetics-slider-fill {
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        background-color: rgba(76, 175, 80, 0.5);
+    }
+
+    .genetics-labels {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        margin-top: 5px;
+    }
+</style>
+{% endblock %}

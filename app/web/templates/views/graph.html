@@ -1,0 +1,177 @@
+{% extends 'common/base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Sensor Data: {{ sensor_id }}</h5>
+                    <div>
+                        <button class="btn btn-sm btn-outline-primary" id="btn-24h">24 Hours</button>
+                        <button class="btn btn-sm btn-outline-primary" id="btn-7d">7 Days</button>
+                        <button class="btn btn-sm btn-outline-primary" id="btn-30d">30 Days</button>
+                        <button class="btn btn-sm btn-outline-primary" id="btn-custom">Custom Range</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="date-range-picker" class="mb-3" style="display: none;">
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="form-group">
+                                    <label for="start-date">Start Date</label>
+                                    <input type="date" class="form-control" id="start-date">
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="form-group">
+                                    <label for="end-date">End Date</label>
+                                    <input type="date" class="form-control" id="end-date">
+                                </div>
+                            </div>
+                            <div class="col-md-2 d-flex align-items-end">
+                                <button class="btn btn-primary" id="btn-apply-range">Apply</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container" style="position: relative; height:60vh; width:100%">
+                        <canvas id="sensorChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const sensorId = {{ sensor_id }};
+        let chart;
+        
+        // Set default date range (24 hours)
+        const endDate = new Date();
+        const startDate = new Date();
+        startDate.setDate(startDate.getDate() - 1);
+        
+        // Format dates for API
+        function formatDate(date) {
+            return date.toISOString().split('T')[0];
+        }
+        
+        // Load chart data
+        function loadChartData(start, end) {
+            fetch(`/sensorData?sensor_id=${sensorId}&start_date=${formatDate(start)}&end_date=${formatDate(end)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (chart) {
+                        chart.destroy();
+                    }
+                    
+                    const ctx = document.getElementById('sensorChart').getContext('2d');
+                    chart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: data.timestamps,
+                            datasets: [{
+                                label: data.label,
+                                data: data.values,
+                                backgroundColor: 'rgba(76, 175, 80, 0.2)',
+                                borderColor: 'rgba(76, 175, 80, 1)',
+                                borderWidth: 2,
+                                pointRadius: 3,
+                                pointBackgroundColor: 'rgba(76, 175, 80, 1)',
+                                tension: 0.4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                x: {
+                                    grid: {
+                                        color: 'rgba(255, 255, 255, 0.1)'
+                                    },
+                                    ticks: {
+                                        color: 'rgba(255, 255, 255, 0.7)'
+                                    }
+                                },
+                                y: {
+                                    grid: {
+                                        color: 'rgba(255, 255, 255, 0.1)'
+                                    },
+                                    ticks: {
+                                        color: 'rgba(255, 255, 255, 0.7)'
+                                    }
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                    labels: {
+                                        color: 'rgba(255, 255, 255, 0.7)'
+                                    }
+                                },
+                                tooltip: {
+                                    backgroundColor: 'rgba(42, 42, 42, 0.9)',
+                                    titleColor: 'rgba(255, 255, 255, 0.9)',
+                                    bodyColor: 'rgba(255, 255, 255, 0.9)',
+                                    borderColor: 'rgba(76, 175, 80, 0.7)',
+                                    borderWidth: 1
+                                }
+                            }
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading sensor data:', error);
+                });
+        }
+        
+        // Initial load
+        loadChartData(startDate, endDate);
+        
+        // Time range buttons
+        document.getElementById('btn-24h').addEventListener('click', function() {
+            const end = new Date();
+            const start = new Date();
+            start.setDate(start.getDate() - 1);
+            loadChartData(start, end);
+            document.getElementById('date-range-picker').style.display = 'none';
+        });
+        
+        document.getElementById('btn-7d').addEventListener('click', function() {
+            const end = new Date();
+            const start = new Date();
+            start.setDate(start.getDate() - 7);
+            loadChartData(start, end);
+            document.getElementById('date-range-picker').style.display = 'none';
+        });
+        
+        document.getElementById('btn-30d').addEventListener('click', function() {
+            const end = new Date();
+            const start = new Date();
+            start.setDate(start.getDate() - 30);
+            loadChartData(start, end);
+            document.getElementById('date-range-picker').style.display = 'none';
+        });
+        
+        document.getElementById('btn-custom').addEventListener('click', function() {
+            document.getElementById('date-range-picker').style.display = 'block';
+        });
+        
+        document.getElementById('btn-apply-range').addEventListener('click', function() {
+            const startInput = document.getElementById('start-date').value;
+            const endInput = document.getElementById('end-date').value;
+            
+            if (startInput && endInput) {
+                const start = new Date(startInput);
+                const end = new Date(endInput);
+                loadChartData(start, end);
+            }
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,88 @@
+<div class="sidebar-header">
+    <div class="logo">
+        <a href="{{ url_for('protected_dashboard') }}">
+            <i class="material-icons logo-icon">eco</i>
+            <span class="logo-text">CultivAR</span>
+        </a>
+    </div>
+    <button class="sidebar-close" id="sidebar-close">
+        <i class="fas fa-times"></i>
+    </button>
+</div>
+
+<div class="sidebar-content">
+    <nav class="sidebar-nav">
+        <ul class="sidebar-menu">
+            <li class="menu-item {% if request.path == '/' %}active{% endif %}">
+                <a href="{{ url_for('protected_dashboard') }}" class="menu-link">
+                    <i class="menu-icon fas fa-tachometer-alt"></i>
+                    <span class="menu-text">Dashboard</span>
+                </a>
+            </li>
+            <li class="menu-item {% if '/plants' in request.path %}active{% endif %}">
+                <a href="{{ url_for('protected_dashboard') }}" class="menu-link">
+                    <i class="menu-icon fas fa-seedling"></i>
+                    <span class="menu-text">Plants</span>
+                </a>
+            </li>
+            <li class="menu-item {% if '/strains' in request.path %}active{% endif %}">
+                <a href="{{ url_for('add_strain_page') }}" class="menu-link">
+                    <i class="menu-icon fas fa-dna"></i>
+                    <span class="menu-text">Strains</span>
+                </a>
+            </li>
+            <li class="menu-item {% if '/market' in request.path %}active{% endif %}">
+                <a href="#" class="menu-link submenu-toggle" data-toggle="collapse" data-target="#marketSubmenu" aria-expanded="{% if '/market' in request.path %}true{% else %}false{% endif %}">
+                    <i class="menu-icon fas fa-store"></i>
+                    <span class="menu-text">Market</span>
+                    <i class="fas fa-chevron-down submenu-indicator"></i>
+                </a>
+                <ul class="collapse submenu {% if '/market' in request.path %}show{% endif %}" id="marketSubmenu">
+                    <li class="submenu-item {% if '/market/seed-bank' in request.path %}active{% endif %}">
+                        <a href="{{ url_for('market_seed_bank') }}" class="submenu-link">
+                            <i class="submenu-icon fas fa-seedling"></i>
+                            <span class="submenu-text">Seed Bank</span>
+                        </a>
+                    </li>
+                    <li class="submenu-item {% if '/market/extensions' in request.path %}active{% endif %}">
+                        <a href="{{ url_for('market_extensions') }}" class="submenu-link">
+                            <i class="submenu-icon fas fa-puzzle-piece"></i>
+                            <span class="submenu-text">Extensions</span>
+                        </a>
+                    </li>
+                    <li class="submenu-item {% if '/market/gear' in request.path %}active{% endif %}">
+                        <a href="{{ url_for('market_gear') }}" class="submenu-link">
+                            <i class="submenu-icon fas fa-tools"></i>
+                            <span class="submenu-text">Gear</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="menu-item {% if '/sensors' in request.path or '/graph' in request.path %}active{% endif %}">
+                <a href="{{ url_for('sensors') }}" class="menu-link">
+                    <i class="menu-icon fas fa-thermometer-half"></i>
+                    <span class="menu-text">Sensors</span>
+                </a>
+            </li>
+            <li class="menu-item {% if '/settings' in request.path %}active{% endif %}">
+                <a href="{{ url_for('settings') }}" class="menu-link">
+                    <i class="menu-icon fas fa-cog"></i>
+                    <span class="menu-text">Settings</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>
+
+<div class="sidebar-footer">
+    <div class="version-info">
+        <span class="version-text">Version: {{ version }}</span>
+    </div>
+</div>
+
+<script>
+    // Close sidebar on mobile when close button is clicked
+    document.getElementById('sidebar-close').addEventListener('click', function() {
+        document.querySelector('.app-container').classList.add('sidebar-collapsed');
+    });
+</script>

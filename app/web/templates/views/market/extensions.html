@@ -1,0 +1,486 @@
+{% extends 'common/base.html' %}
+
+{% block title %}Extensions - CultivAR{% endblock %}
+
+{% block header %}Extensions{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Filters and Search -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="flex-grow-1 mr-3">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                </div>
+                                <input type="text" class="form-control" id="extension-search" placeholder="Search extensions...">
+                            </div>
+                        </div>
+                        <div>
+                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="filterDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-filter"></i> Filter
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="filterDropdown">
+                                <h6 class="dropdown-header">Category</h6>
+                                <div class="px-4 py-2">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" id="filter-all-categories" checked>
+                                        <label class="custom-control-label" for="filter-all-categories">All Categories</label>
+                                    </div>
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input category-checkbox" id="filter-automation" checked>
+                                        <label class="custom-control-label" for="filter-automation">Automation</label>
+                                    </div>
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input category-checkbox" id="filter-analytics" checked>
+                                        <label class="custom-control-label" for="filter-analytics">Analytics</label>
+                                    </div>
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input category-checkbox" id="filter-integration" checked>
+                                        <label class="custom-control-label" for="filter-integration">Integration</label>
+                                    </div>
+                                </div>
+                                <div class="dropdown-divider"></div>
+                                <h6 class="dropdown-header">Price</h6>
+                                <div class="px-4 py-2">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" id="filter-free" checked>
+                                        <label class="custom-control-label" for="filter-free">Free</label>
+                                    </div>
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" id="filter-paid" checked>
+                                        <label class="custom-control-label" for="filter-paid">Paid</label>
+                                    </div>
+                                </div>
+                                <div class="dropdown-divider"></div>
+                                <div class="px-4 py-2">
+                                    <button class="btn btn-sm btn-primary btn-block" id="apply-filters">Apply Filters</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ml-2">
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-outline-secondary active" id="view-grid">
+                                    <i class="fas fa-th"></i>
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary" id="view-list">
+                                    <i class="fas fa-list"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="mr-3">
+                            <i class="fas fa-puzzle-piece fa-2x text-muted"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">My Extensions</h6>
+                            <p class="mb-0"><span id="installed-count">2</span> installed</p>
+                        </div>
+                        <div class="ml-auto">
+                            <button class="btn btn-primary" id="manage-extensions">Manage</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Featured Extensions -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h4 class="section-title">Featured Extensions</h4>
+        </div>
+        <div class="col-12">
+            <div class="featured-extensions-carousel">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card extension-card featured">
+                            <div class="extension-card-badge">Featured</div>
+                            <div class="extension-card-category">Automation</div>
+                            <img src="https://via.placeholder.com/300x200?text=AutoGrow" class="card-img-top" alt="AutoGrow">
+                            <div class="card-body">
+                                <h5 class="card-title">AutoGrow</h5>
+                                <div class="extension-card-developer">by GrowTech Solutions</div>
+                                <div class="extension-card-description">Automated grow schedule management with smart notifications and device control.</div>
+                                <div class="extension-card-rating">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                    <span>(127)</span>
+                                </div>
+                                <div class="extension-card-price">$49.99</div>
+                                <div class="extension-card-actions">
+                                    <button class="btn btn-sm btn-outline-secondary">Details</button>
+                                    <button class="btn btn-sm btn-primary">Install</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card extension-card featured">
+                            <div class="extension-card-badge">Featured</div>
+                            <div class="extension-card-category">Analytics</div>
+                            <img src="https://via.placeholder.com/300x200?text=GrowInsights" class="card-img-top" alt="GrowInsights">
+                            <div class="card-body">
+                                <h5 class="card-title">GrowInsights</h5>
+                                <div class="extension-card-developer">by DataHarvest Inc.</div>
+                                <div class="extension-card-description">Advanced analytics and reporting for your grow operations with predictive yield estimates.</div>
+                                <div class="extension-card-rating">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <span>(89)</span>
+                                </div>
+                                <div class="extension-card-price">$39.99</div>
+                                <div class="extension-card-actions">
+                                    <button class="btn btn-sm btn-outline-secondary">Details</button>
+                                    <button class="btn btn-sm btn-primary">Install</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card extension-card featured">
+                            <div class="extension-card-badge">Featured</div>
+                            <div class="extension-card-category">Integration</div>
+                            <img src="https://via.placeholder.com/300x200?text=SensorSync" class="card-img-top" alt="SensorSync">
+                            <div class="card-body">
+                                <h5 class="card-title">SensorSync</h5>
+                                <div class="extension-card-developer">by ConnectGrow</div>
+                                <div class="extension-card-description">Connect with popular sensor systems including Govee, Inkbird, and more.</div>
+                                <div class="extension-card-rating">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                    <span>(156)</span>
+                                </div>
+                                <div class="extension-card-price">Free</div>
+                                <div class="extension-card-actions">
+                                    <button class="btn btn-sm btn-outline-secondary">Details</button>
+                                    <button class="btn btn-sm btn-success">Installed</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- All Extensions -->
+    <div class="row">
+        <div class="col-12">
+            <h4 class="section-title">All Extensions</h4>
+        </div>
+    </div>
+    
+    <div class="row extension-grid" id="extension-container">
+        <!-- Extension Cards will be dynamically generated here -->
+        {% for i in range(1, 9) %}
+        <div class="col-md-3 mb-4 extension-item" 
+             data-category="{% if i % 3 == 0 %}automation{% elif i % 3 == 1 %}analytics{% else %}integration{% endif %}" 
+             data-price="{% if i % 4 == 0 %}free{% else %}paid{% endif %}">
+            <div class="card extension-card">
+                <div class="extension-card-category">{% if i % 3 == 0 %}Automation{% elif i % 3 == 1 %}Analytics{% else %}Integration{% endif %}</div>
+                <img src="https://via.placeholder.com/300x200?text=Extension+{{ i }}" class="card-img-top" alt="Extension {{ i }}">
+                <div class="card-body">
+                    <h5 class="card-title">Extension Name {{ i }}</h5>
+                    <div class="extension-card-developer">by Developer {{ i }}</div>
+                    <div class="extension-card-description">This is a short description of what Extension {{ i }} does and how it can help your grow operation.</div>
+                    <div class="extension-card-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star{% if i % 5 != 0 %}-half-alt{% endif %}"></i>
+                        <i class="fa{% if i % 3 != 0 %}r{% else %}s{% endif %} fa-star"></i>
+                        <span>({{ i * 10 }})</span>
+                    </div>
+                    <div class="extension-card-price">{% if i % 4 == 0 %}Free{% else %}${{ 19 + i }}.99{% endif %}</div>
+                    <div class="extension-card-actions">
+                        <button class="btn btn-sm btn-outline-secondary">Details</button>
+                        {% if i == 2 %}
+                        <button class="btn btn-sm btn-success">Installed</button>
+                        {% else %}
+                        <button class="btn btn-sm btn-primary">Install</button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block styles %}
+<style>
+    .section-title {
+        margin-bottom: 1.5rem;
+        font-weight: 500;
+        color: var(--text-primary);
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 0.5rem;
+    }
+    
+    .extension-card {
+        height: 100%;
+        position: relative;
+        transition: transform 0.3s, box-shadow 0.3s;
+        overflow: hidden;
+    }
+    
+    .extension-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    .extension-card-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: var(--accent-color);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        z-index: 1;
+    }
+    
+    .extension-card-category {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background-color: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        z-index: 1;
+    }
+    
+    .extension-card .card-img-top {
+        height: 180px;
+        object-fit: cover;
+        transition: transform 0.3s;
+    }
+    
+    .extension-card:hover .card-img-top {
+        transform: scale(1.05);
+    }
+    
+    .extension-card .card-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    
+    .extension-card-developer {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        margin-bottom: 0.5rem;
+    }
+    
+    .extension-card-description {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        margin-bottom: 0.5rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .extension-card-rating {
+        color: #ffc107;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .extension-card-rating span {
+        color: var(--text-secondary);
+        margin-left: 5px;
+    }
+    
+    .extension-card-price {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+    }
+    
+    .extension-card-actions {
+        display: flex;
+        justify-content: space-between;
+    }
+    
+    .featured-extensions-carousel {
+        margin-bottom: 2rem;
+    }
+    
+    .featured {
+        border-color: var(--accent-color);
+    }
+    
+    /* List View Styles */
+    .extension-list .extension-item {
+        width: 100%;
+        max-width: 100%;
+        flex: 0 0 100%;
+    }
+    
+    .extension-list .extension-card {
+        flex-direction: row;
+    }
+    
+    .extension-list .extension-card .card-img-top {
+        width: 150px;
+        height: 150px;
+        border-top-right-radius: 0;
+        border-bottom-left-radius: calc(0.25rem - 1px);
+    }
+    
+    .extension-list .extension-card .card-body {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    
+    .extension-list .extension-card .card-title,
+    .extension-list .extension-card .extension-card-developer,
+    .extension-list .extension-card .extension-card-description {
+        width: 100%;
+    }
+    
+    .extension-list .extension-card .extension-card-rating,
+    .extension-list .extension-card .extension-card-price {
+        width: 50%;
+    }
+    
+    .extension-list .extension-card .extension-card-actions {
+        width: 100%;
+        margin-top: auto;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 767.98px) {
+        .extension-list .extension-card {
+            flex-direction: column;
+        }
+        
+        .extension-list .extension-card .card-img-top {
+            width: 100%;
+            height: 180px;
+            border-top-right-radius: calc(0.25rem - 1px);
+            border-bottom-left-radius: 0;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function() {
+        // View toggle (Grid/List)
+        $('#view-grid').click(function() {
+            $(this).addClass('active');
+            $('#view-list').removeClass('active');
+            $('#extension-container').removeClass('extension-list').addClass('extension-grid');
+        });
+        
+        $('#view-list').click(function() {
+            $(this).addClass('active');
+            $('#view-grid').removeClass('active');
+            $('#extension-container').removeClass('extension-grid').addClass('extension-list');
+        });
+        
+        // Filter functionality
+        $('#filter-all-categories').change(function() {
+            $('.category-checkbox').prop('checked', $(this).is(':checked'));
+        });
+        
+        $('.category-checkbox').change(function() {
+            if (!$(this).is(':checked')) {
+                $('#filter-all-categories').prop('checked', false);
+            } else if ($('.category-checkbox:checked').length === $('.category-checkbox').length) {
+                $('#filter-all-categories').prop('checked', true);
+            }
+        });
+        
+        $('#apply-filters').click(function() {
+            applyFilters();
+        });
+        
+        function applyFilters() {
+            const automation = $('#filter-automation').is(':checked');
+            const analytics = $('#filter-analytics').is(':checked');
+            const integration = $('#filter-integration').is(':checked');
+            const free = $('#filter-free').is(':checked');
+            const paid = $('#filter-paid').is(':checked');
+            
+            $('.extension-item').each(function() {
+                const category = $(this).data('category');
+                const price = $(this).data('price');
+                
+                let categoryMatch = false;
+                if ((category === 'automation' && automation) || 
+                    (category === 'analytics' && analytics) || 
+                    (category === 'integration' && integration)) {
+                    categoryMatch = true;
+                }
+                
+                let priceMatch = false;
+                if ((price === 'free' && free) || (price === 'paid' && paid)) {
+                    priceMatch = true;
+                }
+                
+                if (categoryMatch && priceMatch) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        }
+        
+        // Search functionality
+        $('#extension-search').on('input', function() {
+            const searchTerm = $(this).val().toLowerCase();
+            
+            $('.extension-item').each(function() {
+                const title = $(this).find('.card-title').text().toLowerCase();
+                const description = $(this).find('.extension-card-description').text().toLowerCase();
+                const developer = $(this).find('.extension-card-developer').text().toLowerCase();
+                
+                if (title.includes(searchTerm) || description.includes(searchTerm) || developer.includes(searchTerm)) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        });
+        
+        // Manage extensions button
+        $('#manage-extensions').click(function() {
+            // In a real application, this would navigate to an extension management page
+            alert('This would open the extension management page where you can configure, update, or remove installed extensions.');
+        });
+    });
+</script>
+{% endblock %}

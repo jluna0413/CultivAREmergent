@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="CultivAR - Self-Hosted Cannabis Grow Journal">
+    <meta name="theme-color" content="#1a1a1a">
+    <title>Settings - CultivAR</title>
+    <!-- CSS Dependencies -->
+    <link rel="stylesheet" href="../../static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../static/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="../../static/css/style.css">
+    <!-- Inline CSS for Settings Page -->
+    <style>
+        /* CSS Variables */
+        :root {
+            /* Theme Colors */
+            --bg-dark: #1a1a1a;
+            --bg-card: #2a2a2a;
+            --bg-sidebar: #121212;
+            --bg-header: #1e1e1e;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --text-muted: #808080;
+            --border-color: #333333;
+            --accent-color: #4caf50;
+            --accent-color-hover: #3d8b40;
+            --danger-color: #f44336;
+            --warning-color: #ff9800;
+            --info-color: #2196f3;
+            --success-color: #4caf50;
+
+            /* Sizing */
+            --sidebar-width: 250px;
+            --sidebar-collapsed-width: 70px;
+            --header-height: 60px;
+            --border-radius: 8px;
+            --card-spacing: 16px;
+
+            /* Transitions */
+            --transition-speed: 0.3s;
+        }
+
+        /* Settings Page Styles */
+        .settings-container {
+            margin-bottom: 30px;
+        }
+
+        .settings-nav {
+            margin-bottom: 20px;
+        }
+
+        .settings-nav .list-group-item {
+            background-color: var(--bg-card);
+            color: var(--text-primary);
+            border-color: var(--border-color);
+        }
+
+        .settings-nav .list-group-item:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .settings-nav .list-group-item.active {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+            color: white;
+        }
+
+        .settings-nav .list-group-item i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .settings-card {
+            background-color: var(--bg-card);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .settings-card-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+
+        .settings-card-header h4 {
+            margin: 0;
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .settings-card-body {
+            padding: 20px;
+        }
+
+        .settings-section {
+            margin-bottom: 25px;
+        }
+
+        .settings-section-title {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        /* Ensure hamburger menu is visible and properly positioned */
+        .hamburger-menu {
+            display: flex;
+            z-index: 1050;
+            position: fixed !important;
+            top: 15px !important;
+            left: 15px !important;
+            opacity: 1 !important;
+            pointer-events: auto !important;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.25rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background-color 0.3s;
+        }
+
+        .hamburger-menu:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Fix for sidebar toggle on settings page */
+        @media (max-width: 768px) {
+            .hamburger-menu {
+                display: flex !important;
+                opacity: 1 !important;
+                pointer-events: auto !important;
+                transform: scale(1) !important;
+            }
+
+            .app-container.sidebar-collapsed .hamburger-menu {
+                transform: scale(1) !important;
+                opacity: 1 !important;
+            }
+
+            /* Ensure sidebar overlay works correctly */
+            .sidebar-overlay {
+                z-index: 1000 !important;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+                display: none;
+            }
+
+            body.sidebar-open .sidebar-overlay {
+                display: block;
+            }
+
+            /* Ensure sidebar is above other content */
+            .sidebar {
+                z-index: 1001 !important;
+                transform: translateX(-100%);
+            }
+
+            body.sidebar-open .sidebar {
+                transform: translateX(0);
+            }
+        }
+
+        /* Sidebar collapsed state */
+        .app-container.sidebar-collapsed .main-content {
+            margin-left: 0;
+        }
+
+        /* Sidebar open state */
+        body.sidebar-open .sidebar {
+            transform: translateX(0);
+        }
+    </style>
+</head>
+<body class="dark-theme">
+    <div class="app-container">
+        <div class="sidebar-overlay"></div>
+        <aside class="sidebar">
+            <!-- Sidebar Header -->
+            <div class="sidebar-header">
+                <div class="logo">
+                    <a href="#">
+                        <i class="material-icons logo-icon">eco</i>
+                        <span class="logo-text">CultivAR</span>
+                    </a>
+                </div>
+                <button class="sidebar-close" id="sidebar-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <!-- Sidebar Content -->
+            <div class="sidebar-content">
+                <nav class="sidebar-nav">
+                    <ul class="sidebar-menu">
+                        <li class="menu-item">
+                            <a href="#" class="menu-link">
+                                <i class="menu-icon fas fa-tachometer-alt"></i>
+                                <span class="menu-text">Dashboard</span>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="#" class="menu-link">
+                                <i class="menu-icon fas fa-seedling"></i>
+                                <span class="menu-text">Plants</span>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="#" class="menu-link">
+                                <i class="menu-icon fas fa-dna"></i>
+                                <span class="menu-text">Collection</span>
+                            </a>
+                        </li>
+                        <li class="menu-item">
+                            <a href="#" class="menu-link submenu-toggle" data-toggle="collapse" data-target="#marketSubmenu" aria-expanded="false">
+                                <i class="menu-icon fas fa-store"></i>
+                                <span class="menu-text">Market</span>
+                                <i class="fas fa-chevron-down submenu-indicator"></i>
+                            </a>
+                            <ul class="collapse submenu" id="marketSubmenu">
+                                <li class="submenu-item">
+                                    <a href="#" class="submenu-link">
+                                        <i class="submenu-icon fas fa-seedling"></i>
+                                        <span class="submenu-text">Seed Bank</span>
+                                    </a>
+                                </li>
+                                <li class="submenu-item">
+                                    <a href="#" class="submenu-link">
+                                        <i class="submenu-icon fas fa-puzzle-piece"></i>
+                                        <span class="submenu-text">Extensions</span>
+                                    </a>
+                                </li>
+                                <li class="submenu-item">
+                                    <a href="#" class="submenu-link">
+                                        <i class="submenu-icon fas fa-tools"></i>
+                                        <span class="submenu-text">Gear</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="menu-item">
+                            <a href="#" class="menu-link">
+                                <i class="menu-icon fas fa-thermometer-half"></i>
+                                <span class="menu-text">Sensors</span>
+                            </a>
+                        </li>
+                        <li class="menu-item active">
+                            <a href="#" class="menu-link">
+                                <i class="menu-icon fas fa-cog"></i>
+                                <span class="menu-text">Settings</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
+            <!-- Sidebar Footer -->
+            <div class="sidebar-footer">
+                <div class="version-info">
+                    <span class="version-text">Version: 1.0.0</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Fixed hamburger menu button for mobile -->
+        <button class="hamburger-menu" id="hamburger-menu">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <main class="main-content">
+            <header class="content-header">
+                <div class="header-left">
+                    <button class="menu-toggle" id="menu-toggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 class="page-title">Settings</h1>
+                </div>
+                <div class="header-right">
+                    <div class="user-menu dropdown">
+                        <button class="btn dropdown-toggle" type="button" id="userMenuDropdown" data-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user-circle"></i>
+                            <span class="username">User</span>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userMenuDropdown">
+                            <a class="dropdown-item" href="#">
+                                <i class="fas fa-cog"></i> Settings
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <div class="content-body">
+                <!-- Settings Content -->
+                <div class="settings-container">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="settings-nav">
+                                <div class="list-group">
+                                    <a href="#general" class="list-group-item list-group-item-action active" data-toggle="list">
+                                        <i class="fas fa-cog"></i> General
+                                    </a>
+                                    <a href="#users" class="list-group-item list-group-item-action" data-toggle="list">
+                                        <i class="fas fa-users"></i> Users
+                                    </a>
+                                    <a href="#sensors" class="list-group-item list-group-item-action" data-toggle="list">
+                                        <i class="fas fa-thermometer-half"></i> Sensors
+                                    </a>
+                                    <a href="#backup" class="list-group-item list-group-item-action" data-toggle="list">
+                                        <i class="fas fa-database"></i> Backup & Restore
+                                    </a>
+                                    <a href="#report-issue" class="list-group-item list-group-item-action" data-toggle="list">
+                                        <i class="fas fa-exclamation-triangle"></i> Report Issue
+                                    </a>
+                                    <a href="#about" class="list-group-item list-group-item-action" data-toggle="list">
+                                        <i class="fas fa-info-circle"></i> About
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="tab-content">
+                                <!-- General Settings Tab -->
+                                <div class="tab-pane fade show active" id="general">
+                                    <div class="settings-card">
+                                        <div class="settings-card-header">
+                                            <h4>General Settings</h4>
+                                        </div>
+                                        <div class="settings-card-body">
+                                            <form id="general-settings-form">
+                                                <div class="settings-section">
+                                                    <h5 class="settings-section-title">Appearance Settings</h5>
+                                                    <div class="form-group">
+                                                        <div class="custom-control custom-switch">
+                                                            <input type="checkbox" class="custom-control-input" id="dark-theme" name="dark_theme" checked>
+                                                            <label class="custom-control-label" for="dark-theme">Dark Theme</label>
+                                                        </div>
+                                                        <small class="form-text text-muted">Use dark theme for better visibility in low-light environments.</small>
+                                                    </div>
+                                                </div>
+
+                                                <div class="settings-section">
+                                                    <h5 class="settings-section-title">Regional Settings</h5>
+                                                    <div class="form-group">
+                                                        <label for="timezone">Timezone</label>
+                                                        <select class="form-control" id="timezone" name="timezone">
+                                                            <option value="UTC" selected>UTC</option>
+                                                            <option value="America/New_York">Eastern Time (US & Canada)</option>
+                                                            <option value="America/Chicago">Central Time (US & Canada)</option>
+                                                            <option value="America/Denver">Mountain Time (US & Canada)</option>
+                                                            <option value="America/Los_Angeles">Pacific Time (US & Canada)</option>
+                                                            <option value="Europe/London">London</option>
+                                                            <option value="Europe/Paris">Paris</option>
+                                                            <option value="Asia/Tokyo">Tokyo</option>
+                                                            <option value="Australia/Sydney">Sydney</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="date-format">Date Format</label>
+                                                        <select class="form-control" id="date-format" name="date_format">
+                                                            <option value="MM/DD/YYYY" selected>MM/DD/YYYY</option>
+                                                            <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                                                            <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="temperature-unit">Temperature Unit</label>
+                                                        <select class="form-control" id="temperature-unit" name="temperature_unit">
+                                                            <option value="C" selected>Celsius (°C)</option>
+                                                            <option value="F">Fahrenheit (°F)</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="settings-section">
+                                                    <h5 class="settings-section-title">Notification Settings</h5>
+                                                    <div class="form-group">
+                                                        <div class="custom-control custom-switch">
+                                                            <input type="checkbox" class="custom-control-input" id="enable-notifications" name="enable_notifications" checked>
+                                                            <label class="custom-control-label" for="enable-notifications">Enable Notifications</label>
+                                                        </div>
+                                                        <small class="form-text text-muted">Receive notifications for important events.</small>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <div class="custom-control custom-switch">
+                                                            <input type="checkbox" class="custom-control-input" id="enable-email" name="enable_email" checked>
+                                                            <label class="custom-control-label" for="enable-email">Enable Email Notifications</label>
+                                                        </div>
+                                                        <small class="form-text text-muted">Receive notifications via email.</small>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="email-address">Email Address</label>
+                                                        <input type="email" class="form-control" id="email-address" name="email_address" value="">
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group text-right">
+                                                    <button type="button" class="btn btn-primary" id="save-general-settings">Save Settings</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Other tabs content would go here -->
+                                <!-- For brevity, I'm only including the General tab -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- JavaScript Dependencies -->
+    <script src="../../static/js/jquery.min.js"></script>
+    <script src="../../static/js/bootstrap.bundle.min.js"></script>
+    <script src="../../static/js/chart.min.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script>
+        // Debug information
+        console.log("Settings page script loaded");
+        console.log("jQuery version:", typeof $ !== 'undefined' ? $.fn.jquery : "jQuery not loaded");
+        console.log("Bootstrap version:", typeof bootstrap !== 'undefined' ? bootstrap.version : "Bootstrap not loaded");
+        console.log("Hamburger menu element:", document.getElementById('hamburger-menu') ? "Found" : "Not found");
+        console.log("Menu toggle element:", document.getElementById('menu-toggle') ? "Found" : "Not found");
+        console.log("Sidebar close element:", document.getElementById('sidebar-close') ? "Found" : "Not found");
+        console.log("App container class:", document.querySelector('.app-container') ? document.querySelector('.app-container').className : "Not found");
+
+        // Add DOMContentLoaded event handler for vanilla JS support
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if jQuery is loaded
+            if (typeof $ === 'undefined') {
+                console.warn('jQuery not loaded, using vanilla JS fallback');
+                setupVanillaJSHandlers();
+            } else {
+                console.log('jQuery is loaded, will use jQuery handlers');
+            }
+
+            function setupVanillaJSHandlers() {
+                console.log('DOMContentLoaded event fired');
+
+                // Setup hamburger menu with vanilla JS
+                var hamburgerBtn = document.getElementById('hamburger-menu');
+                if (hamburgerBtn) {
+                    hamburgerBtn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('Hamburger clicked from DOMContentLoaded handler');
+                        document.querySelector('.app-container').classList.toggle('sidebar-collapsed');
+                        document.body.classList.toggle('sidebar-open');
+                    });
+                    console.log('Hamburger menu handler added via DOMContentLoaded');
+                }
+
+                // Setup sidebar close button with vanilla JS
+                var sidebarCloseBtn = document.getElementById('sidebar-close');
+                if (sidebarCloseBtn) {
+                    sidebarCloseBtn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('Sidebar close clicked from DOMContentLoaded handler');
+                        document.querySelector('.app-container').classList.add('sidebar-collapsed');
+                        document.body.classList.remove('sidebar-open');
+                    });
+                    console.log('Sidebar close handler added via DOMContentLoaded');
+                }
+
+                // Check screen size and set initial sidebar state
+                function checkScreenSizeVanilla() {
+                    if (window.innerWidth < 768) {
+                        // Mobile view - collapse sidebar by default
+                        document.querySelector('.app-container').classList.add('sidebar-collapsed');
+                        document.body.classList.remove('sidebar-open');
+                        console.log('Mobile view detected, sidebar collapsed (vanilla JS)');
+                    } else {
+                        // Desktop view - expand sidebar by default
+                        document.querySelector('.app-container').classList.remove('sidebar-collapsed');
+                        document.body.classList.remove('sidebar-open');
+                        console.log('Desktop view detected, sidebar expanded (vanilla JS)');
+                    }
+                }
+
+                // Call on page load
+                checkScreenSizeVanilla();
+
+                // Also call on window resize
+                window.addEventListener('resize', checkScreenSizeVanilla);
+            }
+        });
+        // End of DOMContentLoaded handler
+
+        $(document).ready(function() {
+            // Check screen size and set initial sidebar state
+            function checkScreenSize() {
+                if (window.innerWidth < 768) {
+                    // Mobile view - collapse sidebar by default
+                    $('.app-container').addClass('sidebar-collapsed');
+                    $('body').removeClass('sidebar-open');
+                    console.log('Mobile view detected, sidebar collapsed');
+                } else {
+                    // Desktop view - expand sidebar by default
+                    $('.app-container').removeClass('sidebar-collapsed');
+                    $('body').removeClass('sidebar-open');
+                    console.log('Desktop view detected, sidebar expanded');
+                }
+            }
+
+            // Call on page load
+            checkScreenSize();
+
+            // Also call on window resize
+            $(window).on('resize', function() {
+                checkScreenSize();
+            });
+
+            // Preserve active tab on page reload
+            const activeTab = localStorage.getItem('settingsActiveTab');
+            if (activeTab) {
+                $('.list-group-item[href="' + activeTab + '"]').tab('show');
+            }
+
+            // Store active tab in localStorage
+            $('.list-group-item').on('shown.bs.tab', function(e) {
+                localStorage.setItem('settingsActiveTab', $(e.target).attr('href'));
+            });
+
+            // General Settings
+            $('#save-general-settings').click(function() {
+                // This would be implemented in a real application
+                alert('General settings would be saved here');
+            });
+
+            // Initialize Bootstrap tabs
+            $('.list-group-item[data-toggle="list"]').on('click', function(e) {
+                e.preventDefault();
+                $(this).tab('show');
+            });
+
+            // Make sure sidebar toggle works correctly
+            $('#menu-toggle').off('click').on('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Menu toggle button clicked on settings page');
+                $('.app-container').toggleClass('sidebar-collapsed');
+                $('body').toggleClass('sidebar-open');
+
+                // Log the current state for debugging
+                console.log('App container classes after toggle:', $('.app-container').attr('class'));
+                console.log('Body classes after toggle:', $('body').attr('class'));
+            });
+
+            // Close sidebar when clicking outside
+            $(document).on('click', function(e) {
+                if (!$(e.target).closest('.sidebar').length &&
+                    !$(e.target).closest('#menu-toggle').length &&
+                    !$(e.target).closest('#hamburger-menu').length) {
+                    $('.app-container').addClass('sidebar-collapsed');
+                    $('body').removeClass('sidebar-open');
+                }
+            });
+
+            // Close sidebar when close button is clicked
+            $('#sidebar-close').off('click').on('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Sidebar close button clicked');
+                $('.app-container').addClass('sidebar-collapsed');
+                $('body').removeClass('sidebar-open');
+                console.log('Sidebar collapsed via close button');
+            });
+
+            // Also add a direct event listener using vanilla JS for better compatibility
+            var sidebarCloseBtn = document.getElementById('sidebar-close');
+            if (sidebarCloseBtn) {
+                sidebarCloseBtn.removeEventListener('click', sidebarCloseHandler);
+                sidebarCloseBtn.addEventListener('click', sidebarCloseHandler);
+                console.log('Sidebar close button event listener added');
+            }
+
+            function sidebarCloseHandler(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Sidebar close button clicked (vanilla JS)');
+                var appContainer = document.querySelector('.app-container');
+                if (appContainer) {
+                    appContainer.classList.add('sidebar-collapsed');
+                    document.body.classList.remove('sidebar-open');
+                    console.log('Sidebar collapsed via close button (vanilla JS)');
+                }
+            }
+
+            // Prevent clicks inside sidebar from closing it
+            $('.sidebar').on('click', function(e) {
+                e.stopPropagation();
+            });
+
+            // Additional direct handler for hamburger menu
+            var hamburgerBtn = document.getElementById('hamburger-menu');
+            if (hamburgerBtn) {
+                // Remove any existing event listeners first to avoid duplicates
+                hamburgerBtn.removeEventListener('click', hamburgerClickHandler);
+
+                // Add the event listener
+                hamburgerBtn.addEventListener('click', hamburgerClickHandler);
+                console.log('Hamburger menu event listener added');
+            } else {
+                console.error('Hamburger menu element not found!');
+                // Try to find it by class instead
+                var hamburgerBtns = document.getElementsByClassName('hamburger-menu');
+                if (hamburgerBtns.length > 0) {
+                    hamburgerBtns[0].removeEventListener('click', hamburgerClickHandler);
+                    hamburgerBtns[0].addEventListener('click', hamburgerClickHandler);
+                    console.log('Hamburger menu found by class and event listener added');
+                }
+            }
+
+            // Define the hamburger click handler function
+            function hamburgerClickHandler(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Hamburger clicked directly on settings page');
+                var appContainer = document.querySelector('.app-container');
+                if (appContainer) {
+                    appContainer.classList.toggle('sidebar-collapsed');
+                    document.body.classList.toggle('sidebar-open');
+                    console.log('App container class toggled:', appContainer.className);
+                } else {
+                    console.error('App container element not found!');
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+<!-- Sensors Tab -->
+<div class=\ tab-pane fade\ id=\sensors\>
+    <div class=\settings-card\>
+        <div class=\settings-card-header\>
+            <h4>Sensor Settings</h4>
+        </div>
+        <div class=\settings-card-body\>
+            <div class=\settings-section\>
+                <h5 class=\settings-section-title\>Connected Sensors</h5>
+                <div class=\table-responsive\>
+                    <table class=\table table-hover\>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th>Location</th>
+                                <th>Status</th>
+                                <th>Last Reading</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Main Temp Sensor</td>
+                                <td>Temperature</td>
+                                <td>Grow Room</td>
+                                <td><span class=\badge badge-success\>Active</span></td>
+                                <td>24.5°C (5 mins ago)</td>
+                                <td>
+                                    <button class=\btn btn-sm btn-primary\><i class=\fas fa-edit\></i></button>
+                                    <button class=\btn btn-sm btn-danger\><i class=\fas fa-trash\></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Humidity Monitor</td>
+                                <td>Humidity</td>
+                                <td>Grow Room</td>
+                                <td><span class=\badge badge-success\>Active</span></td>
+                                <td>55% (5 mins ago)</td>
+                                <td>
+                                    <button class=\btn btn-sm btn-primary\><i class=\fas fa-edit\></i></button>
+                                    <button class=\btn btn-sm btn-danger\><i class=\fas fa-trash\></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <button class=\btn btn-success\><i class=\fas fa-plus\></i> Add New Sensor</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+// Add sensor button handlers
+.ready(function() {
+    // Edit sensor button
+    .click(function() {
+        const row = .closest(\ tr\);
+        const sensorName = row.find(\td:first\).text();
+        alert(\Edit sensor: \ + sensorName);
+    });
+    
+    // Delete sensor button
+    .click(function() {
+        const row = .closest(\tr\);
+        const sensorName = row.find(\td:first\).text();
+        if (confirm(\Are you sure you want to delete \ + sensorName + \?\)) {
+            alert(\Sensor would be deleted in a real application\);
+        }
+    });
+    
+    // Add new sensor button
+    .click(function() {
+        alert(\Add new sensor form would open here\);
+    });
+});
+</script>
