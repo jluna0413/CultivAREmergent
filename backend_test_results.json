@@ -1,0 +1,177 @@
+[
+  {
+    "test": "Health Check",
+    "status": "PASS",
+    "details": "Health endpoint working",
+    "response_code": 200,
+    "timestamp": "2025-07-26T18:07:50.077989"
+  },
+  {
+    "test": "Login Page Access",
+    "status": "PASS",
+    "details": "Login page accessible",
+    "response_code": 200,
+    "timestamp": "2025-07-26T18:07:50.080845"
+  },
+  {
+    "test": "Valid Login",
+    "status": "PASS",
+    "details": "Admin login successful",
+    "response_code": 200,
+    "timestamp": "2025-07-26T18:07:50.342700"
+  },
+  {
+    "test": "Invalid Login",
+    "status": "PASS",
+    "details": "Invalid login properly rejected",
+    "response_code": 200,
+    "timestamp": "2025-07-26T18:07:50.351121"
+  },
+  {
+    "test": "Signup Page Access",
+    "status": "FAIL",
+    "details": "HTTP 500",
+    "response_code": 500,
+    "timestamp": "2025-07-26T18:07:50.360673"
+  },
+  {
+    "test": "User Signup",
+    "status": "PASS",
+    "details": "Signup functionality working",
+    "response_code": 200,
+    "timestamp": "2025-07-26T18:07:50.632918"
+  },
+  {
+    "test": "Protected Route: Dashboard",
+    "status": "PASS",
+    "details": "Route accessible after login",
+    "response_code": 200,
+    "timestamp": "2025-07-26T18:07:50.636990"
+  },
+  {
+    "test": "Protected Route: Plants Page",
+    "status": "PASS",
+    "details": "Route accessible after login",
+    "response_code": 200,
+    "timestamp": "2025-07-26T18:07:50.650914"
+  },
+  {
+    "test": "Protected Route: Strains Page",
+    "status": "PASS",
+    "details": "Route accessible after login",
+    "response_code": 200,
+    "timestamp": "2025-07-26T18:07:50.670338"
+  },
+  {
+    "test": "Protected Route: Sensors Page",
+    "status": "PASS",
+    "details": "Route accessible after login",
+    "response_code": 200,
+    "timestamp": "2025-07-26T18:07:50.684969"
+  },
+  {
+    "test": "Protected Route: Settings Page",
+    "status": "FAIL",
+    "details": "HTTP 500",
+    "response_code": 500,
+    "timestamp": "2025-07-26T18:07:50.718548"
+  },
+  {
+    "test": "Protected Route: Seed Bank",
+    "status": "PASS",
+    "details": "Route accessible after login",
+    "response_code": 200,
+    "timestamp": "2025-07-26T18:07:50.731933"
+  },
+  {
+    "test": "Protected Route: Extensions",
+    "status": "PASS",
+    "details": "Route accessible after login",
+    "response_code": 200,
+    "timestamp": "2025-07-26T18:07:50.745646"
+  },
+  {
+    "test": "Protected Route: Gear",
+    "status": "PASS",
+    "details": "Route accessible after login",
+    "response_code": 200,
+    "timestamp": "2025-07-26T18:07:50.760620"
+  },
+  {
+    "test": "Admin API: Get Users API",
+    "status": "WARN",
+    "details": "Authentication required (expected for admin API)",
+    "response_code": 401,
+    "timestamp": "2025-07-26T18:07:50.770792"
+  },
+  {
+    "test": "Admin API: System Logs API",
+    "status": "WARN",
+    "details": "Authentication required (expected for admin API)",
+    "response_code": 401,
+    "timestamp": "2025-07-26T18:07:50.773103"
+  },
+  {
+    "test": "Admin API: System Info API",
+    "status": "WARN",
+    "details": "Authentication required (expected for admin API)",
+    "response_code": 401,
+    "timestamp": "2025-07-26T18:07:50.775408"
+  },
+  {
+    "test": "Admin API: Diagnostics Test API",
+    "status": "PASS",
+    "details": "API working, returned data",
+    "response_code": 200,
+    "timestamp": "2025-07-26T18:07:51.278288"
+  },
+  {
+    "test": "Create User API",
+    "status": "WARN",
+    "details": "Authentication required for user creation",
+    "response_code": 401,
+    "timestamp": "2025-07-26T18:07:51.281164"
+  },
+  {
+    "test": "DB Connectivity: Dashboard Database Access",
+    "status": "PASS",
+    "details": "Database-dependent page loaded successfully",
+    "response_code": 200,
+    "timestamp": "2025-07-26T18:07:51.292888"
+  },
+  {
+    "test": "DB Connectivity: Plants Database Access",
+    "status": "PASS",
+    "details": "Database-dependent page loaded successfully",
+    "response_code": 200,
+    "timestamp": "2025-07-26T18:07:51.296381"
+  },
+  {
+    "test": "DB Connectivity: Strains Database Access",
+    "status": "PASS",
+    "details": "Database-dependent page loaded successfully",
+    "response_code": 200,
+    "timestamp": "2025-07-26T18:07:51.299865"
+  },
+  {
+    "test": "DB Connectivity: Sensors Database Access",
+    "status": "PASS",
+    "details": "Database-dependent page loaded successfully",
+    "response_code": 200,
+    "timestamp": "2025-07-26T18:07:51.303320"
+  },
+  {
+    "test": "Static Assets: Favicon",
+    "status": "PASS",
+    "details": "Favicon served successfully",
+    "response_code": 200,
+    "timestamp": "2025-07-26T18:07:51.305811"
+  },
+  {
+    "test": "Logout",
+    "status": "PASS",
+    "details": "Logout endpoint working",
+    "response_code": 200,
+    "timestamp": "2025-07-26T18:07:51.312061"
+  }
+]
