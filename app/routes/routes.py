@@ -163,6 +163,14 @@ def register_auth_routes(app):
 
         return render_template('views/signup.html', title='Sign Up')
 
+    @app.route('/logout')
+    @login_required
+    def logout():
+        """Handle user logout."""
+        logout_user()
+        flash('You have been logged out successfully.', 'success')
+        return redirect(url_for('login'))
+
     @app.route('/forgot-password', methods=['GET', 'POST'])
     def forgot_password():
         """Handle password reset request (Placeholder)."""
