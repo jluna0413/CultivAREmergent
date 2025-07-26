@@ -25,7 +25,7 @@ class Config:
     DB_NAME = os.getenv('ISLEY_DB_NAME', 'cultivardb')
 
     # SQLite database path
-    SQLITE_DB_PATH = os.getenv('SQLITE_DB_PATH', 'data/cultivar.db')
+    SQLITE_DB_PATH = os.getenv('SQLITE_DB_PATH', os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'data', 'cultivar.db'))
 
     # Upload settings
     UPLOAD_FOLDER = os.getenv('UPLOAD_FOLDER', 'uploads')
