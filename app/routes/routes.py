@@ -64,7 +64,22 @@ def register_routes(app):
     @login_required
     def settings():
         """Render the settings page."""
-        return render_template('views/settings.html', title='Settings')
+        # Create a default settings object for the template
+        default_settings = {
+            'accent_color': '#4CAF50',
+            'email_address': '',
+            'polling_interval': 60,
+            'data_retention': 30,
+            'acinfinity_username': '',
+            'acinfinity_password': '',
+            'ecowitt_api_key': '',
+            'ecowitt_application_key': '',
+            'ecowitt_mac': '',
+            'backup_time': '02:00',
+            'backup_retention': 7,
+            'backup_location': './backups'
+        }
+        return render_template('views/settings.html', title='Settings', settings=default_settings)
 
     @app.route('/strains')
     @login_required
