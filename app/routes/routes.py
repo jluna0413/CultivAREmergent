@@ -68,7 +68,7 @@ def register_routes(app):
 
     @app.route('/strains')
     @login_required
-    def add_strain_page():
+    def strains():
         """Render the strains page."""
         return render_template('views/strains.html', title='Strain Collection')
 
