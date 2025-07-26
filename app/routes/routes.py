@@ -42,6 +42,18 @@ def register_routes(app):
         """Render the seed bank page."""
         return render_template('views/market/seed_bank.html', title='Seed Bank')
 
+    @app.route('/market/extensions')
+    @login_required
+    def market_extensions():
+        """Render the extensions page."""
+        return render_template('views/market/extensions.html', title='Extensions')
+
+    @app.route('/market/gear')
+    @login_required
+    def market_gear():
+        """Render the gear page."""
+        return render_template('views/market/gear.html', title='Grow Gear')
+
 
 def register_basic_routes(app):
     @app.route('/')
