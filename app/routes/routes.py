@@ -54,6 +54,24 @@ def register_routes(app):
         """Render the gear page."""
         return render_template('views/market/gear.html', title='Grow Gear')
 
+    @app.route('/sensors')
+    @login_required
+    def sensors():
+        """Render the sensors page."""
+        return render_template('views/sensors.html', title='Sensors')
+
+    @app.route('/settings')
+    @login_required
+    def settings():
+        """Render the settings page."""
+        return render_template('views/settings.html', title='Settings')
+
+    @app.route('/strains')
+    @login_required
+    def add_strain_page():
+        """Render the strains page."""
+        return render_template('views/strains.html', title='Strain Collection')
+
 
 def register_basic_routes(app):
     @app.route('/')
