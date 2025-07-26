@@ -148,16 +148,16 @@ def register_auth_routes(app):
 
             if not username or not password or not confirm_password:
                 flash('All fields are required.', 'danger')
-                return render_template('views/signup.html', title='Sign Up')
+                return render_template('signup.html', title='Sign Up')
 
             if password != confirm_password:
                 flash('Passwords do not match.', 'danger')
-                return render_template('views/signup.html', title='Sign Up')
+                return render_template('signup.html', title='Sign Up')
 
             existing_user = User.query.filter_by(username=username).first()
             if existing_user:
                 flash('Username already exists.', 'danger')
-                return render_template('views/signup.html', title='Sign Up')
+                return render_template('signup.html', title='Sign Up')
 
             new_user = User(username=username)
             new_user.password_hash = generate_password_hash(password)
@@ -167,7 +167,7 @@ def register_auth_routes(app):
             flash('Account created successfully. Please log in.', 'success')
             return redirect(url_for('login'))
 
-        return render_template('views/signup.html', title='Sign Up')
+        return render_template('signup.html', title='Sign Up')
 
     @app.route('/logout')
     @login_required
