@@ -18,6 +18,8 @@ def migrate_db():
     from app.models.base_models import Measurement, Metric, Status, Strain, Zone, Stream
     from app.models.base_models import PlantImage, Sensor, SensorData, Settings
     from app.models.system_models import SystemActivity
+    from app.models.acinfinity_models import ACInfinityDevice, ACInfinityToken
+    from app.models.ecowitt_models import EcowittDevice
 
     logger.info("Migrating database schema")
 
