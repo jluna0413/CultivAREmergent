@@ -72,6 +72,12 @@ def register_routes(app):
         """Render the strains page."""
         return render_template('views/strains.html', title='Strain Collection')
 
+    @app.route('/plants')
+    @login_required
+    def plants():
+        """Render the plants page."""
+        return render_template('views/plants.html', title='My Plants')
+
 
 def register_basic_routes(app):
     @app.route('/')
