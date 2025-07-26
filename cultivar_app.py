@@ -55,6 +55,9 @@ def create_app():
         try:
             from app.models import migrate_db, init_db
             from app.models.base_models import User
+            from app.models.acinfinity_models import ACInfinityDevice, ACInfinityToken
+            from app.models.ecowitt_models import EcowittDevice
+            from app.models.system_models import SystemActivity
             from werkzeug.security import generate_password_hash
             
             # Create tables
