@@ -95,5 +95,5 @@ def create_app():
 
 if __name__ == '__main__':
     app = create_app()
-    port = int(os.getenv('ISLEY_PORT', 4200))
+    port = int(os.getenv('ISLEY_PORT', 8001))  # Changed from 4200 to 8001 for production
     app.run(host='0.0.0.0', port=port, debug=True)
