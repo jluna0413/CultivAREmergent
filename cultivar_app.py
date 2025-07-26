@@ -69,11 +69,16 @@ def create_app():
             # Create default admin user if it doesn't exist
             admin_user = User.query.filter_by(username='admin').first()
             if not admin_user:
-                admin_user = User(username='admin')
+                admin_user = User(username='admin', is_admin=True)
                 admin_user.password_hash = generate_password_hash('isley')  # Default password from README
                 db.session.add(admin_user)
                 db.session.commit()
                 print("Created default admin user with username 'admin' and password 'isley'")
+            elif not admin_user.is_admin:
+                # Update existing admin user to have admin privileges
+                admin_user.is_admin = True
+                db.session.commit()
+                print("Updated admin user with admin privileges")
             
         except Exception as e:
             print(f"Database initialization error: {e}")
