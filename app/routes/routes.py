@@ -150,6 +150,11 @@ def register_auth_routes(app):
     Args:
         app: The Flask application.
     """
+    
+    @app.route('/debug-test')
+    def debug_test():
+        return "Debug route working - code changes are applied!"
+    
     @app.route('/login', methods=['GET', 'POST'])
     def login():
         """ Handle user login. """
