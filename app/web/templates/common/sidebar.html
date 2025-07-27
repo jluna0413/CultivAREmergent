@@ -72,10 +72,17 @@
             </li>
 
             {% if current_user.is_admin %}
-            <li class="menu-item {% if '/admin' in request.path %}active{% endif %}">
+            <li class="menu-item {% if '/admin/users' in request.path %}active{% endif %}">
                 <a href="{{ url_for('admin_users') }}" class="menu-link">
                     <i class="menu-icon fas fa-users-cog"></i>
                     <span class="menu-text">User Management</span>
+                </a>
+            </li>
+            
+            <li class="menu-item {% if '/admin/export' in request.path %}active{% endif %}">
+                <a href="{{ url_for('admin_export') }}" class="menu-link">
+                    <i class="menu-icon fas fa-download"></i>
+                    <span class="menu-text">Data Export</span>
                 </a>
             </li>
             {% endif %}
