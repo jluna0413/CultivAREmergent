@@ -109,7 +109,7 @@ def create_app():
                 # Create a test zone
                 test_zone = Zone.query.filter_by(name='Grow Tent 1').first()
                 if not test_zone:
-                    test_zone = Zone(name='Grow Tent 1', description='Main growing area')
+                    test_zone = Zone(name='Grow Tent 1')
                     db.session.add(test_zone)
                     db.session.flush()
                 
