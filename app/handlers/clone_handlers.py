@@ -246,23 +246,23 @@ def get_clone_statistics():
     """
     try:
         # Total clones created
-        total_clones = Plant.query.filter_by(clone=True).count()
+        total_clones = Plant.query.filter_by(is_clone=True).count()
         
         # Successful clones (living - not dead)
         successful_clones = Plant.query.filter(
-            Plant.clone == True,
+            Plant.is_clone == True,
             Plant.status_id != 5  # Not dead
         ).count()
         
         # Failed clones (dead)
         failed_clones = Plant.query.filter(
-            Plant.clone == True,
+            Plant.is_clone == True,
             Plant.status_id == 5  # Dead
         ).count()
         
         # Harvested clones
         harvested_clones = Plant.query.filter(
-            Plant.clone == True,
+            Plant.is_clone == True,
             Plant.status_id == 4  # Harvested
         ).count()
         
