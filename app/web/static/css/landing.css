@@ -150,15 +150,27 @@ p {
 .hero-title {
     margin-bottom: 1.5rem;
     font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
 }
 
 .hero-gradient {
-    background: linear-gradient(135deg, var(--primary-green), var(--accent-color));
+    background: linear-gradient(135deg, #4CAF50, #8BC34A);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     color: transparent;
     display: inline-block;
+    font-weight: 800;
+}
+
+/* Fallback for browsers that don't support background-clip */
+@supports not (-webkit-background-clip: text) {
+    .hero-gradient {
+        color: #4CAF50;
+        background: none;
+        -webkit-text-fill-color: unset;
+    }
 }
 
 .hero-subtitle {
