@@ -11,3 +11,10 @@ from app.handlers.breeder_handlers import get_breeders, add_breeder, update_bree
 # User management handlers
 from app.handlers.user_handlers import get_all_users, get_user_by_id, create_user, update_user, delete_user
 from app.handlers.user_handlers import toggle_user_admin_status, force_password_reset, get_user_statistics
+
+# Data export handlers
+from app.handlers.export_handlers import (
+    export_plants_csv, export_strains_csv, export_activities_csv, export_users_csv,
+    export_plants_json, export_strains_json, export_complete_backup, export_sensors_csv,
+    get_export_statistics
+)
