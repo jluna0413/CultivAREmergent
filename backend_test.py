@@ -474,6 +474,22 @@ class CultivARTester:
         print("\n🛡️ Testing Protected Routes...")
         self.test_protected_routes()
         
+        # NEW: Mobile-responsive dashboard tests
+        print("\n📱 Testing Mobile-Responsive Dashboard...")
+        self.test_mobile_responsive_dashboard()
+        
+        # NEW: PWA feature tests
+        print("\n🔄 Testing PWA Features...")
+        self.test_pwa_features()
+        
+        # NEW: Widget system tests
+        print("\n🧩 Testing Widget System...")
+        self.test_widget_system_assets()
+        
+        # NEW: Dashboard data loading tests
+        print("\n📊 Testing Dashboard Data Loading...")
+        self.test_dashboard_data_loading()
+        
         # Admin API tests
         print("\n👑 Testing Admin API Endpoints...")
         self.test_admin_api_endpoints()
