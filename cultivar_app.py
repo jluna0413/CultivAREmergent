@@ -81,6 +81,54 @@ def create_app():
                 db.session.commit()
                 print("Updated admin user with admin privileges")
             
+            # Create a test plant for clone demonstration if no plants exist
+            from app.models.base_models import Plant, Strain, Status, Zone, Breeder
+            if Plant.query.count() == 0:
+                # Create a test breeder
+                test_breeder = Breeder.query.filter_by(name='CultivAR Seeds').first()
+                if not test_breeder:
+                    test_breeder = Breeder(name='CultivAR Seeds', description='Test breeder for demo')
+                    db.session.add(test_breeder)
+                    db.session.flush()
+                
+                # Create a test strain
+                test_strain = Strain.query.filter_by(name='Green Goddess').first()
+                if not test_strain:
+                    test_strain = Strain(
+                        name='Green Goddess',
+                        breeder_id=test_breeder.id,
+                        indica=60,
+                        sativa=40,
+                        description='Premium hybrid strain perfect for cloning',
+                        seed_count=10,
+                        cycle_time=75
+                    )
+                    db.session.add(test_strain)
+                    db.session.flush()
+                
+                # Create a test zone
+                test_zone = Zone.query.filter_by(name='Grow Tent 1').first()
+                if not test_zone:
+                    test_zone = Zone(name='Grow Tent 1', description='Main growing area')
+                    db.session.add(test_zone)
+                    db.session.flush()
+                
+                # Create a test plant
+                test_plant = Plant(
+                    name='Mother Plant Alpha',
+                    description='Healthy mother plant ready for cloning',
+                    strain_id=test_strain.id,
+                    zone_id=test_zone.id,
+                    status_id=2,  # Vegetative
+                    clone=False,
+                    start_dt=datetime.now() - timedelta(days=45),
+                    current_week=7,
+                    current_day=3
+                )
+                db.session.add(test_plant)
+                db.session.commit()
+                print("Created test plant 'Mother Plant Alpha' for clone demonstration")
+            
         except Exception as e:
             print(f"Database initialization error: {e}")
     
