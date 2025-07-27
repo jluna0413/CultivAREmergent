@@ -45,6 +45,12 @@ def register_routes(app):
         """Render the mobile-responsive dashboard."""
         return render_template('views/dashboard_mobile.html', title='Dashboard')
 
+    @app.route('/dashboard-new')
+    @login_required
+    def dashboard_new():
+        """Test route for new dashboard."""
+        return render_template('views/dashboard_mobile.html', title='Dashboard')
+
     @app.route('/market/seed-bank')
     @login_required
     def market_seed_bank():
