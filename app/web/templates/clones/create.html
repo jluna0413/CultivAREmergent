@@ -1,0 +1,554 @@
+{% extends 'common/base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block header %}
+    <div class="header-content">
+        <h1><i class="fas fa-plus-circle"></i> Create Clones</h1>
+        <p>Create new clones from healthy parent plants</p>
+    </div>
+{% endblock %}
+
+{% block content %}
+<div class="create-clone-container">
+    <div class="breadcrumb">
+        <a href="{{ url_for('clones_dashboard') }}"><i class="fas fa-sitemap"></i> Clone Management</a>
+        <span><i class="fas fa-chevron-right"></i></span>
+        <span>Create Clones</span>
+    </div>
+
+    <form method="POST" class="clone-form" id="cloneForm">
+        <!-- Parent Selection -->
+        <div class="form-section">
+            <h3><i class="fas fa-seedling"></i> Select Parent Plant</h3>
+            <p class="form-help">Choose a healthy parent plant to create clones from</p>
+            
+            <div class="parent-selection">
+                {% if parent_plants %}
+                    <div class="parents-grid">
+                        {% for parent in parent_plants %}
+                        <div class="parent-option" data-parent-id="{{ parent.id }}">
+                            <input type="radio" name="parent_id" value="{{ parent.id }}" 
+                                   id="parent_{{ parent.id }}" required>
+                            <label for="parent_{{ parent.id }}" class="parent-card">
+                                <div class="parent-info">
+                                    <h4>{{ parent.name }}</h4>
+                                    <div class="parent-details">
+                                        <span class="strain">{{ parent.strain_name }}</span>
+                                        <span class="breeder">{{ parent.breeder_name }}</span>
+                                    </div>
+                                    <div class="parent-stats">
+                                        <span class="status {{ parent.status.lower() }}">{{ parent.status }}</span>
+                                        <span class="week-day">W{{ parent.current_week }}D{{ parent.current_day }}</span>
+                                        <span class="clone-count">{{ parent.clone_count }} clones</span>
+                                    </div>
+                                    {% if parent.description %}
+                                    <p class="description">{{ parent.description }}</p>
+                                    {% endif %}
+                                </div>
+                                <div class="selection-indicator">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                            </label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="no-parents">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h4>No Parent Plants Available</h4>
+                        <p>You need at least one living plant to create clones. Add some plants first.</p>
+                        <a href="{{ url_for('plants') }}" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Add Plants
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if parent_plants %}
+        <!-- Clone Count Selection -->
+        <div class="form-section">
+            <h3><i class="fas fa-calculator"></i> Number of Clones</h3>
+            <p class="form-help">Select how many clones you want to create</p>
+            
+            <div class="clone-count-selection">
+                <label for="clone_count">Number of clones:</label>
+                <select id="clone_count" name="clone_count" onchange="generateCloneFields()">
+                    <option value="1">1 Clone</option>
+                    <option value="2">2 Clones</option>
+                    <option value="3">3 Clones</option>
+                    <option value="4">4 Clones</option>
+                    <option value="5">5 Clones</option>
+                    <option value="6">6 Clones</option>
+                    <option value="8">8 Clones</option>
+                    <option value="10">10 Clones</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Clone Details -->
+        <div class="form-section">
+            <h3><i class="fas fa-edit"></i> Clone Details</h3>
+            <p class="form-help">Configure individual clone settings</p>
+            
+            <div id="cloneFields" class="clone-fields">
+                <!-- Dynamic clone fields will be generated here -->
+            </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary btn-create">
+                <i class="fas fa-plus-circle"></i> Create Clones
+            </button>
+            <a href="{{ url_for('clones_dashboard') }}" class="btn btn-secondary">
+                <i class="fas fa-times"></i> Cancel
+            </a>
+        </div>
+        {% endif %}
+    </form>
+</div>
+
+<style>
+.create-clone-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+}
+
+.breadcrumb a {
+    color: #4CAF50;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.breadcrumb a:hover {
+    color: #66BB6A;
+}
+
+.breadcrumb span {
+    color: #888;
+}
+
+.clone-form {
+    background: linear-gradient(145deg, #2a2a2a, #3a3a3a);
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(76, 175, 80, 0.2);
+}
+
+.form-section {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #444;
+}
+
+.form-section:last-of-type {
+    border-bottom: none;
+    margin-bottom: 20px;
+}
+
+.form-section h3 {
+    color: #4CAF50;
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.form-help {
+    color: #bbb;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+    font-style: italic;
+}
+
+.parents-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 15px;
+}
+
+.parent-option {
+    position: relative;
+}
+
+.parent-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.parent-card {
+    display: block;
+    background: linear-gradient(145deg, #333, #2a2a2a);
+    border-radius: 8px;
+    padding: 20px;
+    border: 2px solid #444;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.parent-card:hover {
+    border-color: #4CAF50;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+.parent-option input[type="radio"]:checked + .parent-card {
+    border-color: #4CAF50;
+    background: linear-gradient(145deg, rgba(76, 175, 80, 0.2), rgba(76, 175, 80, 0.1));
+}
+
+.parent-info h4 {
+    color: #fff;
+    margin: 0 0 10px 0;
+    font-size: 1.1rem;
+}
+
+.parent-details {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.strain, .breeder {
+    background: #444;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    color: #ddd;
+}
+
+.strain {
+    background: #4CAF50;
+    color: white;
+}
+
+.parent-stats {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.status {
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.status.seedling { background: #4CAF50; color: white; }
+.status.vegetative { background: #2196F3; color: white; }
+.status.flowering { background: #FF9800; color: white; }
+
+.week-day {
+    background: #666;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 0.75rem;
+}
+
+.clone-count {
+    color: #bbb;
+    font-size: 0.8rem;
+}
+
+.description {
+    color: #bbb;
+    font-size: 0.85rem;
+    margin: 0;
+    font-style: italic;
+}
+
+.selection-indicator {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: #4CAF50;
+    font-size: 1.2rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.parent-option input[type="radio"]:checked + .parent-card .selection-indicator {
+    opacity: 1;
+}
+
+.no-parents {
+    text-align: center;
+    padding: 40px;
+    color: #bbb;
+}
+
+.no-parents i {
+    font-size: 3rem;
+    color: #FF9800;
+    margin-bottom: 20px;
+}
+
+.no-parents h4 {
+    color: #fff;
+    margin-bottom: 10px;
+}
+
+.clone-count-selection {
+    background: linear-gradient(145deg, #333, #2a2a2a);
+    border-radius: 8px;
+    padding: 20px;
+    border: 1px solid #444;
+}
+
+.clone-count-selection label {
+    display: block;
+    color: #ddd;
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+
+.clone-count-selection select {
+    background: #444;
+    border: 1px solid #555;
+    color: #fff;
+    padding: 10px 15px;
+    border-radius: 6px;
+    font-size: 1rem;
+    width: 200px;
+}
+
+.clone-fields {
+    display: grid;
+    gap: 20px;
+}
+
+.clone-field {
+    background: linear-gradient(145deg, #333, #2a2a2a);
+    border-radius: 8px;
+    padding: 20px;
+    border: 1px solid #444;
+}
+
+.clone-field h4 {
+    color: #4CAF50;
+    margin: 0 0 15px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.field-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.field-group.full-width {
+    grid-template-columns: 1fr;
+}
+
+.field-group label {
+    display: block;
+    color: #ddd;
+    font-weight: 500;
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+}
+
+.field-group input, .field-group select, .field-group textarea {
+    background: #444;
+    border: 1px solid #555;
+    color: #fff;
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.field-group input:focus, .field-group select:focus, .field-group textarea:focus {
+    background: #3a3a3a;
+    border-color: #4CAF50;
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+    outline: none;
+}
+
+.field-group textarea {
+    min-height: 60px;
+    resize: vertical;
+}
+
+.form-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: flex-end;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #444;
+}
+
+.btn {
+    padding: 12px 24px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-primary {
+    background: linear-gradient(145deg, #4CAF50, #66BB6A);
+    color: white;
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(76, 175, 80, 0.4);
+}
+
+.btn-secondary {
+    background: linear-gradient(145deg, #666, #555);
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.btn-create {
+    font-size: 1.1rem;
+    padding: 15px 30px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .create-clone-container {
+        padding: 15px;
+    }
+    
+    .clone-form {
+        padding: 20px;
+    }
+    
+    .parents-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .field-group {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .btn {
+        justify-content: center;
+    }
+}
+</style>
+
+<script>
+function generateCloneFields() {
+    const cloneCount = parseInt(document.getElementById('clone_count').value);
+    const container = document.getElementById('cloneFields');
+    
+    container.innerHTML = '';
+    
+    for (let i = 0; i < cloneCount; i++) {
+        const cloneField = document.createElement('div');
+        cloneField.className = 'clone-field';
+        cloneField.innerHTML = `
+            <h4><i class="fas fa-seedling"></i> Clone ${i + 1}</h4>
+            
+            <div class="field-group">
+                <div>
+                    <label for="clone_name_${i}">Clone Name *</label>
+                    <input type="text" id="clone_name_${i}" name="clone_name_${i}" 
+                           placeholder="Clone ${i + 1}" required>
+                </div>
+                <div>
+                    <label for="zone_id_${i}">Zone</label>
+                    <select id="zone_id_${i}" name="zone_id_${i}">
+                        <option value="">Select Zone</option>
+                        {% for zone in zones %}
+                        <option value="{{ zone.id }}">{{ zone.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            
+            <div class="field-group">
+                <div>
+                    <label for="start_date_${i}">Start Date</label>
+                    <input type="date" id="start_date_${i}" name="start_date_${i}" 
+                           value="${new Date().toISOString().split('T')[0]}">
+                </div>
+            </div>
+            
+            <div class="field-group full-width">
+                <div>
+                    <label for="clone_description_${i}">Description</label>
+                    <textarea id="clone_description_${i}" name="clone_description_${i}" 
+                              placeholder="Optional description for this clone"></textarea>
+                </div>
+            </div>
+        `;
+        
+        container.appendChild(cloneField);
+    }
+}
+
+// Initialize with 1 clone field
+document.addEventListener('DOMContentLoaded', function() {
+    generateCloneFields();
+});
+
+// Form validation
+document.getElementById('cloneForm').addEventListener('submit', function(e) {
+    const parentSelected = document.querySelector('input[name="parent_id"]:checked');
+    if (!parentSelected) {
+        e.preventDefault();
+        alert('Please select a parent plant.');
+        return false;
+    }
+    
+    // Check if at least one clone name is filled
+    const cloneCount = parseInt(document.getElementById('clone_count').value);
+    let hasValidName = false;
+    
+    for (let i = 0; i < cloneCount; i++) {
+        const nameField = document.getElementById(`clone_name_${i}`);
+        if (nameField && nameField.value.trim()) {
+            hasValidName = true;
+            break;
+        }
+    }
+    
+    if (!hasValidName) {
+        e.preventDefault();
+        alert('Please provide at least one clone name.');
+        return false;
+    }
+});
+</script>
+
+{% endblock %}
