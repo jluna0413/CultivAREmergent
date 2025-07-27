@@ -26,9 +26,12 @@ def register_routes(app):
     # Register authentication routes
     register_auth_routes(app)
 
-    # Register strain routes
-    from app.routes.strain_routes import register_strain_routes # Corrected import path
+    # Register other route modules
+    from app.routes.strain_routes import register_strain_routes
     register_strain_routes(app)
+    
+    from app.routes.user_routes import register_user_management_routes
+    register_user_management_routes(app)
 
     @app.route('/dashboard')
     @login_required
