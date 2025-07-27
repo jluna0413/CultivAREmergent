@@ -296,7 +296,7 @@ def get_clone_statistics():
         # Recent clone activity (last 30 days)
         thirty_days_ago = datetime.now() - timedelta(days=30)
         recent_clones = Plant.query.filter(
-            Plant.clone == True,
+            Plant.is_clone == True,
             Plant.start_dt >= thirty_days_ago
         ).count()
         
