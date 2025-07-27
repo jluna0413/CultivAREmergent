@@ -60,9 +60,67 @@
         </div>
 
         <div class="login-footer">
-            © 2025 CultivAR
+            <p>Don't have an account? <a href="/signup" class="auth-link">Sign up here</a></p>
+            <p class="copyright">© 2025 CultivAR</p>
         </div>
     </div>
+
+    <!-- JavaScript for toggle functionality -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auth toggle functionality (Signup/Login)
+            const signupToggle = document.getElementById('signup-toggle');
+            signupToggle.addEventListener('click', function() {
+                window.location.href = '/signup';
+            });
+        });
+    </script>
+
+    <style>
+        .auth-toggle {
+            margin-bottom: 20px;
+        }
+
+        .toggle-buttons {
+            display: flex;
+            background-color: #2a2a2a;
+            border-radius: 8px;
+            padding: 4px;
+            margin-bottom: 20px;
+        }
+
+        .toggle-btn {
+            flex: 1;
+            padding: 10px 15px;
+            background: transparent;
+            border: none;
+            border-radius: 6px;
+            color: #888;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .toggle-btn.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .auth-link {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+
+        .auth-link:hover {
+            color: #66BB6A;
+        }
+
+        .copyright {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
 
     <!-- Optional: Bootstrap JS Bundle -->
     <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
