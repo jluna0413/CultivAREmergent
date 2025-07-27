@@ -49,7 +49,7 @@ def register_dashboard_routes(app):
     @login_required
     def protected_dashboard():
         """Render the mobile-responsive dashboard."""
-        return render_template('views/dashboard_mobile.html', title='Dashboard')
+        return render_template('views/index.html', title='Dashboard')
 
     @app.route('/dashboard-new')
     @login_required
