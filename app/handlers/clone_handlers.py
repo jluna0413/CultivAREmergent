@@ -374,7 +374,7 @@ def delete_clone(clone_id):
         if not clone:
             return {'success': False, 'error': 'Clone not found'}
         
-        if not clone.clone:
+        if not clone.is_clone:
             return {'success': False, 'error': 'Plant is not a clone'}
         
         clone_name = clone.name
