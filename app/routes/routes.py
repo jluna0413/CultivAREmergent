@@ -126,6 +126,11 @@ def register_basic_routes(app):
         """Serve the favicon."""
         return send_from_directory(os.path.join(app.root_path, 'app/web/static/images'), 'favicon-32x32.png', mimetype='image/png')
 
+    @app.route('/manifest.json')
+    def manifest():
+        """Serve the PWA manifest file."""
+        return send_from_directory(os.path.join(app.root_path, 'app/web/static'), 'manifest.json', mimetype='application/json')
+
 def register_auth_routes(app):
     """
     Register authentication routes.
