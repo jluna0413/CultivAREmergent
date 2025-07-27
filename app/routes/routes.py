@@ -42,8 +42,8 @@ def register_routes(app):
     @app.route('/dashboard')
     @login_required
     def protected_dashboard():
-        """Render the dashboard."""
-        return render_template('views/index.html', title='Dashboard')
+        """Render the mobile-responsive dashboard."""
+        return render_template('views/dashboard_mobile.html', title='Dashboard')
 
     @app.route('/market/seed-bank')
     @login_required
