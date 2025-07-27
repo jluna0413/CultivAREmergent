@@ -87,7 +87,7 @@ def create_app():
                 # Create a test breeder
                 test_breeder = Breeder.query.filter_by(name='CultivAR Seeds').first()
                 if not test_breeder:
-                    test_breeder = Breeder(name='CultivAR Seeds', description='Test breeder for demo')
+                    test_breeder = Breeder(name='CultivAR Seeds')
                     db.session.add(test_breeder)
                     db.session.flush()
                 
