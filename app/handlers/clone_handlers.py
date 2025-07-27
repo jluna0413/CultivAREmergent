@@ -178,7 +178,7 @@ def get_clone_lineage(plant_id):
             'plant': {
                 'id': plant.id,
                 'name': plant.name,
-                'is_clone': plant.get('is_clone', False),
+                'is_clone': plant.is_clone,
                 'strain_name': plant.strain.name if plant.strain else 'Unknown'
             },
             'parent': None,
