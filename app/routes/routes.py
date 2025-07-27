@@ -160,9 +160,17 @@ def register_auth_routes(app):
             username = request.form.get('username')
             password = request.form.get('password')
             confirm_password = request.form.get('confirm_password')
+            phone = request.form.get('phone')
+            email = request.form.get('email')
 
+            # Check required fields
             if not username or not password or not confirm_password:
-                flash('All fields are required.', 'danger')
+                flash('Username, password, and password confirmation are required.', 'danger')
+                return render_template('signup.html', title='Sign Up')
+
+            # Check that either phone or email is provided
+            if not phone and not email:
+                flash('Either phone number or email address is required.', 'danger')
                 return render_template('signup.html', title='Sign Up')
 
             if password != confirm_password:
@@ -174,8 +182,16 @@ def register_auth_routes(app):
                 flash('Username already exists.', 'danger')
                 return render_template('signup.html', title='Sign Up')
 
+            # Create new user with phone or email
             new_user = User(username=username)
             new_user.password_hash = generate_password_hash(password)
+            
+            # Add phone or email to user record (we need to add these fields to the User model)
+            if phone:
+                new_user.phone = phone
+            if email:
+                new_user.email = email
+                
             db.session.add(new_user)
             db.session.commit()
 
