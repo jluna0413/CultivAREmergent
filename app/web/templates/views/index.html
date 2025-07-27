@@ -87,11 +87,16 @@
 <script src="{{ url_for('static', filename='js/dashboard-widgets.js') }}"></script>
 <script>
 $(document).ready(function() {
-    // Initialize dashboard
-    const dashboard = window.dashboardWidgets;
+    // Ensure overlays are hidden by default
+    $('#settings-overlay').hide().removeClass('active');
+    $('#widget-settings-panel').removeClass('active');
     
-    // Load initial data
-    loadDashboardData();
+    // Initialize dashboard only if widget system is available
+    if (window.dashboardWidgets) {
+        const dashboard = window.dashboardWidgets;
+        // Load initial data
+        loadDashboardData();
+    }
     
     // Refresh dashboard
     $('#refresh-dashboard').click(function() {
@@ -105,19 +110,21 @@ $(document).ready(function() {
     // Settings panel toggles
     $('.widget-settings-btn').click(function() {
         $('#widget-settings-panel').addClass('active');
-        $('#settings-overlay').addClass('active');
+        $('#settings-overlay').show().addClass('active');
     });
     
     $('.widget-settings-close, #settings-overlay').click(function() {
         $('#widget-settings-panel').removeClass('active');
-        $('#settings-overlay').removeClass('active');
+        $('#settings-overlay').removeClass('active').hide();
     });
     
     // Widget toggles
     $('.widget-toggle').click(function() {
         $(this).toggleClass('active');
         const widgetId = $(this).data('widget-id');
-        dashboard.toggleWidget(widgetId);
+        if (window.dashboardWidgets) {
+            window.dashboardWidgets.toggleWidget(widgetId);
+        }
     });
     
     // Reset layout
@@ -143,7 +150,9 @@ $(document).ready(function() {
     // Timeline navigation
     $(document).on('click', '#timeline-prev, #timeline-next', function() {
         const direction = $(this).attr('id').includes('prev') ? 'prev' : 'next';
-        dashboard.navigateTimeline(direction);
+        if (window.dashboardWidgets) {
+            window.dashboardWidgets.navigateTimeline(direction);
+        }
     });
     
     // Auto-refresh environmental data every 30 seconds
