@@ -1,0 +1,547 @@
+{% extends 'common/base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block header %}
+    <div class="header-content">
+        <h1><i class="fas fa-sitemap"></i> Clone Management</h1>
+        <p>Manage plant clones and track lineage</p>
+    </div>
+{% endblock %}
+
+{% block content %}
+<div class="clone-container">
+    <!-- Clone Statistics -->
+    <div class="stats-section">
+        <h2><i class="fas fa-chart-line"></i> Clone Statistics</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon total-icon">
+                    <i class="fas fa-sitemap"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>{{ clone_stats.total_clones }}</h3>
+                    <p>Total Clones</p>
+                    <small>All clones ever created</small>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon success-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>{{ clone_stats.successful_clones }}</h3>
+                    <p>Successful Clones</p>
+                    <small>Living and thriving</small>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon rate-icon">
+                    <i class="fas fa-percentage"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>{{ clone_stats.success_rate }}%</h3>
+                    <p>Success Rate</p>
+                    <small>Overall clone success</small>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon recent-icon">
+                    <i class="fas fa-seedling"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>{{ clone_stats.recent_clones }}</h3>
+                    <p>Recent Clones</p>
+                    <small>Last 30 days</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Performing Parents -->
+    {% if clone_stats.top_parents %}
+    <div class="top-parents-section">
+        <h2><i class="fas fa-trophy"></i> Top Parent Plants</h2>
+        <div class="parents-grid">
+            {% for parent in clone_stats.top_parents %}
+            <div class="parent-card">
+                <div class="parent-info">
+                    <h4>{{ parent.name }}</h4>
+                    <p class="strain-name">{{ parent.strain_name }}</p>
+                    <div class="clone-count">
+                        <i class="fas fa-sitemap"></i>
+                        <span>{{ parent.clone_count }} clones</span>
+                    </div>
+                </div>
+                <div class="parent-actions">
+                    <a href="{{ url_for('clone_lineage', clone_id=parent.id) }}" 
+                       class="btn btn-sm btn-primary">
+                        <i class="fas fa-project-diagram"></i> View Lineage
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Action Bar -->
+    <div class="action-bar">
+        <a href="{{ url_for('create_clone') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Create New Clones
+        </a>
+        <button class="btn btn-secondary" onclick="refreshClones()">
+            <i class="fas fa-sync-alt"></i> Refresh
+        </button>
+    </div>
+
+    <!-- Clones Table -->
+    <div class="clones-section">
+        <h2><i class="fas fa-list"></i> All Clones</h2>
+        <div class="clones-table-container">
+            <table class="clones-table">
+                <thead>
+                    <tr>
+                        <th>Clone Name</th>
+                        <th>Parent Plant</th>
+                        <th>Strain</th>
+                        <th>Status</th>
+                        <th>Age</th>
+                        <th>Week/Day</th>
+                        <th>Zone</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for clone in clones %}
+                    <tr data-clone-id="{{ clone.id }}">
+                        <td>
+                            <div class="clone-info">
+                                <strong>{{ clone.name }}</strong>
+                                {% if clone.description %}
+                                    <small>{{ clone.description }}</small>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            <a href="{{ url_for('clone_lineage', clone_id=clone.id) }}" 
+                               class="parent-link">
+                                {{ clone.parent_name }}
+                            </a>
+                        </td>
+                        <td>{{ clone.strain_name }}</td>
+                        <td>
+                            {% if clone.status_id == 1 %}
+                                <span class="badge badge-seedling">{{ clone.status }}</span>
+                            {% elif clone.status_id == 2 %}
+                                <span class="badge badge-vegetative">{{ clone.status }}</span>
+                            {% elif clone.status_id == 3 %}
+                                <span class="badge badge-flowering">{{ clone.status }}</span>
+                            {% elif clone.status_id == 4 %}
+                                <span class="badge badge-harvested">{{ clone.status }}</span>
+                            {% elif clone.status_id == 5 %}
+                                <span class="badge badge-dead">{{ clone.status }}</span>
+                            {% else %}
+                                <span class="badge badge-unknown">{{ clone.status }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="age-display">{{ clone.days_alive }} days</span>
+                            {% if clone.start_date %}
+                                <small>Since {{ clone.start_date }}</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="week-day">W{{ clone.current_week }}D{{ clone.current_day }}</span>
+                        </td>
+                        <td>{{ clone.zone_name }}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <a href="{{ url_for('clone_lineage', clone_id=clone.id) }}" 
+                                   class="btn btn-sm btn-info" title="View Lineage">
+                                    <i class="fas fa-project-diagram"></i>
+                                </a>
+                                
+                                <button class="btn btn-sm btn-danger" 
+                                        onclick="deleteClone({{ clone.id }}, '{{ clone.name }}')" 
+                                        title="Delete Clone">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+            {% if not clones %}
+            <div class="empty-state">
+                <i class="fas fa-sitemap"></i>
+                <h3>No Clones Yet</h3>
+                <p>Start by creating your first clones from healthy parent plants.</p>
+                <a href="{{ url_for('create_clone') }}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Create Your First Clone
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Success/Error Messages -->
+<div id="messageContainer" class="message-container"></div>
+
+<style>
+.clone-container {
+    padding: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.stats-section, .top-parents-section, .clones-section {
+    margin-bottom: 40px;
+}
+
+.stats-section h2, .top-parents-section h2, .clones-section h2 {
+    color: #4CAF50;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.5rem;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: linear-gradient(145deg, #2a2a2a, #3a3a3a);
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(76, 175, 80, 0.2);
+}
+
+.stat-icon {
+    font-size: 2.5rem;
+    margin-right: 15px;
+    width: 60px;
+    text-align: center;
+}
+
+.total-icon { color: #4CAF50; }
+.success-icon { color: #66BB6A; }
+.rate-icon { color: #FFD54F; }
+.recent-icon { color: #81C784; }
+
+.stat-info h3 {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #fff;
+    margin: 0;
+}
+
+.stat-info p {
+    color: #bbb;
+    margin: 5px 0;
+    font-size: 0.9rem;
+}
+
+.stat-info small {
+    color: #888;
+    font-size: 0.8rem;
+}
+
+.parents-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+}
+
+.parent-card {
+    background: linear-gradient(145deg, #333, #2a2a2a);
+    border-radius: 8px;
+    padding: 15px;
+    border: 1px solid #444;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.parent-info h4 {
+    color: #fff;
+    margin: 0 0 5px 0;
+    font-size: 1rem;
+}
+
+.strain-name {
+    color: #bbb;
+    margin: 0 0 8px 0;
+    font-size: 0.85rem;
+}
+
+.clone-count {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #4CAF50;
+    font-size: 0.9rem;
+}
+
+.action-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    align-items: center;
+}
+
+.clones-table-container {
+    background: #2a2a2a;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(76, 175, 80, 0.2);
+}
+
+.clones-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.clones-table th {
+    background: linear-gradient(145deg, #333, #444);
+    color: #4CAF50;
+    padding: 15px 12px;
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 2px solid #4CAF50;
+}
+
+.clones-table td {
+    padding: 12px;
+    border-bottom: 1px solid #444;
+    color: #ddd;
+}
+
+.clones-table tbody tr:hover {
+    background: rgba(76, 175, 80, 0.1);
+}
+
+.clone-info strong {
+    color: #fff;
+    display: block;
+}
+
+.clone-info small {
+    color: #bbb;
+    font-size: 0.8rem;
+}
+
+.parent-link {
+    color: #4CAF50;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.parent-link:hover {
+    color: #66BB6A;
+    text-decoration: underline;
+}
+
+.badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.badge-seedling { background: linear-gradient(145deg, #4CAF50, #66BB6A); color: white; }
+.badge-vegetative { background: linear-gradient(145deg, #2196F3, #42A5F5); color: white; }
+.badge-flowering { background: linear-gradient(145deg, #FF9800, #FFB74D); color: white; }
+.badge-harvested { background: linear-gradient(145deg, #9C27B0, #BA68C8); color: white; }
+.badge-dead { background: linear-gradient(145deg, #f44336, #ef5350); color: white; }
+.badge-unknown { background: linear-gradient(145deg, #666, #777); color: white; }
+
+.age-display {
+    font-weight: 500;
+    color: #fff;
+}
+
+.week-day {
+    background: #4CAF50;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 5px;
+}
+
+.btn-sm {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #bbb;
+}
+
+.empty-state i {
+    font-size: 4rem;
+    color: #4CAF50;
+    margin-bottom: 20px;
+}
+
+.empty-state h3 {
+    color: #fff;
+    margin-bottom: 10px;
+}
+
+.empty-state p {
+    margin-bottom: 20px;
+}
+
+.message-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.alert {
+    padding: 12px 20px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    border: none;
+    font-weight: 500;
+}
+
+.alert-success {
+    background: linear-gradient(145deg, #4CAF50, #388E3C);
+    color: white;
+}
+
+.alert-danger {
+    background: linear-gradient(145deg, #f44336, #d32f2f);
+    color: white;
+}
+
+.btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-primary {
+    background: linear-gradient(145deg, #4CAF50, #66BB6A);
+    color: white;
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(76, 175, 80, 0.4);
+}
+
+.btn-secondary {
+    background: linear-gradient(145deg, #666, #555);
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.btn-info {
+    background: linear-gradient(145deg, #2196F3, #42A5F5);
+    color: white;
+}
+
+.btn-danger {
+    background: linear-gradient(145deg, #f44336, #ef5350);
+    color: white;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .clone-container {
+        padding: 15px;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .parents-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .clones-table {
+        font-size: 0.9rem;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+}
+</style>
+
+<script>
+function showMessage(message, type = 'success') {
+    const container = document.getElementById('messageContainer');
+    const alert = document.createElement('div');
+    alert.className = `alert alert-${type}`;
+    alert.innerHTML = message;
+    
+    container.appendChild(alert);
+    
+    setTimeout(() => {
+        alert.remove();
+    }, 5000);
+}
+
+function deleteClone(cloneId, cloneName) {
+    if (confirm(`Are you sure you want to delete clone "${cloneName}"? This action cannot be undone.`)) {
+        fetch(`/clones/${cloneId}/delete`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showMessage(data.message, 'success');
+                setTimeout(() => window.location.reload(), 1000);
+            } else {
+                showMessage(data.error, 'danger');
+            }
+        });
+    }
+}
+
+function refreshClones() {
+    window.location.reload();
+}
+</script>
+
+{% endblock %}
