@@ -92,6 +92,8 @@
             const emailSignup = document.getElementById('email-signup');
             const phoneInput = document.getElementById('phone');
             const emailInput = document.getElementById('email');
+            const passwordPhone = document.getElementById('password');
+            const passwordEmail = document.getElementById('password-email');
 
             phoneMethodBtn.addEventListener('click', function() {
                 phoneMethodBtn.classList.add('active');
@@ -100,6 +102,8 @@
                 emailSignup.style.display = 'none';
                 phoneInput.required = true;
                 emailInput.required = false;
+                passwordPhone.required = true;
+                passwordEmail.required = false;
             });
 
             emailMethodBtn.addEventListener('click', function() {
@@ -109,6 +113,8 @@
                 phoneSignup.style.display = 'none';
                 emailInput.required = true;
                 phoneInput.required = false;
+                passwordEmail.required = true;
+                passwordPhone.required = false;
             });
 
             // Auth toggle functionality (Signup/Login)
