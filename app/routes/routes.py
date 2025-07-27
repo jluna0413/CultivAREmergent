@@ -116,6 +116,18 @@ def register_dashboard_routes(app):
 
 
 def register_basic_routes(app):
+    """
+    Register basic routes that don't require authentication.
+
+    Args:
+        app: The Flask application.
+    """
+    
+    @app.route('/test-landing')
+    def test_landing():
+        """Test route to verify function is being called."""
+        return "Test landing route works!"
+    
     @app.route('/')
     def landing_page():
         """Render the viral landing page."""
