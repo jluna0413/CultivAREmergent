@@ -18,3 +18,9 @@ from app.handlers.export_handlers import (
     export_plants_json, export_strains_json, export_complete_backup, export_sensors_csv,
     get_export_statistics
 )
+
+# Clone management handlers
+from app.handlers.clone_handlers import (
+    get_available_parent_plants, create_clones, get_clone_lineage, get_clone_statistics,
+    get_all_clones, delete_clone
+)
