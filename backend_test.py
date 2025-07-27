@@ -250,6 +250,212 @@ class CultivARTester:
         except Exception as e:
             self.log_test("Static Assets: Favicon", "FAIL", f"Exception: {str(e)}")
             
+    def test_mobile_responsive_dashboard(self):
+        """Test the new mobile-responsive dashboard implementation"""
+        # First login to access dashboard
+        login_response = self.session.post(f"{self.base_url}/login", data=self.admin_credentials)
+        
+        if login_response.status_code != 302:
+            self.log_test("Mobile Dashboard - Login Required", "FAIL", "Cannot login to test dashboard")
+            return
+            
+        try:
+            # Test dashboard route with new template
+            response = self.session.get(f"{self.base_url}/dashboard")
+            if response.status_code == 200:
+                content = response.text
+                
+                # Check for new dashboard container class
+                if '.dashboard-container' in content or 'dashboard-container' in content:
+                    self.log_test("Mobile Dashboard - Container", "PASS", "Dashboard container found", response.status_code)
+                else:
+                    self.log_test("Mobile Dashboard - Container", "FAIL", "Dashboard container not found", response.status_code)
+                
+                # Check for widget system
+                if 'dashboard-widgets' in content:
+                    self.log_test("Mobile Dashboard - Widget System", "PASS", "Widget system found", response.status_code)
+                else:
+                    self.log_test("Mobile Dashboard - Widget System", "FAIL", "Widget system not found", response.status_code)
+                
+                # Check for customize button
+                if 'widget-settings-btn' in content:
+                    self.log_test("Mobile Dashboard - Customize Button", "PASS", "Customize button found", response.status_code)
+                else:
+                    self.log_test("Mobile Dashboard - Customize Button", "FAIL", "Customize button not found", response.status_code)
+                
+                # Check for settings panel
+                if 'widget-settings-panel' in content:
+                    self.log_test("Mobile Dashboard - Settings Panel", "PASS", "Settings panel found", response.status_code)
+                else:
+                    self.log_test("Mobile Dashboard - Settings Panel", "FAIL", "Settings panel not found", response.status_code)
+                
+                # Check for dashboard widgets CSS
+                if 'dashboard-widgets.css' in content:
+                    self.log_test("Mobile Dashboard - CSS", "PASS", "Dashboard widgets CSS included", response.status_code)
+                else:
+                    self.log_test("Mobile Dashboard - CSS", "FAIL", "Dashboard widgets CSS not included", response.status_code)
+                
+                # Check for dashboard widgets JS
+                if 'dashboard-widgets.js' in content:
+                    self.log_test("Mobile Dashboard - JavaScript", "PASS", "Dashboard widgets JS included", response.status_code)
+                else:
+                    self.log_test("Mobile Dashboard - JavaScript", "FAIL", "Dashboard widgets JS not included", response.status_code)
+                    
+            else:
+                self.log_test("Mobile Dashboard - Access", "FAIL", f"Dashboard not accessible: HTTP {response.status_code}", response.status_code)
+                
+        except Exception as e:
+            self.log_test("Mobile Dashboard - Access", "FAIL", f"Exception: {str(e)}")
+
+    def test_pwa_features(self):
+        """Test PWA (Progressive Web App) features"""
+        try:
+            # Test manifest.json accessibility
+            response = self.session.get(f"{self.base_url}/manifest.json")
+            if response.status_code == 200:
+                try:
+                    manifest_data = response.json()
+                    
+                    # Check required manifest fields
+                    required_fields = ['name', 'short_name', 'start_url', 'display', 'icons']
+                    missing_fields = [field for field in required_fields if field not in manifest_data]
+                    
+                    if not missing_fields:
+                        self.log_test("PWA - Manifest Structure", "PASS", "All required manifest fields present", response.status_code)
+                    else:
+                        self.log_test("PWA - Manifest Structure", "FAIL", f"Missing fields: {missing_fields}", response.status_code)
+                    
+                    # Check CultivAR specific content
+                    if manifest_data.get('name') == 'CultivAR - Cannabis Grow Journal':
+                        self.log_test("PWA - App Name", "PASS", "Correct app name in manifest", response.status_code)
+                    else:
+                        self.log_test("PWA - App Name", "FAIL", f"Incorrect app name: {manifest_data.get('name')}", response.status_code)
+                        
+                except json.JSONDecodeError:
+                    self.log_test("PWA - Manifest Format", "FAIL", "Invalid JSON in manifest", response.status_code)
+            else:
+                self.log_test("PWA - Manifest Access", "FAIL", f"Manifest not accessible: HTTP {response.status_code}", response.status_code)
+                
+            # Test service worker accessibility
+            response = self.session.get(f"{self.base_url}/static/sw.js")
+            if response.status_code == 200:
+                sw_content = response.text
+                
+                # Check for service worker functionality
+                if 'addEventListener' in sw_content and 'install' in sw_content:
+                    self.log_test("PWA - Service Worker", "PASS", "Service worker has install event", response.status_code)
+                else:
+                    self.log_test("PWA - Service Worker", "FAIL", "Service worker missing install event", response.status_code)
+                
+                # Check for cache functionality
+                if 'caches' in sw_content and 'CACHE_NAME' in sw_content:
+                    self.log_test("PWA - Caching", "PASS", "Service worker has caching functionality", response.status_code)
+                else:
+                    self.log_test("PWA - Caching", "FAIL", "Service worker missing caching functionality", response.status_code)
+                    
+            else:
+                self.log_test("PWA - Service Worker Access", "FAIL", f"Service worker not accessible: HTTP {response.status_code}", response.status_code)
+                
+        except Exception as e:
+            self.log_test("PWA - Features", "FAIL", f"Exception: {str(e)}")
+
+    def test_widget_system_assets(self):
+        """Test widget system static assets"""
+        try:
+            # Test dashboard widgets CSS
+            response = self.session.get(f"{self.base_url}/static/css/dashboard-widgets.css")
+            if response.status_code == 200:
+                css_content = response.text
+                
+                # Check for responsive design classes
+                if '@media' in css_content and 'max-width' in css_content:
+                    self.log_test("Widget System - Responsive CSS", "PASS", "Responsive design CSS found", response.status_code)
+                else:
+                    self.log_test("Widget System - Responsive CSS", "FAIL", "Responsive design CSS not found", response.status_code)
+                
+                # Check for widget classes
+                if '.dashboard-widget' in css_content:
+                    self.log_test("Widget System - Widget Classes", "PASS", "Widget CSS classes found", response.status_code)
+                else:
+                    self.log_test("Widget System - Widget Classes", "FAIL", "Widget CSS classes not found", response.status_code)
+                    
+            else:
+                self.log_test("Widget System - CSS Access", "FAIL", f"Widget CSS not accessible: HTTP {response.status_code}", response.status_code)
+            
+            # Test dashboard widgets JavaScript
+            response = self.session.get(f"{self.base_url}/static/js/dashboard-widgets.js")
+            if response.status_code == 200:
+                js_content = response.text
+                
+                # Check for widget system class
+                if 'DashboardWidgetSystem' in js_content:
+                    self.log_test("Widget System - JavaScript Class", "PASS", "DashboardWidgetSystem class found", response.status_code)
+                else:
+                    self.log_test("Widget System - JavaScript Class", "FAIL", "DashboardWidgetSystem class not found", response.status_code)
+                
+                # Check for drag and drop functionality
+                if 'setupDragAndDrop' in js_content:
+                    self.log_test("Widget System - Drag & Drop", "PASS", "Drag and drop functionality found", response.status_code)
+                else:
+                    self.log_test("Widget System - Drag & Drop", "FAIL", "Drag and drop functionality not found", response.status_code)
+                
+                # Check for mobile handlers
+                if 'setupMobileHandlers' in js_content:
+                    self.log_test("Widget System - Mobile Handlers", "PASS", "Mobile handlers found", response.status_code)
+                else:
+                    self.log_test("Widget System - Mobile Handlers", "FAIL", "Mobile handlers not found", response.status_code)
+                    
+            else:
+                self.log_test("Widget System - JavaScript Access", "FAIL", f"Widget JS not accessible: HTTP {response.status_code}", response.status_code)
+                
+        except Exception as e:
+            self.log_test("Widget System - Assets", "FAIL", f"Exception: {str(e)}")
+
+    def test_dashboard_data_loading(self):
+        """Test dashboard widget data loading functionality"""
+        # First login to access dashboard
+        login_response = self.session.post(f"{self.base_url}/login", data=self.admin_credentials)
+        
+        if login_response.status_code != 302:
+            self.log_test("Dashboard Data - Login Required", "FAIL", "Cannot login to test dashboard data")
+            return
+            
+        try:
+            # Test dashboard route
+            response = self.session.get(f"{self.base_url}/dashboard")
+            if response.status_code == 200:
+                content = response.text
+                
+                # Check for data loading functions
+                if 'loadDashboardData' in content:
+                    self.log_test("Dashboard Data - Load Function", "PASS", "Data loading function found", response.status_code)
+                else:
+                    self.log_test("Dashboard Data - Load Function", "FAIL", "Data loading function not found", response.status_code)
+                
+                # Check for plant data loading
+                if 'loadPlantData' in content:
+                    self.log_test("Dashboard Data - Plant Data", "PASS", "Plant data loading found", response.status_code)
+                else:
+                    self.log_test("Dashboard Data - Plant Data", "FAIL", "Plant data loading not found", response.status_code)
+                
+                # Check for environmental data loading
+                if 'loadEnvironmentalData' in content:
+                    self.log_test("Dashboard Data - Environmental Data", "PASS", "Environmental data loading found", response.status_code)
+                else:
+                    self.log_test("Dashboard Data - Environmental Data", "FAIL", "Environmental data loading not found", response.status_code)
+                
+                # Check for sensor data loading
+                if 'loadSensorData' in content:
+                    self.log_test("Dashboard Data - Sensor Data", "PASS", "Sensor data loading found", response.status_code)
+                else:
+                    self.log_test("Dashboard Data - Sensor Data", "FAIL", "Sensor data loading not found", response.status_code)
+                    
+            else:
+                self.log_test("Dashboard Data - Access", "FAIL", f"Dashboard not accessible: HTTP {response.status_code}", response.status_code)
+                
+        except Exception as e:
+            self.log_test("Dashboard Data - Loading", "FAIL", f"Exception: {str(e)}")
+
     def run_all_tests(self):
         """Run all backend tests"""
         print("🚀 Starting CultivAR Backend Testing Suite")
