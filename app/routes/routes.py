@@ -162,8 +162,20 @@ def register_auth_routes(app):
             username = request.form.get('username')
             password = request.form.get('password')
             logger.info(f"Login attempt for username: {username}")
+            logger.info(f"Password provided: {'Yes' if password else 'No'}")
 
             user = User.query.filter_by(username=username).first()
+            logger.info(f"User found in database: {'Yes' if user else 'No'}")
+            
+            if user:
+                logger.info(f"User has password_hash: {hasattr(user, 'password_hash')}")
+                logger.info(f"Password hash exists: {bool(user.password_hash) if hasattr(user, 'password_hash') else False}")
+                
+                if hasattr(user, 'password_hash') and user.password_hash:
+                    password_check = check_password_hash(user.password_hash, password)
+                    logger.info(f"Password check result: {password_check}")
+                else:
+                    logger.error("User has no password_hash")
 
             if user and hasattr(user, 'password_hash') and check_password_hash(user.password_hash, password):
                 logger.info("Login successful.")
