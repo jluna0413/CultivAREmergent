@@ -11,7 +11,7 @@ import time
 from datetime import datetime
 
 class CultivARTester:
-    def __init__(self, base_url="http://localhost:4200"):
+    def __init__(self, base_url="http://localhost:8001"):
         self.base_url = base_url
         self.session = requests.Session()
         self.test_results = []
