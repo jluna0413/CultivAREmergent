@@ -155,13 +155,24 @@ p {
 }
 
 .hero-gradient {
-    background: linear-gradient(135deg, #4CAF50, #8BC34A);
+    background: linear-gradient(135deg, #4CAF50, #8BC34A, #66BB6A);
+    background-size: 200% 200%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     color: transparent;
     display: inline-block;
     font-weight: 800;
+    animation: gradient-shift 3s ease-in-out infinite;
+}
+
+@keyframes gradient-shift {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
 }
 
 /* Fallback for browsers that don't support background-clip */
@@ -170,6 +181,7 @@ p {
         color: #4CAF50;
         background: none;
         -webkit-text-fill-color: unset;
+        animation: none;
     }
 }
 
