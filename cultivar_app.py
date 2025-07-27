@@ -120,7 +120,7 @@ def create_app():
                     strain_id=test_strain.id,
                     zone_id=test_zone.id,
                     status_id=2,  # Vegetative
-                    clone=False,
+                    is_clone=False,
                     start_dt=datetime.now() - timedelta(days=45),
                     current_week=7,
                     current_day=3
