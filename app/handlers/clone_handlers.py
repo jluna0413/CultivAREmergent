@@ -332,7 +332,7 @@ def get_all_clones():
         list: List of all clone plants.
     """
     try:
-        clones = Plant.query.filter_by(clone=True).all()
+        clones = Plant.query.filter_by(is_clone=True).all()
         
         clone_list = []
         for clone in clones:
