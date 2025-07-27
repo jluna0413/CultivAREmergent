@@ -92,7 +92,7 @@ def create_clones(parent_id, clone_data_list):
                     strain_id=parent_plant.strain_id,
                     zone_id=zone_id,
                     status_id=1,  # Start as Seedling
-                    clone=True,
+                    is_clone=True,
                     parent_id=parent_id,
                     start_dt=start_date,
                     current_week=1,
