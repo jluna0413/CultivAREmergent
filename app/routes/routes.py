@@ -35,6 +35,9 @@ def register_routes(app):
     
     from app.routes.export_routes import register_export_routes
     register_export_routes(app)
+    
+    from app.routes.clone_routes import register_clone_routes
+    register_clone_routes(app)
 
     @app.route('/dashboard')
     @login_required
