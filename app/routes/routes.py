@@ -153,6 +153,8 @@ def register_basic_routes(app):
         except Exception as e:
             logger.error(f"Newsletter subscription error: {str(e)}")
             return jsonify({'error': 'Internal server error'}), 500
+
+def register_basic_routes(app):
     """
     Register basic routes that don't require authentication.
 
