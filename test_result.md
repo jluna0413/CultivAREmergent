@@ -126,7 +126,7 @@ Analyze our entire codebase, debug, test all endpoints and refactor our project.
 **✅ Authentication**: Login system functional  
 
 ### **✅ PRODUCTION URL STATUS:**
-- **Production URL**: https://dev-roadmap-13.preview.emergentagent.com ✅ **WORKING**
+- **Production URL**: https://33430284-aa37-4560-aef2-669c2b901f3c.preview.emergentagent.com ✅ **WORKING**
 - **Login Page**: Accessible (minor CSS loading issue in production env)
 - **API Endpoints**: Functional and responding correctly
 - **Supervisor Status**: Backend service running properly
@@ -212,7 +212,7 @@ All testing must be performed using the `deep_testing_backend_v2` agent for back
 **✅ HEALTH ENDPOINTS:**
 - Port 8001: ✅ `/health` returns `{"status": "ok"}` (HTTP 200)
 - Port 3000: ✅ `/health` returns `{"status": "ok"}` (HTTP 200)  
-- Production URL: ✅ `https://dev-roadmap-13.preview.emergentagent.com/health` (HTTP 200)
+- Production URL: ✅ `https://33430284-aa37-4560-aef2-669c2b901f3c.preview.emergentagent.com/health` (HTTP 200)
 
 **✅ SUPERVISOR SERVICES STATUS:**
 - Backend service: ✅ RUNNING (pid 2646, uptime 0:33:44)
@@ -242,7 +242,7 @@ All testing must be performed using the `deep_testing_backend_v2` agent for back
 - Default data initialization: ✅ Activities, metrics, statuses populated
 
 **✅ PRODUCTION DEPLOYMENT STATUS:**
-- Production URL: ✅ https://dev-roadmap-13.preview.emergentagent.com WORKING
+- Production URL: ✅ https://33430284-aa37-4560-aef2-669c2b901f3c.preview.emergentagent.com WORKING
 - Static file serving: ✅ Favicon and assets served correctly
 - Application logs: ✅ No errors, normal operation
 - Port configuration: ✅ Backend on 8001, Frontend on 3000
