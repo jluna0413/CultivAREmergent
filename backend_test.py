@@ -336,7 +336,7 @@ def main():
     if len(sys.argv) > 1:
         base_url = sys.argv[1]
     else:
-        base_url = "http://localhost:4200"
+        base_url = "http://localhost:8001"
         
     print(f"Testing CultivAR application at: {base_url}")
     
