@@ -31,6 +31,13 @@
                     <span class="menu-text">Strains</span>
                 </a>
             </li>
+
+            <li class="menu-item {% if '/clones' in request.path %}active{% endif %}">
+                <a href="{{ url_for('clones_dashboard') }}" class="menu-link">
+                    <i class="menu-icon fas fa-sitemap"></i>
+                    <span class="menu-text">Clone Management</span>
+                </a>
+            </li>
             <li class="menu-item {% if '/market' in request.path %}active{% endif %}">
                 <a href="#" class="menu-link submenu-toggle" data-toggle="collapse" data-target="#marketSubmenu" aria-expanded="{% if '/market' in request.path %}true{% else %}false{% endif %}">
                     <i class="menu-icon fas fa-store"></i>
