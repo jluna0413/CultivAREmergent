@@ -157,15 +157,13 @@ def register_auth_routes(app):
     def signup():
         """Handle user signup."""
         if request.method == 'POST':
-            username = request.form.get('username')
-            password = request.form.get('password')
-            confirm_password = request.form.get('confirm_password')
             phone = request.form.get('phone')
             email = request.form.get('email')
+            password = request.form.get('password')
 
             # Check required fields
-            if not username or not password or not confirm_password:
-                flash('Username, password, and password confirmation are required.', 'danger')
+            if not password:
+                flash('Password is required.', 'danger')
                 return render_template('signup.html', title='Sign Up')
 
             # Check that either phone or email is provided
@@ -173,20 +171,37 @@ def register_auth_routes(app):
                 flash('Either phone number or email address is required.', 'danger')
                 return render_template('signup.html', title='Sign Up')
 
-            if password != confirm_password:
-                flash('Passwords do not match.', 'danger')
-                return render_template('signup.html', title='Sign Up')
+            # Generate username from phone or email
+            if phone:
+                username = f"user_{phone.replace('+', '').replace('-', '').replace(' ', '')}"
+                contact_method = phone
+            else:
+                username = f"user_{email.split('@')[0]}"
+                contact_method = email
 
-            existing_user = User.query.filter_by(username=username).first()
+            # Check if user already exists by contact method
+            existing_user = None
+            if phone:
+                existing_user = User.query.filter_by(phone=phone).first()
+            else:
+                existing_user = User.query.filter_by(email=email).first()
+                
             if existing_user:
-                flash('Username already exists.', 'danger')
+                contact_type = "phone number" if phone else "email address"
+                flash(f'An account with this {contact_type} already exists.', 'danger')
                 return render_template('signup.html', title='Sign Up')
 
-            # Create new user with phone or email
+            # Ensure username is unique
+            counter = 1
+            original_username = username
+            while User.query.filter_by(username=username).first():
+                username = f"{original_username}_{counter}"
+                counter += 1
+
+            # Create new user
             new_user = User(username=username)
             new_user.password_hash = generate_password_hash(password)
             
-            # Add phone or email to user record (we need to add these fields to the User model)
             if phone:
                 new_user.phone = phone
             if email:
@@ -195,7 +210,7 @@ def register_auth_routes(app):
             db.session.add(new_user)
             db.session.commit()
 
-            flash('Account created successfully. Please log in.', 'success')
+            flash(f'Account created successfully! Your username is: {username}', 'success')
             return redirect(url_for('login'))
 
         return render_template('signup.html', title='Sign Up')
