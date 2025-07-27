@@ -39,6 +39,12 @@ def register_routes(app):
     from app.routes.clone_routes import register_clone_routes
     register_clone_routes(app)
 
+    # Register dashboard routes
+    register_dashboard_routes(app)
+
+def register_dashboard_routes(app):
+    """Register dashboard-specific routes."""
+    
     @app.route('/dashboard')
     @login_required
     def protected_dashboard():
