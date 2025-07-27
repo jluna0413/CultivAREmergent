@@ -40,7 +40,7 @@ def get_available_parent_plants():
                 'start_date': plant.start_dt.strftime('%Y-%m-%d') if plant.start_dt else None,
                 'clone_count': clone_count,
                 'zone_name': plant.zone.name if plant.zone else 'No Zone',
-                'is_clone': plant.clone,
+                'is_clone': plant.get('is_clone', False),
                 'parent_name': plant.parent.name if plant.parent else None
             }
             parent_list.append(parent_data)
