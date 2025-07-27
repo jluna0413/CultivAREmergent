@@ -97,10 +97,10 @@ def register_routes(app):
 def register_basic_routes(app):
     @app.route('/')
     def index():
-        # Redirect to login or dashboard as appropriate
+        # Redirect to signup or dashboard as appropriate
         if current_user.is_authenticated:
             return redirect(url_for('protected_dashboard'))
-        return redirect(url_for('login'))
+        return redirect(url_for('signup'))  # Changed from 'login' to 'signup'
     """
     Register basic routes that don't require authentication.
 
