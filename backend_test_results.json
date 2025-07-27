@@ -4,174 +4,174 @@
     "status": "PASS",
     "details": "Health endpoint working",
     "response_code": 200,
-    "timestamp": "2025-07-27T00:26:20.278412"
+    "timestamp": "2025-07-27T00:26:25.718972"
   },
   {
     "test": "Login Page Access",
     "status": "PASS",
     "details": "Login page accessible",
     "response_code": 200,
-    "timestamp": "2025-07-27T00:26:20.286673"
+    "timestamp": "2025-07-27T00:26:25.722245"
   },
   {
     "test": "Valid Login",
     "status": "PASS",
     "details": "Admin login successful",
     "response_code": 200,
-    "timestamp": "2025-07-27T00:26:20.570595"
+    "timestamp": "2025-07-27T00:26:26.001053"
   },
   {
     "test": "Invalid Login",
     "status": "PASS",
     "details": "Invalid login properly rejected",
     "response_code": 200,
-    "timestamp": "2025-07-27T00:26:20.579735"
+    "timestamp": "2025-07-27T00:26:26.019175"
   },
   {
     "test": "Signup Page Access",
     "status": "PASS",
     "details": "Signup page accessible",
     "response_code": 200,
-    "timestamp": "2025-07-27T00:26:20.584347"
+    "timestamp": "2025-07-27T00:26:26.023239"
   },
   {
     "test": "User Signup",
     "status": "PASS",
     "details": "Signup functionality working",
     "response_code": 200,
-    "timestamp": "2025-07-27T00:26:20.857411"
+    "timestamp": "2025-07-27T00:26:26.027886"
   },
   {
     "test": "Protected Route: Dashboard",
     "status": "PASS",
     "details": "Route accessible after login",
     "response_code": 200,
-    "timestamp": "2025-07-27T00:26:20.861587"
+    "timestamp": "2025-07-27T00:26:26.032073"
   },
   {
     "test": "Protected Route: Plants Page",
     "status": "PASS",
     "details": "Route accessible after login",
     "response_code": 200,
-    "timestamp": "2025-07-27T00:26:20.874745"
+    "timestamp": "2025-07-27T00:26:26.045573"
   },
   {
     "test": "Protected Route: Strains Page",
     "status": "PASS",
     "details": "Route accessible after login",
     "response_code": 200,
-    "timestamp": "2025-07-27T00:26:20.900034"
+    "timestamp": "2025-07-27T00:26:26.064327"
   },
   {
     "test": "Protected Route: Sensors Page",
     "status": "PASS",
     "details": "Route accessible after login",
     "response_code": 200,
-    "timestamp": "2025-07-27T00:26:20.914637"
+    "timestamp": "2025-07-27T00:26:26.078232"
   },
   {
     "test": "Protected Route: Settings Page",
     "status": "PASS",
     "details": "Route accessible after login",
     "response_code": 200,
-    "timestamp": "2025-07-27T00:26:20.951245"
+    "timestamp": "2025-07-27T00:26:26.107686"
   },
   {
     "test": "Protected Route: Seed Bank",
     "status": "PASS",
     "details": "Route accessible after login",
     "response_code": 200,
-    "timestamp": "2025-07-27T00:26:20.963869"
+    "timestamp": "2025-07-27T00:26:26.120249"
   },
   {
     "test": "Protected Route: Extensions",
     "status": "PASS",
     "details": "Route accessible after login",
     "response_code": 200,
-    "timestamp": "2025-07-27T00:26:20.976149"
+    "timestamp": "2025-07-27T00:26:26.135264"
   },
   {
     "test": "Protected Route: Gear",
     "status": "PASS",
     "details": "Route accessible after login",
     "response_code": 200,
-    "timestamp": "2025-07-27T00:26:20.989663"
+    "timestamp": "2025-07-27T00:26:26.149114"
   },
   {
     "test": "Admin API: Get Users API",
     "status": "WARN",
     "details": "Authentication required (expected for admin API)",
     "response_code": 401,
-    "timestamp": "2025-07-27T00:26:21.003498"
+    "timestamp": "2025-07-27T00:26:26.160858"
   },
   {
     "test": "Admin API: System Logs API",
     "status": "WARN",
     "details": "Authentication required (expected for admin API)",
     "response_code": 401,
-    "timestamp": "2025-07-27T00:26:21.006127"
+    "timestamp": "2025-07-27T00:26:26.163328"
   },
   {
     "test": "Admin API: System Info API",
     "status": "WARN",
     "details": "Authentication required (expected for admin API)",
     "response_code": 401,
-    "timestamp": "2025-07-27T00:26:21.008507"
+    "timestamp": "2025-07-27T00:26:26.165724"
   },
   {
     "test": "Admin API: Diagnostics Test API",
     "status": "PASS",
     "details": "API working, returned data",
     "response_code": 200,
-    "timestamp": "2025-07-27T00:26:21.511733"
+    "timestamp": "2025-07-27T00:26:26.669106"
   },
   {
     "test": "Create User API",
     "status": "WARN",
     "details": "Authentication required for user creation",
     "response_code": 401,
-    "timestamp": "2025-07-27T00:26:21.514677"
+    "timestamp": "2025-07-27T00:26:26.671830"
   },
   {
     "test": "DB Connectivity: Dashboard Database Access",
     "status": "PASS",
     "details": "Database-dependent page loaded successfully",
     "response_code": 200,
-    "timestamp": "2025-07-27T00:26:21.526504"
+    "timestamp": "2025-07-27T00:26:26.683391"
   },
   {
     "test": "DB Connectivity: Plants Database Access",
     "status": "PASS",
     "details": "Database-dependent page loaded successfully",
     "response_code": 200,
-    "timestamp": "2025-07-27T00:26:21.530234"
+    "timestamp": "2025-07-27T00:26:26.686934"
   },
   {
     "test": "DB Connectivity: Strains Database Access",
     "status": "PASS",
     "details": "Database-dependent page loaded successfully",
     "response_code": 200,
-    "timestamp": "2025-07-27T00:26:21.533843"
+    "timestamp": "2025-07-27T00:26:26.690476"
   },
   {
     "test": "DB Connectivity: Sensors Database Access",
     "status": "PASS",
     "details": "Database-dependent page loaded successfully",
     "response_code": 200,
-    "timestamp": "2025-07-27T00:26:21.537463"
+    "timestamp": "2025-07-27T00:26:26.693925"
   },
   {
     "test": "Static Assets: Favicon",
     "status": "PASS",
     "details": "Favicon served successfully",
     "response_code": 200,
-    "timestamp": "2025-07-27T00:26:21.540096"
+    "timestamp": "2025-07-27T00:26:26.696368"
   },
   {
     "test": "Logout",
     "status": "PASS",
     "details": "Logout endpoint working",
     "response_code": 200,
-    "timestamp": "2025-07-27T00:26:21.546795"
+    "timestamp": "2025-07-27T00:26:26.702884"
   }
 ]
