@@ -252,15 +252,8 @@ class CultivARTester:
             
     def test_mobile_responsive_dashboard(self):
         """Test the new mobile-responsive dashboard implementation"""
-        # First login to access dashboard
-        login_response = self.session.post(f"{self.base_url}/login", data=self.admin_credentials)
-        
-        if login_response.status_code != 302:
-            self.log_test("Mobile Dashboard - Login Required", "FAIL", "Cannot login to test dashboard")
-            return
-            
         try:
-            # Test dashboard route with new template
+            # Test dashboard route with new template (session should already be logged in)
             response = self.session.get(f"{self.base_url}/dashboard")
             if response.status_code == 200:
                 content = response.text
