@@ -166,13 +166,6 @@ def register_basic_routes(app):
             logger.error(f"Newsletter subscription error: {str(e)}")
             return jsonify({'error': 'Internal server error'}), 500
 
-def register_basic_routes(app):
-    """
-    Register basic routes that don't require authentication.
-
-    Args:
-        app: The Flask application.
-    """
     @app.route('/health')
     def health():
         """Health check endpoint."""
