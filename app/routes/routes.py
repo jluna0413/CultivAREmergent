@@ -153,7 +153,9 @@ def register_auth_routes(app):
     @app.route('/login', methods=['GET', 'POST'])
     def login():
         """ Handle user login. """
-        logger.info("Login route accessed.")
+        logger.info("=== LOGIN ROUTE HIT ===")
+        print("=== LOGIN ROUTE DEBUG ===")
+        
         if current_user.is_authenticated:
             logger.info("User already authenticated. Redirecting to dashboard.")
             return redirect(url_for('protected_dashboard'))  # Corrected endpoint name
@@ -163,19 +165,24 @@ def register_auth_routes(app):
             password = request.form.get('password')
             logger.info(f"Login attempt for username: {username}")
             logger.info(f"Password provided: {'Yes' if password else 'No'}")
+            print(f"LOGIN DEBUG: username={username}, password={'***' if password else 'None'}")
 
             user = User.query.filter_by(username=username).first()
             logger.info(f"User found in database: {'Yes' if user else 'No'}")
+            print(f"LOGIN DEBUG: User found: {'Yes' if user else 'No'}")
             
             if user:
                 logger.info(f"User has password_hash: {hasattr(user, 'password_hash')}")
                 logger.info(f"Password hash exists: {bool(user.password_hash) if hasattr(user, 'password_hash') else False}")
+                print(f"LOGIN DEBUG: User has password_hash: {hasattr(user, 'password_hash')}")
                 
                 if hasattr(user, 'password_hash') and user.password_hash:
                     password_check = check_password_hash(user.password_hash, password)
                     logger.info(f"Password check result: {password_check}")
+                    print(f"LOGIN DEBUG: Password check result: {password_check}")
                 else:
                     logger.error("User has no password_hash")
+                    print("LOGIN DEBUG: ERROR - User has no password_hash")
 
             if user and hasattr(user, 'password_hash') and check_password_hash(user.password_hash, password):
                 logger.info("Login successful.")
