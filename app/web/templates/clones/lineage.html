@@ -1,0 +1,570 @@
+{% extends 'common/base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block header %}
+    <div class="header-content">
+        <h1><i class="fas fa-project-diagram"></i> Clone Lineage</h1>
+        <p>Family tree for {{ lineage.plant.name }}</p>
+    </div>
+{% endblock %}
+
+{% block content %}
+<div class="lineage-container">
+    <div class="breadcrumb">
+        <a href="{{ url_for('clones_dashboard') }}"><i class="fas fa-sitemap"></i> Clone Management</a>
+        <span><i class="fas fa-chevron-right"></i></span>
+        <span>{{ lineage.plant.name }} Lineage</span>
+    </div>
+
+    <!-- Family Tree Visualization -->
+    <div class="family-tree">
+        <div class="tree-container">
+            <!-- Grandparent Level -->
+            {% if lineage.grandparent %}
+            <div class="tree-level grandparent-level">
+                <div class="plant-node grandparent">
+                    <div class="node-content">
+                        <i class="fas fa-seedling"></i>
+                        <h4>{{ lineage.grandparent.name }}</h4>
+                        <p class="strain">{{ lineage.grandparent.strain_name }}</p>
+                        <span class="node-type">Grandparent</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tree-connector grandparent-connector">
+                <div class="connector-line vertical"></div>
+            </div>
+            {% endif %}
+
+            <!-- Parent Level -->
+            {% if lineage.parent %}
+            <div class="tree-level parent-level">
+                <div class="plant-node parent">
+                    <div class="node-content">
+                        <i class="fas fa-tree"></i>
+                        <h4>{{ lineage.parent.name }}</h4>
+                        <p class="strain">{{ lineage.parent.strain_name }}</p>
+                        <p class="status">{{ lineage.parent.status }}</p>
+                        {% if lineage.parent.start_date %}
+                        <p class="date">Started: {{ lineage.parent.start_date }}</p>
+                        {% endif %}
+                        <span class="node-type">Parent Plant</span>
+                    </div>
+                    <div class="node-actions">
+                        <a href="{{ url_for('clone_lineage', clone_id=lineage.parent.id) }}" 
+                           class="btn btn-sm btn-info">
+                            <i class="fas fa-eye"></i> View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tree-connector parent-connector">
+                <div class="connector-line vertical"></div>
+                {% if lineage.siblings %}
+                <div class="connector-line horizontal"></div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Current Plant Level -->
+            <div class="tree-level current-level">
+                <div class="siblings-container">
+                    <!-- Siblings -->
+                    {% for sibling in lineage.siblings %}
+                    <div class="plant-node sibling">
+                        <div class="node-content">
+                            <i class="fas fa-clone"></i>
+                            <h4>{{ sibling.name }}</h4>
+                            <p class="status">{{ sibling.status }}</p>
+                            {% if sibling.start_date %}
+                            <p class="date">{{ sibling.start_date }}</p>
+                            {% endif %}
+                            <span class="node-type">Sibling</span>
+                        </div>
+                        <div class="node-actions">
+                            <a href="{{ url_for('clone_lineage', clone_id=sibling.id) }}" 
+                               class="btn btn-sm btn-secondary">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+
+                    <!-- Current Plant -->
+                    <div class="plant-node current">
+                        <div class="node-content">
+                            <i class="fas fa-star"></i>
+                            <h4>{{ lineage.plant.name }}</h4>
+                            <p class="strain">{{ lineage.plant.strain_name }}</p>
+                            <span class="node-type current-marker">Current Plant</span>
+                            {% if lineage.plant.is_clone %}
+                            <span class="clone-badge">Clone</span>
+                            {% else %}
+                            <span class="original-badge">Original</span>
+                            {% endif %}
+                        </div>
+                        <div class="node-highlight"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Children Level -->
+            {% if lineage.children %}
+            <div class="tree-connector children-connector">
+                <div class="connector-line vertical"></div>
+                <div class="connector-line horizontal"></div>
+            </div>
+            
+            <div class="tree-level children-level">
+                <div class="children-container">
+                    {% for child in lineage.children %}
+                    <div class="plant-node child">
+                        <div class="node-content">
+                            <i class="fas fa-seedling"></i>
+                            <h4>{{ child.name }}</h4>
+                            <p class="status">{{ child.status }}</p>
+                            <p class="week-day">W{{ child.current_week }}D{{ child.current_day }}</p>
+                            {% if child.start_date %}
+                            <p class="date">{{ child.start_date }}</p>
+                            {% endif %}
+                            <span class="node-type">Offspring</span>
+                        </div>
+                        <div class="node-actions">
+                            <a href="{{ url_for('clone_lineage', clone_id=child.id) }}" 
+                               class="btn btn-sm btn-success">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Lineage Summary -->
+    <div class="lineage-summary">
+        <h2><i class="fas fa-info-circle"></i> Lineage Summary</h2>
+        
+        <div class="summary-cards">
+            <div class="summary-card">
+                <div class="card-icon">
+                    <i class="fas fa-layer-group"></i>
+                </div>
+                <div class="card-content">
+                    <h3>Generation</h3>
+                    <p>
+                        {% if lineage.grandparent %}
+                            3rd Generation (has grandparent)
+                        {% elif lineage.parent %}
+                            2nd Generation (has parent)
+                        {% else %}
+                            1st Generation (original)
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+            
+            <div class="summary-card">
+                <div class="card-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="card-content">
+                    <h3>Siblings</h3>
+                    <p>{{ lineage.siblings|length }} sibling(s)</p>
+                </div>
+            </div>
+            
+            <div class="summary-card">
+                <div class="card-icon">
+                    <i class="fas fa-seedling"></i>
+                </div>
+                <div class="card-content">
+                    <h3>Offspring</h3>
+                    <p>{{ lineage.children|length }} clone(s)</p>
+                </div>
+            </div>
+            
+            <div class="summary-card">
+                <div class="card-icon">
+                    <i class="fas fa-dna"></i>
+                </div>
+                <div class="card-content">
+                    <h3>Strain</h3>
+                    <p>{{ lineage.plant.strain_name }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="lineage-actions">
+        {% if lineage.children|length == 0 %}
+        <a href="{{ url_for('create_clone') }}?parent={{ lineage.plant.id }}" 
+           class="btn btn-primary">
+            <i class="fas fa-plus"></i> Create Clones from This Plant
+        </a>
+        {% endif %}
+        
+        <a href="{{ url_for('clones_dashboard') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Clone Management
+        </a>
+    </div>
+</div>
+
+<style>
+.lineage-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 30px;
+    font-size: 0.9rem;
+}
+
+.breadcrumb a {
+    color: #4CAF50;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.breadcrumb a:hover {
+    color: #66BB6A;
+}
+
+.breadcrumb span {
+    color: #888;
+}
+
+.family-tree {
+    background: linear-gradient(145deg, #2a2a2a, #3a3a3a);
+    border-radius: 12px;
+    padding: 40px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(76, 175, 80, 0.2);
+    overflow-x: auto;
+}
+
+.tree-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 600px;
+}
+
+.tree-level {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 10px 0;
+}
+
+.siblings-container, .children-container {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.plant-node {
+    background: linear-gradient(145deg, #333, #2a2a2a);
+    border-radius: 12px;
+    padding: 20px;
+    min-width: 180px;
+    text-align: center;
+    position: relative;
+    border: 2px solid #444;
+    transition: all 0.3s ease;
+}
+
+.plant-node:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.plant-node.grandparent {
+    border-color: #9C27B0;
+    background: linear-gradient(145deg, rgba(156, 39, 176, 0.2), rgba(156, 39, 176, 0.1));
+}
+
+.plant-node.parent {
+    border-color: #2196F3;
+    background: linear-gradient(145deg, rgba(33, 150, 243, 0.2), rgba(33, 150, 243, 0.1));
+}
+
+.plant-node.current {
+    border-color: #4CAF50;
+    background: linear-gradient(145deg, rgba(76, 175, 80, 0.3), rgba(76, 175, 80, 0.2));
+    box-shadow: 0 0 20px rgba(76, 175, 80, 0.4);
+}
+
+.plant-node.sibling {
+    border-color: #FF9800;
+    background: linear-gradient(145deg, rgba(255, 152, 0, 0.2), rgba(255, 152, 0, 0.1));
+}
+
+.plant-node.child {
+    border-color: #4CAF50;
+    background: linear-gradient(145deg, rgba(76, 175, 80, 0.15), rgba(76, 175, 80, 0.05));
+}
+
+.node-content i {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.grandparent i { color: #9C27B0; }
+.parent i { color: #2196F3; }
+.current i { color: #4CAF50; }
+.sibling i { color: #FF9800; }
+.child i { color: #4CAF50; }
+
+.node-content h4 {
+    color: #fff;
+    margin: 0 0 8px 0;
+    font-size: 1rem;
+}
+
+.node-content p {
+    color: #bbb;
+    margin: 4px 0;
+    font-size: 0.85rem;
+}
+
+.strain {
+    color: #4CAF50 !important;
+    font-weight: 500;
+}
+
+.status {
+    background: #444;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    display: inline-block;
+}
+
+.week-day {
+    background: #4CAF50;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    display: inline-block;
+}
+
+.date {
+    font-size: 0.8rem !important;
+}
+
+.node-type {
+    background: #666;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    display: inline-block;
+    margin-top: 8px;
+}
+
+.current-marker {
+    background: #4CAF50 !important;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(76, 175, 80, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0); }
+}
+
+.clone-badge {
+    background: #2196F3;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 8px;
+    font-size: 0.7rem;
+    margin-left: 5px;
+}
+
+.original-badge {
+    background: #9C27B0;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 8px;
+    font-size: 0.7rem;
+    margin-left: 5px;
+}
+
+.node-actions {
+    margin-top: 10px;
+}
+
+.tree-connector {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 30px;
+    position: relative;
+}
+
+.connector-line {
+    background: #4CAF50;
+}
+
+.connector-line.vertical {
+    width: 2px;
+    height: 30px;
+}
+
+.connector-line.horizontal {
+    height: 2px;
+    width: 200px;
+    position: absolute;
+}
+
+.lineage-summary {
+    margin-bottom: 30px;
+}
+
+.lineage-summary h2 {
+    color: #4CAF50;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.summary-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.summary-card {
+    background: linear-gradient(145deg, #2a2a2a, #3a3a3a);
+    border-radius: 8px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    border: 1px solid rgba(76, 175, 80, 0.2);
+}
+
+.card-icon {
+    font-size: 2rem;
+    color: #4CAF50;
+    margin-right: 15px;
+    width: 50px;
+    text-align: center;
+}
+
+.card-content h3 {
+    color: #fff;
+    margin: 0 0 5px 0;
+    font-size: 1rem;
+}
+
+.card-content p {
+    color: #bbb;
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.lineage-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.btn {
+    padding: 12px 24px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+}
+
+.btn-primary {
+    background: linear-gradient(145deg, #4CAF50, #66BB6A);
+    color: white;
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+.btn-secondary {
+    background: linear-gradient(145deg, #666, #555);
+    color: white;
+}
+
+.btn-info {
+    background: linear-gradient(145deg, #2196F3, #42A5F5);
+    color: white;
+}
+
+.btn-success {
+    background: linear-gradient(145deg, #4CAF50, #66BB6A);
+    color: white;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .lineage-container {
+        padding: 15px;
+    }
+    
+    .family-tree {
+        padding: 20px;
+    }
+    
+    .tree-container {
+        min-width: auto;
+    }
+    
+    .siblings-container, .children-container {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .plant-node {
+        min-width: 150px;
+        padding: 15px;
+    }
+    
+    .summary-cards {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .lineage-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+</style>
+
+{% endblock %}
