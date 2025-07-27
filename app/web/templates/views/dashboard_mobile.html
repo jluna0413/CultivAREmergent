@@ -1,0 +1,297 @@
+{% extends 'common/base.html' %}
+
+{% block title %}Dashboard - CultivAR{% endblock %}
+
+{% block header %}Dashboard{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard-widgets.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h1 class="dashboard-title">Welcome back, {{ current_user.username }}!</h1>
+        <div class="dashboard-controls">
+            <button class="widget-settings-btn" title="Customize Dashboard">
+                <i class="fas fa-cog"></i> Customize
+            </button>
+            <button class="btn btn-sm btn-primary" id="refresh-dashboard">
+                <i class="fas fa-sync"></i> Refresh
+            </button>
+        </div>
+    </div>
+
+    <!-- Dashboard Widgets Container -->
+    <div class="dashboard-widgets" id="dashboard-widgets">
+        <!-- Widgets will be dynamically loaded here -->
+    </div>
+</div>
+
+<!-- Widget Settings Panel -->
+<div class="widget-settings-panel" id="widget-settings-panel">
+    <div class="settings-header">
+        <h3>Dashboard Settings</h3>
+        <button class="btn btn-sm btn-secondary widget-settings-close">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    <div class="settings-content">
+        <h4>Widget Visibility</h4>
+        <div class="widget-toggles">
+            <div class="widget-toggle-item">
+                <span class="widget-toggle-label">Active Plants</span>
+                <div class="widget-toggle active" data-widget-id="plants"></div>
+            </div>
+            <div class="widget-toggle-item">
+                <span class="widget-toggle-label">Plant Timeline</span>
+                <div class="widget-toggle active" data-widget-id="timeline"></div>
+            </div>
+            <div class="widget-toggle-item">
+                <span class="widget-toggle-label">Quick Actions</span>
+                <div class="widget-toggle active" data-widget-id="quick-actions"></div>
+            </div>
+            <div class="widget-toggle-item">
+                <span class="widget-toggle-label">Environmental Data</span>
+                <div class="widget-toggle active" data-widget-id="environmental"></div>
+            </div>
+            <div class="widget-toggle-item">
+                <span class="widget-toggle-label">Sensors</span>
+                <div class="widget-toggle active" data-widget-id="sensors"></div>
+            </div>
+            <div class="widget-toggle-item">
+                <span class="widget-toggle-label">Strains</span>
+                <div class="widget-toggle active" data-widget-id="strains"></div>
+            </div>
+            <div class="widget-toggle-item">
+                <span class="widget-toggle-label">Harvests</span>
+                <div class="widget-toggle active" data-widget-id="harvests"></div>
+            </div>
+        </div>
+        
+        <div class="mt-4">
+            <h4>Dashboard Layout</h4>
+            <p class="text-muted small">Drag widgets by their handle to reorder them.</p>
+            <button class="btn btn-sm btn-outline-secondary" id="reset-layout">
+                <i class="fas fa-undo"></i> Reset to Default
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Settings Panel Overlay -->
+<div class="settings-overlay" id="settings-overlay"></div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/dashboard-widgets.js') }}"></script>
+<script>
+$(document).ready(function() {
+    // Initialize dashboard
+    const dashboard = window.dashboardWidgets;
+    
+    // Load initial data
+    loadDashboardData();
+    
+    // Refresh dashboard
+    $('#refresh-dashboard').click(function() {
+        $(this).find('i').addClass('fa-spin');
+        loadDashboardData();
+        setTimeout(() => {
+            $(this).find('i').removeClass('fa-spin');
+        }, 1000);
+    });
+    
+    // Settings panel toggles
+    $('.widget-settings-btn').click(function() {
+        $('#widget-settings-panel').addClass('active');
+        $('#settings-overlay').addClass('active');
+    });
+    
+    $('.widget-settings-close, #settings-overlay').click(function() {
+        $('#widget-settings-panel').removeClass('active');
+        $('#settings-overlay').removeClass('active');
+    });
+    
+    // Widget toggles
+    $('.widget-toggle').click(function() {
+        $(this).toggleClass('active');
+        const widgetId = $(this).data('widget-id');
+        dashboard.toggleWidget(widgetId);
+    });
+    
+    // Reset layout
+    $('#reset-layout').click(function() {
+        if (confirm('Reset dashboard to default layout?')) {
+            localStorage.removeItem('dashboard-widgets');
+            location.reload();
+        }
+    });
+    
+    // Quick action handlers
+    $(document).on('click', '.quick-action-btn', function() {
+        const action = $(this).data('action');
+        handleQuickAction(action);
+    });
+    
+    // Widget expand handlers
+    $(document).on('click', '.widget-expand-btn', function() {
+        const widget = $(this).closest('.dashboard-widget');
+        widget.toggleClass('expanded');
+    });
+    
+    // Timeline navigation
+    $(document).on('click', '#timeline-prev, #timeline-next', function() {
+        const direction = $(this).attr('id').includes('prev') ? 'prev' : 'next';
+        dashboard.navigateTimeline(direction);
+    });
+    
+    // Auto-refresh environmental data every 30 seconds
+    setInterval(loadEnvironmentalData, 30000);
+});
+
+function loadDashboardData() {
+    loadPlantData();
+    loadEnvironmentalData();
+    loadSensorData();
+    loadStrainData();
+    loadHarvestData();
+}
+
+function loadPlantData() {
+    // Mock plant data - replace with actual API call
+    const plantCount = Math.floor(Math.random() * 10) + 1;
+    $('#plants-count').text(plantCount);
+    
+    // Load recent plants
+    const recentPlantsHtml = `
+        <div class="plant-item">
+            <span class="plant-name">Northern Lights #1</span>
+            <span class="plant-status status-flowering">Flowering</span>
+        </div>
+        <div class="plant-item">
+            <span class="plant-name">White Widow #2</span>
+            <span class="plant-status status-active">Vegetative</span>
+        </div>
+        <div class="plant-item">
+            <span class="plant-name">OG Kush #3</span>
+            <span class="plant-status status-active">Seedling</span>
+        </div>
+    `;
+    $('#recent-plants').html(recentPlantsHtml);
+}
+
+function loadEnvironmentalData() {
+    // Mock environmental data
+    const envData = [
+        { icon: 'thermometer-half', label: 'Temperature', value: '24°C', status: 'optimal' },
+        { icon: 'tint', label: 'Humidity', value: '65%', status: 'optimal' },
+        { icon: 'wind', label: 'Air Flow', value: 'Good', status: 'optimal' },
+        { icon: 'lightbulb', label: 'Light', value: '600W', status: 'optimal' }
+    ];
+    
+    const envHtml = envData.map(item => `
+        <div class="env-item">
+            <div class="env-icon">
+                <i class="fas fa-${item.icon}"></i>
+            </div>
+            <div class="env-value">${item.value}</div>
+            <div class="env-label">${item.label}</div>
+        </div>
+    `).join('');
+    
+    $('#environmental-data').html(envHtml);
+}
+
+function loadSensorData() {
+    $('#sensors-count').text(Math.floor(Math.random() * 5) + 1);
+}
+
+function loadStrainData() {
+    $('#strains-count').text(Math.floor(Math.random() * 8) + 3);
+}
+
+function loadHarvestData() {
+    $('#harvests-count').text(Math.floor(Math.random() * 3));
+}
+
+function handleQuickAction(action) {
+    switch(action) {
+        case 'add-plant':
+            window.location.href = '{{ url_for("plants") }}';
+            break;
+        case 'water-all':
+            if (confirm('Water all active plants?')) {
+                showNotification('All plants watered successfully!', 'success');
+            }
+            break;
+        case 'record-activity':
+            $('#recordActivityModal').modal('show');
+            break;
+        case 'check-sensors':
+            loadEnvironmentalData();
+            showNotification('Sensor data refreshed', 'info');
+            break;
+    }
+}
+
+function showNotification(message, type = 'info') {
+    const alert = $(`
+        <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="close" data-dismiss="alert">
+                <span>&times;</span>
+            </button>
+        </div>
+    `);
+    
+    $('.content-body').prepend(alert);
+    
+    setTimeout(() => {
+        alert.alert('close');
+    }, 3000);
+}
+
+// Register service worker for PWA
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/static/sw.js')
+        .then(function(registration) {
+            console.log('Service Worker registered successfully');
+        })
+        .catch(function(error) {
+            console.log('Service Worker registration failed');
+        });
+}
+</script>
+
+<style>
+.settings-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.settings-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.expanded {
+    grid-column: 1 / -1 !important;
+    min-height: 500px !important;
+}
+
+@media (max-width: 768px) {
+    .expanded {
+        min-height: 400px !important;
+    }
+}
+</style>
+{% endblock %}
