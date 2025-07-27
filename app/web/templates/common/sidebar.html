@@ -70,6 +70,15 @@
                     <span class="menu-text">Settings</span>
                 </a>
             </li>
+
+            {% if current_user.is_admin %}
+            <li class="menu-item {% if '/admin' in request.path %}active{% endif %}">
+                <a href="{{ url_for('admin_users') }}" class="menu-link">
+                    <i class="menu-icon fas fa-users-cog"></i>
+                    <span class="menu-text">User Management</span>
+                </a>
+            </li>
+            {% endif %}
         </ul>
     </nav>
 </div>
