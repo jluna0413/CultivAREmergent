@@ -275,12 +275,16 @@ if ('serviceWorker' in navigator) {
     z-index: 1000;
     opacity: 0;
     visibility: hidden;
+    pointer-events: none;
     transition: all 0.3s ease;
+    display: none;
 }
 
 .settings-overlay.active {
     opacity: 1;
     visibility: visible;
+    pointer-events: auto;
+    display: block;
 }
 
 .expanded {
