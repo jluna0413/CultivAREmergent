@@ -117,11 +117,42 @@ def register_dashboard_routes(app):
 
 def register_basic_routes(app):
     @app.route('/')
-    def index():
-        # Redirect to signup or dashboard as appropriate
-        if current_user.is_authenticated:
-            return redirect(url_for('protected_dashboard'))
-        return redirect(url_for('signup'))  # Changed from 'login' to 'signup'
+    def landing_page():
+        """Render the viral landing page."""
+        return render_template('landing/index.html')
+
+    @app.route('/home')
+    def home():
+        """Redirect from old home to landing page."""
+        return redirect(url_for('landing_page'))
+    
+    @app.route('/api/newsletter/subscribe', methods=['POST'])
+    def newsletter_subscribe():
+        """Handle newsletter subscription."""
+        try:
+            data = request.get_json()
+            phone = data.get('phone', '').strip()
+            
+            if not phone or len(phone) != 10:
+                return jsonify({'error': 'Invalid phone number'}), 400
+            
+            # Here you would integrate with your SMS service (Twilio, etc.)
+            # For now, we'll just log it
+            logger.info(f"Newsletter signup: {phone}")
+            
+            # You could store in database
+            # newsletter_subscriber = NewsletterSubscriber(phone=phone)
+            # db.session.add(newsletter_subscriber)
+            # db.session.commit()
+            
+            return jsonify({
+                'success': True,
+                'message': 'Successfully subscribed to newsletter'
+            })
+            
+        except Exception as e:
+            logger.error(f"Newsletter subscription error: {str(e)}")
+            return jsonify({'error': 'Internal server error'}), 500
     """
     Register basic routes that don't require authentication.
 
