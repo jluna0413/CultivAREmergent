@@ -406,15 +406,8 @@ class CultivARTester:
 
     def test_dashboard_data_loading(self):
         """Test dashboard widget data loading functionality"""
-        # First login to access dashboard
-        login_response = self.session.post(f"{self.base_url}/login", data=self.admin_credentials)
-        
-        if login_response.status_code != 302:
-            self.log_test("Dashboard Data - Login Required", "FAIL", "Cannot login to test dashboard data")
-            return
-            
         try:
-            # Test dashboard route
+            # Test dashboard route (session should already be logged in)
             response = self.session.get(f"{self.base_url}/dashboard")
             if response.status_code == 200:
                 content = response.text
