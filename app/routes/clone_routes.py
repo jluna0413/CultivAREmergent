@@ -59,7 +59,7 @@ def register_clone_routes(app):
                 clone_data_list.append(clone_data)
             
             # Create the clones
-            result = create_clones(parent_id, clone_data_list)
+            result = create_clones(parent_id, clone_data_list, current_user.id)
             
             if result['success']:
                 flash(result['message'], 'success')
@@ -100,7 +100,7 @@ def register_clone_routes(app):
     @login_required
     def delete_clone_route(clone_id):
         """Delete a clone."""
-        result = delete_clone(clone_id)
+        result = delete_clone(clone_id, current_user.id)
         return jsonify(result)
     
     # API endpoints

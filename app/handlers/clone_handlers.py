@@ -50,13 +50,14 @@ def get_available_parent_plants():
         logger.error(f"Error getting available parent plants: {e}")
         return []
 
-def create_clones(parent_id, clone_data_list):
+def create_clones(parent_id, clone_data_list, user_id):
     """
     Create multiple clones from a parent plant.
     
     Args:
         parent_id (int): ID of the parent plant.
         clone_data_list (list): List of clone data dictionaries.
+        user_id (int): The ID of the user performing the action.
         
     Returns:
         dict: Result of the operation with success status and clone IDs.
@@ -127,7 +128,7 @@ def create_clones(parent_id, clone_data_list):
             
             # Log system activity
             activity = SystemActivity(
-                user_id=1,  # This should be current_user.id in the route
+                user_id=user_id,
                 type='clones_created',
                 description=f'{len(created_clones)} clones created from {parent_plant.name}',
                 timestamp=datetime.now()
@@ -359,12 +360,13 @@ def get_all_clones():
         logger.error(f"Error getting all clones: {e}")
         return []
 
-def delete_clone(clone_id):
+def delete_clone(clone_id, user_id):
     """
     Delete a clone plant.
     
     Args:
         clone_id (int): ID of the clone to delete.
+        user_id (int): The ID of the user performing the action.
         
     Returns:
         dict: Result of the operation.
@@ -388,7 +390,7 @@ def delete_clone(clone_id):
         
         # Log system activity
         activity = SystemActivity(
-            user_id=1,  # This should be current_user.id in the route
+            user_id=user_id,
             type='clone_deleted',
             description=f'Clone deleted: {clone_name}',
             timestamp=datetime.now()

@@ -83,7 +83,7 @@
                 <tr data-user-id="{{ user.id }}">
                     <td>
                         <div class="user-info">
-                            <strong>{{ user.username }}</strong>
+                            <strong>{{ user.username|e }}</strong>
                             {% if user.id == current_user.id %}
                                 <span class="badge badge-info">You</span>
                             {% endif %}
@@ -91,9 +91,9 @@
                     </td>
                     <td>
                         {% if user.phone %}
-                            <i class="fas fa-phone"></i> {{ user.phone }}
+                            <i class="fas fa-phone"></i> {{ user.phone|e }}
                         {% elif user.email %}
-                            <i class="fas fa-envelope"></i> {{ user.email }}
+                            <i class="fas fa-envelope"></i> {{ user.email|e }}
                         {% else %}
                             <span class="text-muted">No contact info</span>
                         {% endif %}
@@ -157,7 +157,7 @@
                             
                             {% if user.id != current_user.id and (not user.is_admin or user_stats.admin_users > 1) %}
                                 <button class="btn btn-sm btn-danger" 
-                                        onclick="deleteUser({{ user.id }}, '{{ user.username }}')" 
+                                        onclick="deleteUser({{ user.id }}, '{{ user.username|e }}')"
                                         title="Delete User">
                                     <i class="fas fa-trash"></i>
                                 </button>

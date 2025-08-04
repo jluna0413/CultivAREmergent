@@ -43,6 +43,8 @@ def get_all_users():
             
             user_list.append(user_data)
         
+        logger.info(f"Found {len(users)} users.")
+        logger.info(f"User list: {user_list}")
         return user_list
     except Exception as e:
         logger.error(f"Error getting all users: {e}")

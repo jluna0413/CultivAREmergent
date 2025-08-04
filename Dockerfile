@@ -6,7 +6,7 @@ WORKDIR /app
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    FLASK_APP=main.py \
+    FLASK_APP=cultivar_app.py \
     FLASK_ENV=production
 
 # Install system dependencies
@@ -33,4 +33,4 @@ RUN mkdir -p data uploads/plants uploads/streams uploads/logos logs
 EXPOSE 4200
 
 # Run the application
-CMD ["gunicorn", "--bind", "0.0.0.0:4200", "main:create_app()"]
+CMD ["gunicorn", "--bind", "0.0.0.0:4200", "cultivar_app:create_app()"]

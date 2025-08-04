@@ -7,27 +7,38 @@ from datetime import datetime
 from flask_login import current_user
 from app.models import db
 from app.models.system_models import SystemActivity
-from app.models.base_models import PlantActivity, Activity, Plant, Sensor, SensorData
+from app.models.base_models import PlantActivity, Activity, Plant, Sensor, SensorData, User
 from app.logger import logger
 
-def record_system_activity(activity_type, details=None, user=None):
+def record_system_activity(activity_type, details=None, user_id=None):
     """
     Record a system activity.
     
     Args:
         activity_type (str): The type of activity (login, plant_add, etc.)
         details (dict): Details about the activity
-        user (str): The username of the user who performed the activity
+        user_id (int): The ID of the user who performed the activity
         
     Returns:
         dict: The result of the operation
     """
     try:
         # Get the current user if not provided
-        if user is None and current_user and hasattr(current_user, 'username'):
-            user = current_user.username
-        elif user is None:
-            user = 'system'
+        if user_id is None and current_user and hasattr(current_user, 'id'):
+            user_id = current_user.id
+        elif user_id is None:
+            # This is a system activity, find the system user or an admin
+            system_user = User.query.filter_by(username='system').first()
+            if not system_user:
+                admin_user = User.query.filter_by(is_admin=True).first()
+                if admin_user:
+                    user_id = admin_user.id
+                else:
+                    # Fallback if no admin is found, though this should not happen in a configured system
+                    logger.error("System activity could not be logged: no system or admin user found.")
+                    return {'success': False, 'error': 'Could not determine user for system activity.'}
+            else:
+                user_id = system_user.id
             
         # Convert details to JSON string if it's a dict
         details_json = None
@@ -40,7 +51,7 @@ def record_system_activity(activity_type, details=None, user=None):
         # Create a new system activity
         activity = SystemActivity(
             type=activity_type,
-            user=user,
+            user_id=user_id,
             details=details_json,
             timestamp=datetime.utcnow()
         )
@@ -75,7 +86,7 @@ def get_recent_activities(limit=10):
         for activity in system_activities:
             activity_data = {
                 'type': activity.type,
-                'user': activity.user,
+                'user': activity.user.username if activity.user else 'system',
                 'timestamp': activity.timestamp
             }
             
@@ -131,7 +142,9 @@ def get_plant_activities(plant_id, limit=10):
 
 def record_login_activity(username):
     """Record a login activity."""
-    return record_system_activity('login', user=username)
+    user = User.query.filter_by(username=username).first()
+    user_id = user.id if user else None
+    return record_system_activity('login', user_id=user_id)
 
 def record_plant_add_activity(plant_name, plant_id):
     """Record a plant add activity."""
