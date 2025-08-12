@@ -37,7 +37,7 @@ CultivAR is a self-hosted cannabis grow journal application. It allows you to tr
    python main.py
    ```
 
-4. Access the application at http://localhost:4200
+4. Access the application at http://localhost:5000
 
 ### Option 2: Docker Installation (SQLite)
 
@@ -52,7 +52,7 @@ CultivAR is a self-hosted cannabis grow journal application. It allows you to tr
    docker-compose -f docker-compose.sqlite.yml up -d
    ```
 
-3. Access the application at http://localhost:4200
+3. Access the application at http://localhost:5000
 
 ### Option 3: Docker Installation (PostgreSQL)
 
@@ -67,7 +67,7 @@ CultivAR is a self-hosted cannabis grow journal application. It allows you to tr
    docker-compose -f docker-compose.postgres.yml up -d
    ```
 
-3. Access the application at http://localhost:4200
+3. Access the application at http://localhost:5000
 
 ## Default Credentials
 
@@ -81,13 +81,13 @@ CultivAR is a self-hosted cannabis grow journal application. It allows you to tr
 CultivAR can be configured using environment variables:
 
 - `SECRET_KEY`: Secret key for session management
-- `ISLEY_DB_DRIVER`: Database driver (`sqlite` or `postgres`)
-- `ISLEY_DB_HOST`: PostgreSQL host (default: `localhost`)
-- `ISLEY_DB_PORT`: PostgreSQL port (default: `5432`)
-- `ISLEY_DB_USER`: PostgreSQL username (default: `cultivar`)
-- `ISLEY_DB_PASSWORD`: PostgreSQL password (default: `cultivar`)
-- `ISLEY_DB_NAME`: PostgreSQL database name (default: `cultivardb`)
-- `ISLEY_PORT`: Application port (default: `4200`)
+- `CULTIVAR_DB_DRIVER`: Database driver (`sqlite` or `postgres`)
+- `CULTIVAR_DB_HOST`: PostgreSQL host (default: `localhost`)
+- `CULTIVAR_DB_PORT`: PostgreSQL port (default: `5432`)
+- `CULTIVAR_DB_USER`: PostgreSQL username (default: `cultivar`)
+- `CULTIVAR_DB_PASSWORD`: PostgreSQL password (default: `cultivar`)
+- `CULTIVAR_DB_NAME`: PostgreSQL database name (default: `cultivardb`)
+- `CULTIVAR_PORT`: Application port (default: `5000`)
 - `DEBUG`: Debug mode (`true` or `false`)
 
 ## License

@@ -9,11 +9,11 @@ To access the admin dashboard, use the following credentials:
 
 ## How to Access the Admin Dashboard
 
-1. Go to http://localhost:4200/admin/login directly
+1. Go to http://localhost:5000/admin/login directly
    
    OR
    
-2. From the user login page (http://localhost:4200/login):
+2. From the user login page (http://localhost:5000/login):
    - Look for a small dot (·) at the bottom of the login form
    - Click on that dot to be taken to the admin login page
 
@@ -33,7 +33,7 @@ If you encounter issues accessing the admin dashboard:
 1. Make sure you're using the correct credentials (admin/cultivar_admin)
 2. Clear your browser cache and cookies
 3. Restart the application using the run_consolidated.bat script
-4. Check that port 4200 is not being used by another application
+4. Check that port 5000 is not being used by another application
 
 ## Security Note
 

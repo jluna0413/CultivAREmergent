@@ -6,13 +6,13 @@ services:
     container_name: cultivar-app
     restart: unless-stopped
     ports:
-      - "4200:4200"
+      - "5000:5000"
     volumes:
       - ./data:/app/data
       - ./uploads:/app/uploads
       - ./logs:/app/logs
     environment:
       - SECRET_KEY=change_this_to_a_secure_key
-      - ISLEY_DB_DRIVER=sqlite
-      - ISLEY_PORT=4200
+      - CULTIVAR_DB_DRIVER=sqlite
+      - CULTIVAR_PORT=5000
       - DEBUG=false

@@ -227,7 +227,7 @@ function loadHarvestData() {
 function handleQuickAction(action) {
     switch(action) {
         case 'add-plant':
-            window.location.href = '{{ url_for("plants") }}';
+            window.location.href = '{{ url_for("dashboard.plants") }}';
             break;
         case 'water-all':
             if (confirm('Water all active plants?')) {

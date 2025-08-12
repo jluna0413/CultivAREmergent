@@ -2,9 +2,10 @@
 Breeder handlers for the CultivAR application.
 """
 
+from app.logger import logger
 from app.models import db
 from app.models.base_models import Breeder
-from app.logger import logger
+
 
 def get_breeders():
     """
@@ -19,10 +20,7 @@ def get_breeders():
 
         breeder_list = []
         for breeder in breeders:
-            breeder_data = {
-                'id': breeder.id,
-                'name': breeder.name
-            }
+            breeder_data = {"id": breeder.id, "name": breeder.name}
 
             breeder_list.append(breeder_data)
 
@@ -30,6 +28,7 @@ def get_breeders():
     except Exception as e:
         logger.error(f"Error getting breeders: {e}")
         return []
+
 
 def add_breeder(data):
     """
@@ -43,24 +42,23 @@ def add_breeder(data):
     """
     try:
         # Check if breeder already exists
-        existing_breeder = Breeder.query.filter_by(name=data.get('name')).first()
+        existing_breeder = Breeder.query.filter_by(name=data.get("name")).first()
         if existing_breeder:
-            return {'success': False, 'error': 'Breeder with this name already exists'}
+            return {"success": False, "error": "Breeder with this name already exists"}
 
         # Create a new breeder
-        breeder = Breeder(
-            name=data.get('name')
-        )
+        breeder = Breeder(name=data.get("name"))
 
         # Add the breeder to the database
         db.session.add(breeder)
         db.session.commit()
 
-        return {'success': True, 'breeder_id': breeder.id, 'name': breeder.name}
+        return {"success": True, "breeder_id": breeder.id, "name": breeder.name}
     except Exception as e:
         db.session.rollback()
         logger.error(f"Error adding breeder: {e}")
-        return {'success': False, 'error': str(e)}
+        return {"success": False, "error": str(e)}
+
 
 def update_breeder(breeder_id, data):
     """
@@ -77,24 +75,28 @@ def update_breeder(breeder_id, data):
         breeder = Breeder.query.get(breeder_id)
 
         if not breeder:
-            return {'success': False, 'error': 'Breeder not found'}
+            return {"success": False, "error": "Breeder not found"}
 
         # Check if name already exists
-        if data.get('name') != breeder.name:
-            existing_breeder = Breeder.query.filter_by(name=data.get('name')).first()
+        if data.get("name") != breeder.name:
+            existing_breeder = Breeder.query.filter_by(name=data.get("name")).first()
             if existing_breeder:
-                return {'success': False, 'error': 'Breeder with this name already exists'}
+                return {
+                    "success": False,
+                    "error": "Breeder with this name already exists",
+                }
 
         # Update breeder fields
-        breeder.name = data.get('name', breeder.name)
+        breeder.name = data.get("name", breeder.name)
 
         db.session.commit()
 
-        return {'success': True, 'breeder_id': breeder.id}
+        return {"success": True, "breeder_id": breeder.id}
     except Exception as e:
         db.session.rollback()
         logger.error(f"Error updating breeder: {e}")
-        return {'success': False, 'error': str(e)}
+        return {"success": False, "error": str(e)}
+
 
 def delete_breeder(breeder_id):
     """
@@ -110,18 +112,21 @@ def delete_breeder(breeder_id):
         breeder = Breeder.query.get(breeder_id)
 
         if not breeder:
-            return {'success': False, 'error': 'Breeder not found'}
+            return {"success": False, "error": "Breeder not found"}
 
         # Check if there are strains using this breeder
         if breeder.strains and len(breeder.strains) > 0:
-            return {'success': False, 'error': f'Cannot delete breeder: {len(breeder.strains)} strains are using this breeder'}
+            return {
+                "success": False,
+                "error": f"Cannot delete breeder: {len(breeder.strains)} strains are using this breeder",
+            }
 
         # Delete the breeder
         db.session.delete(breeder)
         db.session.commit()
 
-        return {'success': True}
+        return {"success": True}
     except Exception as e:
         db.session.rollback()
         logger.error(f"Error deleting breeder: {e}")
-        return {'success': False, 'error': str(e)}
+        return {"success": False, "error": str(e)}
