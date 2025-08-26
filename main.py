@@ -27,7 +27,7 @@ def test_login_route():
 
 if __name__ == '__main__':
     try:
-        port = 4200 # Hardcoded port
+        port = 5000 # Hardcoded port
         print(f"Starting Ultra-Minimal main.py Test App on port {port}...")
         print(f"Minimal application object created, attempting to run on port {port}...")
         app.run(host='0.0.0.0', port=port, debug=True, use_reloader=False)

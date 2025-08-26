@@ -8,7 +8,7 @@ CultivAR is a self-hosted cannabis grow journal application. It allows you to tr
 
 ### Logging In
 
-1. Access the application at http://localhost:4200
+1. Access the application at http://localhost:5000
 2. Use the default credentials:
    - Username: admin
    - Password: isley

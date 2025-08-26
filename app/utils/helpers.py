@@ -5,8 +5,11 @@ Helper utilities for the CultivAR application.
 import os
 import re
 from datetime import datetime, timedelta
-from flask import request
+
+from flask import jsonify, request
+
 from app.logger import logger
+
 
 def get_file_extension(filename):
     """
@@ -20,6 +23,7 @@ def get_file_extension(filename):
     """
     return os.path.splitext(filename)[1].lower()
 
+
 def is_valid_image(filename):
     """
     Check if a file is a valid image based on its extension.
@@ -30,8 +34,9 @@ def is_valid_image(filename):
     Returns:
         bool: True if the file is a valid image, False otherwise.
     """
-    valid_extensions = ['.jpg', '.jpeg', '.png', '.gif']
+    valid_extensions = [".jpg", ".jpeg", ".png", ".gif"]
     return get_file_extension(filename) in valid_extensions
+
 
 def format_date(date):
     """
@@ -47,6 +52,7 @@ def format_date(date):
         return ""
     return date.strftime("%m/%d/%Y")
 
+
 def format_datetime(date):
     """
     Format a datetime as a string.
@@ -60,6 +66,7 @@ def format_datetime(date):
     if not date:
         return ""
     return date.strftime("%m/%d/%Y %I:%M %p")
+
 
 def parse_date(date_str):
     """
@@ -81,7 +88,7 @@ def parse_date(date_str):
             "%Y-%m-%dT%H:%M:%S",
             "%Y-%m-%d %H:%M:%S",
             "%m/%d/%Y %H:%M:%S",
-            "%m/%d/%Y %I:%M %p"
+            "%m/%d/%Y %I:%M %p",
         ]
 
         for fmt in formats:
@@ -96,6 +103,7 @@ def parse_date(date_str):
     except Exception as e:
         logger.error(f"Error parsing date: {e}")
         return None
+
 
 def calculate_days_since(date):
     """
@@ -114,6 +122,7 @@ def calculate_days_since(date):
     delta = now - date
     return delta.days
 
+
 def calculate_weeks_since(date):
     """
     Calculate the number of weeks since a date.
@@ -130,6 +139,7 @@ def calculate_weeks_since(date):
 
     return days // 7
 
+
 def slugify(text):
     """
     Convert a string to a URL-friendly slug.
@@ -144,18 +154,19 @@ def slugify(text):
     text = text.lower()
 
     # Remove non-alphanumeric characters
-    text = re.sub(r'[^a-z0-9\s-]', '', text)
+    text = re.sub(r"[^a-z0-9\s-]", "", text)
 
     # Replace spaces with hyphens
-    text = re.sub(r'\s+', '-', text)
+    text = re.sub(r"\s+", "-", text)
 
     # Remove multiple hyphens
-    text = re.sub(r'-+', '-', text)
+    text = re.sub(r"-+", "-", text)
 
     # Remove leading/trailing hyphens
-    text = text.strip('-')
+    text = text.strip("-")
 
     return text
+
 
 def get_client_ip():
     """
@@ -168,6 +179,7 @@ def get_client_ip():
         return request.headers.getlist("X-Forwarded-For")[0]
     else:
         return request.remote_addr
+
 
 def estimate_harvest_date(start_date, cycle_time, autoflower=False):
     """

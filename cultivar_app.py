@@ -67,19 +67,6 @@ def create_app():
             # Initialize default data
             init_db()
             
-            # Create default admin user if it doesn't exist
-            admin_user = User.query.filter_by(username='admin').first()
-            if not admin_user:
-                admin_user = User(username='admin', is_admin=True)
-                admin_user.password_hash = generate_password_hash('isley')  # Default password from README
-                db.session.add(admin_user)
-                db.session.commit()
-                print("Created default admin user with username 'admin' and password 'isley'")
-            elif not admin_user.is_admin:
-                # Update existing admin user to have admin privileges
-                admin_user.is_admin = True
-                db.session.commit()
-                print("Updated admin user with admin privileges")
             
             # Create a test plant for clone demonstration if no plants exist
             from app.models.base_models import Plant, Strain, Status, Zone, Breeder
@@ -135,6 +122,22 @@ def create_app():
     # Register routes
     from app.routes import register_routes
     register_routes(app)
+
+    # Register blueprints
+    from app.blueprints.auth import auth_bp
+    app.register_blueprint(auth_bp)
+    from app.blueprints.dashboard import dashboard_bp
+    app.register_blueprint(dashboard_bp)
+    from app.blueprints.strains import strains_bp
+    app.register_blueprint(strains_bp)
+    from app.blueprints.breeders import breeders_bp
+    app.register_blueprint(breeders_bp)
+    from app.blueprints.admin import admin_bp
+    app.register_blueprint(admin_bp)
+    from app.blueprints.clones import clones_bp
+    app.register_blueprint(clones_bp)
+    from app.blueprints.diagnostics import diagnostics_bp
+    app.register_blueprint(diagnostics_bp)
     
     # Initialize logger
     from app.logger import logger
@@ -144,5 +147,5 @@ def create_app():
 
 if __name__ == '__main__':
     app = create_app()
-    port = int(os.getenv('ISLEY_PORT', 8001))  # Changed from 4200 to 8001 for production
-    app.run(host='0.0.0.0', port=port, debug=True)
+    port = int(os.getenv('CULTIVAR_PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=True, use_reloader=False)
