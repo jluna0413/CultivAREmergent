@@ -1,0 +1,34 @@
+{
+  "server": {
+    "host": "0.0.0.0",
+    "port": 8001,
+    "debug": false
+  },
+  "authentication": {
+    "required": true,
+    "api_key_header": "Authorization",
+    "session_timeout": 3600
+  },
+  "tools": {
+    "plant_management": {
+      "enabled": true,
+      "read_only": false
+    },
+    "environmental_data": {
+      "enabled": true,
+      "historical_limit": "30d"
+    },
+    "reporting": {
+      "enabled": true,
+      "max_report_size": "10MB"
+    }
+  },
+  "rate_limiting": {
+    "requests_per_minute": 60,
+    "burst_limit": 10
+  },
+  "logging": {
+    "level": "INFO",
+    "file": "logs/mcp_server.log"
+  }
+}
