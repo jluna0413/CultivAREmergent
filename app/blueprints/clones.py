@@ -14,6 +14,10 @@ from app.handlers.clone_handlers import (
     get_clone_statistics,
 )
 from app.models.base_models import Zone
+from app.utils.validators import sanitize_text_field
+from app.models.base_models import Zone
+from app.utils.validators import sanitize_html
+from app.models.base_models import Zone
 
 clones_bp = Blueprint(
     "clones", __name__, url_prefix="/clones", template_folder="../web/templates"
@@ -53,6 +57,12 @@ def create():
             clone_name = request.form.get(f"clone_name_{i}", f"Clone {i+1}")
             clone_description = request.form.get(f"clone_description_{i}", "")
             zone_id = request.form.get(f"zone_id_{i}")
+            clone_description = request.form.get(f"clone_description_{i}", "")
+            # Sanitize HTML content to prevent XSS
+            sanitized_description, desc_error = sanitize_text_field(clone_description, "clone description")
+
+            # Use sanitized description
+            clone_description = sanitized_description
             start_date = request.form.get(f"start_date_{i}")
 
             clone_data = {

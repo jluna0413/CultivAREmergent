@@ -110,7 +110,7 @@
                     {% endif %}
                 </div>
                 <div class="strain-footer">
-                    <a href="{{ url_for('strain', strain_id=strain.id) }}" class="btn btn-sm btn-primary">
+                    <a href="{{ url_for('strains.strain_detail', strain_id=strain.id) }}" class="btn btn-sm btn-primary">
                         <i class="fas fa-eye"></i> View
                     </a>
                     <button type="button" onclick="editStrain({{ strain.id }})" class="btn btn-sm btn-info edit-strain" data-strain-id="{{ strain.id }}">

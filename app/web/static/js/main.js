@@ -5,7 +5,6 @@
 
 // Document ready function
 $(document).ready(function() {
-    console.log('Document ready'); // Debug log
 
     // Initialize tooltips
     $('[data-toggle="tooltip"]').tooltip();
@@ -34,10 +33,8 @@ $(document).ready(function() {
     // Apply saved theme
     applyTheme();
 
-    // Ensure modals are centered
-    $(document).on('show.bs.modal', '.modal', function() {
-        $(this).css('display', 'flex');
-    });
+    // Modal centering is now handled in plants.html to avoid conflicts
+    // Removed duplicate modal initialization
 
     // Flash messages auto-close
     $('.alert-dismissible').each(function() {
@@ -69,14 +66,13 @@ $(document).ready(function() {
         initSensorGraph();
     }
 
-    // Initialize any date pickers
-    if ($('.datepicker').length) {
-        $('.datepicker').datepicker({
-            format: 'yyyy-mm-dd',
-            autoclose: true,
-            todayHighlight: true
-        });
-    }
+    // Initialize date inputs (HTML5 date inputs instead of jQuery datepicker)
+    $('.datepicker').each(function() {
+        const $input = $(this);
+        if ($input.attr('type') !== 'date') {
+            $input.attr('type', 'date');
+        }
+    });
 
     // Initialize select2 dropdowns if available
     if ($.fn.select2 && $('.select2').length) {
@@ -100,10 +96,12 @@ function initPlantForm() {
         }
     });
 
-    // Initialize date pickers
-    $('.datepicker').datepicker({
-        format: 'yyyy-mm-dd',
-        autoclose: true
+    // Initialize date inputs (HTML5 instead of jQuery datepicker)
+    $('.datepicker').each(function() {
+        const $input = $(this);
+        if ($input.attr('type') !== 'date') {
+            $input.attr('type', 'date');
+        }
     });
 
     // Handle form submission
@@ -303,7 +301,6 @@ function initSidebarToggle() {
     $('#menu-toggle, #hamburger-menu').on('click', function(e) {
         e.stopPropagation(); // Prevent event bubbling
         e.preventDefault(); // Prevent default action
-        console.log('Toggle button clicked'); // Debug log
         $('.app-container').toggleClass('sidebar-collapsed');
         $('body').toggleClass('sidebar-open');
     });
@@ -327,14 +324,30 @@ function initSidebarToggle() {
         e.stopPropagation(); // Prevent event bubbling
     });
 
-    // Close sidebar when clicking outside on mobile
+    // Close sidebar when clicking outside (desktop vs mobile behavior)
     $(document).on('click', function(e) {
-        // Check if click is outside sidebar and not on toggle button
-        if (!$(e.target).closest('.sidebar').length &&
-            !$(e.target).closest('#menu-toggle').length) {
+        // Don't process click if it's on a sidebar toggle button
+        if ($(e.target).closest('#menu-toggle, #hamburger-menu, .hamburger-menu').length) {
+            return; // Let toggle buttons work normally
+        }
+        
+        // Don't process click if it's on sidebar elements or close button
+        if ($(e.target).closest('.sidebar, #sidebar-close').length) {
+            return; // Let sidebar interactions work normally
+        }
+        
+        // Don't process click if it's on form elements or UI components
+        if ($(e.target).closest('.form-control, .form-group, .form-check, .btn, .modal, .dropdown, .popover, .tooltip, select, textarea, input[type="date"], input[type="text"], input[type="checkbox"], input[type="radio"], label').length) {
+            return; // Skip form and UI element clicks
+        }
+        
+        // Only close sidebar if we're in mobile view and clicking outside
+        if (window.innerWidth < 768) {
+            console.log('SIDEBAR DEBUG: Mobile view - closing sidebar on outside click');
             $('.app-container').addClass('sidebar-collapsed');
             $('body').removeClass('sidebar-open');
         }
+        // Desktop view: Don't auto-close sidebar on outside click
     });
 
     // Add window resize listener
@@ -370,6 +383,17 @@ function initSidebarDropdowns() {
         const target = $(this).data('target');
         console.log('Submenu toggle clicked, target:', target);
 
+        // Normalize URL if this element has href or data-href
+        const href = $(this).attr('href') || $(this).data('href');
+        if (href) {
+            const normalizedHref = normalizeUrl(href);
+            console.log('NAVIGATION DEBUG: Original URL:', href, 'Normalized URL:', normalizedHref);
+
+            // Redirect to normalized URL
+            window.location.href = normalizedHref;
+            return;
+        }
+
         // Get the target submenu
         const $targetSubmenu = $(target);
 
@@ -382,6 +406,51 @@ function initSidebarDropdowns() {
             $(this).attr('aria-expanded', 'true');
         }
     });
+
+    // Handle submenu item clicks
+    $('.submenu-item').off('click').on('click', function(e) {
+        e.stopPropagation();
+
+        const href = $(this).attr('href') || $(this).data('href');
+        if (href) {
+            const normalizedHref = normalizeUrl(href);
+            console.log('NAVIGATION DEBUG: Submenu item clicked, Original URL:', href, 'Normalized URL:', normalizedHref);
+            window.location.href = normalizedHref;
+        }
+    });
+}
+
+/**
+ * Normalize a URL to prevent double slashes and other URL issues
+ */
+function normalizeUrl(url) {
+    if (!url || typeof url !== 'string') {
+        console.warn('NAVIGATION DEBUG: normalizeUrl received invalid URL:', url);
+        return url;
+    }
+
+    // Remove protocol and domain to focus on path
+    const urlObj = new URL(url, window.location.origin);
+    let path = urlObj.pathname + urlObj.search + urlObj.hash;
+
+    // Replace multiple consecutive slashes with single slash (except after protocol)
+    path = path.replace(/\/+/g, '/');
+
+    // Ensure path starts with single slash
+    if (!path.startsWith('/')) {
+        path = '/' + path;
+    }
+
+    // Reconstruct URL with normalized path
+    const normalizedUrl = path + urlObj.search + urlObj.hash;
+
+    console.log('NAVIGATION DEBUG: URL normalization complete:', {
+        original: url,
+        normalized: normalizedUrl,
+        path: path
+    });
+
+    return normalizedUrl;
 }
 
 /**

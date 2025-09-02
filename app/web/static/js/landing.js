@@ -209,19 +209,25 @@ class LandingPage {
         const heroTitle = document.querySelector('.hero-title');
         if (!heroTitle) return;
 
-        const text = heroTitle.innerHTML;
+        // Create a temporary element to safely parse HTML
+        const temp = document.createElement('div');
+        temp.innerHTML = heroTitle.innerHTML;
+        const text = temp.textContent || temp.innerText;
+
         heroTitle.innerHTML = '';
-        
+
         let i = 0;
         const typeWriter = () => {
             if (i < text.length) {
-                heroTitle.innerHTML += text.charAt(i);
+                heroTitle.textContent += text.charAt(i);
                 i++;
                 setTimeout(typeWriter, 50);
+            } else {
+                // Restore original HTML structure after typing
+                heroTitle.innerHTML = temp.innerHTML;
             }
         };
 
-        // Start typewriter after a delay
         setTimeout(typeWriter, 1000);
     }
 

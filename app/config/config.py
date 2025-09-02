@@ -14,7 +14,7 @@ class Config:
     """Configuration class for the application."""
 
     # Application settings
-    SECRET_KEY = os.getenv("SECRET_KEY", "dev_key")
+    SECRET_KEY = os.getenv("SECRET_KEY")
     DEBUG = os.getenv("DEBUG", "False").lower() == "true"
     PORT = int(os.getenv("CULTIVAR_PORT", 5000))
 
@@ -22,8 +22,8 @@ class Config:
     DB_DRIVER = os.getenv("CULTIVAR_DB_DRIVER", "sqlite")
     DB_HOST = os.getenv("CULTIVAR_DB_HOST", "localhost")
     DB_PORT = os.getenv("CULTIVAR_DB_PORT", "5432")
-    DB_USER = os.getenv("CULTIVAR_DB_USER", "cultivar")
-    DB_PASSWORD = os.getenv("CULTIVAR_DB_PASSWORD", "cultivar")
+    DB_USER = os.getenv("CULTIVAR_DB_USER")
+    DB_PASSWORD = os.getenv("CULTIVAR_DB_PASSWORD")
     DB_NAME = os.getenv("CULTIVAR_DB_NAME", "cultivardb")
 
     # SQLite database path
@@ -46,6 +46,11 @@ class Config:
 
     # Guest mode
     GUEST_MODE = os.getenv("GUEST_MODE", "False").lower() == "true"
+
+    # SSL/TLS Configuration
+    SSL_ENABLED = os.getenv("SSL_ENABLED", "False").lower() == "true"
+    SSL_CERT_PATH = os.getenv("SSL_CERT_PATH", "/path/to/certificate.pem")
+    SSL_KEY_PATH = os.getenv("SSL_KEY_PATH", "/path/to/private_key.pem")
 
     # Default lists
     Activities = []
@@ -95,3 +100,21 @@ class Config:
         os.makedirs(os.path.join(cls.UPLOAD_FOLDER, "plants"), exist_ok=True)
         os.makedirs(os.path.join(cls.UPLOAD_FOLDER, "streams"), exist_ok=True)
         os.makedirs(os.path.join(cls.UPLOAD_FOLDER, "logos"), exist_ok=True)
+
+    def __init__(self):
+        if not self.DEBUG:
+            self.validate_production_settings()
+
+    @classmethod
+    def validate_production_settings(cls):
+        """
+        Validate that critical settings are set when not in debug mode.
+        """
+        if not cls.DEBUG:
+            if not cls.SECRET_KEY:
+                raise ValueError("SECRET_KEY must be set in production environment.")
+            if cls.DB_DRIVER != "sqlite":
+                if not cls.DB_USER:
+                    raise ValueError("CULTIVAR_DB_USER must be set in production environment for non-sqlite databases.")
+                if not cls.DB_PASSWORD:
+                    raise ValueError("CULTIVAR_DB_PASSWORD must be set in production environment for non-sqlite databases.")

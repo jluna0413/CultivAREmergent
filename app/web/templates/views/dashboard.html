@@ -1,0 +1,362 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - CultivAR{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">Dashboard</h1>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-outline-primary" id="refresh-env-data-btn">
+                        <i class="fas fa-sync-alt"></i> Refresh Data
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary" id="export-data-btn">
+                        <i class="fas fa-download"></i> Export
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Plants
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="total-plants-count">
+                                {{ plants|length if plants else 0 }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-seedling fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Active Plants
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="active-plants-count">
+                                {{ active_plants|length if active_plants else 0 }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-leaf fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Strains
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="strains-count">
+                                {{ strains|length if strains else 0 }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-dna fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Harvested
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="harvested-count">
+                                {{ harvested|length if harvested else 0 }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-cut fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Row -->
+    <div class="row">
+        <!-- Plants Overview -->
+        <div class="col-lg-8 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">My Plants</h6>
+                    <div class="dropdown no-arrow">
+                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+                            <a class="dropdown-item" href="#" id="view-all-plants">View All Plants</a>
+                            <a class="dropdown-item" href="#" id="add-new-plant">Add New Plant</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if plants %}
+                        <div class="table-responsive">
+                            <table class="table table-bordered" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Strain</th>
+                                        <th>Status</th>
+                                        <th>Age</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for plant in plants[:5] %}
+                                    <tr>
+                                        <td>{{ plant.name }}</td>
+                                        <td>{{ plant.strain_name or 'Unknown' }}</td>
+                                        <td>
+                                            <span class="badge badge-{{ plant.status|lower == 'active' ? 'success' : 'secondary' }}">
+                                                {{ plant.status or 'Unknown' }}
+                                            </span>
+                                        </td>
+                                        <td>{{ plant.age or 0 }} days</td>
+                                        <td>
+                                            <a href="/plant/{{ plant.id }}" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% if plants|length > 5 %}
+                        <div class="text-center mt-3">
+                            <a href="/dashboard/plants" class="btn btn-sm btn-outline-primary">View All Plants</a>
+                        </div>
+                        {% endif %}
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-seedling fa-3x text-gray-300 mb-3"></i>
+                            <h5>No plants yet</h5>
+                            <p class="text-gray-600">Start your grow journal by adding your first plant.</p>
+                            <button class="btn btn-primary" id="add-first-plant">
+                                <i class="fas fa-plus"></i> Add First Plant
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Environmental Data -->
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Environmental Data</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6 text-center">
+                            <div class="h4 text-primary" id="temperature-value">--°F</div>
+                            <small class="text-gray-500">Temperature</small>
+                        </div>
+                        <div class="col-6 text-center">
+                            <div class="h4 text-success" id="humidity-value">--%</div>
+                            <small class="text-gray-500">Humidity</small>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-6 text-center">
+                            <div class="h4 text-info" id="light-value">-- lux</div>
+                            <small class="text-gray-500">Light</small>
+                        </div>
+                        <div class="col-6 text-center">
+                            <div class="h4 text-warning" id="co2-value">-- ppm</div>
+                            <small class="text-gray-500">CO2</small>
+                        </div>
+                    </div>
+                    <div class="text-center mt-3">
+                        <small class="text-muted">Last updated: <span id="last-updated">Never</span></small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="card shadow mt-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Recent Activity</h6>
+                </div>
+                <div class="card-body">
+                    <div id="recent-activity">
+                        <div class="text-center py-3">
+                            <i class="fas fa-history fa-2x text-gray-300 mb-2"></i>
+                            <p class="text-gray-500 mb-0">No recent activity</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Quick Actions</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 col-6 mb-3">
+                            <button class="btn btn-outline-primary btn-block" id="quick-add-plant">
+                                <i class="fas fa-plus"></i> Add Plant
+                            </button>
+                        </div>
+                        <div class="col-md-3 col-6 mb-3">
+                            <button class="btn btn-outline-success btn-block" id="quick-add-strain">
+                                <i class="fas fa-dna"></i> Add Strain
+                            </button>
+                        </div>
+                        <div class="col-md-3 col-6 mb-3">
+                            <button class="btn btn-outline-info btn-block" id="quick-add-activity">
+                                <i class="fas fa-tasks"></i> Log Activity
+                            </button>
+                        </div>
+                        <div class="col-md-3 col-6 mb-3">
+                            <button class="btn btn-outline-warning btn-block" id="quick-view-calendar">
+                                <i class="fas fa-calendar"></i> View Calendar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Dashboard-specific JavaScript
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DASHBOARD.HTML: Dashboard page loaded');
+
+    // Refresh environmental data
+    document.getElementById('refresh-env-data-btn').addEventListener('click', function() {
+        const refreshBtn = this;
+        const originalContent = refreshBtn.innerHTML;
+        refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing...';
+        refreshBtn.disabled = true;
+
+        // Simulate API call to refresh environmental data
+        setTimeout(() => {
+            // Update with random data for demo
+            document.getElementById('temperature-value').textContent = (Math.random() * 20 + 70).toFixed(1) + '°F';
+            document.getElementById('humidity-value').textContent = (Math.random() * 30 + 40).toFixed(0) + '%';
+            document.getElementById('light-value').textContent = (Math.random() * 5000 + 1000).toFixed(0) + ' lux';
+            document.getElementById('co2-value').textContent = (Math.random() * 200 + 400).toFixed(0) + ' ppm';
+            
+            const now = new Date();
+            document.getElementById('last-updated').textContent = now.toLocaleTimeString();
+            
+            refreshBtn.innerHTML = originalContent;
+            refreshBtn.disabled = false;
+            
+            showToast('Environmental data refreshed successfully', 'success');
+        }, 1500);
+    });
+
+    // Quick action buttons
+    document.getElementById('quick-add-plant').addEventListener('click', function() {
+        window.location.href = '/dashboard/plants?action=add';
+    });
+
+    document.getElementById('quick-add-strain').addEventListener('click', function() {
+        window.location.href = '/strains?action=add';
+    });
+
+    document.getElementById('quick-add-activity').addEventListener('click', function() {
+        showToast('Activity logging feature coming soon', 'info');
+    });
+
+    document.getElementById('quick-view-calendar').addEventListener('click', function() {
+        showToast('Calendar feature coming soon', 'info');
+    });
+
+    // Dropdown menu actions
+    document.getElementById('view-all-plants').addEventListener('click', function(e) {
+        e.preventDefault();
+        window.location.href = '/dashboard/plants';
+    });
+
+    document.getElementById('add-new-plant').addEventListener('click', function(e) {
+        e.preventDefault();
+        window.location.href = '/dashboard/plants?action=add';
+    });
+
+    document.getElementById('add-first-plant').addEventListener('click', function() {
+        window.location.href = '/dashboard/plants?action=add';
+    });
+
+    // Load initial data
+    loadDashboardData();
+});
+
+function loadDashboardData() {
+    // Load environmental data
+    loadEnvironmentalData();
+    
+    // Load recent activity
+    loadRecentActivity();
+}
+
+function loadEnvironmentalData() {
+    // Simulate loading environmental data
+    const now = new Date();
+    document.getElementById('last-updated').textContent = now.toLocaleTimeString();
+}
+
+function loadRecentActivity() {
+    // Simulate loading recent activity
+    const activityContainer = document.getElementById('recent-activity');
+    // This would typically load from an API
+    activityContainer.innerHTML = `
+        <div class="list-group">
+            <div class="list-group-item list-group-item-action">
+                <div class="d-flex w-100 justify-content-between">
+                    <h6 class="mb-1">System started</h6>
+                    <small>2 minutes ago</small>
+                </div>
+                <small class="text-muted">CultivAR system initialized</small>
+            </div>
+        </div>
+    `;
+}
+</script>
+{% endblock %}

@@ -90,7 +90,7 @@
 
     <!-- Action Bar -->
     <div class="action-bar">
-        <a href="{{ url_for('create_clone') }}" class="btn btn-primary">
+        <a href="{{ url_for('clones.create') }}" class="btn btn-primary">
             <i class="fas fa-plus"></i> Create New Clones
         </a>
         <button class="btn btn-secondary" onclick="refreshClones()">
@@ -165,8 +165,10 @@
                                     <i class="fas fa-project-diagram"></i>
                                 </a>
                                 
-                                <button class="btn btn-sm btn-danger" 
-                                        onclick="deleteClone({{ clone.id }}, '{{ clone.name }}')" 
+                                <button class="btn btn-sm btn-danger"
+                                        data-clone-id="{{ clone.id }}"
+                                        data-clone-name="{{ clone.name|tojson }}"
+                                        onclick="deleteCloneFromButton(this)"
                                         title="Delete Clone">
                                     <i class="fas fa-trash"></i>
                                 </button>
@@ -182,7 +184,7 @@
                 <i class="fas fa-sitemap"></i>
                 <h3>No Clones Yet</h3>
                 <p>Start by creating your first clones from healthy parent plants.</p>
-                <a href="{{ url_for('create_clone') }}" class="btn btn-primary">
+                <a href="{{ url_for('clones.create') }}" class="btn btn-primary">
                     <i class="fas fa-plus"></i> Create Your First Clone
                 </a>
             </div>
@@ -537,6 +539,12 @@ function deleteClone(cloneId, cloneName) {
             }
         });
     }
+}
+
+function deleteCloneFromButton(button) {
+    const cloneId = button.dataset.cloneId;
+    const cloneName = JSON.parse(button.dataset.cloneName);
+    deleteClone(cloneId, cloneName);
 }
 
 function refreshClones() {

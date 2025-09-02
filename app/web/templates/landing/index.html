@@ -31,7 +31,7 @@
                 <a href="#features">Features</a>
                 <a href="#benefits">Benefits</a>
                 <a href="#pricing">Pricing</a>
-                <a href="{{ url_for('login') }}" class="nav-cta">Get Started</a>
+                <a href="{{ url_for('auth.login') }}" class="nav-cta">Get Started</a>
             </div>
             <div class="nav-mobile">
                 <i class="fas fa-bars"></i>
@@ -52,10 +52,10 @@
                     and optimize yields with enterprise-grade tools designed for serious cultivators.
                 </p>
                 <div class="hero-actions">
-                    <a href="{{ url_for('login') }}" class="btn-primary">
-                        <span>Start Growing Smarter</span>
-                        <i class="fas fa-arrow-right"></i>
-                    </a>
+                   <a href="{{ url_for('auth.login') }}" class="btn-primary">
+                       <span>Start Growing Smarter</span>
+                       <i class="fas fa-arrow-right"></i>
+                   </a>
                     <a href="#demo" class="btn-secondary">
                         <i class="fas fa-play"></i>
                         <span>Watch Demo</span>
@@ -245,6 +245,110 @@
         </div>
     </section>
 
+    <!-- Pricing Section -->
+    <section id="pricing" class="pricing">
+        <div class="section-container">
+            <div class="section-header">
+                <h2>Choose your plan</h2>
+                <p>Start free and scale as you grow</p>
+            </div>
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <h3>Free</h3>
+                        <div class="pricing-price">
+                            <span class="price">$0</span>
+                            <span class="period">/month</span>
+                        </div>
+                    </div>
+                    <div class="pricing-features">
+                        <div class="feature">
+                            <i class="fas fa-check"></i>
+                            <span>Up to 5 plants</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-check"></i>
+                            <span>Basic tracking</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-check"></i>
+                            <span>Mobile access</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-check"></i>
+                            <span>Community support</span>
+                        </div>
+                    </div>
+                    <a href="{{ url_for('auth.login') }}" class="btn-pricing">Get Started</a>
+                </div>
+                <div class="pricing-card recommended">
+                    <div class="pricing-badge">Most Popular</div>
+                    <div class="pricing-header">
+                        <h3>Pro</h3>
+                        <div class="pricing-price">
+                            <span class="price">$29</span>
+                            <span class="period">/month</span>
+                        </div>
+                    </div>
+                    <div class="pricing-features">
+                        <div class="feature">
+                            <i class="fas fa-check"></i>
+                            <span>Unlimited plants</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-check"></i>
+                            <span>Advanced analytics</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-check"></i>
+                            <span>Priority support</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-check"></i>
+                            <span>Export data</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-check"></i>
+                            <span>Custom reports</span>
+                        </div>
+                    </div>
+                    <a href="{{ url_for('auth.login') }}" class="btn-pricing primary">Start Pro Trial</a>
+                </div>
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <h3>Enterprise</h3>
+                        <div class="pricing-price">
+                            <span class="price">Custom</span>
+                        </div>
+                    </div>
+                    <div class="pricing-features">
+                        <div class="feature">
+                            <i class="fas fa-check"></i>
+                            <span>Everything in Pro</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-check"></i>
+                            <span>Team collaboration</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-check"></i>
+                            <span>White-label option</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-check"></i>
+                            <span>24/7 phone support</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-check"></i>
+                            <span>On-premise deployment</span>
+                        </div>
+                    </div>
+                    <a href="{{ url_for('auth.login') }}" class="btn-pricing">Contact Sales</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Social Proof -->
     <section class="testimonials">
         <div class="section-container">
@@ -296,10 +400,10 @@
                 <h2>Ready to revolutionize your grow?</h2>
                 <p>Join thousands of cultivators who've already made the switch to smarter growing.</p>
                 <div class="cta-actions">
-                    <a href="{{ url_for('login') }}" class="btn-primary large">
-                        <span>Start Your Free Trial</span>
-                        <i class="fas fa-arrow-right"></i>
-                    </a>
+                   <a href="{{ url_for('auth.login') }}" class="btn-primary large">
+                       <span>Start Your Free Trial</span>
+                       <i class="fas fa-arrow-right"></i>
+                   </a>
                 </div>
                 <div class="cta-features">
                     <div class="cta-feature">
@@ -367,7 +471,7 @@
                         <a href="#features">Features</a>
                         <a href="#benefits">Benefits</a>
                         <a href="#pricing">Pricing</a>
-                        <a href="{{ url_for('login') }}">Get Started</a>
+                        <a href="{{ url_for('auth.login') }}">Get Started</a>
                     </div>
                     <div class="footer-section">
                         <h4>Support</h4>

@@ -26,9 +26,9 @@
                 </a>
             </li>
             <li class="menu-item {% if '/strains' in request.path %}active{% endif %}">
-                <a href="{{ url_for('dashboard.strains') }}" class="menu-link">
+                <a href="{{ url_for('strains.add_strain_page') }}" class="menu-link">
                     <i class="menu-icon fas fa-dna"></i>
-                    <span class="menu-text">Strains</span>
+                    <span class="menu-text">Add Strain</span>
                 </a>
             </li>
 
@@ -46,19 +46,19 @@
                 </a>
                 <ul class="collapse submenu {% if '/market' in request.path %}show{% endif %}" id="marketSubmenu">
                     <li class="submenu-item {% if '/market/seed-bank' in request.path %}active{% endif %}">
-                        <a href="{{ url_for('dashboard.market_seed_bank') }}" class="submenu-link">
+                        <a href="#" title="Coming Soon" class="submenu-link">
                             <i class="submenu-icon fas fa-seedling"></i>
                             <span class="submenu-text">Seed Bank</span>
                         </a>
                     </li>
                     <li class="submenu-item {% if '/market/extensions' in request.path %}active{% endif %}">
-                        <a href="{{ url_for('dashboard.market_extensions') }}" class="submenu-link">
+                        <a href="{{ url_for('market.extensions') }}" class="submenu-link">
                             <i class="submenu-icon fas fa-puzzle-piece"></i>
                             <span class="submenu-text">Extensions</span>
                         </a>
                     </li>
                     <li class="submenu-item {% if '/market/gear' in request.path %}active{% endif %}">
-                        <a href="{{ url_for('dashboard.market_gear') }}" class="submenu-link">
+                        <a href="{{ url_for('market.gear') }}" class="submenu-link">
                             <i class="submenu-icon fas fa-tools"></i>
                             <span class="submenu-text">Gear</span>
                         </a>
@@ -66,15 +66,17 @@
                 </ul>
             </li>
             <li class="menu-item {% if '/sensors' in request.path or '/graph' in request.path %}active{% endif %}">
-                <a href="{{ url_for('dashboard.sensors') }}" class="menu-link">
+                <a href="#" class="menu-link">
                     <i class="menu-icon fas fa-thermometer-half"></i>
                     <span class="menu-text">Sensors</span>
+                    <small class="text-muted">(Coming Soon)</small>
                 </a>
             </li>
             <li class="menu-item {% if '/settings' in request.path %}active{% endif %}">
-                <a href="{{ url_for('dashboard.settings') }}" class="menu-link">
+                <a href="#" class="menu-link">
                     <i class="menu-icon fas fa-cog"></i>
                     <span class="menu-text">Settings</span>
+                    <small class="text-muted">(Coming Soon)</small>
                 </a>
             </li>
 
@@ -107,5 +109,36 @@
     // Close sidebar on mobile when close button is clicked
     document.getElementById('sidebar-close').addEventListener('click', function() {
         document.querySelector('.app-container').classList.add('sidebar-collapsed');
+    });
+
+    // Handle submenu navigation - prevent collapse when clicking submenu links
+    document.addEventListener('click', function(e) {
+        // Check if click is on a submenu link (not the toggle)
+        if (e.target.classList.contains('submenu-link') && e.target.href !== '#') {
+            e.preventDefault();
+            // Get the URL and ensure it doesn't have double slashes
+            let url = e.target.href;
+            url = url.replace(/\/+/g, '/'); // Replace multiple slashes with single slash
+            window.location.href = url;
+        }
+        
+        // Check if click is on a submenu toggle
+        if (e.target.classList.contains('submenu-toggle') || e.target.closest('.submenu-toggle')) {
+            const toggle = e.target.classList.contains('submenu-toggle') ? e.target : e.target.closest('.submenu-toggle');
+            const targetId = toggle.getAttribute('data-target');
+            const target = document.querySelector(targetId);
+            
+            if (target) {
+                target.classList.toggle('show');
+                const isExpanded = target.classList.contains('show');
+                toggle.setAttribute('aria-expanded', isExpanded);
+                
+                // Update chevron icon
+                const chevron = toggle.querySelector('.submenu-indicator');
+                if (chevron) {
+                    chevron.style.transform = isExpanded ? 'rotate(180deg)' : 'rotate(0deg)';
+                }
+            }
+        }
     });
 </script>

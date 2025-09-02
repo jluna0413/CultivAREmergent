@@ -2,16 +2,18 @@
 Authentication blueprint for the CultivAR application.
 """
 
-from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask import Blueprint, flash, redirect, render_template, request, session, url_for
 from flask_login import current_user, login_required, login_user, logout_user
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from app.logger import logger
 from app.models.base_models import User, db
+from app.utils.rate_limiter import limiter
 
-auth_bp = Blueprint("auth", __name__, template_folder="../web/templates")
+auth_bp = Blueprint("auth", __name__, url_prefix="/auth", template_folder="../web/templates")
 
 
+@limiter.limit("5 per minute")
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
     """Handle user login."""
@@ -58,7 +60,10 @@ def login():
             and check_password_hash(user.password_hash, password)
         ):
             logger.info("Login successful.")
+            # Clear existing session and regenerate to prevent session fixation attacks
+            session.clear()
             login_user(user)  # Log the user in
+            logger.info("Session cleared and regenerated after login.")
             flash("Login successful!", "success")
             # Redirect to the page the user was trying to access, or dashboard
             next_page = request.args.get("next")
@@ -73,6 +78,7 @@ def login():
     )
 
 
+@limiter.limit("2 per minute")
 @auth_bp.route("/signup", methods=["GET", "POST"])
 def signup():
     """Handle user signup."""
@@ -143,6 +149,9 @@ def logout():
     logger.info("=== LOGOUT ROUTE HIT ===")
     try:
         logout_user()
+        # Clear session to prevent session fixation and ensure clean logout
+        session.clear()
+        logger.info("Session cleared after logout.")
         flash("You have been logged out successfully.", "success")
         return redirect(url_for("auth.login"))
     except Exception as e:
@@ -150,6 +159,7 @@ def logout():
         return "Internal Server Error", 500
 
 
+@limiter.limit("1 per minute")
 @auth_bp.route("/forgot-password", methods=["GET", "POST"])
 def forgot_password():
     """Handle password reset request (Placeholder)."""

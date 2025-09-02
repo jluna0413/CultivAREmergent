@@ -11,8 +11,8 @@
             <h2>Add New Strain</h2>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
-                    <li class="breadcrumb-item"><a href="{{ url_for('strains') }}">Collection</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('dashboard.dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="/">Collection</a></li>
                     <li class="breadcrumb-item active" aria-current="page">Add New Strain</li>
                 </ol>
             </nav>
@@ -39,7 +39,7 @@
                                         {% endfor %}
                                     </select>
                                     <div class="mt-2">
-                                        <a href="{{ url_for('add_breeder') }}" class="btn btn-sm btn-outline-secondary">
+                                        <a href="/breeders/add" class="btn btn-sm btn-outline-secondary">
                                             <i class="fas fa-plus"></i> Add New Breeder
                                         </a>
                                     </div>
@@ -91,7 +91,7 @@
                             <textarea class="form-control" id="description" name="description" rows="3"></textarea>
                         </div>
                         <div class="d-flex justify-content-between">
-                            <a href="{{ url_for('strains') }}" class="btn btn-secondary">Cancel</a>
+                            <a href="/" class="btn btn-secondary">Cancel</a>
                             <button type="button" onclick="saveStrain()" class="btn btn-primary">Save Strain</button>
                         </div>
                     </form>

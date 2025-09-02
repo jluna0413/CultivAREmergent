@@ -1,0 +1,388 @@
+{% extends "common/base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-dark text-white">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h2 class="card-title mb-2">
+                                <i class="fas fa-shopping-cart text-success me-3"></i>{{ title }}
+                            </h2>
+                            <p class="card-text text-secondary mb-0" id="cart-info">Your cultivation marketplace orders</p>
+                        </div>
+                        <div class="btn-group">
+                            <a href="/market/seed-bank" class="btn btn-outline-light">
+                                <i class="fas fa-seedling me-2"></i>Continue Shopping
+                            </a>
+                            <button class="btn btn-danger" id="clear-cart" style="display: none;">
+                                <i class="fas fa-trash me-2"></i>Clear All
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Empty State -->
+    <div class="row" id="empty-cart" style="display: none;">
+        <div class="col-12">
+            <div class="card text-center py-5">
+                <div class="card-body">
+                    <i class="fas fa-shopping-cart text-muted" style="font-size: 4rem;"></i>
+                    <h4 class="card-title mt-3">Your cart is empty</h4>
+                    <p class="card-text text-muted">Browse our cultivation marketplace to add some amazing products!</p>
+                    <a href="/market/seed-bank" class="btn btn-primary">
+                        <i class="fas fa-shopping-basket me-2"></i>Start Shopping
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Items -->
+    <div class="row" id="cart-items">
+        <!-- Cart items will be dynamically loaded here -->
+    </div>
+
+    <!-- Cart Summary -->
+    <div class="row mt-4" id="cart-summary" style="display: none;">
+        <div class="col-lg-8">
+            <!-- Cart adjustments or notes -->
+        </div>
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Order Summary</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Subtotal:</span>
+                        <span id="subtotal">$0.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Shipping:</span>
+                        <span id="shipping">$0.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Tax:</span>
+                        <span id="tax">$0.00</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between fw-bold">
+                        <span>Total:</span>
+                        <span id="total" class="text-success">$0.00</span>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button class="btn btn-success w-100" id="checkout-btn">
+                        <i class="fas fa-credit-card me-2"></i>Proceed to Checkout
+                    </button>
+                    <small class="text-muted d-block mt-2 text-center">
+                        * Prices include all applicable taxes
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recently Viewed Section -->
+    <div class="row mt-5" id="recently-viewed" style="display: none;">
+        <div class="col-12">
+            <h4 class="text-white mb-3">Recently Viewed</h4>
+            <div class="row" id="recent-products">
+                <!-- Recently viewed products will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Cart Template for Dynamic Items -->
+<script type="text/template" id="cart-item-template">
+    <div class="col-12 mb-3 cart-item" data-id="{{product_id}}">
+        <div class="card">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-lg-6">
+                        <div class="d-flex align-items-center">
+                            <img src="{{image}}" alt="{{name}}" class="rounded me-3" style="width: 80px; height: 80px; object-fit: cover;">
+                            <div>
+                                <h5 class="card-title mb-1">{{name}}</h5>
+                                <div class="badges">
+                                    <span class="badge bg-secondary">{{category}}</span>
+                                    {{#if rating}}
+                                    <span class="badge bg-warning text-dark ms-1">
+                                        <i class="fas fa-star me-1"></i>{{rating}}
+                                    </span>
+                                    {{/if}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="quantity-controls">
+                            <button class="btn btn-sm btn-outline-secondary quantity-btn" data-action="decrease">-</button>
+                            <span class="quantity mx-3 fw-bold">{{quantity}}</span>
+                            <button class="btn btn-sm btn-outline-secondary quantity-btn" data-action="increase">+</button>
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="price-info">
+                            <span class="unit-price">${{unit_price.toFixed(2)}} each</span>
+                            <div class="total-price fw-bold">{{total_price.toFixed(2)}}>$</span>
+                        </div>
+                    </div>
+                    <div class="col-lg-1">
+                        <button class="btn btn-sm btn-outline-danger remove-item" title="Remove item">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+
+<script>
+// Shopping Cart JavaScript Module
+class ShoppingCart {
+    constructor() {
+        this.cartKey = 'cultivar_cart';
+        this.init();
+    }
+
+    init() {
+        this.bindEvents();
+        this.loadCart();
+        this.updateUI();
+    }
+
+    bindEvents() {
+        // Clear cart event
+        document.getElementById('clear-cart').addEventListener('click', () => {
+            if (confirm('Are you sure you want to clear your cart?')) {
+                this.clearCart();
+            }
+        });
+
+        // Checkout event
+        document.getElementById('checkout-btn').addEventListener('click', () => {
+            this.checkout();
+        });
+
+        // Event delegation for cart items (since they can be dynamically added)
+        document.addEventListener('click', (e) => {
+            const target = e.target;
+            const cartItem = target.closest('.cart-item');
+
+            if (!cartItem) return;
+
+            const productId = cartItem.dataset.id;
+
+            if (target.closest('.quantity-btn')) {
+                const action = target.dataset.action;
+                this.updateQuantity(productId, action);
+            }
+
+            if (target.closest('.remove-item')) {
+                this.removeItem(productId);
+            }
+        });
+    }
+
+    getCart() {
+        try {
+            const cartData = localStorage.getItem(this.cartKey);
+            return cartData ? JSON.parse(cartData) : {};
+        } catch (error) {
+            console.error('Error loading cart:', error);
+            return {};
+        }
+    }
+
+    saveCart(cart) {
+        try {
+            localStorage.setItem(this.cartKey, JSON.stringify(cart));
+        } catch (error) {
+            console.error('Error saving cart:', error);
+        }
+    }
+
+    loadCart() {
+        this.cart = this.getCart();
+    }
+
+    addItem(productId, productData) {
+        if (this.cart[productId]) {
+            this.cart[productId].quantity += 1;
+        } else {
+            this.cart[productId] = {
+                ...productData,
+                quantity: 1,
+                total_price: productData.unit_price
+            };
+        }
+
+        this.cart[productId].total_price = this.cart[productId].quantity * this.cart[productId].unit_price;
+        this.saveCart(this.cart);
+        this.updateUI();
+    }
+
+    removeItem(productId) {
+        delete this.cart[productId];
+        this.saveCart(this.cart);
+        this.updateUI();
+    }
+
+    updateQuantity(productId, action) {
+        if (!this.cart[productId]) return;
+
+        if (action === 'increase') {
+            this.cart[productId].quantity += 1;
+        } else if (action === 'decrease') {
+            this.cart[productId].quantity = Math.max(0, this.cart[productId].quantity - 1);
+            if (this.cart[productId].quantity === 0) {
+                this.removeItem(productId);
+                return;
+            }
+        }
+
+        this.cart[productId].total_price = this.cart[productId].quantity * this.cart[productId].unit_price;
+        this.saveCart(this.cart);
+        this.updateUI();
+    }
+
+    clearCart() {
+        this.cart = {};
+        this.saveCart(this.cart);
+        this.updateUI();
+    }
+
+    getItemCount() {
+        return Object.values(this.cart).reduce((total, item) => total + item.quantity, 0);
+    }
+
+    getTotalPrice() {
+        return Object.values(this.cart).reduce((total, item) => total + item.total_price, 0);
+    }
+
+    checkout() {
+        if (Object.keys(this.cart).length === 0) {
+            alert('Your cart is empty!');
+            return;
+        }
+
+        // Create checkout summary
+        const summary = Object.values(this.cart).map(item =>
+            `${item.name} x${item.quantity} - $${item.total_price.toFixed(2)}`
+        ).join('\n');
+
+        const total = this.getTotalPrice();
+
+        alert(`Checkout Summary:\n\n${summary}\n\nTotal: $${total.toFixed(2)}\n\nThank you for your order! This is a demo shopping cart. In a real application, you would be redirected to a payment processor.`);
+
+        // Clear cart after "successful" checkout
+        this.clearCart();
+    }
+
+    updateUI() {
+        const itemCount = this.getItemCount();
+        const totalPrice = this.getTotalPrice();
+
+        // Update cart info
+        document.getElementById('cart-info').textContent = `Your cultivation marketplace orders ${itemCount > 0 ? `(${itemCount} items)` : '(empty)'}`;
+
+        // Toggle empty state and cart content
+        const hasItems = itemCount > 0;
+
+        document.getElementById('empty-cart').style.display = hasItems ? 'none' : 'block';
+        document.getElementById('cart-summary').style.display = hasItems ? 'block' : 'none';
+        document.getElementById('clear-cart').style.display = hasItems ? 'inline-block' : 'none';
+
+        // Update cart items
+        this.renderCartItems();
+
+        // Update summary
+        if (hasItems) {
+            const shipping = totalPrice > 50 ? 0 : 9.99;
+            const tax = totalPrice * 0.08; // 8% tax
+
+            document.getElementById('subtotal').textContent = `$${totalPrice.toFixed(2)}`;
+            document.getElementById('shipping').textContent = shipping > 0 ? `$${shipping.toFixed(2)}` : 'FREE';
+            document.getElementById('tax').textContent = `$${tax.toFixed(2)}`;
+            document.getElementById('total').textContent = `$${(totalPrice + shipping + tax).toFixed(2)}`;
+        }
+
+        // Update cart counter in navigation (if exists)
+        const cartCounter = document.getElementById('cart-counter');
+        if (cartCounter) {
+            cartCounter.textContent = itemCount;
+            cartCounter.style.display = itemCount > 0 ? 'inline-block' : 'none';
+        }
+    }
+
+    renderCartItems() {
+        const container = document.getElementById('cart-items');
+        container.innerHTML = '';
+
+        Object.entries(this.cart).forEach(([productId, item]) => {
+            const itemElement = document.createElement('div');
+            itemElement.className = 'col-12 mb-3 cart-item';
+            itemElement.dataset.id = productId;
+            itemElement.innerHTML = `
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-lg-6">
+                                <div class="d-flex align-items-center">
+                                    <img src="${item.image || '/static/images/product-placeholder.jpg'}" alt="${item.name}" class="rounded me-3" style="width: 80px; height: 80px; object-fit: cover;">
+                                    <div>
+                                        <h5 class="card-title mb-1">${item.name}</h5>
+                                        <div class="badges">
+                                            <span class="badge bg-secondary">${item.category}</span>
+                                            ${item.rating ? `<span class="badge bg-warning text-dark ms-1"><i class="fas fa-star me-1"></i>${item.rating}</span>` : ''}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                <div class="quantity-controls d-flex align-items-center justify-content-center">
+                                    <button class="btn btn-sm btn-outline-secondary quantity-btn me-2" data-action="decrease">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                    <span class="quantity fw-bold" style="min-width: 30px; text-align: center;">${item.quantity}</span>
+                                    <button class="btn btn-sm btn-outline-secondary quantity-btn ms-2" data-action="increase">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-lg-2">
+                                <div class="price-info">
+                                    <span class="unit-price text-muted">$${item.unit_price.toFixed(2)} each</span>
+                                    <div class="total-price fw-bold">$${item.total_price.toFixed(2)}</div>
+                                </div>
+                            </div>
+                            <div class="col-lg-1">
+                                <button class="btn btn-sm btn-outline-danger remove-item border-0" title="Remove item">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.appendChild(itemElement);
+        });
+    }
+}
+
+// Global cart instance
+let cart = new ShoppingCart();
+</script>
+{% endblock %}

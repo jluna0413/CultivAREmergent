@@ -40,6 +40,8 @@ from app.handlers.user_handlers import (
 )
 from app.models import db
 from app.models.base_models import User
+from app.utils.rate_limiter import limiter
+from app.models.base_models import User
 
 admin_bp = Blueprint(
     "admin", __name__, url_prefix="/admin", template_folder="../web/templates"
@@ -65,6 +67,7 @@ def users():
     )
 
 
+@limiter.limit("3 per minute")
 @admin_bp.route("/users/create", methods=["GET", "POST"])
 @login_required
 def create_user_route():
@@ -466,7 +469,7 @@ def add_user_api():
 @admin_required
 def get_user_api(user_id):
     """Get a user by ID."""
-    user = User.query.get(user_id)
+    user = db.session.get(User, user_id)
 
     if not user:
         return jsonify({"error": "User not found"}), 404
@@ -491,7 +494,7 @@ def get_user_api(user_id):
 @admin_required
 def update_user_api(user_id):
     """Update a user."""
-    user = User.query.get(user_id)
+    user = User.query.session.get(user_id)
 
     if not user:
         return jsonify({"error": "User not found"}), 404
@@ -529,7 +532,7 @@ def update_user_api(user_id):
 @admin_required
 def reset_user_password_api(user_id):
     """Reset a user's password."""
-    user = User.query.get(user_id)
+    user = User.query.session.get(user_id)
 
     if not user:
         return jsonify({"error": "User not found"}), 404
@@ -556,7 +559,7 @@ def reset_user_password_api(user_id):
 @admin_required
 def delete_user_api(user_id):
     """Delete a user."""
-    user = User.query.get(user_id)
+    user = User.query.session.get(user_id)
 
     if not user:
         return jsonify({"error": "User not found"}), 404

@@ -11,8 +11,8 @@
             <h2>Add New Breeder</h2>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
-                    <li class="breadcrumb-item"><a href="{{ url_for('strains') }}">Collection</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('dashboard.dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="/">Collection</a></li>
                     <li class="breadcrumb-item active" aria-current="page">Add New Breeder</li>
                 </ol>
             </nav>
@@ -29,7 +29,7 @@
                             <input type="text" class="form-control" id="breeder_name" name="breeder_name" required>
                         </div>
                         <div class="d-flex justify-content-between">
-                            <a href="{{ url_for('strains') }}" class="btn btn-secondary">Cancel</a>
+                            <a href="/" class="btn btn-secondary">Cancel</a>
                             <button type="button" onclick="saveBreeder()" class="btn btn-primary">Save Breeder</button>
                         </div>
                     </form>

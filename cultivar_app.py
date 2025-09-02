@@ -5,9 +5,13 @@ This file contains the application factory for creating the Flask app instance.
 
 import os
 import sys
+import ssl
 from datetime import datetime, timedelta
-from flask import Flask
+from flask import Flask, request
 from flask_login import LoginManager
+from flask_talisman import Talisman
+from flask_limiter.errors import RateLimitExceeded
+from app.utils.rate_limiter import limiter
 
 # Add the app directory to the Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'app'))
@@ -42,15 +46,69 @@ def create_app():
     # Initialize Flask-Login
     login_manager = LoginManager()
     login_manager.init_app(app)
-    login_manager.login_view = 'login'
+    login_manager.login_view = 'auth.login'
     login_manager.login_message = 'Please log in to access this page.'
     login_manager.login_message_category = 'info'
-    
+
     @login_manager.user_loader
     def load_user(user_id):
         from app.models.base_models import User
-        return User.query.get(int(user_id))
-    
+        return db.session.get(User, int(user_id))
+
+    # Configure Flask session settings
+    app.config['SESSION_COOKIE_SECURE'] = not app.config.get('DEBUG', False)
+    app.config['SESSION_COOKIE_HTTPONLY'] = True
+    app.config['SESSION_COOKIE_SAMESITE'] = 'Strict'
+    app.config['SESSION_PERMANENT'] = True
+    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=24)  # 24 hours
+
+    # Configure Flask-Talisman for enterprise-grade security headers
+    # Adjust security settings based on environment
+    is_production = not app.config.get('DEBUG', False)
+
+    talisman = Talisman(
+        app,
+        content_security_policy={
+            'default-src': "'self'",
+            'script-src': "'self' 'unsafe-inline' 'unsafe-eval'",
+            'style-src': "'self' 'unsafe-inline'",
+            'img-src': "'self' data: https:",
+            'font-src': "'self'",
+            'connect-src': "'self'",
+            'frame-src': "'none'",
+            'object-src': "'none'",
+            'base-uri': "'self'",
+            'form-action': "'self'",
+        },
+        content_security_policy_nonce_in=['script-src', 'style-src'],
+        strict_transport_security=is_production,
+        strict_transport_security_max_age=31536000,  # 1 year
+        strict_transport_security_include_subdomains=is_production,
+        strict_transport_security_preload=is_production,
+        session_cookie_secure=is_production,
+        session_cookie_http_only=True,
+        force_https=is_production,
+        force_https_permanent=is_production,
+        force_file_save=False,
+        frame_options='DENY',
+        x_content_type_options='nosniff',
+        referrer_policy='strict-origin-when-cross-origin',
+        permissions_policy={
+            'geolocation': (),
+            'camera': (),
+            'microphone': (),
+            'payment': (),
+            'usb': (),
+        }
+    )
+
+    # Initialize Flask-Limiter for DDoS protection
+    limiter.init_app(app)
+
+    @app.errorhandler(RateLimitExceeded)
+    def rate_limit_exceeded(e):
+        return "Too many requests. Please try again later.", 429
+
     # Create database tables and initialize data
     with app.app_context():
         try:
@@ -138,6 +196,8 @@ def create_app():
     app.register_blueprint(clones_bp)
     from app.blueprints.diagnostics import diagnostics_bp
     app.register_blueprint(diagnostics_bp)
+    from app.blueprints.market import market_bp
+    app.register_blueprint(market_bp)
     
     # Initialize logger
     from app.logger import logger
@@ -148,4 +208,15 @@ def create_app():
 if __name__ == '__main__':
     app = create_app()
     port = int(os.getenv('CULTIVAR_PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=True, use_reloader=False)
+
+    # SSL Configuration for development/production
+    from app.config.config import Config
+    if Config.SSL_ENABLED and os.path.exists(Config.SSL_CERT_PATH) and os.path.exists(Config.SSL_KEY_PATH):
+        # Create SSL context for HTTPS
+        ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+        ssl_context.load_cert_chain(certfile=Config.SSL_CERT_PATH, keyfile=Config.SSL_KEY_PATH)
+        # Run with SSL in production
+        app.run(host='0.0.0.0', port=port, debug=Config.DEBUG, use_reloader=False, ssl_context=ssl_context)
+    else:
+        # Run without SSL for development
+        app.run(host='0.0.0.0', port=port, debug=Config.DEBUG, use_reloader=False)

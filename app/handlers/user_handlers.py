@@ -10,6 +10,7 @@ from app.logger import logger
 from app.models import db
 from app.models.base_models import User
 from app.models.system_models import SystemActivity
+from app.utils.validators import cleanse_user_data
 
 
 def get_all_users():
@@ -85,7 +86,7 @@ def get_user_by_id(user_id):
         dict: User data or None if not found.
     """
     try:
-        user = User.query.get(user_id)
+        user = db.session.get(User, user_id)
         if not user:
             return None
 
@@ -141,22 +142,18 @@ def create_user(data):
         dict: Result of the operation with success status and user ID.
     """
     try:
-        username = data.get("username")
-        password = data.get("password")
-        phone = data.get("phone")
-        email = data.get("email")
-        is_admin = data.get("is_admin", False)
-        force_password_change = data.get("force_password_change", False)
+        # Cleanse and validate user data
+        cleaned_data, validation_errors = cleanse_user_data(data)
 
-        # Validation
-        if not username or not password:
-            return {"success": False, "error": "Username and password are required"}
+        if validation_errors:
+            return {"success": False, "error": "; ".join(validation_errors)}
 
-        if not phone and not email:
-            return {
-                "success": False,
-                "error": "Either phone number or email is required",
-            }
+        username = cleaned_data.get("username")
+        password = cleaned_data.get("password")
+        phone = cleaned_data.get("phone")
+        email = cleaned_data.get("email")
+        is_admin = cleaned_data.get("is_admin", False)
+        force_password_change = cleaned_data.get("force_password_change", False)
 
         # Check if username already exists
         existing_user = User.query.filter_by(username=username).first()
@@ -222,7 +219,7 @@ def update_user(user_id, data):
         dict: Result of the operation.
     """
     try:
-        user = User.query.get(user_id)
+        user = User.query.session.get(user_id)
         if not user:
             return {"success": False, "error": "User not found"}
 
@@ -275,7 +272,7 @@ def delete_user(user_id):
         dict: Result of the operation.
     """
     try:
-        user = User.query.get(user_id)
+        user = User.query.session.get(user_id)
         if not user:
             return {"success": False, "error": "User not found"}
 
@@ -321,7 +318,7 @@ def toggle_user_admin_status(user_id):
         dict: Result of the operation.
     """
     try:
-        user = User.query.get(user_id)
+        user = User.query.session.get(user_id)
         if not user:
             return {"success": False, "error": "User not found"}
 
@@ -374,7 +371,7 @@ def force_password_reset(user_id):
         dict: Result of the operation.
     """
     try:
-        user = User.query.get(user_id)
+        user = User.query.session.get(user_id)
         if not user:
             return {"success": False, "error": "User not found"}
 

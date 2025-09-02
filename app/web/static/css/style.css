@@ -189,13 +189,14 @@ a:hover {
     position: absolute;
     right: 16px;
     top: 50%;
-    transform: translateY(-50%);
+    /* Use margin-top instead of transform for better touch target alignment */
+    margin-top: -0.4rem; /* Half of font-size (0.8rem) */
     font-size: 0.8rem;
     transition: transform var(--transition-speed);
 }
 
 .submenu-toggle[aria-expanded="true"] .submenu-indicator {
-    transform: translateY(-50%) rotate(180deg);
+    transform: rotate(180deg);
 }
 
 .submenu {
@@ -681,6 +682,55 @@ label {
 .plant-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    /* Fix positioning and z-index issues for plant cards */
+}
+
+/* Fix positioning and z-index issues for plant cards */
+.plant-item {
+    position: relative;
+    z-index: 1;
+}
+
+.plant-card {
+    position: relative;
+    z-index: 1;
+    cursor: pointer;
+}
+
+.plant-status {
+    z-index: 2;
+}
+
+.plant-card-footer .btn {
+    position: relative;
+    z-index: 3;
+}
+
+.plant-card-header {
+    .plant-item {
+        position: relative;
+        z-index: 1;
+    }
+
+    .plant-card {
+        position: relative;
+        z-index: 1;
+        cursor: pointer;
+    }
+
+    .plant-status {
+        z-index: 2;
+    }
+
+    .plant-card-footer .btn {
+        position: relative;
+        z-index: 3;
+    }
+
+    /* Ensure clickable areas are properly aligned */
+    .plant-card * {
+        pointer-events: auto;
+    }
 }
 
 .plant-card-header {
@@ -861,7 +911,7 @@ label {
     position: fixed;
     top: 20px;
     right: 20px;
-    z-index: 1050;
+    z-index: 1060;
     max-width: 350px;
 }
 
