@@ -6,6 +6,7 @@ import platform
 import sys
 
 from flask import Blueprint, current_app, jsonify
+from flask_login import login_required, current_user
 
 from app.models import db
 
@@ -13,7 +14,12 @@ diagnostics_bp = Blueprint("diagnostics", __name__)
 
 
 @diagnostics_bp.route("/diagnostics")
+@login_required
 def diagnostics():
+    """Get system diagnostics information. Requires admin authentication."""
+    # Require admin privileges for sensitive system information
+    if not current_user.is_admin:
+        return jsonify({"error": "Admin privileges required"}), 403
     # App info
     info = {
         "app_name": "CultivAR",

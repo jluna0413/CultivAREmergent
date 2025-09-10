@@ -667,8 +667,9 @@ def get_system_info_api():
 
 
 @admin_bp.route("/api/diagnostics/test", methods=["GET"])
+@admin_required
 def diagnostics_test_api():
-    """A simple endpoint for testing the diagnostics functionality."""
+    """A simple endpoint for testing the diagnostics functionality. Requires admin authentication."""
     import random
     import time
 

@@ -17,8 +17,7 @@ auth_bp = Blueprint("auth", __name__, url_prefix="/auth", template_folder="../we
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
     """Handle user login."""
-    logger.info(f"=== LOGIN ROUTE HIT ({request.method}) ===")
-    print(f"=== LOGIN ROUTE DEBUG ({request.method}) ===")
+    logger.info(f"Login route accessed via {request.method}")
 
     if current_user.is_authenticated:
         logger.info("User already authenticated. Redirecting to dashboard.")
@@ -28,35 +27,16 @@ def login():
         username = request.form.get("username")
         password = request.form.get("password")
         logger.info(f"Login attempt for username: {username}")
-        logger.info(f"Password provided: {'Yes' if password else 'No'}")
-        print(
-            f"LOGIN DEBUG: username={username}, password={'***' if password else 'None'}"
-        )
+
+        # Use generic error message to prevent user enumeration
+        generic_error = "Invalid username or password"
 
         user = User.query.filter_by(username=username).first()
-        logger.info(f"User found in database: {'Yes' if user else 'No'}")
-        print(f"LOGIN DEBUG: User found: {'Yes' if user else 'No'}")
-
-        if user:
-            logger.info(f"User has password_hash: {hasattr(user, 'password_hash')}")
-            logger.info(
-                f"Password hash exists: {bool(user.password_hash) if hasattr(user, 'password_hash') else False}"
-            )
-            print(
-                f"LOGIN DEBUG: User has password_hash: {hasattr(user, 'password_hash')}"
-            )
-
-            if hasattr(user, "password_hash") and user.password_hash:
-                password_check = check_password_hash(user.password_hash, password)
-                logger.info(f"Password check result: {password_check}")
-                print(f"LOGIN DEBUG: Password check result: {password_check}")
-            else:
-                logger.error("User has no password_hash")
-                print("LOGIN DEBUG: ERROR - User has no password_hash")
 
         if (
             user
             and hasattr(user, "password_hash")
+            and user.password_hash
             and check_password_hash(user.password_hash, password)
         ):
             logger.info("Login successful.")
@@ -69,8 +49,8 @@ def login():
             next_page = request.args.get("next")
             return redirect(next_page or url_for("dashboard.dashboard"))
         else:
-            logger.warning("Invalid username or password.")
-            flash("Invalid username or password", "danger")
+            logger.warning("Invalid login attempt.")
+            flash(generic_error, "danger")
             return redirect(url_for("auth.login"))
 
     return render_template(
@@ -146,7 +126,7 @@ def signup():
 @login_required
 def logout():
     """Handle user logout."""
-    logger.info("=== LOGOUT ROUTE HIT ===")
+    logger.info("User logout initiated")
     try:
         logout_user()
         # Clear session to prevent session fixation and ensure clean logout
