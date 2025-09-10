@@ -12,7 +12,7 @@ from app.logger import logger
 
 def save_image(image_file, upload_folder, filename=None):
     """
-    Save an uploaded image to the specified folder.
+    Save an uploaded image to the specified folder with security validation.
 
     Args:
         image_file: The uploaded image file.
@@ -23,6 +23,37 @@ def save_image(image_file, upload_folder, filename=None):
         str: The path to the saved image.
     """
     try:
+        if not image_file or not image_file.filename:
+            logger.error("No image file provided")
+            return None
+
+        # Validate file size
+        MAX_FILE_SIZE = 10 * 1024 * 1024  # 10 MB
+        image_file.seek(0, 2)  # Seek to end
+        file_size = image_file.tell()
+        image_file.seek(0)  # Reset to beginning
+        
+        if file_size > MAX_FILE_SIZE:
+            logger.error(f"File size {file_size} exceeds 10MB limit")
+            return None
+
+        # Validate file type
+        ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
+        ALLOWED_MIMETYPES = {
+            'image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp'
+        }
+        
+        original_filename = image_file.filename
+        file_extension = original_filename.rsplit('.', 1)[1].lower() if '.' in original_filename else ''
+        
+        if file_extension not in ALLOWED_EXTENSIONS:
+            logger.error(f"Invalid file extension: {file_extension}")
+            return None
+            
+        if hasattr(image_file, 'mimetype') and image_file.mimetype not in ALLOWED_MIMETYPES:
+            logger.error(f"Invalid file mimetype: {image_file.mimetype}")
+            return None
+
         # Create the upload folder if it doesn't exist
         if not os.path.exists(upload_folder):
             os.makedirs(upload_folder)
@@ -30,11 +61,28 @@ def save_image(image_file, upload_folder, filename=None):
         # Generate a filename if one wasn't provided
         if not filename:
             timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-            filename = f"{timestamp}_{image_file.filename}"
+            from werkzeug.utils import secure_filename
+            secure_name = secure_filename(original_filename)
+            filename = f"{timestamp}_{secure_name}"
+        
+        # Ensure filename is secure
+        from werkzeug.utils import secure_filename
+        filename = secure_filename(filename)
 
         # Save the image
         image_path = os.path.join(upload_folder, filename)
         image_file.save(image_path)
+
+        # Validate the saved file is actually an image
+        try:
+            with Image.open(image_path) as img:
+                img.verify()  # Verify it's a valid image
+        except Exception as e:
+            # Remove the uploaded file if it's not a valid image
+            if os.path.exists(image_path):
+                os.remove(image_path)
+            logger.error(f"Uploaded file is not a valid image: {e}")
+            return None
 
         return image_path
     except Exception as e:

@@ -26,22 +26,6 @@ from app.logger import logger
 #        return None
 
 
-def check_password(password, hashed_password):
-    """
-    Check if a password matches a hash.
-
-    Args:
-        password (str): The password to check.
-        hashed_password (str): The hashed password to compare against.
-
-    Returns:
-        bool: True if the password matches the hash, False otherwise.
-    """
-    try:
-        # Check if the password matches the hash
-        password_bytes = password.encode("utf-8")
-        hashed_bytes = hashed_password.encode("utf-8")
-        return bcrypt.checkpw(password_bytes, hashed_bytes)
-    except Exception as e:
-        logger.error(f"Error checking password: {e}")
-        return False
+# Note: check_password function removed as it was unused and incompatible
+# with the current password hashing scheme used in the application.
+# Password verification is handled by the User model's check_password method.

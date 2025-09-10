@@ -649,7 +649,7 @@ def link_sensors_to_plant(data):
 
 def upload_plant_images(plant_id, files, description):
     """
-    Upload images for a plant.
+    Upload images for a plant with security validation.
 
     Args:
         plant_id (int): The ID of the plant.
@@ -673,6 +673,30 @@ def upload_plant_images(plant_id, files, description):
 
         for file in files:
             if file and file.filename:
+                # Validate file size
+                MAX_FILE_SIZE = 10 * 1024 * 1024  # 10 MB for plant images
+                file.seek(0, 2)  # Seek to end
+                file_size = file.tell()
+                file.seek(0)  # Reset to beginning
+                
+                if file_size > MAX_FILE_SIZE:
+                    return {"success": False, "error": f"File {file.filename} exceeds 10MB limit"}
+
+                # Validate file type
+                ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
+                ALLOWED_MIMETYPES = {
+                    'image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp'
+                }
+                
+                filename = file.filename
+                file_extension = filename.rsplit('.', 1)[1].lower() if '.' in filename else ''
+                
+                if file_extension not in ALLOWED_EXTENSIONS:
+                    return {"success": False, "error": f"Invalid file type for {filename}. Only PNG, JPG, JPEG, GIF, and WebP are allowed"}
+                    
+                if file.mimetype not in ALLOWED_MIMETYPES:
+                    return {"success": False, "error": f"Invalid file content type for {filename}"}
+
                 # Generate a secure filename
                 filename = secure_filename(file.filename)
 
@@ -681,8 +705,19 @@ def upload_plant_images(plant_id, files, description):
                 filename = f"{timestamp}_{filename}"
 
                 # Save the file
-                # file_path = os.path.join(upload_folder, filename)
-                # file.save(file_path)
+                file_path = os.path.join(upload_folder, filename)
+                file.save(file_path)
+
+                # Validate the uploaded file is actually an image
+                try:
+                    from PIL import Image
+                    with Image.open(file_path) as img:
+                        img.verify()  # Verify it's a valid image
+                except Exception:
+                    # Remove the uploaded file if it's not a valid image
+                    if os.path.exists(file_path):
+                        os.remove(file_path)
+                    return {"success": False, "error": f"File {file.filename} is not a valid image"}
 
                 # Create a database record for the image
                 image = PlantImage(
