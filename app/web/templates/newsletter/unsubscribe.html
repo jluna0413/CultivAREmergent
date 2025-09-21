@@ -1,0 +1,29 @@
+{% extends "common/base.html" %}
+{% block title %}Unsubscribe{% endblock %}
+{% block auth_content %}
+{% include 'marketing/_nav.html' %}
+<section class="section" style="padding: 8rem 1rem 4rem;">
+  <div class="section-container">
+    <div class="glass-card" style="max-width: 640px; margin: 0 auto; padding: 2rem;">
+      <h2>Unsubscribe</h2>
+      <form method="post" action="{{ url_for('newsletter.unsubscribe') }}">
+        {% if csrf_token is defined %}
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        {% endif %}
+        <div class="form-group" style="margin-top: 1rem;">
+          <label class="form-label" for="unsub_email">Email</label>
+          <input id="unsub_email" class="form-input" type="email" name="email" placeholder="you@example.com" required />
+        </div>
+        <div class="form-group" style="margin-top: 1rem;">
+          <label class="form-label" for="unsub_phone">Phone</label>
+          <input id="unsub_phone" class="form-input" type="tel" name="phone" placeholder="+1 555 000 1234" />
+        </div>
+        <div style="margin-top: 1.5rem; display:flex; gap:.75rem;">
+          <button class="btn btn-danger" type="submit">Unsubscribe</button>
+          <a class="btn btn-ghost" href="{{ url_for('newsletter.subscribe') }}">Back</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -153,52 +153,23 @@ class LandingPage {
         this.addAnimationStyles();
     }
 
-    // Add CSS animations dynamically
+    // Animation styles are now handled by CSS classes in landing.css
     addAnimationStyles() {
-        const style = document.createElement('style');
-        style.textContent = `
-            .feature-card,
-            .benefit-item,
-            .testimonial,
-            .stat-card {
-                opacity: 0;
-                transform: translateY(30px);
-                transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            }
-            
-            .feature-card.animate-in,
-            .benefit-item.animate-in,
-            .testimonial.animate-in,
-            .stat-card.animate-in {
-                opacity: 1;
-                transform: translateY(0);
-            }
-            
-            /* Stagger animation delays */
-            .feature-card:nth-child(2) { transition-delay: 0.1s; }
-            .feature-card:nth-child(3) { transition-delay: 0.2s; }
-            .feature-card:nth-child(4) { transition-delay: 0.3s; }
-            .feature-card:nth-child(5) { transition-delay: 0.4s; }
-            .feature-card:nth-child(6) { transition-delay: 0.5s; }
-            
-            .stat-card:nth-child(2) { transition-delay: 0.1s; }
-            .stat-card:nth-child(3) { transition-delay: 0.2s; }
-            .stat-card:nth-child(4) { transition-delay: 0.3s; }
-        `;
-        document.head.appendChild(style);
+        // No longer needed - styles moved to CSS for CSP compliance
+        return;
     }
 
-    // Parallax effects for hero section
+    // Parallax effects for hero section - CSP compliant
     setupParallaxEffects() {
         const heroVisual = document.querySelector('.hero-visual');
-        
+
         if (heroVisual) {
+            // Use CSS custom properties instead of inline styles
             window.addEventListener('scroll', () => {
                 const scrolled = window.pageYOffset;
-                const rate = scrolled * -0.5;
-                
                 if (scrolled < window.innerHeight) {
-                    heroVisual.style.transform = `translateY(${rate}px)`;
+                    const rate = scrolled * -0.5;
+                    heroVisual.style.setProperty('--parallax-y', `${rate}px`);
                 }
             });
         }
@@ -236,39 +207,24 @@ class LandingPage {
         const notification = document.createElement('div');
         notification.className = `notification ${type}`;
         notification.innerHTML = `
-            <div class="notification-content">
-                <i class="fas fa-${type === 'error' ? 'exclamation-circle' : 'check-circle'}"></i>
-                <span>${message}</span>
-            </div>
-        `;
-
-        // Add styles
-        notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: ${type === 'error' ? '#ff4444' : '#4CAF50'};
-            color: white;
-            padding: 1rem 1.5rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            z-index: 10000;
-            transform: translateX(400px);
-            transition: transform 0.3s ease;
+            <i class="fas fa-${type === 'error' ? 'exclamation-circle' : 'check-circle'}"></i>
+            <span>${message}</span>
         `;
 
         document.body.appendChild(notification);
 
-        // Animate in
+        // Animate in with CSS classes
         setTimeout(() => {
-            notification.style.transform = 'translateX(0)';
-        }, 100);
+            notification.classList.add('show');
+        }, 10);
 
         // Remove after 5 seconds
         setTimeout(() => {
-            notification.style.transform = 'translateX(400px)';
+            notification.classList.add('hide');
             setTimeout(() => {
-                document.body.removeChild(notification);
+                if (notification.parentNode) {
+                    document.body.removeChild(notification);
+                }
             }, 300);
         }, 5000);
     }
@@ -283,18 +239,18 @@ class LandingPage {
         console.log('Event tracked:', eventName, properties);
     }
 
-    // Interactive dashboard demo
+    // Interactive dashboard demo - CSP compliant
     setupDashboardDemo() {
         const dashboard = document.querySelector('.hero-dashboard');
         if (!dashboard) return;
 
-        // Add click interactions to dashboard elements
+        // Add click interactions to dashboard elements using CSS classes
         const widgets = dashboard.querySelectorAll('.widget');
         widgets.forEach(widget => {
             widget.addEventListener('click', () => {
-                widget.style.transform = 'scale(1.05)';
+                widget.classList.add('widget-active');
                 setTimeout(() => {
-                    widget.style.transform = 'scale(1)';
+                    widget.classList.remove('widget-active');
                 }, 200);
             });
         });
@@ -342,40 +298,4 @@ document.addEventListener('DOMContentLoaded', () => {
     new LandingPage();
 });
 
-// Add mobile navigation styles
-const mobileNavStyles = `
-    @media (max-width: 768px) {
-        .nav-links {
-            position: fixed;
-            top: 0;
-            right: -100%;
-            width: 100%;
-            height: 100vh;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            transition: right 0.3s ease;
-            z-index: 999;
-        }
-        
-        .nav-links.active {
-            right: 0;
-        }
-        
-        .nav-links a {
-            font-size: 1.5rem;
-            margin: 1rem 0;
-        }
-        
-        .nav-mobile {
-            z-index: 1001;
-        }
-    }
-`;
-
-// Add the mobile styles
-const styleSheet = document.createElement('style');
-styleSheet.textContent = mobileNavStyles;
-document.head.appendChild(styleSheet);
+// Mobile navigation styles are now handled in CSS for CSP compliance

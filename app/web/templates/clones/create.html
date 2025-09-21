@@ -18,6 +18,9 @@
     </div>
 
     <form method="POST" class="clone-form" id="cloneForm">
+        {% if csrf_token is defined %}
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        {% endif %}
         <!-- Parent Selection -->
         <div class="form-section">
             <h3><i class="fas fa-seedling"></i> Select Parent Plant</h3>

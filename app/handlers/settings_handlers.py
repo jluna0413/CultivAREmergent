@@ -167,7 +167,7 @@ def update_user_password(user_id, password):
         bool: True if successful, False otherwise.
     """
     try:
-        user = db.session.get(User, user_id)
+        user = db.session.get(User, ident=user_id)
 
         if not user:
             return False

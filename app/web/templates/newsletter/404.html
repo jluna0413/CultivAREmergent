@@ -1,0 +1,10 @@
+{% extends "common/base.html" %}
+{% block title %}Not Found{% endblock %}
+{% block auth_content %}
+<section class="section" style="padding: 8rem 1rem 4rem; text-align:center;">
+  <div class="section-container">
+    <h1>Page Not Found</h1>
+    <a class="btn btn-primary" href="{{ url_for('newsletter.subscribe') }}">Go to Newsletter</a>
+  </div>
+</section>
+{% endblock %}

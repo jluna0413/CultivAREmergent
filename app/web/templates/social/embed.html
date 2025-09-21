@@ -1,0 +1,18 @@
+{% extends "common/base.html" %}
+{% block title %}Embed Widget{% endblock %}
+{% block auth_content %}
+{% include 'marketing/_nav.html' %}
+<section class="section" style="padding: 8rem 1rem 4rem;">
+  <div class="section-container">
+    <h1>Embed Our Widget</h1>
+    <p class="muted">Copy and paste the snippet below to embed share/follow buttons.</p>
+    <div class="glass-card" style="padding: 1rem;">
+      <pre><code>&lt;div id="cultivar-social" data-style="glass"&gt;&lt;/div&gt;
+&lt;script async src="{{ url_for('static', filename='js/social-embed.js') }}"&gt;&lt;/script&gt;</code></pre>
+    </div>
+    <h3>Preview</h3>
+    {% include 'social/widgets/share_buttons.html' %}
+    {% include 'social/widgets/follow_buttons.html' %}
+  </div>
+</section>
+{% endblock %}

@@ -5,17 +5,94 @@ Handles waitlist, blog, and lead magnet functionality.
 
 import os
 import secrets
+import re
 from datetime import datetime, timedelta
 from flask import Blueprint, flash, redirect, render_template, request, url_for, jsonify, send_from_directory, current_app
-from flask_login import current_user
 from werkzeug.utils import secure_filename
 from sqlalchemy import or_
+from sqlalchemy.exc import SQLAlchemyError
 
 from app.logger import logger
-from app.models.base_models import Waitlist, BlogPost, LeadMagnet, LeadMagnetDownload, NewsletterSubscriber, db  # type: ignore
-from app.utils.rate_limiter import limiter
+from app.models.base_models import Waitlist, BlogPost, LeadMagnet, LeadMagnetDownload, db  # type: ignore
+try:
+    from email_validator import validate_email  # type: ignore
+except Exception:
+    validate_email = None  # type: ignore
 
 marketing_bp = Blueprint("marketing", __name__, url_prefix="/marketing", template_folder="../web/templates")
+
+
+def _validate_email_address(email: str) -> bool:
+    """Validate an email using email_validator if available, else a regex.
+
+    Returns True when valid, False otherwise.
+    """
+    if not email:
+        return False
+
+    if validate_email is not None:
+        try:
+            validate_email(email)
+            return True
+        except Exception:
+            return False
+
+    # fallback regex
+    email_re_local = re.compile(r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$")
+    return bool(email_re_local.match(email))
+
+
+def _has_recent_download(magnet: LeadMagnet, email: str) -> bool:
+    """Return True if the given email already downloaded this magnet today (UTC)."""
+    try:
+        utc_now = datetime.utcnow()
+        start_of_utc_day = utc_now.replace(hour=0, minute=0, second=0, microsecond=0)
+        recent = LeadMagnetDownload.query.filter_by(
+            lead_magnet_id=magnet.id,
+            email=email
+        ).filter(LeadMagnetDownload.download_date >= start_of_utc_day).first()
+        return recent is not None
+    except SQLAlchemyError:
+        logger.exception("DB error when checking recent download for %s", email)
+        return False
+
+
+def _record_download_and_increment(magnet: LeadMagnet, email: str) -> bool:
+    """Create a LeadMagnetDownload record and increment magnet.download_count.
+
+    Returns True on success, False on DB error.
+    """
+    try:
+        download = LeadMagnetDownload(
+            lead_magnet_id=magnet.id,
+            email=email,
+            ip_address=request.remote_addr,
+            user_agent=request.user_agent.string[:255]
+        )
+        magnet.download_count = (magnet.download_count or 0) + 1
+        db.session.add(download)
+        db.session.add(magnet)
+        db.session.commit()
+        logger.info("Lead magnet downloaded: %s by %s", magnet.name, email)
+        return True
+    except SQLAlchemyError:
+        db.session.rollback()
+        logger.exception("Failed to record download for %s", email)
+        return False
+
+
+def _serve_lead_magnet_file(magnet: LeadMagnet, magnet_name: str):
+    """Return a Flask response for the magnet file or raise OSError if not found."""
+    safe_dir = current_app.config.get('LEAD_MAGNET_DIR', os.path.join(current_app.root_path, 'static', 'lead_magnets'))
+    safe_dir_abs = os.path.abspath(safe_dir)
+    filename = os.path.basename(magnet.file_path)
+    file_path = os.path.join(safe_dir_abs, filename)
+
+    if not os.path.exists(file_path):
+        raise OSError(f"Lead magnet file not found: {file_path}")
+
+    return send_from_directory(safe_dir_abs, filename, as_attachment=True, download_name=f"{secure_filename(magnet_name)}.pdf")
+
 
 
 # Waitlist Routes
@@ -28,7 +105,6 @@ def waitlist():
         referral_code = request.form.get("referral_code", "").strip()
 
         # Validate email
-        import re
         email_re = re.compile(r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$")
         if not email or not email_re.match(email):
             flash("Please enter a valid email address.", "danger")
@@ -63,7 +139,7 @@ def waitlist():
         db.session.add(waitlist_entry)
         db.session.commit()
 
-        logger.info(f"New waitlist signup: {email} (tier: {priority_tier})")
+        logger.info("New waitlist signup: %s (tier: %s)", email, priority_tier)
 
         flash("Welcome to the waitlist! Check your email for next steps.", "success")
         return redirect(url_for("marketing.waitlist_success", code=new_referral_code))
@@ -130,96 +206,119 @@ def blog_post(slug):
 @marketing_bp.route("/download/<magnet_name>")
 def download_lead_magnet(magnet_name):
     """Handle lead magnet downloads."""
-    magnet = LeadMagnet.query.filter_by(name=magnet_name, is_active=True).first()
-
-    if not magnet:
-        flash("Download not found.", "danger")
-        return redirect(url_for("marketing.marketing_home"))
-
-    # Get email from form or query parameter
-    email = request.args.get("email", "").strip().lower()
-
-    # Validate email robustly (prefer email_validator if installed)
-    if not email:
-        flash("Please provide a valid email address to download.", "warning")
-        return redirect(url_for("marketing.marketing_home"))
-
+    import traceback
     try:
-        # try to use the email_validator package for accurate checks
-        from email_validator import validate_email, EmailNotValidError  # type: ignore
+        from email_validator import validate_email
+    except ImportError:  # pragma: no cover - optional dependency
+        validate_email = None  # type: ignore
+    try:
+        magnet = LeadMagnet.query.filter_by(name=magnet_name, is_active=True).first()
+
+        if not magnet:
+            flash("Download not found.", "danger")
+            return redirect(url_for("marketing.marketing_home"))
+
+        # Get email from form or query parameter
+        email = request.args.get("email", "").strip().lower()
+
+        # Validate email robustly (prefer email_validator if installed)
+        if not email:
+            flash("Please provide a valid email address to download.", "warning")
+            return redirect(url_for("marketing.marketing_home"))
+
+        # Prefer email_validator for accurate checks when available
+        if validate_email is not None:
+            try:
+                validate_email(email)
+            except Exception:
+                flash("Please provide a valid email address to download.", "warning")
+                return redirect(url_for("marketing.marketing_home"))
+        else:
+            # fallback to a reasonable regex
+            email_re = re.compile(r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$")
+            if not email_re.match(email):
+                flash("Please provide a valid email address to download.", "warning")
+                return redirect(url_for("marketing.marketing_home"))
+
+        # Check if already downloaded recently (prevent spam)
         try:
-            validate_email(email)
-        except EmailNotValidError:
-            flash("Please provide a valid email address to download.", "warning")
-            return redirect(url_for("marketing.marketing_home"))
-    except Exception:
-        # fallback to a reasonable regex
-        import re
-        email_re = re.compile(r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$")
-        if not email_re.match(email):
-            flash("Please provide a valid email address to download.", "warning")
-            return redirect(url_for("marketing.marketing_home"))
+            utc_now = datetime.utcnow()
+            # consider 'today' as since UTC midnight to avoid timezone surprises
+            start_of_utc_day = utc_now.replace(hour=0, minute=0, second=0, microsecond=0)
 
-    # Check if already downloaded recently (prevent spam)
-    try:
-        utc_now = datetime.utcnow()
-        # consider 'today' as since UTC midnight to avoid timezone surprises
-        start_of_utc_day = utc_now.replace(hour=0, minute=0, second=0, microsecond=0)
+            recent_download = LeadMagnetDownload.query.filter_by(
+                lead_magnet_id=magnet.id,
+                email=email
+            ).filter(
+                LeadMagnetDownload.download_date >= start_of_utc_day
+            ).first()
 
-        recent_download = LeadMagnetDownload.query.filter_by(
-            lead_magnet_id=magnet.id,
-            email=email
-        ).filter(
-            LeadMagnetDownload.download_date >= start_of_utc_day
-        ).first()
+            if recent_download:
+                flash("You've already downloaded this today. Check your email!", "info")
+                return redirect(url_for("marketing.marketing_home"))
+        except SQLAlchemyError as db_err:  # pragma: no cover - DB read error path
+            logger.exception("Error while checking recent downloads for %s: %s", email, db_err)
+            # proceed — do not block download on non-critical read errors
 
-        if recent_download:
-            flash("You've already downloaded this today. Check your email!", "info")
-            return redirect(url_for("marketing.marketing_home"))
-    except Exception as e:
-        logger.exception(f"Error while checking recent downloads for {email}: {e}")
-        # proceed — do not block download on non-critical read errors
+        # Record download and increment count inside a transaction
+        try:
+            download = LeadMagnetDownload(
+                lead_magnet_id=magnet.id,
+                email=email,
+                ip_address=request.remote_addr,
+                user_agent=request.user_agent.string[:255]
+            )
 
-    # Record download and increment count inside a transaction
-    try:
-        download = LeadMagnetDownload(
-            lead_magnet_id=magnet.id,
-            email=email,
-            ip_address=request.remote_addr,
-            user_agent=request.user_agent.string[:255]
-        )
+            # Increment download count
+            magnet.download_count = (magnet.download_count or 0) + 1
 
-        # Increment download count
-        magnet.download_count = (magnet.download_count or 0) + 1
+            db.session.add(download)
+            db.session.add(magnet)
+            db.session.commit()
 
-        db.session.add(download)
-        db.session.add(magnet)
-        db.session.commit()
-
-        logger.info(f"Lead magnet downloaded: {magnet_name} by {email}")
-    except Exception as e:
-        db.session.rollback()
-        logger.exception(f"Failed to record lead magnet download for {email}: {e}")
-        flash("An error occurred while processing your download. Please try again later.", "danger")
-        return redirect(url_for("marketing.marketing_home"))
-
-    # Serve file from a configured safe directory to avoid arbitrary path exposure
-    try:
-        safe_dir = current_app.config.get('LEAD_MAGNET_DIR', os.path.join(current_app.root_path, 'static', 'lead_magnets'))
-        safe_dir_abs = os.path.abspath(safe_dir)
-        filename = os.path.basename(magnet.file_path)
-        file_path = os.path.join(safe_dir_abs, filename)
-
-        if not os.path.exists(file_path):
-            logger.error(f"Lead magnet file not found at expected path: {file_path}")
-            flash("Download file not found. Please contact support.", "danger")
+            logger.info("Lead magnet downloaded: %s by %s", magnet_name, email)
+        except SQLAlchemyError as db_err:  # pragma: no cover - DB write error path
+            db.session.rollback()
+            logger.exception("Failed to record lead magnet download for %s: %s", email, db_err)
+            flash("An error occurred while processing your download. Please try again later.", "danger")
             return redirect(url_for("marketing.marketing_home"))
 
-        # send_from_directory will set safe headers and attachment
-        return send_from_directory(safe_dir_abs, filename, as_attachment=True, download_name=f"{secure_filename(magnet_name)}.pdf")
-    except Exception as e:
-        logger.exception(f"Error serving lead magnet {magnet_name} to {email}: {e}")
-        flash("An error occurred while preparing your download. Please contact support.", "danger")
+        # Serve file from a configured safe directory to avoid arbitrary path exposure
+        try:
+            safe_dir = current_app.config.get('LEAD_MAGNET_DIR', os.path.join(current_app.root_path, 'static', 'lead_magnets'))
+            safe_dir_abs = os.path.abspath(safe_dir)
+            filename = os.path.basename(magnet.file_path)
+            file_path = os.path.join(safe_dir_abs, filename)
+
+            if not os.path.exists(file_path):
+                logger.error(f"Lead magnet file not found at expected path: {file_path}")
+                flash("Download file not found. Please contact support.", "danger")
+                return redirect(url_for("marketing.marketing_home"))
+
+            # send_from_directory will set safe headers and attachment
+            return send_from_directory(safe_dir_abs, filename, as_attachment=True, download_name=f"{secure_filename(magnet_name)}.pdf")
+        except OSError as os_err:
+            logger.exception("Error serving lead magnet %s to %s: %s", magnet_name, email, os_err)
+            flash("An error occurred while preparing your download. Please contact support.", "danger")
+            return redirect(url_for("marketing.marketing_home"))
+
+    except Exception as outer_exc:
+        # Ensure any unexpected exception is recorded with full traceback to a dedicated file for easier diagnosis
+        traceback_text = traceback.format_exc()
+        logger.exception("Unhandled exception in download_lead_magnet for %s: %s\n%s", magnet_name, outer_exc, traceback_text)
+        try:
+            logs_dir = os.path.join(current_app.root_path, 'logs')
+            os.makedirs(logs_dir, exist_ok=True)
+            with open(os.path.join(logs_dir, 'marketing_errors.log'), 'a', encoding='utf-8') as file_handle:
+                file_handle.write(f"\n=== {datetime.utcnow().isoformat()} ===\n")
+                file_handle.write(traceback_text)
+                file_handle.write('\n')
+        except Exception:
+            # best-effort: if writing log fails, continue
+            logger.error('Failed to write marketing_errors.log')
+
+        # Reuse registered error handler path
+        flash("An internal server error occurred. The team has been notified.", "danger")
         return redirect(url_for("marketing.marketing_home"))
 
 

@@ -1,0 +1,246 @@
+{% extends "common/base.html" %}
+
+{% block title %}CultivAR - Professional Cannabis Grow Management{% endblock %}
+
+{% block description %}The most advanced self-hosted cannabis grow journal. Track plants, monitor environments, optimize yields. Join our waitlist for early access and exclusive content.{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
+{% endblock %}
+
+{% block auth_content %}
+    {% include 'marketing/_nav.html' %}
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    Your cannabis grow.<br>
+                    <span class="hero-gradient">Professionally managed.</span>
+                </h1>
+                <p class="hero-subtitle">
+                    The most advanced self-hosted cannabis grow journal. Track plants, monitor environments,
+                    and optimize yields with enterprise-grade tools designed for serious cultivators.
+                </p>
+                <div class="hero-actions">
+                   <a href="{{ url_for('marketing.waitlist') }}" class="btn btn-primary btn-lg">
+                       <span>Join the Waitlist</span>
+                       <i class="fas fa-arrow-right"></i>
+                   </a>
+                    <a href="{{ url_for('marketing.blog') }}" class="btn btn-secondary">
+                        <i class="fas fa-book-open"></i>
+                        <span>Read Our Blog</span>
+                    </a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <div class="stat-number">{{ "{:,}".format(waitlist_count) }}</div>
+                        <div class="stat-label">Waitlist Signups</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">{{ today_signups }}</div>
+                        <div class="stat-label">Today's Signups</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">25%</div>
+                        <div class="stat-label">Avg Yield Increase</div>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="hero-dashboard">
+                    <div class="dashboard-header">
+                        <div class="dashboard-dots">
+                            <span></span><span></span><span></span>
+                        </div>
+                        <div class="dashboard-title">CultivAR Dashboard</div>
+                    </div>
+                    <div class="dashboard-content">
+                        <div class="dashboard-widgets">
+                            <div class="widget active-plants">
+                                <div class="widget-icon"><i class="fas fa-seedling"></i></div>
+                                <div class="widget-data">
+                                    <div class="widget-number">24</div>
+                                    <div class="widget-label">Active Plants</div>
+                                </div>
+                            </div>
+                            <div class="widget environmental">
+                                <div class="widget-icon"><i class="fas fa-thermometer-half"></i></div>
+                                <div class="widget-data">
+                                    <div class="widget-number">75°F</div>
+                                    <div class="widget-label">Temperature</div>
+                                </div>
+                            </div>
+                            <div class="widget timeline">
+                                <div class="timeline-items">
+                                    <div class="timeline-item">
+                                        <div class="timeline-dot"></div>
+                                        <div class="timeline-text">Northern Lights watered</div>
+                                    </div>
+                                    <div class="timeline-item">
+                                        <div class="timeline-dot"></div>
+                                        <div class="timeline-text">OG Kush entering flower</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="section-container">
+            <div class="section-header">
+                <h2>Everything you need to grow like a pro</h2>
+                <p>Powerful tools that work together seamlessly</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-seedling"></i>
+                    </div>
+                    <h3>Plant Tracking</h3>
+                    <p>Monitor every aspect of your plants' lifecycle from seed to harvest with detailed logs and growth analytics.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Advanced Analytics</h3>
+                    <p>Get insights into your grow performance with detailed charts, yield predictions, and optimization recommendations.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3>Mobile First</h3>
+                    <p>Access your grow data anywhere with our responsive design and PWA capabilities. Works offline too.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-dna"></i>
+                    </div>
+                    <h3>Strain Library</h3>
+                    <p>Comprehensive strain database with genetics tracking, phenotype selection, and breeding records.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-thermometer-half"></i>
+                    </div>
+                    <h3>Environment Monitoring</h3>
+                    <p>Real-time sensor integration for temperature, humidity, CO2, and more. Set alerts and automate responses.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-clone"></i>
+                    </div>
+                    <h3>Clone Management</h3>
+                    <p>Track plant lineage, manage mother plants, and optimize your cloning success rates with detailed analytics.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Blog Preview Section -->
+    <section class="blog-preview">
+        <div class="section-container">
+            <div class="section-header">
+                <h2>Learn from the experts</h2>
+                <p>Stay ahead with cultivation tips, strain reviews, and industry insights</p>
+            </div>
+            <div class="blog-grid">
+                {% for post in featured_posts %}
+                <article class="blog-card">
+                    <div class="blog-meta">
+                        <span class="blog-category">{{ post.category|title if post.category else 'General' }}</span>
+                        <span class="blog-date">{{ post.publish_date_formatted }}</span>
+                    </div>
+                    <h3 class="blog-title">{{ post.title }}</h3>
+                    <p class="blog-excerpt">{{ post.excerpt or post.content[:150] + '...' }}</p>
+                    <div class="blog-footer">
+                        <span class="blog-author">By {{ post.author or 'CultivAR Team' }}</span>
+                        <a href="{{ url_for('marketing.blog_post', slug=post.slug) }}" class="blog-link">
+                            Read More <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
+            <div class="section-cta">
+                <a href="{{ url_for('marketing.blog') }}" class="btn btn-secondary">
+                    <i class="fas fa-book-open"></i>
+                    <span>View All Posts</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Waitlist CTA Section -->
+    <section class="waitlist-cta">
+        <div class="section-container">
+            <div class="cta-content">
+                <h2>Be the first to know when we launch</h2>
+                <p>Join our exclusive waitlist for early access, beta invitations, and special launch pricing.</p>
+                <div class="cta-actions">
+                   <a href="{{ url_for('marketing.waitlist') }}" class="btn btn-primary btn-lg">
+                       <span>Join the Waitlist</span>
+                       <i class="fas fa-arrow-right"></i>
+                   </a>
+                </div>
+                <div class="cta-features">
+                    <div class="cta-feature">
+                        <i class="fas fa-check"></i>
+                        <span>Priority beta access</span>
+                    </div>
+                    <div class="cta-feature">
+                        <i class="fas fa-check"></i>
+                        <span>Exclusive launch pricing</span>
+                    </div>
+                    <div class="cta-feature">
+                        <i class="fas fa-check"></i>
+                        <span>Direct founder access</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <section class="newsletter">
+        <div class="section-container">
+            <div class="newsletter-content">
+                <div class="newsletter-text">
+                    <h3>Get growing tips delivered to your inbox</h3>
+                    <p>Join thousands of cultivators getting exclusive tips, strain reviews, and grow optimization strategies.</p>
+                </div>
+                <div class="newsletter-form">
+                    <form action="{{ url_for('newsletter.subscribe') }}" method="POST" class="newsletter-signup">
+                        {% if csrf_token is defined %}
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        {% endif %}
+                        <div class="input-group">
+                            <input type="email" name="email" placeholder="Enter your email address" required>
+                            <button type="submit" class="btn btn-primary">
+                                <span>Subscribe</span>
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                        <div class="newsletter-privacy">
+                            <i class="fas fa-lock"></i>
+                            <span>We respect your privacy. Unsubscribe anytime.</span>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/landing.js') }}"></script>
+{% endblock %}

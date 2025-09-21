@@ -1,0 +1,12 @@
+{% extends "common/base.html" %}
+{% block title %}Subscription Confirmed{% endblock %}
+{% block auth_content %}
+{% include 'marketing/_nav.html' %}
+<section class="section" style="padding: 8rem 1rem 4rem; text-align:center;">
+  <div class="section-container">
+    <h1>You're subscribed! 🎉</h1>
+    <p class="lead">Thanks for joining our community. Check your inbox for a welcome email.</p>
+    <a class="btn btn-primary" href="{{ url_for('marketing.marketing_home') }}">Back to Home</a>
+  </div>
+</section>
+{% endblock %}

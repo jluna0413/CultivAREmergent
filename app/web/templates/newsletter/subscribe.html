@@ -1,0 +1,58 @@
+{% extends "common/base.html" %}
+{% block title %}Newsletter Signup{% endblock %}
+{% block styles %}
+<style>
+.newsletter-hero { padding: 6rem 1rem 2rem; background: var(--gradient-hero); }
+.glass-card { background: var(--glass-bg-light); backdrop-filter: blur(12px); border: 1px solid var(--glass-border-light); border-radius: var(--radius-xl); box-shadow: var(--glass-shadow); }
+.form-card { max-width: 720px; margin: 0 auto; padding: 2rem; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+@media (max-width: 768px){ .form-grid { grid-template-columns: 1fr; } }
+</style>
+{% endblock %}
+{% block auth_content %}
+{% include 'marketing/_nav.html' %}
+<section class="newsletter-hero">
+  <div class="section-container">
+    <h1 class="hero-title">Subscribe to our newsletter</h1>
+    <p class="hero-subtitle">Get tips, updates, and community news. Email and SMS options.</p>
+  </div>
+</section>
+<section class="section" style="padding: 2rem 1rem 4rem;">
+  <div class="section-container">
+    <div class="glass-card form-card">
+      <form method="post" action="{{ url_for('newsletter.subscribe') }}">
+        {% if csrf_token is defined %}
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        {% endif %}
+        <input type="hidden" name="source" value="newsletter_page" />
+        <div class="form-grid">
+          <div>
+            <label class="form-label" for="email">Email</label>
+            <input id="email" class="form-input" type="email" name="email" placeholder="you@example.com" required />
+          </div>
+          <div>
+            <label class="form-label" for="phone">Phone (SMS)</label>
+            <input id="phone" class="form-input" type="tel" name="phone" placeholder="+1 555 000 1234" />
+          </div>
+        </div>
+        <div style="margin-top: 1rem;">
+          <label class="form-label" for="subscription_type">Subscription Type</label>
+          <select id="subscription_type" class="form-select" name="subscription_type">
+            <option value="email">Email</option>
+            <option value="sms">SMS</option>
+            <option value="both">Both</option>
+          </select>
+        </div>
+        <div style="margin-top: 1rem; display: flex; align-items: center; gap: .5rem;">
+          <input class="checkbox-input" type="checkbox" id="agree" name="agree_terms" required>
+          <label for="agree">I agree to receive communications and understand I can unsubscribe anytime.</label>
+        </div>
+        <div style="margin-top: 1.5rem; display: flex; gap: .75rem;">
+          <button class="btn btn-primary" type="submit">Subscribe</button>
+          <a class="btn btn-ghost" href="{{ url_for('newsletter.unsubscribe') }}">Unsubscribe</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}
