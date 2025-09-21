@@ -1,12 +1,12 @@
 <nav class="nav-bar nav-glass">
   <div class="nav-container">
-    <a class="nav-logo" href="{{ url_for('marketing.marketing_home') }}">
+    <a class="nav-logo" href="{{ url_for('site') }}">
   <i class="fas fa-leaf" aria-hidden="true"></i>
       <span>CultivAR</span>
     </a>
     <div class="nav-links">
-      <a href="{{ url_for('marketing.blog') }}" class="btn btn-ghost">Blog</a>
-      <a href="{{ url_for('marketing.waitlist') }}" class="btn btn-ghost">Waitlist</a>
+  <a href="{{ url_for('site_blog') }}" class="btn btn-ghost">Blog</a>
+  <a href="{{ url_for('site_waitlist') }}" class="btn btn-ghost">Waitlist</a>
       <a href="{{ url_for('newsletter.subscribe') }}" class="btn btn-ghost">Newsletter</a>
       <a href="{{ url_for('social.follow') }}" class="btn btn-ghost">Community</a>
       <a href="{{ url_for('auth.login') }}" class="btn btn-primary">

@@ -11,6 +11,11 @@
 {% endblock %}
 {% block auth_content %}
 {% include 'marketing/_nav.html' %}
+<!-- Page-specific style note:
+  Prefer canonical token names `--color-*` in templates so ThemeManager
+  dark/light overrides work site-wide. A central compatibility mapping
+  in `styles.css` provides backward compatibility during migration.
+-->
 <section class="newsletter-hero">
   <div class="section-container">
     <h1 class="hero-title">Subscribe to our newsletter</h1>

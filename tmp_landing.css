@@ -53,8 +53,8 @@
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     line-height: 1.6;
-    color: var(--color-text-primary);
-    background: var(--color-background-primary);
+    color: var(--text-primary);
+    background: var(--background);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
@@ -73,7 +73,7 @@ h3 { font-size: clamp(1.5rem, 3vw, 2rem); }
 p {
     font-size: 1.1rem;
     line-height: 1.6;
-    color: var(--color-text-secondary);
+    color: var(--text-secondary);
 }
 
 /* Navigation */
@@ -121,7 +121,7 @@ p {
 
 .nav-links a {
     text-decoration: none;
-    color: var(--color-text-primary);
+    color: var(--text-primary);
     font-weight: 500;
     transition: var(--transition);
     position: relative;
@@ -252,7 +252,7 @@ p {
     align-items: center;
     gap: 0.5rem;
     background: transparent;
-    color: var(--color-text-primary);
+    color: var(--text-primary);
     padding: 1rem 2rem;
     border: 2px solid var(--border-color);
     border-radius: var(--radius-medium);
@@ -286,7 +286,7 @@ p {
 
 .stat-label {
     font-size: 0.9rem;
-    color: var(--color-text-tertiary);
+    color: var(--text-tertiary);
     text-transform: uppercase;
     letter-spacing: 0.1em;
 }
@@ -345,7 +345,7 @@ p {
 
 .dashboard-title {
     font-weight: 600;
-    color: var(--color-text-primary);
+    color: var(--text-primary);
 }
 
 .dashboard-widgets {
@@ -354,7 +354,7 @@ p {
 }
 
 .widget {
-    background: var(--color-background-secondary);
+    background: var(--background-gray);
     border-radius: var(--radius-medium);
     padding: 1.5rem;
     display: flex;
@@ -377,12 +377,12 @@ p {
 .widget-number {
     font-size: 1.8rem;
     font-weight: 700;
-    color: var(--color-text-primary);
+    color: var(--text-primary);
 }
 
 .widget-label {
     font-size: 0.9rem;
-    color: var(--color-text-secondary);
+    color: var(--text-secondary);
 }
 
 /* Widget active state for dashboard demo */
@@ -391,7 +391,7 @@ p {
 }
 
 .timeline {
-    background: var(--color-background-secondary);
+    background: var(--background-gray);
     border-radius: var(--radius-medium);
     padding: 1.5rem;
 }
@@ -417,7 +417,7 @@ p {
 
 .timeline-text {
     font-size: 0.9rem;
-    color: var(--color-text-secondary);
+    color: var(--text-secondary);
 }
 
 /* Sections */
@@ -448,7 +448,7 @@ p {
 /* Features Section */
 .features {
     padding: 6rem 0;
-    background: var(--color-background-primary);
+    background: var(--background);
 }
 
 .features-grid {
@@ -486,17 +486,17 @@ p {
 
 .feature-card h3 {
     margin-bottom: 1rem;
-    color: var(--color-text-primary);
+    color: var(--text-primary);
 }
 
 .feature-card p {
-    color: var(--color-text-secondary);
+    color: var(--text-secondary);
 }
 
 /* Benefits Section */
 .benefits {
     padding: 6rem 0;
-    background: var(--color-background-secondary);
+    background: var(--background-gray);
 }
 
 .benefits-content {
@@ -537,11 +537,11 @@ p {
 
 .benefit-content h4 {
     margin-bottom: 0.5rem;
-    color: var(--color-text-primary);
+    color: var(--text-primary);
 }
 
 .benefit-content p {
-    color: var(--color-text-secondary);
+    color: var(--text-secondary);
 }
 
 .stats-dashboard {
@@ -554,7 +554,7 @@ p {
 .stats-dashboard h4 {
     text-align: center;
     margin-bottom: 2rem;
-    color: var(--color-text-primary);
+    color: var(--text-primary);
 }
 
 .stats-grid {
@@ -566,7 +566,7 @@ p {
 .stat-card {
     text-align: center;
     padding: 1.5rem;
-    background: var(--color-background-secondary);
+    background: var(--background-gray);
     border-radius: var(--radius-medium);
 }
 
@@ -579,13 +579,13 @@ p {
 
 .stat-desc {
     font-size: 0.9rem;
-    color: var(--color-text-secondary);
+    color: var(--text-secondary);
 }
 
 /* Testimonials */
 .testimonials {
     padding: 6rem 0;
-    background: var(--color-background-primary);
+    background: var(--background);
 }
 
 .testimonials-grid {
@@ -609,7 +609,7 @@ p {
 .testimonial-content p {
     font-size: 1.1rem;
     font-style: italic;
-    color: var(--color-text-primary);
+    color: var(--text-primary);
     line-height: 1.7;
 }
 
@@ -621,18 +621,18 @@ p {
 
 .author-name {
     font-weight: 600;
-    color: var(--color-text-primary);
+    color: var(--text-primary);
 }
 
 .author-title {
     font-size: 0.9rem;
-    color: var(--color-text-secondary);
+    color: var(--text-secondary);
 }
 
 /* Pricing Section */
 .pricing {
     padding: 6rem 0;
-    background: var(--color-background-secondary);
+    background: var(--background-gray);
 }
 
 .pricing-grid {
@@ -688,7 +688,7 @@ p {
 
 .pricing-header h3 {
     margin-bottom: 1rem;
-    color: var(--color-text-primary);
+    color: var(--text-primary);
     font-size: 1.8rem;
 }
 
@@ -708,7 +708,7 @@ p {
 
 .period {
     font-size: 1.2rem;
-    color: var(--color-text-secondary);
+    color: var(--text-secondary);
     font-weight: 500;
 }
 
@@ -725,7 +725,7 @@ p {
     align-items: center;
     gap: 0.75rem;
     font-size: 1rem;
-    color: var(--color-text-secondary);
+    color: var(--text-secondary);
 }
 
 .feature i {
@@ -823,7 +823,7 @@ p {
 /* Newsletter */
 .newsletter {
     padding: 4rem 0;
-    background: var(--color-background-secondary);
+    background: var(--background-gray);
 }
 
 .newsletter-content {
@@ -863,7 +863,7 @@ p {
 }
 
 .input-group input::placeholder {
-    color: var(--color-text-tertiary);
+    color: var(--text-tertiary);
 }
 
 .btn-newsletter {
@@ -889,7 +889,7 @@ p {
     gap: 0.5rem;
     margin-top: 1rem;
     font-size: 0.9rem;
-    color: var(--color-text-tertiary);
+    color: var(--text-tertiary);
 }
 
 .newsletter-message {
@@ -909,7 +909,7 @@ p {
 
 /* Footer */
 .footer {
-    background: var(--color-text-primary);
+    background: var(--text-primary);
     color: white;
     padding: 3rem 0 1rem;
 }
@@ -1158,7 +1158,7 @@ p {
     display: block;
     margin-bottom: 0.5rem;
     font-weight: 600;
-    color: var(--color-text-primary);
+    color: var(--text-primary);
 }
 
 .form-group input,
@@ -1205,18 +1205,18 @@ p {
 
 .tier-title {
     font-weight: 600;
-    color: var(--color-text-primary);
+    color: var(--text-primary);
     margin-bottom: 0.5rem;
 }
 
 .tier-description {
     font-size: 0.9rem;
-    color: var(--color-text-secondary);
+    color: var(--text-secondary);
     margin-bottom: 1rem;
 }
 
 .social-proof {
-    background: var(--color-background-secondary);
+    background: var(--background-gray);
     padding: 2rem;
     border-radius: var(--radius-large);
     margin: 2rem 0;
@@ -1242,7 +1242,7 @@ p {
 
 .proof-label {
     font-size: 0.9rem;
-    color: var(--color-text-secondary);
+    color: var(--text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.1em;
 }

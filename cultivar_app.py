@@ -7,7 +7,7 @@ import os
 import sys
 import ssl
 from datetime import datetime, timedelta
-from flask import Flask, request, g
+from flask import Flask, request, g, redirect, url_for
 from flask_login import LoginManager
 from flask_talisman import Talisman
 from flask_limiter.errors import RateLimitExceeded
@@ -276,8 +276,53 @@ def create_app():
     app.register_blueprint(market_bp)
 
     # Register marketing blueprints
-    from app.blueprints.marketing import marketing_bp
+    from app.blueprints.marketing import (
+        marketing_bp,
+        marketing_home,
+        blog,
+        blog_post,
+        waitlist,
+        waitlist_success,
+        download_lead_magnet,
+        waitlist_stats,
+        search_blog,
+    )
     app.register_blueprint(marketing_bp)
+
+    # Expose the marketing homepage at top-level paths for nicer URLs
+    # e.g. /home/ or /site/ will render the same content as /marketing/
+    try:
+        # Register only /site/ to avoid colliding with existing 'home' endpoint
+        app.add_url_rule('/site/', endpoint='site', view_func=marketing_home)
+    except RuntimeError:
+        # In some contexts (import-time before app ready) add_url_rule may fail;
+        # it's safe to ignore here because blueprint route still exists at /marketing/.
+        pass
+
+    # Also expose common marketing endpoints under /site/... for nicer canonical URLs
+    try:
+        app.add_url_rule('/site/blog/', endpoint='site_blog', view_func=blog)
+        app.add_url_rule('/site/blog/<slug>', endpoint='site_blog_post', view_func=blog_post)
+        app.add_url_rule('/site/waitlist', endpoint='site_waitlist', view_func=waitlist)
+        app.add_url_rule('/site/waitlist/success/<code>', endpoint='site_waitlist_success', view_func=waitlist_success)
+        app.add_url_rule('/site/download/<magnet_name>', endpoint='site_download', view_func=download_lead_magnet)
+        app.add_url_rule('/site/api/waitlist/stats', endpoint='site_api_waitlist_stats', view_func=waitlist_stats)
+        app.add_url_rule('/site/api/blog/search', endpoint='site_api_blog_search', view_func=search_blog)
+    except RuntimeError:
+        # ignore if app isn't fully wired yet
+        pass
+
+    # Add a safe, non-destructive redirect from the legacy /marketing/ URL to /site/
+    # This lets users continue to use old bookmarks while surfacing the new path.
+    def _marketing_redirect():
+        return redirect(url_for('site'))
+
+    try:
+        app.add_url_rule('/marketing/', endpoint='marketing_redirect', view_func=_marketing_redirect)
+        app.add_url_rule('/marketing', endpoint='marketing_redirect_noslash', view_func=_marketing_redirect)
+    except RuntimeError:
+        # ignore if app isn't fully wired yet
+        pass
     from app.blueprints.newsletter import newsletter_bp
     app.register_blueprint(newsletter_bp)
     from app.blueprints.social import social_bp

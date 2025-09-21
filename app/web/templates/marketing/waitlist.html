@@ -238,7 +238,13 @@
 <section class="waitlist-hero">
     <div class="waitlist-container">
         <h1>Join the Exclusive CultivAR Waitlist</h1>
-        <p style="font-size: 1.2rem; margin: 1rem 0 2rem; color: var(--text-secondary);">
+       <!-- NOTE: Using canonical token names improves theme interoperability.
+           Legacy token `--text-secondary` is being replaced with
+           `--color-text-secondary` here to ensure the page responds to the
+           ThemeManager's `[data-theme]` overrides. Leave the central
+           compatibility alias in `styles.css` until all templates are
+           migrated. -->
+       <p style="font-size: 1.2rem; margin: 1rem 0 2rem; color: var(--color-text-secondary);">
             Be among the first to experience the future of cannabis cultivation management.
             Get priority access, exclusive pricing, and direct founder support.
         </p>
@@ -352,7 +358,7 @@
         });
 
         // Load dynamic waitlist stats
-        fetch('/marketing/api/waitlist/stats')
+    fetch('/site/api/waitlist/stats')
             .then(response => response.json())
             .then(data => {
                 const waitlistCount = document.getElementById('waitlist-count');

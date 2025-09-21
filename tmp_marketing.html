@@ -1,15 +1,81 @@
-{% extends "common/base.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="The most advanced self-hosted cannabis grow journal. Track plants, monitor environments, optimize yields. Join our waitlist for early access and exclusive content.">
+    <meta name="theme-color" content="#ffffff">
+    <title>CultivAR - Professional Cannabis Grow Management</title>
 
-{% block title %}CultivAR - Professional Cannabis Grow Management{% endblock %}
+    <!-- Modern Font Stack (Apple/Samsung Style) - Using Native System Fonts -->
+    <!-- Removed Google Material Icons (no longer used) -->
 
-{% block description %}The most advanced self-hosted cannabis grow journal. Track plants, monitor environments, optimize yields. Join our waitlist for early access and exclusive content.{% endblock %}
+    <!-- Modern Design System -->
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="/static/css/all.min.css">
 
-{% block styles %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
-{% endblock %}
+    <!-- Fallback styles -->
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/landing.css">
+    <link rel="stylesheet" href="/static/css/marketing.css">
+    <link rel="stylesheet" href="/static/css/style.css">
 
-{% block auth_content %}
-    {% include 'marketing/_nav.html' %}
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/images/favicon-16x16.png">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/static/manifest.json">
+
+    
+<link rel="stylesheet" href="/static/css/landing.css">
+
+
+    <!-- Make CSP nonce available to JavaScript early in the head so scripts can use it -->
+    
+    
+    <meta name="csrf-token" content="IjY0N2JkMDI0ZjFhZTVmNjcxMjk0MzhhYzA3MGI1ZWNlZGQ3ZWMwZmYi.aM-17A.BLmGDZI0n3OUeoFhgYKOUOCnQpI">
+    
+    <script nonce="Z7NoWjTackmo0U-sC24U6TyJ11CQOE0Y">
+        window.cspNonce = 'Z7NoWjTackmo0U-sC24U6TyJ11CQOE0Y';
+    </script>
+    
+    
+</head>
+<body>
+    <!-- Modern Theme Toggle (Glass Morphism Style) -->
+    <div class="theme-toggle-fixed">
+        <button class="theme-toggle glass-card" aria-label="Toggle theme">
+            <!-- Icon will be inserted via CSS -->
+        </button>
+    </div>
+
+    <div class="app-container">
+        
+        
+
+        <!-- Modern Authentication Container -->
+        <div class="auth-container landing-page">
+            
+    <nav class="nav-bar nav-glass">
+  <div class="nav-container">
+    <a class="nav-logo" href="/marketing/">
+  <i class="fas fa-leaf" aria-hidden="true"></i>
+      <span>CultivAR</span>
+    </a>
+    <div class="nav-links">
+      <a href="/marketing/blog" class="btn btn-ghost">Blog</a>
+      <a href="/marketing/waitlist" class="btn btn-ghost">Waitlist</a>
+      <a href="/newsletter/subscribe" class="btn btn-ghost">Newsletter</a>
+      <a href="/social/follow" class="btn btn-ghost">Community</a>
+      <a href="/auth/login" class="btn btn-primary">
+        <span>Get Started</span>
+  <i class="fas fa-arrow-right" aria-hidden="true"></i>
+      </a>
+    </div>
+  </div>
+</nav>
 
     <!-- Hero Section -->
     <section class="hero">
@@ -24,22 +90,22 @@
                     and optimize yields with enterprise-grade tools designed for serious cultivators.
                 </p>
                 <div class="hero-actions">
-                   <a href="{{ url_for('marketing.waitlist') }}" class="btn btn-primary btn-lg">
+                   <a href="/marketing/waitlist" class="btn btn-primary btn-lg">
                        <span>Join the Waitlist</span>
                        <i class="fas fa-arrow-right"></i>
                    </a>
-                    <a href="{{ url_for('site_blog') }}" class="btn btn-secondary">
+                    <a href="/marketing/blog" class="btn btn-secondary">
                         <i class="fas fa-book-open"></i>
                         <span>Read Our Blog</span>
                     </a>
                 </div>
                 <div class="hero-stats">
                     <div class="stat">
-                        <div class="stat-number">{{ "{:,}".format(waitlist_count) }}</div>
+                        <div class="stat-number">0</div>
                         <div class="stat-label">Waitlist Signups</div>
                     </div>
                     <div class="stat">
-                        <div class="stat-number">{{ today_signups }}</div>
+                        <div class="stat-number">0</div>
                         <div class="stat-label">Today's Signups</div>
                     </div>
                     <div class="stat">
@@ -153,25 +219,10 @@
                 <p>Stay ahead with cultivation tips, strain reviews, and industry insights</p>
             </div>
             <div class="blog-grid">
-                {% for post in featured_posts %}
-                <article class="blog-card">
-                    <div class="blog-meta">
-                        <span class="blog-category">{{ post.category|title if post.category else 'General' }}</span>
-                        <span class="blog-date">{{ post.publish_date_formatted }}</span>
-                    </div>
-                    <h3 class="blog-title">{{ post.title }}</h3>
-                    <p class="blog-excerpt">{{ post.excerpt or post.content[:150] + '...' }}</p>
-                    <div class="blog-footer">
-                        <span class="blog-author">By {{ post.author or 'CultivAR Team' }}</span>
-                        <a href="{{ url_for('marketing.blog_post', slug=post.slug) }}" class="blog-link">
-                            Read More <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>
-                {% endfor %}
+                
             </div>
             <div class="section-cta">
-                <a href="{{ url_for('site_blog') }}" class="btn btn-secondary">
+                <a href="/marketing/blog" class="btn btn-secondary">
                     <i class="fas fa-book-open"></i>
                     <span>View All Posts</span>
                 </a>
@@ -186,7 +237,7 @@
                 <h2>Be the first to know when we launch</h2>
                 <p>Join our exclusive waitlist for early access, beta invitations, and special launch pricing.</p>
                 <div class="cta-actions">
-                   <a href="{{ url_for('marketing.waitlist') }}" class="btn btn-primary btn-lg">
+                   <a href="/marketing/waitlist" class="btn btn-primary btn-lg">
                        <span>Join the Waitlist</span>
                        <i class="fas fa-arrow-right"></i>
                    </a>
@@ -218,10 +269,10 @@
                     <p>Join thousands of cultivators getting exclusive tips, strain reviews, and grow optimization strategies.</p>
                 </div>
                 <div class="newsletter-form">
-                    <form action="{{ url_for('newsletter.subscribe') }}" method="POST" class="newsletter-signup">
-                        {% if csrf_token is defined %}
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        {% endif %}
+                    <form action="/newsletter/subscribe" method="POST" class="newsletter-signup">
+                        
+                        <input type="hidden" name="csrf_token" value="IjY0N2JkMDI0ZjFhZTVmNjcxMjk0MzhhYzA3MGI1ZWNlZGQ3ZWMwZmYi.aM-17A.BLmGDZI0n3OUeoFhgYKOUOCnQpI">
+                        
                         <div class="input-group">
                             <input type="email" name="email" placeholder="Enter your email address" required>
                             <button type="submit" class="btn btn-primary">
@@ -239,8 +290,30 @@
         </div>
     </section>
 
-{% endblock %}
 
-{% block scripts %}
-    <script src="{{ url_for('static', filename='js/landing.js') }}"></script>
-{% endblock %}
+        </div>
+
+        
+    </div>
+
+    <!-- Modern JavaScript Stack -->
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Design System Core (must load after window.cspNonce is set) -->
+    <script src="/static/js/theme-manager.js"></script>
+    <script src="/static/js/styles.js"></script>
+
+    <!-- Application Scripts -->
+    <script src="/static/js/chart.min.js"></script>
+    <script src="/static/js/main.js"></script>
+    <script src="/static/js/cart-utilities.js"></script>
+
+    <!-- Modern UI Interactive Script moved to external bundle (main.js) to avoid inline script CSP issues -->
+
+    
+    <script src="/static/js/landing.js"></script>
+
+
+</body>
+</html>

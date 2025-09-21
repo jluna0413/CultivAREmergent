@@ -1,3 +1,59 @@
+# Implementation plan & roadmap (short)
+
+This document captures the recent containerization work, the immediate next tasks, and how to sync this to Byterover/Archon if needed.
+
+1. Containerization (done)
+   - Added `Dockerfile`, `docker-compose.yml`, `.dockerignore`, `Makefile`, and `README_DOCKER.md`.
+   - Dev compose runs Flask with `--reload` and mounts the repo for hot-reload while developing the marketing frontend.
+   - Dev `SECRET_KEY` is set in `docker-compose.yml` for local convenience — do NOT use this value in production.
+
+2. Smoke tests (done)
+   - Verified `/marketing/download/test` returns a PDF attachment and saved it locally via `curl`.
+
+3. Lint & small refactors (in this commit)
+   - Refactored `app/blueprints/marketing.py`:
+     - Moved optional email validator import to module top.
+     - Extracted helpers `_validate_email_address`, `_has_recent_download`, `_record_download_and_increment`, `_serve_lead_magnet_file`.
+     - Replaced in-function imports and narrowed exception scopes where safe.
+   - Ran `pylint` on the module — score improved. More lints remain (style/line length/complexity) to address incrementally.
+
+4. Next high-priority tasks
+   - Address runtime-impacting lints across the app (imports inside functions, broad excepts).
+   - Add a CI GitHub Actions workflow to build and smoke-test the Docker image on push.
+   - Add a dev bootstrap script (PowerShell) to start `docker compose up -d` on developer machines (optional).
+   - Review long functions in `marketing.py` and split where appropriate to reduce complexity warnings.
+
+5. Byterover / Archon sync
+   - I couldn't access the project's Byterover storage tools from this environment, so I added this `IMPLEMENTATION_PLAN.md` file to the repo.
+   - To sync with Byterover manually:
+     1. Log into your Byterover/Archon dashboard.
+     2. Create a new implementation plan entry titled "Containerize backend + linting".
+     3. Paste the contents of this file and mark tasks as in-progress/completed as appropriate.
+
+6. How to run locally (short)
+   - Create a `.env` with a secure `SECRET_KEY` for dev.
+   - PowerShell commands:
+
+```powershell
+# create env (one-time)
+@"
+SECRET_KEY=dev-secret-change-me
+FLASK_ENV=development
+FLASK_DEBUG=1
+"@ > .env
+
+# start in background
+docker compose up -d --build
+
+# logs
+docker compose logs -f
+
+# stop
+docker compose down
+```
+
+7. Commit note
+   - This commit includes the containerization files and the targeted refactor to `marketing.py` to reduce runtime issues and improve maintainability.
 # CultivAR Implementation Plan
 
 ## Overview

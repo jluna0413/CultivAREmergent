@@ -1,44 +1,117 @@
 /* Main Styles for CultivAR - Brought to you by Eye Heart Hemp */
 
 :root {
-    /* Theme Colors - Will be overridden by theme classes */
-    --bg-dark: #1a1a1a;
-    --bg-card: #2a2a2a;
-    --bg-sidebar: #121212;
-    --bg-header: #1e1e1e;
-    --text-primary: #ffffff;
-    --text-secondary: #b0b0b0;
-    --text-muted: #808080;
-    --border-color: #333333;
-    --accent-color: #4caf50;
-    --accent-color-hover: #3d8b40;
-    --danger-color: #f44336;
-    --warning-color: #ff9800;
-    --info-color: #2196f3;
-    --success-color: #4caf50;
+    /* Core tokens for application UI. These are canonical names used
+       across the app (`--color-*`, `--color-background-*`, etc.). We
+       also provide legacy mappings for older selectors that still
+       reference `--text-*` or `--bg-*` tokens. */
+
+    /* Canonical text colors (defaults for dark-oriented UI) */
+    --color-text-primary: #ffffff;
+    --color-text-secondary: #b0b0b0;
+    --color-text-muted: #808080;
+
+    /* Canonical background tokens */
+    --color-background-primary: #1a1a1a; /* page background */
+    --color-surface-card: #2a2a2a; /* cards / panels */
+    --color-surface-sidebar: #121212;
+    --color-surface-header: #1e1e1e;
+
+    /* Accent & Status */
+    --color-accent-primary: #4caf50;
+    --color-accent-hover: #3d8b40;
+    --color-danger: #f44336;
+    --color-warning: #ff9800;
+    --color-info: #2196f3;
+    --color-success: #4caf50;
+
+    /* Back-compat mappings for legacy names used throughout the app */
+    --bg-dark: var(--color-background-primary);
+    --bg-card: var(--color-surface-card);
+    --bg-sidebar: var(--color-surface-sidebar);
+    --bg-header: var(--color-surface-header);
+    --text-primary: var(--color-text-primary);
+    --text-secondary: var(--color-text-secondary);
+    --text-muted: var(--color-text-muted);
+    --border-color: #333333; /* explicit, not yet canonicalized */
+    --accent-color: var(--color-accent-primary);
+    --accent-color-hover: var(--color-accent-hover);
 }
+
+    /* Marketing-specific overrides (prefer canonical tokens)
+        Loaded last to override legacy hardcoded white text in other
+        marketing/landing styles. These rules use canonical tokens so
+        theme toggles still apply. Use of !important is limited to
+        combat lingering legacy !important rules. */
+    .section-header h2,
+    .cta-content h2,
+    .cta-feature,
+    .newsletter-text h3 {
+         color: var(--color-text-primary) !important;
+    }
+
+    /* Theme-aware explicit overrides for marketing headings to avoid
+       accidental token overrides from other stylesheets. These ensure
+       high contrast in light theme and preserve white text in dark
+       theme. */
+    :root:not([data-theme="dark"]) .section-header h2,
+    :root:not([data-theme="dark"]) .cta-content h2,
+    :root:not([data-theme="dark"]) .cta-feature,
+    :root:not([data-theme="dark"]) .newsletter-text h3 {
+        color: #1d1d1f !important; /* darker gray / near-black for light theme */
+    }
+
+    :root[data-theme="dark"] .section-header h2,
+    :root[data-theme="dark"] .cta-content h2,
+    :root[data-theme="dark"] .cta-feature,
+    :root[data-theme="dark"] .newsletter-text h3 {
+        color: #ffffff !important; /* explicit white for dark theme */
+    }
+
 
 /* Dark Theme (Default) */
 body.dark-theme {
-    --bg-dark: #1a1a1a;
-    --bg-card: #2a2a2a;
-    --bg-sidebar: #121212;
-    --bg-header: #1e1e1e;
-    --text-primary: #ffffff;
-    --text-secondary: #b0b0b0;
-    --text-muted: #808080;
+    /* Dark theme canonical values */
+    --color-background-primary: #1a1a1a;
+    --color-surface-card: #2a2a2a;
+    --color-surface-sidebar: #121212;
+    --color-surface-header: #1e1e1e;
+
+    --color-text-primary: #ffffff;
+    --color-text-secondary: #b0b0b0;
+    --color-text-muted: #808080;
+
+    /* Keep legacy aliases in sync */
+    --bg-dark: var(--color-background-primary);
+    --bg-card: var(--color-surface-card);
+    --bg-sidebar: var(--color-surface-sidebar);
+    --bg-header: var(--color-surface-header);
+    --text-primary: var(--color-text-primary);
+    --text-secondary: var(--color-text-secondary);
+    --text-muted: var(--color-text-muted);
     --border-color: #333333;
 }
 
 /* Light Theme */
 body.light-theme {
-    --bg-dark: #f5f5f5;
-    --bg-card: #ffffff;
-    --bg-sidebar: #e8e8e8;
-    --bg-header: #f0f0f0;
-    --text-primary: #333333;
-    --text-secondary: #666666;
-    --text-muted: #999999;
+    /* Light theme canonical values */
+    --color-background-primary: #f5f5f5;
+    --color-surface-card: #ffffff;
+    --color-surface-sidebar: #e8e8e8;
+    --color-surface-header: #f0f0f0;
+
+    --color-text-primary: #333333;
+    --color-text-secondary: #666666;
+    --color-text-muted: #999999;
+
+    /* Back-compat aliases */
+    --bg-dark: var(--color-background-primary);
+    --bg-card: var(--color-surface-card);
+    --bg-sidebar: var(--color-surface-sidebar);
+    --bg-header: var(--color-surface-header);
+    --text-primary: var(--color-text-primary);
+    --text-secondary: var(--color-text-secondary);
+    --text-muted: var(--color-text-muted);
     --border-color: #dddddd;
 
     /* Sizing */
@@ -62,7 +135,7 @@ body.light-theme {
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     background-color: var(--bg-dark);
-    color: var(--text-primary);
+    color: var(--color-text-primary);
     line-height: 1.6;
     overflow-x: hidden;
     min-height: 100vh;
@@ -97,7 +170,7 @@ a:hover {
 .sidebar {
     width: var(--sidebar-width);
     background-color: var(--bg-sidebar);
-    color: var(--text-primary);
+    color: var(--color-text-primary);
     height: 100vh;
     position: fixed;
     top: 0;
@@ -126,7 +199,7 @@ a:hover {
     display: none;
     background: transparent;
     border: none;
-    color: var(--text-secondary);
+    color: var(--color-text-secondary);
     cursor: pointer;
     font-size: 1.25rem;
 }
@@ -155,14 +228,14 @@ a:hover {
     display: flex;
     align-items: center;
     padding: 12px 16px;
-    color: var(--text-secondary);
+    color: var(--color-text-secondary);
     transition: all var(--transition-speed);
     border-left: 3px solid transparent;
 }
 
 .menu-link:hover {
     background-color: rgba(255, 255, 255, 0.05);
-    color: var(--text-primary);
+    color: var(--color-text-primary);
 }
 
 .menu-item.active .menu-link {
@@ -229,14 +302,14 @@ a:hover {
     display: flex;
     align-items: center;
     padding: 10px 16px 10px 40px;
-    color: var(--text-secondary);
+    color: var(--color-text-secondary);
     transition: all var(--transition-speed);
     border-left: 3px solid transparent;
 }
 
 .submenu-link:hover {
     background-color: rgba(255, 255, 255, 0.05);
-    color: var(--text-primary);
+    color: var(--color-text-primary);
 }
 
 .submenu-item.active .submenu-link {
@@ -260,7 +333,7 @@ a:hover {
     padding: 16px;
     border-top: 1px solid var(--border-color);
     font-size: 0.8rem;
-    color: var(--text-muted);
+    color: var(--color-text-muted);
 }
 
 .version-info {
@@ -308,7 +381,7 @@ a:hover {
 .menu-toggle {
     background: transparent;
     border: none;
-    color: var(--text-secondary);
+    color: var(--color-text-secondary);
     font-size: 1.25rem;
     margin-right: 16px;
     cursor: pointer;
@@ -318,14 +391,14 @@ a:hover {
 }
 
 .menu-toggle:hover {
-    color: var(--text-primary);
+    color: var(--color-text-primary);
 }
 
 .page-title {
     font-size: 1.5rem;
     font-weight: 500;
     margin: 0;
-    color: var(--text-primary);
+    color: var(--color-text-primary);
 }
 
 .header-right {
@@ -340,7 +413,7 @@ a:hover {
 .user-menu .btn {
     background: transparent;
     border: none;
-    color: var(--text-secondary);
+    color: var(--color-text-secondary);
     display: flex;
     align-items: center;
     padding: 8px 12px;
@@ -348,7 +421,7 @@ a:hover {
 }
 
 .user-menu .btn:hover {
-    color: var(--text-primary);
+    color: var(--color-text-primary);
 }
 
 .user-menu .username {
@@ -362,12 +435,12 @@ a:hover {
 }
 
 .dropdown-item {
-    color: var(--text-secondary);
+    color: var(--color-text-secondary);
 }
 
 .dropdown-item:hover {
     background-color: rgba(255, 255, 255, 0.05);
-    color: var(--text-primary);
+    color: var(--color-text-primary);
 }
 
 .dropdown-divider {
@@ -403,7 +476,7 @@ a:hover {
     margin: 0;
     font-size: 1.1rem;
     font-weight: 500;
-    color: var(--text-primary);
+    color: var(--color-text-primary);
 }
 
 .card-body {
@@ -418,14 +491,14 @@ a:hover {
 
 /* Table Styles */
 .table {
-    color: var(--text-primary);
+    color: var(--color-text-primary);
     margin-bottom: 0;
 }
 
 .table thead th {
     border-bottom: 2px solid var(--border-color);
     border-top: none;
-    color: var(--text-secondary);
+    color: var(--color-text-secondary);
     font-weight: 500;
     text-transform: uppercase;
     font-size: 0.8rem;
@@ -494,14 +567,14 @@ a:hover {
     background-color: var(--bg-dark);
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius);
-    color: var(--text-primary);
+    color: var(--color-text-primary);
     padding: 10px 12px;
 }
 
 .form-control:focus {
     background-color: var(--bg-dark);
     border-color: var(--accent-color);
-    color: var(--text-primary);
+    color: var(--color-text-primary);
     box-shadow: 0 0 0 0.2rem rgba(76, 175, 80, 0.25);
 }
 
@@ -510,7 +583,7 @@ a:hover {
 }
 
 label {
-    color: var(--text-secondary);
+    color: var(--color-text-secondary);
     margin-bottom: 0.5rem;
     font-weight: 500;
 }
@@ -580,20 +653,20 @@ label {
 }
 
 .login-header h2 {
-    color: var(--text-primary);
+    color: var(--color-text-primary);
     margin-bottom: 8px;
     font-weight: 600;
 }
 
 .login-header p {
-    color: var(--text-secondary);
+    color: var(--color-text-secondary);
 }
 
 /* Sensor Grid and Card Styles */
 .sensor-zone-title {
     font-size: 1rem;
     font-weight: 500;
-    color: var(--text-secondary);
+    color: var(--color-text-secondary);
     margin: 16px 0 12px 0;
     padding-bottom: 8px;
     border-bottom: 1px solid var(--border-color);
@@ -628,7 +701,7 @@ label {
 
 .sensor-name {
     font-weight: 500;
-    color: var(--text-secondary);
+    color: var(--color-text-secondary);
     margin-bottom: 8px;
     font-size: 0.9rem;
 }
@@ -637,7 +710,7 @@ label {
     font-size: 1.8rem;
     font-weight: 600;
     margin-bottom: 8px;
-    color: var(--text-primary);
+    color: var(--color-text-primary);
 }
 
 .sensor-value.text-danger {
@@ -650,7 +723,7 @@ label {
 
 .sensor-date {
     font-size: 0.8rem;
-    color: var(--text-muted);
+    color: var(--color-text-muted);
     margin-top: auto;
     margin-bottom: 8px;
 }
@@ -879,7 +952,7 @@ label {
 
 .empty-state-icon {
     font-size: 3.5rem;
-    color: var(--text-muted);
+    color: var(--color-text-muted);
     margin-bottom: 20px;
     opacity: 0.6;
     width: 80px;
@@ -894,12 +967,12 @@ label {
 .empty-state h4 {
     font-size: 1.25rem;
     font-weight: 500;
-    color: var(--text-primary);
+    color: var(--color-text-primary);
     margin-bottom: 10px;
 }
 
 .empty-state p {
-    color: var(--text-secondary);
+    color: var(--color-text-secondary);
     margin-bottom: 20px;
     max-width: 400px;
 }
@@ -919,7 +992,7 @@ label {
 
 .toast {
     background-color: var(--bg-card);
-    color: var(--text-primary);
+    color: var(--color-text-primary);
     border: 1px solid var(--border-color);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     margin-bottom: 10px;
@@ -927,7 +1000,7 @@ label {
 
 .toast-header {
     background-color: rgba(255, 255, 255, 0.05);
-    color: var(--text-primary);
+    color: var(--color-text-primary);
     border-bottom: 1px solid var(--border-color);
 }
 
@@ -985,11 +1058,11 @@ label {
 .login-header h2 {
     margin-top: 10px;
     margin-bottom: 5px;
-    color: var(--text-primary);
+    color: var(--color-text-primary);
 }
 
 .login-header p {
-    color: var(--text-secondary);
+    color: var(--color-text-secondary);
     margin-bottom: 0;
 }
 
@@ -1163,12 +1236,12 @@ label {
 }
 
 .close {
-    color: var(--text-secondary);
+    color: var(--color-text-secondary);
     text-shadow: none;
 }
 
 .close:hover {
-    color: var(--text-primary);
+    color: var(--color-text-primary);
 }
 
 /* Modal centering */
@@ -1187,7 +1260,7 @@ label {
 }
 
 .nav-tabs .nav-link {
-    color: var(--text-secondary);
+    color: var(--color-text-secondary);
     border: none;
     border-bottom: 2px solid transparent;
     border-radius: 0;
@@ -1196,7 +1269,7 @@ label {
 }
 
 .nav-tabs .nav-link:hover {
-    color: var(--text-primary);
+    color: var(--color-text-primary);
     border-color: transparent;
 }
 
@@ -1213,13 +1286,13 @@ label {
 .page-link {
     background-color: var(--bg-card);
     border: 1px solid var(--border-color);
-    color: var(--text-secondary);
+    color: var(--color-text-secondary);
 }
 
 .page-link:hover {
     background-color: rgba(255, 255, 255, 0.05);
     border-color: var(--border-color);
-    color: var(--text-primary);
+    color: var(--color-text-primary);
 }
 
 .page-item.active .page-link {
@@ -1230,7 +1303,7 @@ label {
 .page-item.disabled .page-link {
     background-color: var(--bg-card);
     border-color: var(--border-color);
-    color: var(--text-muted);
+    color: var(--color-text-muted);
 }
 
 /* Custom Scrollbar */
@@ -1249,7 +1322,7 @@ label {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: var(--text-muted);
+    background: var(--color-text-muted);
 }
 
 /* ==========================================================================
@@ -1285,13 +1358,13 @@ body.login-page-body { /* Added class to scope these styles */
     font-size: 2rem; /* Larger title */
     margin-bottom: 0.5rem;
     font-weight: 600; /* Match other headers */
-    color: var(--text-primary);
+    color: var(--color-text-primary);
 }
 
 .login-page-body .login-header p {
     font-size: 1rem; /* Subtitle size */
     margin-bottom: 2rem;
-    color: var(--text-secondary);
+    color: var(--color-text-secondary);
 }
 
 /* Input group styling for login form */
@@ -1299,7 +1372,7 @@ body.login-page-body { /* Added class to scope these styles */
     background-color: var(--bg-card); /* Match input background */
     border: 1px solid var(--border-color);
     border-right: none; /* Remove right border */
-    color: var(--text-muted);
+    color: var(--color-text-muted);
 }
 
 .login-page-body .form-control {
@@ -1338,7 +1411,7 @@ body.login-page-body { /* Added class to scope these styles */
 }
 
 .login-page-body .login-links a {
-    color: var(--text-secondary);
+    color: var(--color-text-secondary);
     margin: 0 10px;
     font-size: 0.9rem;
 }
@@ -1352,5 +1425,5 @@ body.login-page-body { /* Added class to scope these styles */
     text-align: center;
     margin-top: 2rem; /* More space above footer */
     font-size: 0.8rem;
-    color: var(--text-muted);
+    color: var(--color-text-muted);
 }

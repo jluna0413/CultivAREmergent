@@ -135,6 +135,26 @@ body {
   --blur-lg: blur(16px);
 }
 
+/* Compatibility mappings
+   Many legacy stylesheets and templates use older token names (e.g. --text-primary,
+   --background). Map those legacy names to the canonical --color-* tokens so
+   they follow the same theme overrides applied by [data-theme="dark"].
+   This is intentionally minimal and safe; it can be removed after a full
+   migration to the canonical naming scheme. */
+:root {
+  --text-primary: var(--color-text-primary);
+  --text-secondary: var(--color-text-secondary);
+  --text-tertiary: var(--color-text-tertiary);
+  --text-inverse: var(--color-text-inverse);
+
+  --background: var(--color-background-primary);
+  --background-secondary: var(--color-background-secondary);
+
+  /* Glass vars: preserve existing semantics but prefer canonical tokens where available */
+  --glass-bg-light: var(--glass-bg-light);
+  --glass-bg-dark: var(--glass-bg-dark);
+}
+
 /* === DARK THEME === */
 [data-theme="dark"] {
   /* Dark Theme Color System */

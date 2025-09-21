@@ -283,7 +283,7 @@ def marketing_home():
     ).count()
 
     return render_template(
-        "marketing/home.html",
+        "marketing/site.html",
         title="CultivAR - Professional Cannabis Grow Management",
         featured_posts=featured_posts,
         waitlist_count=waitlist_count,
@@ -308,6 +308,13 @@ def waitlist_stats():
         "today": today,
         "this_week": this_week
     })
+
+
+# Expose the marketing_home view for convenient top-level routing
+__all__ = [
+    'marketing_bp',
+    'marketing_home'
+]
 
 
 @marketing_bp.route("/api/blog/search")
