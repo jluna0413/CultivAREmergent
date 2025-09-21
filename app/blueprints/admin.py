@@ -42,10 +42,22 @@ from app.models import db
 from app.models.base_models import User
 from app.utils.rate_limiter import limiter
 from app.models.base_models import User
+from app.logger import logger
 
 admin_bp = Blueprint(
     "admin", __name__, url_prefix="/admin", template_folder="../web/templates"
 )
+
+
+@admin_bp.route("/")
+@login_required
+def admin_redirect():
+    """Redirect admin root page to /admin/users."""
+    if not current_user.is_admin:
+        flash("Access denied. Admin privileges required.", "danger")
+        return redirect(url_for("dashboard.dashboard"))
+
+    return redirect(url_for("admin.users"))
 
 
 @admin_bp.route("/users")
@@ -144,6 +156,38 @@ def delete_user_route(user_id):
 
     result = delete_user(user_id)
     return jsonify(result)
+
+
+@admin_bp.route('/users/bulk-delete', methods=['POST'])
+@login_required
+def bulk_delete_users():
+    """Bulk delete users by IDs (expects JSON {"user_ids": [1,2,3]})"""
+    if not current_user.is_admin:
+        return jsonify({"success": False, "error": "Access denied"}), 403
+
+    payload = request.get_json(silent=True) or {}
+    user_ids = payload.get('user_ids') if isinstance(payload.get('user_ids'), list) else None
+    if not user_ids:
+        return jsonify({"success": False, "error": "No user_ids provided"}), 400
+
+    try:
+        # Convert to integers and filter out current admin to avoid self-delete
+        ids = [int(uid) for uid in user_ids if int(uid) != current_user.id]
+        if not ids:
+            return jsonify({"success": False, "error": "No valid user IDs to delete"}), 400
+
+        # Use handler to perform deletes (handler should manage related cleanup)
+        deleted = 0
+        for uid in ids:
+            res = delete_user(uid)
+            if res.get('success'):
+                deleted += 1
+
+        return jsonify({"success": True, "message": f"Deleted {deleted} users"})
+    except Exception as e:
+        db.session.rollback()
+        logger.error(f"Bulk delete users failed: {e}")
+        return jsonify({"success": False, "error": "Server error during bulk delete"}), 500
 
 
 @admin_bp.route("/users/<int:user_id>/toggle-admin", methods=["POST"])
@@ -427,13 +471,9 @@ def get_users_api():
             "id": user.id,
             "username": user.username,
             "email": user.email if hasattr(user, "email") else "",
-            "role": user.role if hasattr(user, "role") else "user",
+            "role": "admin" if hasattr(user, "is_admin") and user.is_admin else "user",
             "is_active": True,  # In a real app, you'd check a status field
-            "last_login": (
-                user.last_login.isoformat()
-                if hasattr(user, "last_login") and user.last_login
-                else None
-            ),
+            "last_login": None,  # last_login field doesn't exist in User model
         }
         user_list.append(user_dict)
 
@@ -469,7 +509,7 @@ def add_user_api():
 @admin_required
 def get_user_api(user_id):
     """Get a user by ID."""
-    user = db.session.get(User, user_id)
+    user = db.session.get(User, ident=user_id)
 
     if not user:
         return jsonify({"error": "User not found"}), 404
@@ -478,13 +518,9 @@ def get_user_api(user_id):
         "id": user.id,
         "username": user.username,
         "email": user.email if hasattr(user, "email") else "",
-        "role": user.role if hasattr(user, "role") else "user",
+        "role": "admin" if hasattr(user, "is_admin") and user.is_admin else "user",
         "is_active": True,  # In a real app, you'd check a status field
-        "last_login": (
-            user.last_login.isoformat()
-            if hasattr(user, "last_login") and user.last_login
-            else None
-        ),
+        "last_login": None,  # last_login field doesn't exist in User model
     }
 
     return jsonify(user_dict)
@@ -494,12 +530,14 @@ def get_user_api(user_id):
 @admin_required
 def update_user_api(user_id):
     """Update a user."""
-    user = User.query.session.get(user_id)
+    user = db.session.get(User, ident=user_id)
 
     if not user:
         return jsonify({"error": "User not found"}), 404
 
-    data = request.json
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "No JSON data received"}), 400
 
     # Update fields
     if data.get("username"):
@@ -514,7 +552,8 @@ def update_user_api(user_id):
         user.email = data["email"]
 
     if data.get("role"):
-        user.role = data["role"]
+        # Map role to is_admin field
+        user.is_admin = (data["role"] == "admin")
 
     # Save changes
     db.session.commit()
@@ -532,12 +571,14 @@ def update_user_api(user_id):
 @admin_required
 def reset_user_password_api(user_id):
     """Reset a user's password."""
-    user = User.query.session.get(user_id)
+    user = db.session.get(User, ident=user_id)
 
     if not user:
         return jsonify({"error": "User not found"}), 404
 
-    data = request.json
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "No JSON data received"}), 400
 
     if not data.get("new_password"):
         return jsonify({"error": "New password is required"}), 400
@@ -559,14 +600,14 @@ def reset_user_password_api(user_id):
 @admin_required
 def delete_user_api(user_id):
     """Delete a user."""
-    user = User.query.session.get(user_id)
+    user = db.session.get(User, ident=user_id)
 
     if not user:
         return jsonify({"error": "User not found"}), 404
 
     # Don't allow deleting the last admin user
-    if hasattr(user, "role") and user.role == "admin":
-        admin_count = User.query.filter_by(role="admin").count()
+    if hasattr(user, "is_admin") and user.is_admin:
+        admin_count = User.query.filter_by(is_admin=True).count()
         if admin_count <= 1:
             return jsonify({"error": "Cannot delete the last admin user"}), 400
 
@@ -632,24 +673,21 @@ def get_system_info_api():
     try:
         import psutil
 
-        system_info.update(
-            {
-                "cpu_count": psutil.cpu_count(),
-                "memory_total": round(
-                    psutil.virtual_memory().total / (1024 * 1024 * 1024), 2
-                ),  # GB
-                "memory_available": round(
-                    psutil.virtual_memory().available / (1024 * 1024 * 1024), 2
-                ),  # GB
-                "disk_total": round(
-                    psutil.disk_usage("/").total / (1024 * 1024 * 1024), 2
-                ),  # GB
-                "disk_free": round(
-                    psutil.disk_usage("/").free / (1024 * 1024 * 1024), 2
-                ),  # GB
-                "boot_time": datetime.fromtimestamp(psutil.boot_time()).isoformat(),
-            }
-        )
+        cpu_count = psutil.cpu_count()
+        system_info["cpu_count"] = str(cpu_count) if cpu_count is not None else "N/A"
+        system_info["memory_total"] = str(round(
+            psutil.virtual_memory().total / (1024 * 1024 * 1024), 2
+        ))  # GB
+        system_info["memory_available"] = str(round(
+            psutil.virtual_memory().available / (1024 * 1024 * 1024), 2
+        ))  # GB
+        system_info["disk_total"] = str(round(
+            psutil.disk_usage("/").total / (1024 * 1024 * 1024), 2
+        ))  # GB
+        system_info["disk_free"] = str(round(
+            psutil.disk_usage("/").free / (1024 * 1024 * 1024), 2
+        ))  # GB
+        system_info["boot_time"] = datetime.fromtimestamp(psutil.boot_time()).isoformat()
     except ImportError:
         # psutil not available, add some basic info
         system_info.update(
