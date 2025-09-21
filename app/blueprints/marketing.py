@@ -1,0 +1,338 @@
+"""
+Marketing blueprint for the CultivAR application.
+Handles waitlist, blog, and lead magnet functionality.
+"""
+
+import os
+import secrets
+from datetime import datetime, timedelta
+from flask import Blueprint, flash, redirect, render_template, request, url_for, jsonify, send_from_directory, current_app
+from flask_login import current_user
+from werkzeug.utils import secure_filename
+from sqlalchemy import or_
+
+from app.logger import logger
+from app.models.base_models import Waitlist, BlogPost, LeadMagnet, LeadMagnetDownload, NewsletterSubscriber, db  # type: ignore
+from app.utils.rate_limiter import limiter
+
+marketing_bp = Blueprint("marketing", __name__, url_prefix="/marketing", template_folder="../web/templates")
+
+
+# Waitlist Routes
+@marketing_bp.route("/waitlist", methods=["GET", "POST"])
+def waitlist():
+    """Handle waitlist signups."""
+    if request.method == "POST":
+        email = request.form.get("email", "").strip().lower()
+        priority_tier = request.form.get("priority_tier", "general")
+        referral_code = request.form.get("referral_code", "").strip()
+
+        # Validate email
+        import re
+        email_re = re.compile(r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$")
+        if not email or not email_re.match(email):
+            flash("Please enter a valid email address.", "danger")
+            return redirect(url_for("marketing.waitlist"))
+
+        # Check if email already exists
+        existing = Waitlist.query.filter_by(email=email).first()
+        if existing:
+            flash("This email is already on the waitlist!", "info")
+            return redirect(url_for("marketing.waitlist"))
+
+        # Generate referral code
+        new_referral_code = secrets.token_urlsafe(8)
+
+        # Handle referral
+        referred_by = None
+        if referral_code:
+            referrer = Waitlist.query.filter_by(referral_code=referral_code).first()
+            if referrer:
+                referred_by = referrer.id
+
+        # Create waitlist entry
+        waitlist_entry = Waitlist(
+            email=email,
+            priority_tier=priority_tier,
+            referral_code=new_referral_code,
+            referred_by=referred_by,
+            ip_address=request.remote_addr,
+            user_agent=request.user_agent.string[:255]
+        )
+
+        db.session.add(waitlist_entry)
+        db.session.commit()
+
+        logger.info(f"New waitlist signup: {email} (tier: {priority_tier})")
+
+        flash("Welcome to the waitlist! Check your email for next steps.", "success")
+        return redirect(url_for("marketing.waitlist_success", code=new_referral_code))
+
+    return render_template("marketing/waitlist.html", title="Join the Waitlist")
+
+
+@marketing_bp.route("/waitlist/success/<code>")
+def waitlist_success(code):
+    """Show waitlist success page with referral code."""
+    waitlist_entry = Waitlist.query.filter_by(referral_code=code).first_or_404()
+    return render_template(
+        "marketing/waitlist_success.html",
+        title="Welcome to the Waitlist",
+        referral_code=waitlist_entry.referral_code,
+        email=waitlist_entry.email
+    )
+
+
+# Blog Routes
+@marketing_bp.route("/blog")
+def blog():
+    """Display blog posts."""
+    page = request.args.get('page', 1, type=int)
+    category = request.args.get('category', None)
+
+    # Query published posts
+    query = BlogPost.query.filter_by(is_published=True)
+
+    if category:
+        query = query.filter_by(category=category)
+
+    posts = query.order_by(BlogPost.publish_date.desc()).paginate(
+        page=page, per_page=10, error_out=False
+    )
+
+    # Get all categories for filter
+    categories = db.session.query(BlogPost.category).filter(
+        BlogPost.category.isnot(None),
+        BlogPost.is_published == True
+    ).distinct().all()
+
+    return render_template(
+        "marketing/blog.html",
+        title="Blog",
+        posts=posts,
+        categories=[cat[0] for cat in categories if cat[0]]
+    )
+
+
+@marketing_bp.route("/blog/<slug>")
+def blog_post(slug):
+    """Display individual blog post."""
+    post = BlogPost.query.filter_by(slug=slug, is_published=True).first_or_404()
+
+    # Increment view count
+    post.view_count += 1
+    db.session.commit()
+
+    return render_template("marketing/blog_post.html", title=post.title, post=post)
+
+
+# Lead Magnet Routes
+@marketing_bp.route("/download/<magnet_name>")
+def download_lead_magnet(magnet_name):
+    """Handle lead magnet downloads."""
+    magnet = LeadMagnet.query.filter_by(name=magnet_name, is_active=True).first()
+
+    if not magnet:
+        flash("Download not found.", "danger")
+        return redirect(url_for("marketing.marketing_home"))
+
+    # Get email from form or query parameter
+    email = request.args.get("email", "").strip().lower()
+
+    # Validate email robustly (prefer email_validator if installed)
+    if not email:
+        flash("Please provide a valid email address to download.", "warning")
+        return redirect(url_for("marketing.marketing_home"))
+
+    try:
+        # try to use the email_validator package for accurate checks
+        from email_validator import validate_email, EmailNotValidError  # type: ignore
+        try:
+            validate_email(email)
+        except EmailNotValidError:
+            flash("Please provide a valid email address to download.", "warning")
+            return redirect(url_for("marketing.marketing_home"))
+    except Exception:
+        # fallback to a reasonable regex
+        import re
+        email_re = re.compile(r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$")
+        if not email_re.match(email):
+            flash("Please provide a valid email address to download.", "warning")
+            return redirect(url_for("marketing.marketing_home"))
+
+    # Check if already downloaded recently (prevent spam)
+    try:
+        utc_now = datetime.utcnow()
+        # consider 'today' as since UTC midnight to avoid timezone surprises
+        start_of_utc_day = utc_now.replace(hour=0, minute=0, second=0, microsecond=0)
+
+        recent_download = LeadMagnetDownload.query.filter_by(
+            lead_magnet_id=magnet.id,
+            email=email
+        ).filter(
+            LeadMagnetDownload.download_date >= start_of_utc_day
+        ).first()
+
+        if recent_download:
+            flash("You've already downloaded this today. Check your email!", "info")
+            return redirect(url_for("marketing.marketing_home"))
+    except Exception as e:
+        logger.exception(f"Error while checking recent downloads for {email}: {e}")
+        # proceed — do not block download on non-critical read errors
+
+    # Record download and increment count inside a transaction
+    try:
+        download = LeadMagnetDownload(
+            lead_magnet_id=magnet.id,
+            email=email,
+            ip_address=request.remote_addr,
+            user_agent=request.user_agent.string[:255]
+        )
+
+        # Increment download count
+        magnet.download_count = (magnet.download_count or 0) + 1
+
+        db.session.add(download)
+        db.session.add(magnet)
+        db.session.commit()
+
+        logger.info(f"Lead magnet downloaded: {magnet_name} by {email}")
+    except Exception as e:
+        db.session.rollback()
+        logger.exception(f"Failed to record lead magnet download for {email}: {e}")
+        flash("An error occurred while processing your download. Please try again later.", "danger")
+        return redirect(url_for("marketing.marketing_home"))
+
+    # Serve file from a configured safe directory to avoid arbitrary path exposure
+    try:
+        safe_dir = current_app.config.get('LEAD_MAGNET_DIR', os.path.join(current_app.root_path, 'static', 'lead_magnets'))
+        safe_dir_abs = os.path.abspath(safe_dir)
+        filename = os.path.basename(magnet.file_path)
+        file_path = os.path.join(safe_dir_abs, filename)
+
+        if not os.path.exists(file_path):
+            logger.error(f"Lead magnet file not found at expected path: {file_path}")
+            flash("Download file not found. Please contact support.", "danger")
+            return redirect(url_for("marketing.marketing_home"))
+
+        # send_from_directory will set safe headers and attachment
+        return send_from_directory(safe_dir_abs, filename, as_attachment=True, download_name=f"{secure_filename(magnet_name)}.pdf")
+    except Exception as e:
+        logger.exception(f"Error serving lead magnet {magnet_name} to {email}: {e}")
+        flash("An error occurred while preparing your download. Please contact support.", "danger")
+        return redirect(url_for("marketing.marketing_home"))
+
+
+@marketing_bp.route("/")
+def marketing_home():
+    """Marketing homepage."""
+    # Get featured blog posts
+    featured_posts = BlogPost.query.filter_by(is_published=True).order_by(
+        BlogPost.publish_date.desc()
+    ).limit(3).all()
+
+    # Get waitlist stats for social proof
+    waitlist_count = Waitlist.query.count()
+    today_signups = Waitlist.query.filter(
+        Waitlist.signup_date >= datetime.utcnow().replace(hour=0, minute=0, second=0)
+    ).count()
+
+    return render_template(
+        "marketing/home.html",
+        title="CultivAR - Professional Cannabis Grow Management",
+        featured_posts=featured_posts,
+        waitlist_count=waitlist_count,
+        today_signups=today_signups
+    )
+
+
+# API Routes
+@marketing_bp.route("/api/waitlist/stats")
+def waitlist_stats():
+    """Get waitlist statistics for social proof."""
+    total = Waitlist.query.count()
+    today = Waitlist.query.filter(
+        Waitlist.signup_date >= datetime.utcnow().replace(hour=0, minute=0, second=0)
+    ).count()
+    this_week = Waitlist.query.filter(
+        Waitlist.signup_date >= datetime.utcnow() - timedelta(days=7)
+    ).count()
+
+    return jsonify({
+        "total": total,
+        "today": today,
+        "this_week": this_week
+    })
+
+
+@marketing_bp.route("/api/blog/search")
+def search_blog():
+    """Search and filter blog posts.
+
+    Behavior:
+    - If only `category` is provided (no `q`), return recent posts in that category.
+    - If `q` is provided (optionally with `category`), full-text search within published posts.
+    - If neither is provided, return the most recent published posts.
+    Response fields are shaped for app/web/static/js/blog.js expectations.
+    """
+    q = request.args.get('q', '').strip()
+    category = request.args.get('category', '').strip()
+
+    # Base query: published posts only
+    query = BlogPost.query.filter(BlogPost.is_published == True)
+
+    # Optional category filter
+    if category:
+        query = query.filter(BlogPost.category == category)
+
+    # Optional text search
+    if q:
+        like = f"%{q}%"
+        query = query.filter(
+            or_(
+                BlogPost.title.ilike(like),  # type: ignore
+                BlogPost.content.ilike(like),  # type: ignore
+                BlogPost.excerpt.ilike(like),  # type: ignore
+                BlogPost.tags.ilike(like)  # type: ignore
+            )
+        )
+
+    posts = query.order_by(BlogPost.publish_date.desc()).limit(10).all()
+
+    def fmt_date(dt):
+        try:
+            return dt.strftime("%b %d, %Y") if dt else ""
+        except Exception:
+            return ""
+
+    return jsonify({
+        "posts": [{
+            "id": post.id,
+            "title": post.title,
+            "slug": post.slug,
+            "excerpt": post.excerpt or (post.content[:150] + '...') if post.content else "",
+            "author": post.author or "CultivAR Team",
+            "category": post.category or "General",
+            # Fields expected by blog.js renderer
+            "url": url_for('marketing.blog_post', slug=post.slug),
+            "date": fmt_date(post.publish_date),
+            "isoDate": post.publish_date.isoformat() if getattr(post, 'publish_date', None) else "",
+            "imageUrl": post.featured_image or "",
+            "imageAlt": post.title
+        } for post in posts]
+    })
+
+
+# Error Handlers
+@marketing_bp.errorhandler(404)
+def not_found(error):
+    """Handle 404 errors."""
+    return render_template("marketing/404.html", title="Page Not Found"), 404
+
+
+@marketing_bp.errorhandler(500)
+def internal_error(error):
+    """Handle 500 errors."""
+    db.session.rollback()
+    logger.error(f"Marketing blueprint error: {error}")
+    return render_template("marketing/500.html", title="Server Error"), 500
