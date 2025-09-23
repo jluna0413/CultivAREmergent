@@ -3,27 +3,75 @@ name: Automated Patch Application
 on:
   schedule:
     - cron: '0 2 * * 1' # weekly on Monday at 02:00 UTC (adjust as needed)
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      applyPatches:
+        description: "Apply patches and open PRs (requires write perms)"
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+  pull-requests: read
 
 jobs:
   apply-patches:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.x'
 
       - name: Run patch generator
         run: python3 scripts/generate_patch_suggestions.py
 
-      - name: List patches
-        run: ls -la scripts/patches || true
-
-      - name: Dry-run notice
+      - name: Detect patches
+        id: detect
         run: |
-          echo "Generated patch suggestions only. To apply patches automatically, run scripts/auto_apply_patches_and_create_prs.ps1 with gh auth."
+          if [ -d scripts/patches ] && compgen -G "scripts/patches/*.patch" > /dev/null; then
+            echo "found=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "found=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: List patches
+        if: steps.detect.outputs.found == 'true'
+        run: ls -la scripts/patches
+
+      - name: Upload patches artifact
+        if: steps.detect.outputs.found == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: patch-suggestions
+          path: scripts/patches/*.patch
+          if-no-files-found: ignore
+
+      - name: Configure git identity (for PR branches)
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.applyPatches && steps.detect.outputs.found == 'true' }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Apply patches and create PRs
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.applyPatches && steps.detect.outputs.found == 'true' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          pwsh -File scripts/auto_apply_patches_and_create_prs.ps1 -PatchDir scripts/patches -BaseBranch main -CheckCmd "python3 scripts/check_all_jinja.py"
+
+      - name: Summary
+        run: |
+          echo "Patches found: ${{ steps.detect.outputs.found }}"
+          echo "Apply patches requested: ${{ github.event_name == 'workflow_dispatch' && inputs.applyPatches }}"
         
