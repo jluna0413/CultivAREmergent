@@ -1,0 +1,11 @@
+--- a/app/web/templates/admin/export.html
++++ b/app/web/templates/admin/export.html
+@@ -167,7 +167,7 @@
+                 </div>
+             </div>
+             <div class="backup-action">
+-                <a href="{{ url_for('export_complete') }}" class="btn btn-backup" onclick="showBackupProgress()">
++                <a href="{{ url_for('export_complete') }}" class="btn btn-backup" data-action="showBackupProgress">
+                     <i class="fas fa-download"></i> Create Complete Backup
+                 </a>
+                 <p class="backup-note">This may take a few moments for large datasets</p>

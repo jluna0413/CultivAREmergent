@@ -1,0 +1,33 @@
+--- a/app/web/templates/views/strains.html
++++ b/app/web/templates/views/strains.html
+@@ -45,10 +45,10 @@
+     <div class="col-md-4 text-end">
+         <div class="view-toggle mb-2">
+             <div class="btn-group" role="group" aria-label="View toggle">
+-                <button type="button" onclick="setGridView()" id="grid-view-btn" class="btn btn-sm btn-outline-secondary active">
++                <button type="button" data-action="setGridView" id="grid-view-btn" class="btn btn-sm btn-outline-secondary active">
+                     <i class="fas fa-th"></i> Grid
+                 </button>
+-                <button type="button" onclick="setListView()" id="list-view-btn" class="btn btn-sm btn-outline-secondary">
++                <button type="button" data-action="setListView" id="list-view-btn" class="btn btn-sm btn-outline-secondary">
+                     <i class="fas fa-list"></i> List
+                 </button>
+             </div>
+@@ -218,7 +218,7 @@
+             </div>
+             <div class="modal-footer">
+                 <button type="button" class="btn btn-secondary" onclick="closeModal('addStrainModal')">Cancel</button>
+-                <button type="button" onclick="saveStrain()" class="btn btn-primary" id="save-strain-btn">Save Strain</button>
++                <button type="button" data-action="saveStrain" class="btn btn-primary" id="save-strain-btn">Save Strain</button>
+             </div>
+         </div>
+     </div>
+@@ -242,7 +242,7 @@
+             </div>
+             <div class="modal-footer">
+                 <button type="button" class="btn btn-secondary" onclick="closeModal('addBreederModal')">Cancel</button>
+-                <button type="button" onclick="saveBreeder()" class="btn btn-primary" id="save-breeder-btn">Save Breeder</button>
++                <button type="button" data-action="saveBreeder" class="btn btn-primary" id="save-breeder-btn">Save Breeder</button>
+             </div>
+         </div>
+     </div>
