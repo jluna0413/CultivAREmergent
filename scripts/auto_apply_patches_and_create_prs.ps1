@@ -22,7 +22,7 @@ if (-not (Get-Command gh -ErrorAction SilentlyContinue)) { throw "gh (GitHub CLI
 $PatchDir = (Resolve-Path $PatchDir).Path
 Write-Host "Scanning patches in $PatchDir"
 
-Get-ChildItem -Path $PatchDir -Filter "*.patch" | ForEach-Object {
+Get-ChildItem -Path $PatchDir -Filter "*.patch" | Sort-Object Name | ForEach-Object {
     $patch = $_.FullName
     $patchName = $_.BaseName
     $branch = "auto/patch/$patchName"
@@ -39,8 +39,14 @@ Get-ChildItem -Path $PatchDir -Filter "*.patch" | ForEach-Object {
 
     git checkout -b $branch
 
+    # Copy patch to a stable temp location so it remains accessible across checkouts
+    $tmpRoot = if ($env:RUNNER_TEMP) { $env:RUNNER_TEMP } elseif ($env:TEMP) { $env:TEMP } else { Join-Path (Get-Location) ".gitpatchtmp" }
+    if (-not (Test-Path $tmpRoot)) { New-Item -ItemType Directory -Force -Path $tmpRoot | Out-Null }
+    $tmpPatch = Join-Path $tmpRoot ("$patchName.patch")
+    Get-Content -Raw -Path $patch | Set-Content -Path $tmpPatch -NoNewline:$false
+
     try {
-        git apply --index $patch
+        git apply --index $tmpPatch
     } catch {
         Write-Warning "Patch failed to apply cleanly: $patchName. Aborting branch and leaving patch for manual review."
         git checkout $BaseBranch
@@ -48,8 +54,17 @@ Get-ChildItem -Path $PatchDir -Filter "*.patch" | ForEach-Object {
         return
     }
 
-    # Stage any changes from the patch explicitly (defensive add for CI envs)
-    git add -A
+    # Stage only modified/deleted tracked files, avoid committing the .patch files themselves
+    git add -u
+
+    # If nothing changed, skip commit/PR
+    $status = git status --porcelain
+    if (-not $status) {
+        Write-Host "No file changes detected after applying $patchName; skipping commit/PR."
+        git checkout $BaseBranch
+        git branch -D $branch
+        return
+    }
 
     $checkSucceeded = $true
     if (Test-Path (Join-Path (Get-Location) $CheckCmd.Split(' ')[1])) {
