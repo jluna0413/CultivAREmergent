@@ -1,0 +1,19 @@
+--- a/app/web/templates/views/plant.html
++++ b/app/web/templates/views/plant.html
+@@ -5,7 +5,7 @@
+ {% block header %}
+
+ <div class="plant-header">
+
+     <div class="plant-title-section">
+
+-        <button class="btn btn-sm btn-secondary back-btn" onclick="history.back()">
+
++        <button class="btn btn-sm btn-secondary back-btn" data-action="back">
+
+             <i class="fas fa-arrow-left"></i> Back
+
+         </button>
+
+         <h1 class="plant-title">{{ plant.name }}</h1>
+
