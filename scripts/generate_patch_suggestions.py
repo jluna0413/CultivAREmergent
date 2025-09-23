@@ -50,9 +50,18 @@ def generate_patch(path: Path):
         else:
             new.append(ln)
     if changed:
-        diff = difflib.unified_diff(text, new, fromfile=str(path), tofile=str(path), lineterm="")
+        # Use git-style a/ and b/ paths with repo-relative location for better compatibility with `git apply`.
+        rel = path.relative_to(ROOT).as_posix()
+        diff_lines = list(difflib.unified_diff(
+            text,
+            new,
+            fromfile=f"a/{rel}",
+            tofile=f"b/{rel}",
+            lineterm=""
+        ))
         patch_path = PATCH_DIR / (path.name + ".patch")
-        patch_path.write_text("\n".join(diff))
+        # Ensure trailing newline at EOF for patch parsers.
+        patch_path.write_text("\n".join(diff_lines) + "\n")
         return patch_path
     return None
 

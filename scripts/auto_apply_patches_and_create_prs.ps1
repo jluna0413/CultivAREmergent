@@ -48,13 +48,20 @@ Get-ChildItem -Path $PatchDir -Filter "*.patch" | ForEach-Object {
         return
     }
 
-    Write-Host "Running checks: $CheckCmd"
+    # Stage any changes from the patch explicitly (defensive add for CI envs)
+    git add -A
+
     $checkSucceeded = $true
-    try {
-        pwsh -NoProfile -Command $CheckCmd
-    } catch {
-        $checkSucceeded = $false
-        Write-Warning "Checks failed for $patchName. Leaving branch $branch for manual fix."
+    if (Test-Path (Join-Path (Get-Location) $CheckCmd.Split(' ')[1])) {
+        Write-Host "Running checks: $CheckCmd"
+        try {
+            pwsh -NoProfile -Command $CheckCmd
+        } catch {
+            $checkSucceeded = $false
+            Write-Warning "Checks failed for $patchName. Leaving branch $branch for manual fix."
+        }
+    } else {
+        Write-Warning "Check script not found; skipping checks for $patchName."
     }
 
     if (-not $checkSucceeded) {
@@ -67,7 +74,8 @@ Get-ChildItem -Path $PatchDir -Filter "*.patch" | ForEach-Object {
     $title = "Automated: apply patch $patchName"
     $body = "Auto-generated patch application for $patchName\n\nThis branch was created by scripts/auto_apply_patches_and_create_prs.ps1.\nPlease review and merge via normal workflow."
 
-    $ghCmd = "gh pr create --title `"$title`" --body `"$body`" --base $BaseBranch --head $branch --label $Label"
+    $ghCmd = "gh pr create --title `"$title`" --body `"$body`" --base $BaseBranch --head $branch"
+    if ($Label) { $ghCmd += " --label `"$Label`"" }
     if ($Reviewer) { $ghCmd += " --reviewer $Reviewer" }
     if (Test-Path $PrTemplatePath) { $ghCmd += " --body-file $PrTemplatePath" }
 
