@@ -1,0 +1,12 @@
+{% extends "common/base.html" %}
+{% block title %}Follow Us{% endblock %}
+{% block auth_content %}
+{% include 'marketing/_nav.html' %}
+<section class="section" style="padding: 8rem 1rem 4rem;">
+  <div class="section-container">
+    <h1>Follow Us</h1>
+    <p class="muted">Stay updated across platforms.</p>
+    {% include 'social/widgets/follow_buttons.html' %}
+  </div>
+</section>
+{% endblock %}

@@ -7,7 +7,7 @@ import os
 import sys
 import ssl
 from datetime import datetime, timedelta
-from flask import Flask, request
+from flask import Flask, request, g, redirect, url_for
 from flask_login import LoginManager
 from flask_talisman import Talisman
 from flask_limiter.errors import RateLimitExceeded
@@ -30,7 +30,19 @@ def create_app():
     
     # Load configuration
     from app.config.config import Config
-    app.config['SECRET_KEY'] = Config.SECRET_KEY
+    # Ensure SECRET_KEY is set. In development provide a safe fallback so
+    # sessions, flashes and CSRF work during local testing. Do NOT use the
+    # fallback in production.
+    secret_key = Config.SECRET_KEY
+    if not secret_key:
+        # When running in debug/dev mode, allow a predictable dev key so
+        # tests and local runs don't fail due to missing SECRET_KEY.
+        if Config.DEBUG:
+            secret_key = os.getenv('DEV_SECRET_KEY', 'dev-secret-key-for-local-testing')
+            print('WARNING: No SECRET_KEY set — using development fallback. Do not use in production.')
+        else:
+            raise ValueError('SECRET_KEY must be set in production environment.')
+    app.config['SECRET_KEY'] = secret_key
     app.config['SQLALCHEMY_DATABASE_URI'] = Config.get_database_uri()
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['UPLOAD_FOLDER'] = Config.UPLOAD_FOLDER
@@ -46,14 +58,14 @@ def create_app():
     # Initialize Flask-Login
     login_manager = LoginManager()
     login_manager.init_app(app)
-    login_manager.login_view = 'auth.login'
+    login_manager.login_view = 'auth.login'  # type: ignore
     login_manager.login_message = 'Please log in to access this page.'
     login_manager.login_message_category = 'info'
 
     @login_manager.user_loader
     def load_user(user_id):
         from app.models.base_models import User
-        return db.session.get(User, int(user_id))
+        return db.session.get(User, ident=int(user_id))
 
     # Configure Flask session settings
     app.config['SESSION_COOKIE_SECURE'] = not app.config.get('DEBUG', False)
@@ -64,46 +76,109 @@ def create_app():
 
     # Configure Flask-Talisman for enterprise-grade security headers
     # Adjust security settings based on environment
+    app.config['DEBUG'] = True  # Force debug mode for development testing
     is_production = not app.config.get('DEBUG', False)
 
-    talisman = Talisman(
-        app,
-        content_security_policy={
-            'default-src': "'self'",
-            'script-src': "'self' 'unsafe-inline' 'unsafe-eval'",
-            'style-src': "'self' 'unsafe-inline'",
-            'img-src': "'self' data: https:",
-            'font-src': "'self'",
-            'connect-src': "'self'",
-            'frame-src': "'none'",
-            'object-src': "'none'",
-            'base-uri': "'self'",
-            'form-action': "'self'",
-        },
-        content_security_policy_nonce_in=['script-src', 'style-src'],
-        strict_transport_security=is_production,
-        strict_transport_security_max_age=31536000,  # 1 year
-        strict_transport_security_include_subdomains=is_production,
-        strict_transport_security_preload=is_production,
-        session_cookie_secure=is_production,
-        session_cookie_http_only=True,
-        force_https=is_production,
-        force_https_permanent=is_production,
-        force_file_save=False,
-        frame_options='DENY',
-        x_content_type_options='nosniff',
-        referrer_policy='strict-origin-when-cross-origin',
-        permissions_policy={
-            'geolocation': (),
-            'camera': (),
-            'microphone': (),
-            'payment': (),
-            'usb': (),
-        }
-    )
+    # Use different Talisman configurations for production vs development
+    if is_production:
+        # Production: Enable HTTPS redirects and full security
+        talisman = Talisman(
+            app,
+            content_security_policy={
+                'default-src': "'self'",
+                'script-src': "'self'",
+                'style-src': "'self' 'unsafe-inline'",
+                'style-src-attr': "'unsafe-inline'",
+                'img-src': "'self' data: https:",
+                'font-src': "'self' data:",
+                'connect-src': "'self'",
+                'frame-src': "'none'",
+                'object-src': "'none'",
+                'base-uri': "'self'",
+                'form-action': "'self'",
+            },
+            content_security_policy_nonce_in=['script-src', 'style-src'],
+            strict_transport_security=is_production,
+            strict_transport_security_max_age=31536000,  # 1 year
+            strict_transport_security_include_subdomains=is_production,
+            strict_transport_security_preload=is_production,
+            session_cookie_secure=is_production,
+            session_cookie_http_only=True,
+            force_https=is_production,
+            force_https_permanent=is_production,
+            force_file_save=False,
+            frame_options='DENY',
+            x_content_type_options='nosniff',
+            referrer_policy='strict-origin-when-cross-origin',
+            permissions_policy={
+                'geolocation': (),
+                'camera': (),
+                'microphone': (),
+                'payment': (),
+                'usb': (),
+            }
+        )
+        print("DEBUG: Talisman initialized with force_https redirect")
+    else:
+        # In development, use minimal security headers without HTTPS redirects
+        talisman = Talisman(
+            app,
+            content_security_policy={
+                'default-src': "'self'",
+                'script-src': "'self' 'unsafe-inline' 'unsafe-eval'",
+                'style-src': "'self' 'unsafe-inline'",
+                'style-src-attr': "'unsafe-inline'",
+                'img-src': "'self' data: http: https:",
+                'font-src': "'self' data:",
+                'connect-src': "'self' data:",
+                'frame-src': "'none'",
+                'object-src': "'none'",
+                'base-uri': "'self'",
+                'form-action': "'self'",
+            },
+            content_security_policy_nonce_in=['script-src', 'style-src'],
+            strict_transport_security=False,
+            strict_transport_security_max_age=0,
+            strict_transport_security_include_subdomains=False,
+            strict_transport_security_preload=False,
+            session_cookie_secure=False,
+            session_cookie_http_only=True,
+            force_https=False,  # Disable HTTPS redirect for development
+            force_https_permanent=False,
+            frame_options='DENY',
+            x_content_type_options='nosniff',
+            referrer_policy='strict-origin-when-cross-origin',
+            permissions_policy={
+                'geolocation': (),
+                'camera': (),
+                'microphone': (),
+                'payment': (),
+                'usb': (),
+            }
+        )
+        print("DEBUG: Talisman initialized without force_https redirect for development")
 
     # Initialize Flask-Limiter for DDoS protection
     limiter.init_app(app)
+
+    # Enable CSRF protection for forms and POST endpoints
+    try:
+        from flask_wtf.csrf import CSRFProtect, generate_csrf  # type: ignore
+        CSRFProtect(app)
+        app.config['WTF_CSRF_TIME_LIMIT'] = None
+
+        # Expose csrf_token() helper to Jinja templates
+        @app.context_processor
+        def inject_csrf_token():  # type: ignore
+            try:
+                return dict(csrf_token=generate_csrf)
+            except Exception:
+                return {}
+    except Exception as _:
+        # If Flask-WTF not available, skip without crashing in dev
+        @app.context_processor
+        def inject_csrf_token_missing():  # type: ignore
+            return {}
 
     @app.errorhandler(RateLimitExceeded)
     def rate_limit_exceeded(e):
@@ -132,7 +207,8 @@ def create_app():
                 # Create a test breeder
                 test_breeder = Breeder.query.filter_by(name='CultivAR Seeds').first()
                 if not test_breeder:
-                    test_breeder = Breeder(name='CultivAR Seeds')
+                    test_breeder = Breeder()
+                    test_breeder.name = 'CultivAR Seeds'
                     db.session.add(test_breeder)
                     db.session.flush()
                 
@@ -198,10 +274,99 @@ def create_app():
     app.register_blueprint(diagnostics_bp)
     from app.blueprints.market import market_bp
     app.register_blueprint(market_bp)
+
+    # Register marketing blueprints
+    from app.blueprints.marketing import (
+        marketing_bp,
+        marketing_home,
+        blog,
+        blog_post,
+        waitlist,
+        waitlist_success,
+        download_lead_magnet,
+        waitlist_stats,
+        search_blog,
+    )
+    app.register_blueprint(marketing_bp)
+
+    # Expose the marketing homepage at top-level paths for nicer URLs
+    # e.g. /home/ or /site/ will render the same content as /marketing/
+    try:
+        # Register only /site/ to avoid colliding with existing 'home' endpoint
+        app.add_url_rule('/site/', endpoint='site', view_func=marketing_home)
+    except RuntimeError:
+        # In some contexts (import-time before app ready) add_url_rule may fail;
+        # it's safe to ignore here because blueprint route still exists at /marketing/.
+        pass
+
+    # Also expose common marketing endpoints under /site/... for nicer canonical URLs
+    try:
+        app.add_url_rule('/site/blog/', endpoint='site_blog', view_func=blog)
+        app.add_url_rule('/site/blog/<slug>', endpoint='site_blog_post', view_func=blog_post)
+        app.add_url_rule('/site/waitlist', endpoint='site_waitlist', view_func=waitlist)
+        app.add_url_rule('/site/waitlist/success/<code>', endpoint='site_waitlist_success', view_func=waitlist_success)
+        app.add_url_rule('/site/download/<magnet_name>', endpoint='site_download', view_func=download_lead_magnet)
+        app.add_url_rule('/site/api/waitlist/stats', endpoint='site_api_waitlist_stats', view_func=waitlist_stats)
+        app.add_url_rule('/site/api/blog/search', endpoint='site_api_blog_search', view_func=search_blog)
+    except RuntimeError:
+        # ignore if app isn't fully wired yet
+        pass
+
+    # Add a safe, non-destructive redirect from the legacy /marketing/ URL to /site/
+    # This lets users continue to use old bookmarks while surfacing the new path.
+    def _marketing_redirect():
+        return redirect(url_for('site'))
+
+    try:
+        app.add_url_rule('/marketing/', endpoint='marketing_redirect', view_func=_marketing_redirect)
+        app.add_url_rule('/marketing', endpoint='marketing_redirect_noslash', view_func=_marketing_redirect)
+    except RuntimeError:
+        # ignore if app isn't fully wired yet
+        pass
+    from app.blueprints.newsletter import newsletter_bp
+    app.register_blueprint(newsletter_bp)
+    from app.blueprints.social import social_bp
+    app.register_blueprint(social_bp)
     
     # Initialize logger
     from app.logger import logger
     logger.info("CultivAR application created successfully")
+
+    # Template context processor: ensure csp_nonce is available in templates
+    @app.context_processor
+    def inject_csp_nonce():
+        """Provide a defensive way to expose the CSP nonce to templates as `csp_nonce`.
+
+        Flask-Talisman normally exposes `csp_nonce` to templates when
+        `content_security_policy_nonce_in` is configured. In case that
+        behavior differs across versions or environments, try common
+        locations (flask.g, request attributes, or the extension) and
+        return None if not found.
+        """
+        try:
+            nonce = None
+            # common places Talisman might store it
+            nonce = getattr(g, 'csp_nonce', None)
+            if not nonce:
+                nonce = getattr(request, 'csp_nonce', None)
+
+            # try to read from the talisman extension if present
+            if not nonce:
+                tal = app.extensions.get('talisman') if hasattr(app, 'extensions') else None
+                if tal:
+                    # Some versions store a callable or attribute for nonce
+                    candidate = getattr(tal, 'csp_nonce', None) or getattr(tal, '_csp_nonce', None)
+                    if callable(candidate):
+                        try:
+                            nonce = candidate()
+                        except Exception:
+                            nonce = None
+                    else:
+                        nonce = candidate
+
+            return {'csp_nonce': nonce}
+        except Exception:
+            return {'csp_nonce': None}
     
     return app
 
@@ -209,14 +374,7 @@ if __name__ == '__main__':
     app = create_app()
     port = int(os.getenv('CULTIVAR_PORT', 5000))
 
-    # SSL Configuration for development/production
+    # For development testing, run on HTTP only to avoid SSL issues
     from app.config.config import Config
-    if Config.SSL_ENABLED and os.path.exists(Config.SSL_CERT_PATH) and os.path.exists(Config.SSL_KEY_PATH):
-        # Create SSL context for HTTPS
-        ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
-        ssl_context.load_cert_chain(certfile=Config.SSL_CERT_PATH, keyfile=Config.SSL_KEY_PATH)
-        # Run with SSL in production
-        app.run(host='0.0.0.0', port=port, debug=Config.DEBUG, use_reloader=False, ssl_context=ssl_context)
-    else:
-        # Run without SSL for development
-        app.run(host='0.0.0.0', port=port, debug=Config.DEBUG, use_reloader=False)
+    print("DEBUG: Running Flask app on HTTP only for development testing")
+    app.run(host='0.0.0.0', port=port, debug=Config.DEBUG, use_reloader=False)

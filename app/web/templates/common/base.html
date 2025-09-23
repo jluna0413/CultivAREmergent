@@ -3,122 +3,190 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="CultivAR - Self-Hosted Cannabis Grow Journal">
-    <meta name="theme-color" content="#1a1a1a">
+    <meta name="description" content="{% block description %}CultivAR - Professional Cannabis Grow Management{% endblock %}">
+    <meta name="theme-color" content="#ffffff">
     <title>{% block title %}CultivAR{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+
+    <!-- Modern Font Stack (Apple/Samsung Style) - Using Native System Fonts -->
+    <!-- Removed Google Material Icons (no longer used) -->
+
+    <!-- Modern Design System -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/all.min.css') }}">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+    <!-- Fallback styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/marketing.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <!-- Apple Touch Icons -->
     <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='images/apple-touch-icon.png') }}">
     <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='images/favicon-32x32.png') }}">
     <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='images/favicon-16x16.png') }}">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+
     {% block styles %}{% endblock %}
+
+    <!-- Make CSP nonce available to JavaScript early in the head so scripts can use it -->
+    {# Expose CSRF token to JavaScript via a meta tag for AJAX requests #}
+    {% if csrf_token is defined %}
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    {% endif %}
+    <script nonce="{% if csp_nonce %}{{ csp_nonce }}{% endif %}">
+        window.cspNonce = '{% if csp_nonce %}{{ csp_nonce }}{% endif %}';
+    </script>
+    {# Conditional dev debug overlay loader: only when URL contains ?debug=1; load early to capture logs #}
+    {% if request and request.args.get('debug') %}
+    <script src="{{ url_for('static', filename='js/dev-debug.js') }}"></script>
+    {% endif %}
 </head>
-<body class="dark-theme">
+<body>
+    <!-- Modern Theme Toggle (Glass Morphism Style) -->
+    <div class="theme-toggle-fixed">
+        <button class="theme-toggle glass-card" aria-label="Toggle theme">
+            <!-- Icon will be inserted via CSS -->
+        </button>
+    </div>
+
     <div class="app-container">
-        {% if current_user.is_authenticated %}
+        {% set user_is_authenticated = current_user.is_authenticated|default(False) %}
+        {% if user_is_authenticated %}
+
+        <!-- Glass Morphism Overlay for Mobile -->
         <div class="sidebar-overlay"></div>
-        <aside class="sidebar">
+
+        <!-- Modern Glass Sidebar -->
+        <aside class="sidebar glass">
             {% include 'common/sidebar.html' %}
         </aside>
-        <!-- Fixed hamburger menu button for mobile -->
-        <button class="hamburger-menu" id="hamburger-menu">
+
+        <!-- Modern Hamburger Menu -->
+        <button class="btn hamburger-glossy" id="hamburger-menu" aria-label="Toggle menu">
             <i class="fas fa-bars"></i>
         </button>
 
         <main class="main-content">
-            <header class="content-header">
-                <div class="header-left">
-                    <button class="menu-toggle" id="menu-toggle">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                    <h1 class="page-title">{% block header %}{% endblock %}</h1>
-                </div>
-                <div class="header-right">
-                    <!-- Shopping Cart -->
-                    <div class="cart-nav position-relative me-3" id="cart-nav">
-                        <a href="{{ url_for('market.cart') }}" class="btn btn-secondary position-relative" title="Shopping Cart">
-                            <i class="fas fa-shopping-cart"></i>
-                            <span id="cart-counter" class="badge bg-danger position-absolute top-0 start-100 translate-middle rounded-pill d-none">
-                                0
-                            </span>
-                        </a>
+            <!-- Apple-style Header with Glass Morphism -->
+            <header class="nav-glass content-header">
+                <div class="container d-flex justify-between items-center h-full">
+                    <div class="header-left d-flex items-center gap-lg">
+                        <button class="btn btn-icon menu-toggle" id="menu-toggle" aria-label="Toggle sidebar">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <h1 class="page-title">
+                            {% block header %}{% endblock %}
+                        </h1>
                     </div>
 
-                    <!-- Settings Menu -->
-                    <a href="#" class="btn btn-secondary me-3" title="Settings">
-                        <i class="fas fa-cog"></i>
-                    </a>
+                    <div class="header-right d-flex items-center gap-md">
+                        <!-- Modern Cart Button -->
+                        <div class="cart-nav" id="cart-nav">
+                            <a href="{{ url_for('market.cart') }}" class="btn glass-card position-relative" aria-label="Shopping Cart">
+                                <i class="fas fa-shopping-cart"></i>
+                                <span id="cart-counter" class="counter badge-danger position-absolute">
+                                    0
+                                </span>
+                            </a>
+                        </div>
 
-                    <div class="user-menu dropdown">
-                        <button class="btn dropdown-toggle" type="button" id="userMenuDropdown" data-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-user-circle"></i>
-                            <span class="username">{{ current_user.username }}</span>
-                        </button>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userMenuDropdown">
-                            <a class="dropdown-item" href="{{ url_for('market.cart') }}">
-                                <i class="fas fa-shopping-cart me-2"></i>Cart
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="#">
-                                <i class="fas fa-cog me-2"></i> Settings
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="{{ url_for('auth.logout') }}">
-                                <i class="fas fa-sign-out-alt"></i> Logout
-                            </a>
+                        <!-- Modern Settings Button -->
+                        <a href="#" class="btn btn-icon glass-card" aria-label="Settings">
+                            <i class="fas fa-cog"></i>
+                        </a>
+
+                        <!-- Modern User Menu -->
+                        <div class="user-menu glass-card">
+                            <button class="btn user-menu-trigger d-flex items-center gap-sm" id="userMenuDropdown">
+                                <div class="user-avatar">
+                                    <i class="fas fa-user-circle"></i>
+                                </div>
+                                <span class="username">{{ current_user.username }}</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+
+                            <!-- Apple-style Dropdown Menu -->
+                            <div class="user-dropdown glass-card" aria-labelledby="userMenuDropdown">
+                                <a class="dropdown-item" href="{{ url_for('market.cart') }}">
+                                    <i class="fas fa-shopping-cart"></i>
+                                    <span>Shopping Cart</span>
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-cog"></i>
+                                    <span>Settings</span>
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="{{ url_for('auth.logout') }}">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    <span>Logout</span>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
             </header>
+
+            <!-- Modern Content Area -->
             <div class="content-body">
+                <!-- Apple-style Alert Messages -->
                 {% with messages = get_flashed_messages(with_categories=true) %}
                     {% if messages %}
-                        {% for category, message in messages %}
-                            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                                {{ message }}
-                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                        {% endfor %}
+                        <div class="alert-container">
+                            {% for category, message in messages %}
+                                <div class="alert glass-card alert-{{ category }}" role="alert">
+                                    <i class="
+                                        {% if category == 'success' %}fas fa-check-circle
+                                        {% elif category == 'error' %}fas fa-exclamation-circle
+                                        {% elif category == 'warning' %}fas fa-exclamation-triangle
+                                        {% else %}fas fa-info-circle
+                                        {% endif %}
+                                    "></i>
+                                    <span>{{ message }}</span>
+                                    <button class="btn btn-icon alert-close" aria-label="Close alert">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            {% endfor %}
+                        </div>
                     {% endif %}
                 {% endwith %}
-                {% block content %}{% endblock %}
+
+                <!-- Main Content with Modern Spacing -->
+                <div class="container">
+                    {% block content %}{% endblock %}
+                </div>
             </div>
         </main>
+
         {% else %}
-        <div class="auth-container">
+
+        <!-- Modern Authentication Container -->
+        <div class="auth-container landing-page">
             {% block auth_content %}{% endblock %}
         </div>
+
         {% endif %}
     </div>
 
+    <!-- Modern JavaScript Stack -->
     <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
-    <!-- Font Awesome is loaded via CSS only -->
+
+    <!-- Design System Core (must load after window.cspNonce is set) -->
+    <script src="{{ url_for('static', filename='js/theme-manager.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/styles.js') }}"></script>
+
+    <!-- Application Scripts -->
     <script src="{{ url_for('static', filename='js/chart.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script src="{{ url_for('static', filename='js/cart-utilities.js') }}"></script>
-    <script>
-        // Console log for debugging
-        console.log('Base template loaded');
 
-        // Additional hamburger menu handler
-        document.addEventListener('DOMContentLoaded', function() {
-            var hamburgerBtn = document.getElementById('hamburger-menu');
-            if (hamburgerBtn) {
-                hamburgerBtn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    console.log('Hamburger clicked from inline script');
-                    document.querySelector('.app-container').classList.toggle('sidebar-collapsed');
-                    document.body.classList.toggle('sidebar-open');
-                });
-            }
-        });
-    </script>
+    <!-- Modern UI Interactive Script moved to external bundle (main.js) to avoid inline script CSP issues -->
+
     {% block scripts %}{% endblock %}
+
 </body>
 </html>

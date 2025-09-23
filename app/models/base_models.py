@@ -31,12 +31,23 @@ class User(db.Model, UserMixin):
         db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
     )
 
+    def __init__(self, username=None, phone=None, email=None, password_hash=None, is_admin=False, force_password_change=False, **kwargs):
+        super().__init__(**kwargs)
+        self.username = username
+        self.phone = phone
+        self.email = email
+        self.password_hash = password_hash
+        self.is_admin = is_admin
+        self.force_password_change = force_password_change
+
     def set_password(self, password):
         """Hashes the password and sets the password_hash."""
         self.password_hash = generate_password_hash(password)
 
     def check_password(self, password):
         """Checks if the provided password matches the stored hash."""
+        if not self.password_hash:
+            return False
         return check_password_hash(self.password_hash, password)
 
 
@@ -66,6 +77,10 @@ class Breeder(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
+
+    def __init__(self, name=None, **kwargs):
+        super().__init__(**kwargs)
+        self.name = name
 
 
 class Measurement(db.Model):
@@ -150,6 +165,29 @@ class Plant(db.Model):
     def parent_name(self):
         return self.parent.name if self.parent else None
 
+    def __init__(self, name=None, description=None, status_id=None, strain_id=None, zone_id=None, current_day=0, current_week=0, current_height=None, height_date=None, last_water_date=None, last_feed_date=None, is_clone=False, start_dt=None, harvest_weight=None, harvest_date=None, cycle_time=None, strain_url=None, est_harvest_date=None, autoflower=False, parent_id=None, **kwargs):
+        super().__init__(**kwargs)
+        self.name = name
+        self.description = description
+        self.status_id = status_id
+        self.strain_id = strain_id
+        self.zone_id = zone_id
+        self.current_day = current_day
+        self.current_week = current_week
+        self.current_height = current_height
+        self.height_date = height_date
+        self.last_water_date = last_water_date
+        self.last_feed_date = last_feed_date
+        self.is_clone = is_clone
+        self.start_dt = start_dt or datetime.utcnow()
+        self.harvest_weight = harvest_weight
+        self.harvest_date = harvest_date
+        self.cycle_time = cycle_time
+        self.strain_url = strain_url
+        self.est_harvest_date = est_harvest_date
+        self.autoflower = autoflower
+        self.parent_id = parent_id
+
     @property
     def latest_image(self):
         return (
@@ -194,9 +232,9 @@ class Sensor(db.Model):
         db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
     )
 
-    # Relationships
+    # Relationships - remove conflicting backref
     zone = db.relationship("Zone", backref="sensors")
-    data = db.relationship("SensorData", backref="sensor", cascade="all, delete-orphan")
+    data = db.relationship("SensorData", back_populates="sensor", cascade="all, delete-orphan")
 
     @property
     def zone_name(self):
@@ -210,6 +248,9 @@ class SensorData(db.Model):
     sensor_id = db.Column(db.Integer, db.ForeignKey("sensor.id"), nullable=False)
     value = db.Column(db.Float, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # Relationships - remove conflicting backref
+    sensor = db.relationship("Sensor", back_populates="data")
 
     @property
     def sensor_name(self):
@@ -265,6 +306,19 @@ class Strain(db.Model):
     # Relationships
     breeder = db.relationship("Breeder", backref="strains")
 
+    def __init__(self, name=None, breeder_id=None, indica=0, sativa=0, autoflower=False, description=None, seed_count=0, cycle_time=None, url=None, short_description=None, **kwargs):
+        super().__init__(**kwargs)
+        self.name = name
+        self.breeder_id = breeder_id
+        self.indica = indica
+        self.sativa = sativa
+        self.autoflower = autoflower
+        self.description = description
+        self.seed_count = seed_count
+        self.cycle_time = cycle_time
+        self.url = url
+        self.short_description = short_description
+
     @property
     def breeder_name(self):
         return self.breeder.name if self.breeder else None
@@ -275,6 +329,10 @@ class Zone(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
+
+    def __init__(self, name=None, **kwargs):
+        super().__init__(**kwargs)
+        self.name = name
 
 
 class Stream(db.Model):
@@ -292,3 +350,151 @@ class Stream(db.Model):
     @property
     def zone_name(self):
         return self.zone.name if self.zone else None
+
+
+# Marketing-related models for the marketing website
+
+class Waitlist(db.Model):
+    """Waitlist model for pre-launch signups."""
+
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    priority_tier = db.Column(db.String(20), default='general')  # early_bird, beta, general
+    referral_code = db.Column(db.String(20), unique=True)
+    referred_by = db.Column(db.Integer, db.ForeignKey('waitlist.id'))
+    signup_date = db.Column(db.DateTime, default=datetime.utcnow)
+    is_activated = db.Column(db.Boolean, default=False)
+    ip_address = db.Column(db.String(45))  # For tracking unique signups
+    user_agent = db.Column(db.String(255))  # For analytics
+
+    # Relationships
+    referred_users = db.relationship('Waitlist', backref='referrer', remote_side=[id])
+
+    def __init__(self, email=None, priority_tier='general', **kwargs):
+        super().__init__(**kwargs)
+        self.email = email
+        self.priority_tier = priority_tier
+
+    @property
+    def referral_count(self):
+        from app.models import db
+        return db.session.query(Waitlist).filter_by(referred_by=self.id).count()
+
+    @property
+    def signup_date_formatted(self):
+        return self.signup_date.strftime('%B %d, %Y') if self.signup_date else None
+
+
+class BlogPost(db.Model):
+    """Blog post model for content marketing."""
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    slug = db.Column(db.String(200), unique=True, nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    excerpt = db.Column(db.String(300))
+    category = db.Column(db.String(50))  # growing_tips, strain_reviews, industry_news, etc.
+    author = db.Column(db.String(100))
+    publish_date = db.Column(db.DateTime, default=datetime.utcnow)
+    is_published = db.Column(db.Boolean, default=False)
+    featured_image = db.Column(db.String(255))  # Path to featured image
+    meta_description = db.Column(db.String(160))  # SEO meta description
+    tags = db.Column(db.String(255))  # Comma-separated tags
+    view_count = db.Column(db.Integer, default=0)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def __init__(self, title=None, slug=None, content=None, **kwargs):
+        super().__init__(**kwargs)
+        self.title = title
+        self.slug = slug
+        self.content = content
+
+    @property
+    def publish_date_formatted(self):
+        return self.publish_date.strftime('%B %d, %Y') if self.publish_date else None
+
+    @property
+    def reading_time(self):
+        """Estimate reading time in minutes."""
+        if not self.content:
+            return 0
+        words_per_minute = 200
+        word_count = len(self.content.split())
+        return max(1, round(word_count / words_per_minute))
+
+    @property
+    def tags_list(self):
+        """Return tags as a list."""
+        return [tag.strip() for tag in self.tags.split(',')] if self.tags else []
+
+
+class LeadMagnet(db.Model):
+    """Lead magnet model for tracking downloads."""
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)  # e.g., "Beginners Grow Book"
+    description = db.Column(db.Text)
+    file_path = db.Column(db.String(255), nullable=False)  # Path to downloadable file
+    download_count = db.Column(db.Integer, default=0)
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def __init__(self, name=None, file_path=None, **kwargs):
+        super().__init__(**kwargs)
+        self.name = name
+        self.file_path = file_path
+
+
+class LeadMagnetDownload(db.Model):
+    """Track individual lead magnet downloads."""
+
+    id = db.Column(db.Integer, primary_key=True)
+    lead_magnet_id = db.Column(db.Integer, db.ForeignKey('lead_magnet.id'), nullable=False)
+    email = db.Column(db.String(120), nullable=False)
+    ip_address = db.Column(db.String(45))
+    download_date = db.Column(db.DateTime, default=datetime.utcnow)
+    user_agent = db.Column(db.String(255))
+
+    # Relationships
+    lead_magnet = db.relationship('LeadMagnet', backref='downloads')
+
+    def __init__(self, lead_magnet_id=None, email=None, **kwargs):
+        super().__init__(**kwargs)
+        self.lead_magnet_id = lead_magnet_id
+        self.email = email
+
+
+class NewsletterSubscriber(db.Model):
+    """Enhanced newsletter subscriber model supporting both email and phone."""
+
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120), unique=True)
+    phone = db.Column(db.String(20), unique=True)
+    subscription_type = db.Column(db.String(20), default='both')  # email, phone, both
+    is_active = db.Column(db.Boolean, default=True)
+    subscription_date = db.Column(db.DateTime, default=datetime.utcnow)
+    unsubscribe_date = db.Column(db.DateTime)
+    ip_address = db.Column(db.String(45))
+    preferences = db.Column(db.Text)  # JSON string of user preferences
+    source = db.Column(db.String(50))  # landing_page, blog_post, etc.
+
+    def __init__(self, email=None, phone=None, subscription_type='both', **kwargs):
+        super().__init__(**kwargs)
+        self.email = email
+        self.phone = phone
+        self.subscription_type = subscription_type
+
+    @property
+    def contact_info(self):
+        """Return the primary contact method."""
+        if self.email:
+            return self.email
+        elif self.phone:
+            return self.phone
+        return None
+
+    @property
+    def is_unsubscribed(self):
+        return self.unsubscribe_date is not None

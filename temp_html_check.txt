@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CultivAR - Professional Cannabis Grow Management</title>
+    <meta name="description" content="The most advanced self-hosted cannabis grow journal. Track plants, monitor environments, optimize yields. Your grow, your data, your success.">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Apple-style CSS -->
+    <link rel="stylesheet" href="/static/css/landing.css">
+    
+    <!-- PWA -->
+    <link rel="manifest" href="/static/manifest.json">
+    <meta name="theme-color" content="#4CAF50">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-seedling"></i>
+                <span>CultivAR</span>
+            </div>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#benefits">Benefits</a>
+                <a href="#pricing">Pricing</a>
+                <a href="/auth/login" class="nav-cta">Get Started</a>
+            </div>
+            <div class="nav-mobile">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    Your cannabis grow.<br>
+                    <span class="hero-gradient">Professionally managed.</span>
+                </h1>
+                <p class="hero-subtitle">
+                    The most advanced self-hosted cannabis grow journal. Track plants, monitor environments, 
+                    and optimize yields with enterprise-grade tools designed for serious cultivators.
+                </p>
+                <div class="hero-actions">
+                   <a href="/auth/login" class="btn-primary">
+                       <span>Start Growing Smarter</span>
+                       <i class="fas fa-arrow-right"></i>
+                   </a>
+                    <a href="#demo" class="btn-secondary">
+                        <i class="fas fa-play"></i>
+                        <span>Watch Demo</span>
+                    </a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <div class="stat-number">10,000+</div>
+                        <div class="stat-label">Plants Tracked</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">500+</div>
+                        <div class="stat-label">Active Growers</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">25%</div>
+                        <div class="stat-label">Avg Yield Increase</div>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="hero-dashboard">
+                    <div class="dashboard-header">
+                        <div class="dashboard-dots">
+                            <span></span><span></span><span></span>
+                        </div>
+                        <div class="dashboard-title">CultivAR Dashboard</div>
+                    </div>
+                    <div class="dashboard-content">
+                        <div class="dashboard-widgets">
+                            <div class="widget active-plants">
+                                <div class="widget-icon"><i class="fas fa-seedling"></i></div>
+                                <div class="widget-data">
+                                    <div class="widget-number">24</div>
+                                    <div class="widget-label">Active Plants</div>
+                                </div>
+                            </div>
+                            <div class="widget environmental">
+                                <div class="widget-icon"><i class="fas fa-thermometer-half"></i></div>
+                                <div class="widget-data">
+                                    <div class="widget-number">75øF</div>
+                                    <div class="widget-label">Temperature</div>
+                                </div>
+                            </div>
+                            <div class="widget timeline">
+                                <div class="timeline-items">
+                                    <div class="timeline-item">
+                                        <div class="timeline-dot"></div>
+                                        <div class="timeline-text">Northern Lights watered</div>
+                                    </div>
+                                    <div class="timeline-item">
+                                        <div class="timeline-dot"></div>
+                                        <div class="timeline-text">OG Kush entering flower</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="section-container">
+            <div class="section-header">
+                <h2>Everything you need to grow like a pro</h2>
+                <p>Powerful tools that work together seamlessly</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-seedling"></i>
+                    </div>
+                    <h3>Plant Tracking</h3>
+                    <p>Monitor every aspect of your plants' lifecycle from seed to harvest with detailed logs and growth analytics.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Advanced Analytics</h3>
+                    <p>Get insights into your grow performance with detailed charts, yield predictions, and optimization recommendations.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3>Mobile First</h3>
+                    <p>Access your grow data anywhere with our responsive design and PWA capabilities. Works offline too.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-dna"></i>
+                    </div>
+                    <h3>Strain Library</h3>
+                    <p>Comprehensive strain database with genetics tracking, phenotype selection, and breeding records.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-thermometer-half"></i>
+                    </div>
+                    <h3>Environment Monitoring</h3>
+                    <p>Real-time sensor integration for temperature, humidity, CO2, and more. Set alerts and automate responses.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-clone"></i>
+                    </div>
+                    <h3>Clone Management</h3>
+                    <p>Track plant lineage, manage mother plants, and optimize your cloning success rates with detailed analytics.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section id="benefits" class="benefits">
+        <div class="section-container">
+            <div class="benefits-content">
+                <div class="benefits-text">
+                    <h2>Why serious growers choose CultivAR</h2>
+                    <div class="benefit-list">
+                        <div class="benefit-item">
+                            <div class="benefit-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div class="benefit-content">
+                                <h4>Complete Privacy</h4>
+                                <p>Self-hosted solution means your data never leaves your control. No cloud dependencies, no privacy concerns.</p>
+                            </div>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="benefit-icon">
+                                <i class="fas fa-chart-bar"></i>
+                            </div>
+                            <div class="benefit-content">
+                                <h4>Maximize Yields</h4>
+                                <p>Data-driven insights help optimize your grow conditions and techniques for consistently higher yields.</p>
+                            </div>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="benefit-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="benefit-content">
+                                <h4>Save Time</h4>
+                                <p>Automated tracking, smart notifications, and streamlined workflows free up more time for what matters.</p>
+                            </div>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="benefit-icon">
+                                <i class="fas fa-graduation-cap"></i>
+                            </div>
+                            <div class="benefit-content">
+                                <h4>Learn & Improve</h4>
+                                <p>Historical data and analytics help you understand what works and continuously improve your techniques.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="benefits-visual">
+                    <div class="stats-dashboard">
+                        <h4>Your Growth in Numbers</h4>
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-value">+32%</div>
+                                <div class="stat-desc">Yield Increase</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">-45%</div>
+                                <div class="stat-desc">Time Spent Tracking</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">98%</div>
+                                <div class="stat-desc">Plant Success Rate</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">12</div>
+                                <div class="stat-desc">Harvests per Year</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="pricing">
+        <div class="section-container">
+            <div class="section-header">
+                <h2>Choose your plan</h2>
+                <p>Start free and scale as you grow</p>
+            </div>
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <h3>Free</h3>
+                        <div class="pricing-price">
+                            <span class="price">$0</span>
+                            <span class="period">/month</span>
+                        </div>
+                    </div>
+                    <div class="pricing-features">
+                        <div class="feature">
+                            <i class="fas fa-check"></i>
+                            <span>Up to 5 plants</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-check"></i>
+                            <span>Basic tracking</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-check"></i>
+                            <span>Mobile access</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-check"></i>
+                            <span>Community support</span>
+                        </div>
+                    </div>
+                    <a href="/auth/login" class="btn-pricing">Get Started</a>
+                </div>
+                <div class="pricing-card recommended">
+                    <div class="pricing-badge">Most Popular</div>
+                    <div class="pricing-header">
+                        <h3>Pro</h3>
+                        <div class="pricing-price">
+                            <span class="price">$29</span>
+                            <span class="period">/month</span>
+                        </div>
+                    </div>
+                    <div class="pricing-features">
+                        <div class="feature">
+                            <i class="fas fa-check"></i>
+                            <span>Unlimited plants</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-check"></i>
+                            <span>Advanced analytics</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-check"></i>
+                            <span>Priority support</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-check"></i>
+                            <span>Export data</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-check"></i>
+                            <span>Custom reports</span>
+                        </div>
+                    </div>
+                    <a href="/auth/login" class="btn-pricing primary">Start Pro Trial</a>
+                </div>
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <h3>Enterprise</h3>
+                        <div class="pricing-price">
+                            <span class="price">Custom</span>
+                        </div>
+                    </div>
+                    <div class="pricing-features">
+                        <div class="feature">
+                            <i class="fas fa-check"></i>
+                            <span>Everything in Pro</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-check"></i>
+                            <span>Team collaboration</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-check"></i>
+                            <span>White-label option</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-check"></i>
+                            <span>24/7 phone support</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-check"></i>
+                            <span>On-premise deployment</span>
+                        </div>
+                    </div>
+                    <a href="/auth/login" class="btn-pricing">Contact Sales</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Social Proof -->
+    <section class="testimonials">
+        <div class="section-container">
+            <div class="section-header">
+                <h2>Trusted by professional cultivators</h2>
+            </div>
+            <div class="testimonials-grid">
+                <div class="testimonial">
+                    <div class="testimonial-content">
+                        <p>"CultivAR transformed my operation. The data insights alone increased my yields by 35% in the first year."</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-info">
+                            <div class="author-name">Sarah Johnson</div>
+                            <div class="author-title">Commercial Cultivator, CO</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial">
+                    <div class="testimonial-content">
+                        <p>"Finally, a grow management system that respects privacy. Self-hosted means my data stays mine."</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-info">
+                            <div class="author-name">Mike Chen</div>
+                            <div class="author-title">Master Grower, CA</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial">
+                    <div class="testimonial-content">
+                        <p>"The mobile app is incredible. I can check on my grow from anywhere and never miss a critical alert."</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-info">
+                            <div class="author-name">Alex Rodriguez</div>
+                            <div class="author-title">Boutique Producer, OR</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="section-container">
+            <div class="cta-content">
+                <h2>Ready to revolutionize your grow?</h2>
+                <p>Join thousands of cultivators who've already made the switch to smarter growing.</p>
+                <div class="cta-actions">
+                   <a href="/auth/login" class="btn-primary large">
+                       <span>Start Your Free Trial</span>
+                       <i class="fas fa-arrow-right"></i>
+                   </a>
+                </div>
+                <div class="cta-features">
+                    <div class="cta-feature">
+                        <i class="fas fa-check"></i>
+                        <span>30-day free trial</span>
+                    </div>
+                    <div class="cta-feature">
+                        <i class="fas fa-check"></i>
+                        <span>No credit card required</span>
+                    </div>
+                    <div class="cta-feature">
+                        <i class="fas fa-check"></i>
+                        <span>Full feature access</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <section class="newsletter">
+        <div class="section-container">
+            <div class="newsletter-content">
+                <div class="newsletter-text">
+                    <h3>Stay ahead of the grow</h3>
+                    <p>Get exclusive cultivation tips, product updates, and industry insights delivered to your phone.</p>
+                </div>
+                <div class="newsletter-form">
+                    <form id="newsletter-form" class="newsletter-signup">
+                        <div class="input-group">
+                            <input type="tel" placeholder="Enter your phone number" id="phone-input" required>
+                            <button type="submit" class="btn-newsletter">
+                                <span>Subscribe</span>
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                        <div class="newsletter-privacy">
+                            <i class="fas fa-lock"></i>
+                            <span>We respect your privacy. Unsubscribe anytime.</span>
+                        </div>
+                    </form>
+                    <div id="newsletter-success" class="newsletter-message success" style="display: none;">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Thanks! You'll receive our latest grow tips via SMS.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="footer-logo">
+                        <i class="fas fa-seedling"></i>
+                        <span>CultivAR</span>
+                    </div>
+                    <p>Professional cannabis grow management for serious cultivators.</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-section">
+                        <h4>Product</h4>
+                        <a href="#features">Features</a>
+                        <a href="#benefits">Benefits</a>
+                        <a href="#pricing">Pricing</a>
+                        <a href="/auth/login">Get Started</a>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Support</h4>
+                        <a href="#docs">Documentation</a>
+                        <a href="#help">Help Center</a>
+                        <a href="#contact">Contact</a>
+                        <a href="#community">Community</a>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Legal</h4>
+                        <a href="#privacy">Privacy Policy</a>
+                        <a href="#terms">Terms of Service</a>
+                        <a href="#compliance">Compliance</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div class="footer-copyright">
+                    <p>&copy; 2025 CultivAR. All rights reserved.</p>
+                </div>
+                <div class="footer-social">
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-github"></i></a>
+                    <a href="#"><i class="fab fa-discord"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="/static/js/landing.js"></script>
+</body>
+</html>

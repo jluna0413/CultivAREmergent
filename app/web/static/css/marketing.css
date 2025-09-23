@@ -1,0 +1,121 @@
+/*
+ * Marketing UI Styles (scoped)
+ * Applies only to unauthenticated marketing pages via .landing-page wrapper from base.html
+ * Uses design system CSS variables defined in styles.css
+ */
+
+.landing-page {
+  --nav-height: 64px;
+}
+
+/* Marketing Navigation */
+.landing-page nav,
+.landing-page .nav,
+.landing-page .nav-bar,
+.landing-page .marketing-nav {
+  position: -webkit-sticky; /* Safari */
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--color-border-secondary);
+}
+
+[data-theme="dark"] .landing-page nav,
+[data-theme="dark"] .landing-page .nav,
+[data-theme="dark"] .landing-page .nav-bar,
+[data-theme="dark"] .landing-page .marketing-nav {
+  background: rgba(0, 0, 0, 0.6);
+  border-color: var(--color-border-secondary);
+}
+
+.landing-page .nav-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--nav-height);
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.landing-page .nav-links a,
+.landing-page .nav-logo a,
+.landing-page .nav a {
+  color: var(--color-text-primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.landing-page .nav-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  border-radius: 999px;
+  background: var(--gradient-primary);
+  color: #fff !important;
+  box-shadow: var(--shadow-md);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.landing-page .nav-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Section container utility used across marketing pages */
+.landing-page .section-container {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Generic hero spacing to avoid overlap with sticky nav */
+.landing-page .hero,
+.landing-page .success-hero,
+.landing-page .blog-post-hero {
+  padding-top: calc(var(--nav-height) + 2rem);
+}
+
+/* Glass cards */
+.landing-page .glass-card,
+.landing-page .glass-panel {
+  background: var(--glass-bg-light);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border-light);
+  border-radius: 1rem;
+  box-shadow: var(--shadow-lg);
+}
+
+[data-theme="dark"] .landing-page .glass-card,
+[data-theme="dark"] .landing-page .glass-panel {
+  background: var(--glass-bg-dark);
+  border-color: var(--glass-border-dark);
+}
+
+/* Buttons */
+.landing-page .btn-primary-glass {
+  background: var(--gradient-primary);
+  color: #fff;
+  border: none;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1.25rem;
+  box-shadow: var(--shadow-md);
+}
+
+.landing-page .btn-primary-glass:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Small responsive nits */
+@media (max-width: 768px) {
+  .landing-page .nav-container {
+    padding: 0 0.75rem;
+  }
+}

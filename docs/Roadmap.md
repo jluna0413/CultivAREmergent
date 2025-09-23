@@ -2,6 +2,26 @@
 
 This document outlines the planned features and improvements for the CultivAR application.
 
+## Marketing & Pre-Launch Strategy
+
+**See [Marketing_Strategy.md](Marketing_Strategy.md) for comprehensive marketing website plan**
+
+### Marketing Website (Parallel Development)
+- [ ] Transform existing landing page into comprehensive marketing site
+- [ ] Implement waitlist system with priority tiers
+- [ ] Create blog functionality for content marketing
+- [ ] Develop lead magnet delivery system ("Beginners Grow Book")
+- [ ] Integrate analytics and conversion tracking
+- [ ] Set up email marketing automation
+- [ ] Launch marketing site for pre-launch lead generation
+
+### Business Development
+- [ ] Build pre-launch email list and community
+- [ ] Establish content authority through blog
+- [ ] Validate demand and gather user feedback
+- [ ] Test marketing strategies and messaging
+- [ ] Prepare for beta launch and user acquisition
+
 ## Version 0.2.0
 
 ### Core Features

@@ -1,0 +1,26 @@
+{% extends "common/base.html" %}
+{% block title %}Share{% endblock %}
+{% block auth_content %}
+{% include 'marketing/_nav.html' %}
+<section class="section" style="padding: 8rem 1rem 4rem;">
+  <div class="section-container">
+    <h1>Share a Link</h1>
+    <form method="post" action="{{ url_for('social.share') }}" class="glass-card" style="padding:1rem;">
+      {% if csrf_token is defined %}
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      {% endif %}
+      <div class="form-group"><label>URL</label><input name="url" class="form-control" type="url" required></div>
+      <div class="form-group"><label>Title</label><input name="title" class="form-control" type="text" required></div>
+      <div class="form-group"><label>Description</label><input name="description" class="form-control" type="text"></div>
+      <div class="form-group"><label>Platform</label>
+        <select name="platform" class="form-control">
+          {% for key, platform in platforms.items() %}
+            <option value="{{ key }}">{{ platform.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <button class="btn btn-primary" type="submit">Generate Share URL</button>
+    </form>
+  </div>
+</section>
+{% endblock %}

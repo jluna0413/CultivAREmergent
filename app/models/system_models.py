@@ -20,6 +20,12 @@ class SystemActivity(db.Model):
 
     user = db.relationship("User", backref="system_activities")
 
+    def __init__(self, user_id=None, type=None, details=None, timestamp=None):
+        self.user_id = user_id
+        self.type = type
+        self.details = details
+        self.timestamp = timestamp or datetime.utcnow()
+
     def __repr__(self):
         return (
             f"<SystemActivity {self.type} by {self.user.username} at {self.timestamp}>"

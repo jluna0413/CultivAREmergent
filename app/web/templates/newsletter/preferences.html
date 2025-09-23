@@ -1,0 +1,39 @@
+{% extends "common/base.html" %}
+{% block title %}Newsletter Preferences{% endblock %}
+{% block auth_content %}
+{% include 'marketing/_nav.html' %}
+<section class="section" style="padding: 8rem 1rem 4rem;">
+  <div class="section-container">
+    <div class="glass-card" style="max-width: 720px; margin: 0 auto; padding: 2rem;">
+      <h2>Preferences for {{ email }}</h2>
+      <form method="post">
+        {% if csrf_token is defined %}
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        {% endif %}
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+          <label class="checkbox-group" for="pref_tips">
+            <input id="pref_tips" class="checkbox-input" type="checkbox" name="topics" value="tips"> 
+            <span>Growing Tips</span>
+          </label>
+          <label class="checkbox-group" for="pref_updates">
+            <input id="pref_updates" class="checkbox-input" type="checkbox" name="topics" value="updates"> 
+            <span>Product Updates</span>
+          </label>
+          <label class="checkbox-group" for="pref_community">
+            <input id="pref_community" class="checkbox-input" type="checkbox" name="topics" value="community"> 
+            <span>Community News</span>
+          </label>
+          <label class="checkbox-group" for="pref_offers">
+            <input id="pref_offers" class="checkbox-input" type="checkbox" name="topics" value="offers"> 
+            <span>Offers</span>
+          </label>
+        </div>
+        <div style="margin-top:1.5rem; display:flex; gap:.75rem;">
+          <button class="btn btn-primary" type="submit">Save</button>
+          <a class="btn btn-ghost" href="{{ url_for('newsletter.subscribe') }}">Back</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}

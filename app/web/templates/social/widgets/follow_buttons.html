@@ -1,0 +1,19 @@
+<div class="social-follow">
+  {# Prefer explicit social_links mapping when provided (e.g., from social.follow) #}
+  {% if social_links %}
+    {% for name, href in social_links.items() %}
+      {# Basic allowlist: only render links that start with http(s) #}
+      {% if href and (href.startswith('https://') or href.startswith('http://')) %}
+        <a class="btn btn-ghost" href="{{ href }}" target="_blank" rel="noopener noreferrer" aria-label="Follow on {{ name|title }}" title="Follow on {{ name|title }}">Follow on {{ name|title }}</a>
+      {% endif %}
+    {% endfor %}
+  {% elif platforms and social_platforms %}
+    {# Fallback for widget route: render buttons for requested platforms if known #}
+    {% for key in platforms %}
+      {% set label = social_platforms.get(key, {}).get('name', key|title) %}
+      <span class="btn btn-ghost" role="button" aria-disabled="true" tabindex="-1" aria-label="Follow on {{ label }} (unavailable)" title="Follow on {{ label }}">Follow on {{ label }}</span>
+    {% endfor %}
+  {% else %}
+    <p class="muted">Follow links are not configured.</p>
+  {% endif %}
+</div>

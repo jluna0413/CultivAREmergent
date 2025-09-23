@@ -1,0 +1,115 @@
+{% extends "common/base.html" %}
+
+{% block title %}CultivAR - Community Platform{% endblock %}
+
+{% block description %}The most advanced self-hosted cannabis grow journal. Track plants, monitor environments, optimize yields. Join our community for tips and early access.{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
+<style>
+/* Small page-specific overrides for community tone */
+.blog-preview .section-header h2 {
+    /* Use existing gradient class for impact */
+}
+.btn-view-posts {
+    background: white;
+    color: transparent; /* will use gradient for text via background-clip */
+    background-image: linear-gradient(135deg, var(--primary-green), var(--accent-color));
+    -webkit-background-clip: text;
+    background-clip: text;
+    border: 1px solid var(--border-color);
+}
+.btn-view-posts i {
+    /* color via background-clip not supported on icons; use gradient via SVG or fallback to green */
+    color: var(--primary-green);
+}
+.btn-view-posts:hover {
+    background: linear-gradient(135deg, var(--primary-green), var(--accent-color));
+    color: white !important;
+}
+.marketing-strong { color: var(--color-text-primary); }
+</style>
+{% endblock %}
+
+{% block auth_content %}
+    {% include 'marketing/_nav.html' %}
+
+    <!-- Hero Section -->
+    <section class="hero">
+        ...existing code...
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        ...existing code...
+    </section>
+
+    <!-- Blog Preview Section -->
+    <section class="blog-preview">
+        <div class="section-container">
+            <div class="section-header">
+                <h2 class="hero-gradient">Learn from the experts</h2>
+                <p>Stay ahead with cultivation tips, strain reviews, and industry insights</p>
+            </div>
+            <div class="blog-grid">
+                {% for post in featured_posts %}
+                ...existing code...
+                {% endfor %}
+            </div>
+            <div class="section-cta">
+                <a href="{{ url_for('site_blog') }}" class="btn btn-secondary btn-view-posts">
+                    <i class="fas fa-book-open"></i>
+                    <span>View All Posts</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Waitlist CTA Section -->
+    <section class="waitlist-cta">
+        <div class="section-container">
+            <div class="cta-content">
+                <h2 class="marketing-strong">Be the first to know when we launch</h2>
+                <p class="marketing-strong">Join our exclusive waitlist for early access, beta invitations, and special launch pricing.</p>
+                <div class="cta-actions">
+                   <a href="{{ url_for('site_waitlist') }}" class="btn btn-primary btn-lg">
+                       <span>Join the Waitlist</span>
+                       <i class="fas fa-arrow-right"></i>
+                   </a>
+                </div>
+                <div class="cta-features">
+                    <div class="cta-feature marketing-strong">
+                        <i class="fas fa-check"></i>
+                        <span>Priority beta access</span>
+                    </div>
+                    <div class="cta-feature marketing-strong">
+                        <i class="fas fa-check"></i>
+                        <span>Exclusive launch pricing</span>
+                    </div>
+                    <div class="cta-feature marketing-strong">
+                        <i class="fas fa-check"></i>
+                        <span>Direct founder access</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <section class="newsletter">
+        <div class="section-container">
+            <div class="newsletter-content">
+                <div class="newsletter-text">
+                    <h3 class="marketing-strong">Get growing tips delivered to your inbox</h3>
+                    <p>Join thousands of cultivators getting exclusive tips, strain reviews, and grow optimization strategies.</p>
+                </div>
+                ...existing code...
+            </div>
+        </div>
+    </section>
+
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/landing.js') }}"></script>
+{% endblock %}

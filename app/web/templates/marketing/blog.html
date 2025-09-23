@@ -1,0 +1,174 @@
+{% extends "common/base.html" %}
+
+{% block title %}CultivAR Blog - Growing Tips, Strain Reviews & Industry Insights{% endblock %}
+
+{% block description %}Stay ahead with the latest cannabis cultivation tips, strain reviews, and industry insights from the CultivAR team. Learn from experts and optimize your grow.{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/blog.css') }}">
+{% endblock %}
+
+{% block auth_content %}
+    {% include 'marketing/_nav.html' %}
+    <!-- Blog Hero -->
+    <section class="blog-hero">
+        <div class="section-container">
+            <h1>Learn from the Experts</h1>
+            <p>Stay ahead with cultivation tips, strain reviews, and industry insights from professional growers and our development team.</p>
+        </div>
+    </section>
+
+    <!-- Blog Controls - Glass Card -->
+    <section class="blog-controls">
+        <div class="container">
+            <div class="search-box">
+                <input type="text" id="blog-search" class="search-input" placeholder="Search articles..." data-blog-search-input>
+                <i class="fas fa-search search-icon" aria-hidden="true"></i>
+            </div>
+            <div class="category-filters">
+                <a href="{{ url_for('site_blog') }}" class="category-filter {% if not request.args.get('category') %}active{% endif %}" data-category="">
+                    <span>All Posts</span>
+                </a>
+                {% for category in categories %}
+                <a href="{{ url_for('site_blog', category=category) }}" class="category-filter {% if request.args.get('category') == category %}active{% endif %}" data-category="{{ category }}">
+                    <span>{{ category|title }}</span>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Blog Content -->
+    <section class="blog-section">
+        <div class="section-container">
+            <div class="blog-content-layout">
+                <!-- Main Content -->
+                <div>
+                    {# Empty state always in DOM so JS can toggle visibility #}
+                    <div class="empty-state" data-empty-state {% if posts.items %}hidden{% endif %}>
+                        <div class="empty-icon" aria-hidden="true"><i class="fas fa-search-minus"></i></div>
+                        <h3>No articles found</h3>
+                        <p>Try adjusting your search terms or browse different categories.</p>
+                    </div>
+
+                    {# Posts container always present so JS can render results #}
+                    <div class="blog-grid" data-blog-posts>
+                        {% if posts.items %}
+                            {% for post in posts.items %}
+                            <article class="blog-card">
+                                <div class="blog-image">
+                                    {% if post.featured_image %}
+                                    <img src="{{ post.featured_image }}" alt="{{ post.title }}">
+                                    {% else %}
+                                    <i class="fas fa-seedling"></i>
+                                    {% endif %}
+                                </div>
+                                <div class="blog-content">
+                                    <div class="blog-meta">
+                                        <span class="blog-category">{{ post.category|title if post.category else 'General' }}</span>
+                                        <span class="blog-date">{{ post.publish_date_formatted }}</span>
+                                    </div>
+                                    <h3 class="blog-title">{{ post.title }}</h3>
+                                    <p class="blog-excerpt">{{ post.excerpt or post.content[:150] + '...' }}</p>
+                                    <div class="blog-footer">
+                                        <span class="blog-author">By {{ post.author or 'CultivAR Team' }}</span>
+                                        <a href="{{ url_for('marketing.blog_post', slug=post.slug) }}" class="blog-link">
+                                            Read More <i class="fas fa-arrow-right"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </article>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+
+                    <!-- Pagination -->
+                    {% if posts.pages > 1 %}
+                    <div class="pagination">
+                        {% if posts.has_prev %}
+                        <a href="{{ url_for('site_blog', page=posts.prev_num, category=request.args.get('category')) }}">&laquo; Previous</a>
+                        {% endif %}
+
+                        {% for page_num in posts.iter_pages() %}
+                        {% if page_num %}
+                        {% if page_num == posts.page %}
+                        <span class="active">{{ page_num }}</span>
+                        {% else %}
+                        <a href="{{ url_for('site_blog', page=page_num, category=request.args.get('category')) }}">{{ page_num }}</a>
+                        {% endif %}
+                        {% else %}
+                        <span>...</span>
+                        {% endif %}
+                        {% endfor %}
+
+                        {% if posts.has_next %}
+                        <a href="{{ url_for('site_blog', page=posts.next_num, category=request.args.get('category')) }}">Next &raquo;</a>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Sidebar -->
+                <aside class="blog-sidebar">
+                    <!-- Newsletter CTA -->
+                    <div class="newsletter-cta">
+                        <h3>Get Growing Tips</h3>
+                        <p>Join thousands of cultivators getting exclusive tips delivered to their inbox.</p>
+                        <form action="{{ url_for('newsletter.subscribe') }}" method="POST" class="newsletter-form">
+                            {% if csrf_token is defined %}
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            {% endif %}
+                            <input type="email" name="email" placeholder="Your email" required>
+                            <button type="submit" class="btn-primary">Subscribe</button>
+                        </form>
+                    </div>
+
+                    <!-- Categories -->
+                    <div class="sidebar-section">
+                        <h3>Categories</h3>
+                        <div class="sidebar-links">
+                            <a href="{{ url_for('site_blog') }}" class="sidebar-link {% if not request.args.get('category') %}active{% endif %}">
+                                All Posts ({{ posts.total }})
+                            </a>
+                            {% for category in categories %}
+                            <a href="{{ url_for('site_blog', category=category) }}" class="sidebar-link {% if request.args.get('category') == category %}active{% endif %}">
+                                {{ category|title }} ({{ posts.total }})
+                            </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Recent Posts -->
+                    <div class="sidebar-section">
+                        <h3>Recent Posts</h3>
+                        <div class="sidebar-links">
+                            {% for post in posts.items[:5] %}
+                            <a href="{{ url_for('marketing.blog_post', slug=post.slug) }}" class="sidebar-link">
+                                {{ post.title[:50] }}{% if post.title|length > 50 %}...{% endif %}
+                            </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Popular Tags -->
+                    <div class="sidebar-section">
+                        <h3>Popular Tags</h3>
+                        <div class="popular-tags">
+                            <span class="blog-category">Growing Tips</span>
+                            <span class="blog-category">Strain Reviews</span>
+                            <span class="blog-category">Industry News</span>
+                            <span class="blog-category">Cultivation</span>
+                            <span class="blog-category">Harvest</span>
+                            <span class="blog-category">Equipment</span>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/landing.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/blog.js') }}"></script>
+{% endblock %}

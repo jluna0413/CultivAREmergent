@@ -4,6 +4,7 @@ User management handlers for the CultivAR application.
 
 from datetime import datetime, timedelta
 
+from sqlalchemy import desc
 from werkzeug.security import generate_password_hash
 
 from app.logger import logger
@@ -31,7 +32,7 @@ def get_all_users():
             # Get last login (for now, we'll use updated_at as proxy)
             last_activity = (
                 SystemActivity.query.filter_by(user_id=user.id)
-                .order_by(SystemActivity.timestamp.desc())
+                .order_by(desc(SystemActivity.timestamp))  # type: ignore
                 .first()
             )
 
@@ -86,14 +87,14 @@ def get_user_by_id(user_id):
         dict: User data or None if not found.
     """
     try:
-        user = db.session.get(User, user_id)
+        user = db.session.get(User, ident=user_id)
         if not user:
             return None
 
         # Get user activities
         activities = (
             SystemActivity.query.filter_by(user_id=user.id)
-            .order_by(SystemActivity.timestamp.desc())
+            .order_by(SystemActivity.timestamp.desc())  # type: ignore
             .limit(10)
             .all()
         )
@@ -181,7 +182,10 @@ def create_user(data):
             is_admin=is_admin,
             force_password_change=force_password_change,
         )
-        new_user.password_hash = generate_password_hash(password)
+        if password:
+            new_user.password_hash = generate_password_hash(password)
+        else:
+            return {"success": False, "error": "Password is required"}
 
         db.session.add(new_user)
         db.session.commit()
@@ -219,7 +223,7 @@ def update_user(user_id, data):
         dict: Result of the operation.
     """
     try:
-        user = User.query.session.get(user_id)
+        user = db.session.get(User, ident=user_id)
         if not user:
             return {"success": False, "error": "User not found"}
 
@@ -272,7 +276,7 @@ def delete_user(user_id):
         dict: Result of the operation.
     """
     try:
-        user = User.query.session.get(user_id)
+        user = db.session.get(User, ident=user_id)
         if not user:
             return {"success": False, "error": "User not found"}
 
@@ -318,7 +322,7 @@ def toggle_user_admin_status(user_id):
         dict: Result of the operation.
     """
     try:
-        user = User.query.session.get(user_id)
+        user = db.session.get(User, ident=user_id)
         if not user:
             return {"success": False, "error": "User not found"}
 
@@ -371,7 +375,7 @@ def force_password_reset(user_id):
         dict: Result of the operation.
     """
     try:
-        user = User.query.session.get(user_id)
+        user = db.session.get(User, ident=user_id)
         if not user:
             return {"success": False, "error": "User not found"}
 

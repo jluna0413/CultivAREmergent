@@ -1,0 +1,29 @@
+name: Automated Patch Application
+
+on:
+  schedule:
+    - cron: '0 2 * * 1' # weekly on Monday at 02:00 UTC (adjust as needed)
+  workflow_dispatch: {}
+
+jobs:
+  apply-patches:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Run patch generator
+        run: python3 scripts/generate_patch_suggestions.py
+
+      - name: List patches
+        run: ls -la scripts/patches || true
+
+      - name: Dry-run notice
+        run: |
+          echo "Generated patch suggestions only. To apply patches automatically, run scripts/auto_apply_patches_and_create_prs.ps1 with gh auth."
+        

@@ -1,0 +1,111 @@
+{
+  "audit_summary": {
+    "total_tests": 16,
+    "passed_tests": 0,
+    "failed_tests": 16,
+    "success_rate": 0.0
+  },
+  "test_results": [
+    {
+      "test": "Basic route: /",
+      "result": "FAIL",
+      "details": "Error: HTTPSConnectionPool(host='localhost', port=5000): Max retries exceeded with url: / (Caused by SSLError(SSLError(1, '[SSL: WRONG_VERSION_NUMBER] wrong version number (_ssl.c:1006)'))), Landing page",
+      "timestamp": "2025-09-18T01:13:33.162461"
+    },
+    {
+      "test": "Basic route: /health",
+      "result": "FAIL",
+      "details": "Error: HTTPSConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /health (Caused by SSLError(SSLError(1, '[SSL: WRONG_VERSION_NUMBER] wrong version number (_ssl.c:1006)'))), Health check endpoint",
+      "timestamp": "2025-09-18T01:13:37.539661"
+    },
+    {
+      "test": "Auth route: /auth/login",
+      "result": "FAIL",
+      "details": "Error: HTTPSConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /auth/login (Caused by SSLError(SSLError(1, '[SSL: WRONG_VERSION_NUMBER] wrong version number (_ssl.c:1006)'))), Login page",
+      "timestamp": "2025-09-18T01:13:41.930530"
+    },
+    {
+      "test": "Auth route: /auth/signup",
+      "result": "FAIL",
+      "details": "Error: HTTPSConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /auth/signup (Caused by SSLError(SSLError(1, '[SSL: WRONG_VERSION_NUMBER] wrong version number (_ssl.c:1006)'))), Signup page",
+      "timestamp": "2025-09-18T01:13:46.255677"
+    },
+    {
+      "test": "Auth route: /auth/forgot-password",
+      "result": "FAIL",
+      "details": "Error: HTTPSConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /auth/forgot-password (Caused by SSLError(SSLError(1, '[SSL: WRONG_VERSION_NUMBER] wrong version number (_ssl.c:1006)'))), Forgot password",
+      "timestamp": "2025-09-18T01:13:50.654501"
+    },
+    {
+      "test": "Dashboard route: /dashboard/",
+      "result": "FAIL",
+      "details": "Error: HTTPSConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /dashboard/ (Caused by SSLError(SSLError(1, '[SSL: WRONG_VERSION_NUMBER] wrong version number (_ssl.c:1006)'))), Main dashboard",
+      "timestamp": "2025-09-18T01:13:55.095532"
+    },
+    {
+      "test": "Dashboard route: /dashboard/plants",
+      "result": "FAIL",
+      "details": "Error: HTTPSConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /dashboard/plants (Caused by SSLError(SSLError(1, '[SSL: WRONG_VERSION_NUMBER] wrong version number (_ssl.c:1006)'))), Plants page",
+      "timestamp": "2025-09-18T01:13:59.519620"
+    },
+    {
+      "test": "Static file: /static/css/style.css",
+      "result": "FAIL",
+      "details": "Error: HTTPSConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /static/css/style.css (Caused by SSLError(SSLError(1, '[SSL: WRONG_VERSION_NUMBER] wrong version number (_ssl.c:1006)'))), Main stylesheet",
+      "timestamp": "2025-09-18T01:14:03.972974"
+    },
+    {
+      "test": "Static file: /static/js/main.js",
+      "result": "FAIL",
+      "details": "Error: HTTPSConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /static/js/main.js (Caused by SSLError(SSLError(1, '[SSL: WRONG_VERSION_NUMBER] wrong version number (_ssl.c:1006)'))), Main JavaScript file",
+      "timestamp": "2025-09-18T01:14:08.428464"
+    },
+    {
+      "test": "Static file: /favicon.ico",
+      "result": "FAIL",
+      "details": "Error: HTTPSConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /favicon.ico (Caused by SSLError(SSLError(1, '[SSL: WRONG_VERSION_NUMBER] wrong version number (_ssl.c:1006)'))), Favicon",
+      "timestamp": "2025-09-18T01:14:12.913997"
+    },
+    {
+      "test": "Market route: /market/extensions",
+      "result": "FAIL",
+      "details": "Error: HTTPSConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /market/extensions (Caused by SSLError(SSLError(1, '[SSL: WRONG_VERSION_NUMBER] wrong version number (_ssl.c:1006)'))), Market extensions",
+      "timestamp": "2025-09-18T01:14:17.372422"
+    },
+    {
+      "test": "Market route: /market/gear",
+      "result": "FAIL",
+      "details": "Error: HTTPSConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /market/gear (Caused by SSLError(SSLError(1, '[SSL: WRONG_VERSION_NUMBER] wrong version number (_ssl.c:1006)'))), Market gear",
+      "timestamp": "2025-09-18T01:14:21.836911"
+    },
+    {
+      "test": "Market route: /market/seed-bank",
+      "result": "FAIL",
+      "details": "Error: HTTPSConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /market/seed-bank (Caused by SSLError(SSLError(1, '[SSL: WRONG_VERSION_NUMBER] wrong version number (_ssl.c:1006)'))), Market seed bank",
+      "timestamp": "2025-09-18T01:14:26.342676"
+    },
+    {
+      "test": "Admin route: /admin/users",
+      "result": "FAIL",
+      "details": "Error: HTTPSConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /admin/users (Caused by SSLError(SSLError(1, '[SSL: WRONG_VERSION_NUMBER] wrong version number (_ssl.c:1006)'))), Admin users page",
+      "timestamp": "2025-09-18T01:14:30.867122"
+    },
+    {
+      "test": "Admin route: /admin/export",
+      "result": "FAIL",
+      "details": "Error: HTTPSConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /admin/export (Caused by SSLError(SSLError(1, '[SSL: WRONG_VERSION_NUMBER] wrong version number (_ssl.c:1006)'))), Admin data export",
+      "timestamp": "2025-09-18T01:14:35.380701"
+    },
+    {
+      "test": "JavaScript navigation check",
+      "result": "FAIL",
+      "details": "Error: HTTPSConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /static/js/main.js (Caused by SSLError(SSLError(1, '[SSL: WRONG_VERSION_NUMBER] wrong version number (_ssl.c:1006)')))",
+      "timestamp": "2025-09-18T01:14:39.898166"
+    }
+  ],
+  "audit_timestamp": "2025-09-18T01:14:39.901248",
+  "environment": {
+    "base_url": "http://localhost:5000",
+    "python_version": "3.11.9 (tags/v3.11.9:de54cf5, Apr  2 2024, 10:12:12) [MSC v.1938 64 bit (AMD64)]"
+  }
+}

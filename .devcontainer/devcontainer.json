@@ -1,0 +1,15 @@
+{
+  "name": "CultivAR (Docker)",
+  "dockerComposeFile": "../docker-compose.yml",
+  "service": "cultivare",
+  "workspaceFolder": "/app",
+  "extensions": [
+    "ms-python.python",
+    "ms-python.vscode-pylance"
+  ],
+  "settings": {
+    "python.defaultInterpreterPath": "/usr/local/bin/python"
+  },
+  "forwardPorts": [5000],
+  "shutdownAction": "stopCompose"
+}

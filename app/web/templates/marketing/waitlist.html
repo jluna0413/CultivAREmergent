@@ -1,0 +1,394 @@
+{% extends "common/base.html" %}
+
+{% block title %}Join the CultivAR Waitlist - Early Access & Exclusive Benefits{% endblock %}
+
+{% block description %}Join the exclusive CultivAR waitlist for early access to the most advanced cannabis grow management platform. Get priority beta access, special launch pricing, and direct founder support.{% endblock %}
+
+{% block styles %}
+<style>
+/* Waitlist Page Specific Styles */
+.waitlist-hero {
+    padding: 6rem 2rem 4rem;
+    background: var(--gradient-hero);
+    min-height: 90vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.waitlist-hero .waitlist-container {
+    max-width: 800px;
+    width: 100%;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.waitlist-hero h1 {
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: var(--color-text-primary);
+}
+
+.waitlist-hero h1::after {
+    content: '';
+    display: block;
+    width: 80px;
+    height: 4px;
+    background: var(--gradient-primary);
+    margin: 1rem auto 0;
+    border-radius: 2px;
+}
+
+.waitlist-hero p {
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+    color: var(--color-text-secondary);
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Social Proof */
+.social-proof {
+    background: var(--color-surface-primary);
+    border-radius: var(--radius-xl);
+    padding: 2rem;
+    margin: 3rem 0;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--glass-border-light);
+}
+
+.social-proof h3 {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+    color: var(--color-text-primary);
+}
+
+.proof-stats {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.proof-stat {
+    text-align: center;
+    flex: 1;
+    min-width: 120px;
+}
+
+.proof-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--color-primary-500);
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.proof-label {
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+/* Waitlist Form - Glass Card */
+.waitlist-form {
+    background: var(--glass-bg-light);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border-light);
+    border-radius: var(--radius-2xl);
+    padding: 3rem;
+    margin: 2rem auto;
+    box-shadow: var(--shadow-xl);
+    max-width: 500px;
+    transition: all 0.3s ease;
+}
+
+[data-theme="dark"] .waitlist-form {
+    background: var(--glass-bg-dark);
+    border-color: var(--glass-border-dark);
+}
+
+.waitlist-form:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-2xl);
+}
+
+/* Priority Tiers */
+.priority-tiers {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin: 2rem 0;
+    padding: 0;
+}
+
+.tier-option {
+    border: 2px solid var(--color-border-primary);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: var(--color-surface-primary);
+}
+
+.tier-option:hover {
+    border-color: var(--color-primary-400);
+    transform: scale(1.02);
+}
+
+.tier-option.selected {
+    border-color: var(--color-primary-500);
+    background: rgba(76, 175, 80, 0.05);
+    box-shadow: var(--shadow-md);
+}
+
+[data-theme="dark"] .tier-option.selected {
+    background: rgba(76, 175, 80, 0.1);
+}
+
+.tier-title {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--color-text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.tier-description {
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+    line-height: 1.4;
+}
+
+/* Waitlist Benefits */
+.waitlist-benefits {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.benefit-item {
+    background: var(--color-surface-primary);
+    border-radius: var(--radius-xl);
+    padding: 2rem;
+    text-align: center;
+    box-shadow: var(--shadow-light);
+    border: 1px solid var(--color-border-secondary);
+    transition: all 0.3s ease;
+}
+
+.benefit-item:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--color-primary-200);
+}
+
+.benefit-item .benefit-icon {
+    width: 60px;
+    height: 60px;
+    background: var(--gradient-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    color: white;
+    font-size: 1.5rem;
+}
+
+.benefit-item h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: 1rem;
+}
+
+.benefit-item p {
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .waitlist-hero { padding: 4rem 1rem 2rem; }
+    .waitlist-hero h1 { font-size: 2.5rem; }
+    .waitlist-form { padding: 2rem 1.5rem; margin: 1rem; }
+    .priority-tiers { grid-template-columns: 1fr; }
+    .waitlist-benefits { grid-template-columns: 1fr; gap: 1.5rem; }
+    .proof-stats { gap: 1.5rem; }
+    .proof-stat { min-width: 80px; }
+}
+
+@media (max-width: 480px) {
+    .waitlist-hero h1 { font-size: 2rem; }
+    .waitlist-form { padding: 1.5rem 1rem; }
+    .benefit-item { padding: 1.5rem; }
+}
+</style>
+{% endblock %}
+
+{% block auth_content %}
+{% include 'marketing/_nav.html' %}
+
+<section class="waitlist-hero">
+    <div class="waitlist-container">
+        <h1>Join the Exclusive CultivAR Waitlist</h1>
+       <!-- NOTE: Using canonical token names improves theme interoperability.
+           Legacy token `--text-secondary` is being replaced with
+           `--color-text-secondary` here to ensure the page responds to the
+           ThemeManager's `[data-theme]` overrides. Leave the central
+           compatibility alias in `styles.css` until all templates are
+           migrated. -->
+       <p style="font-size: 1.2rem; margin: 1rem 0 2rem; color: var(--color-text-secondary);">
+            Be among the first to experience the future of cannabis cultivation management.
+            Get priority access, exclusive pricing, and direct founder support.
+        </p>
+
+        <!-- Social Proof -->
+        <div class="social-proof">
+            <h3>Join the growing community</h3>
+            <div class="proof-stats">
+                <div class="proof-stat">
+                    <div class="proof-number" id="waitlist-count">15000</div>
+                    <div class="proof-label">Waitlist Members</div>
+                </div>
+                <div class="proof-stat">
+                    <div class="proof-number" id="today-count">25</div>
+                    <div class="proof-label">Joined Today</div>
+                </div>
+                <div class="proof-stat">
+                    <div class="proof-number">1200+</div>
+                    <div class="proof-label">Beta Testers</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Waitlist Form -->
+        <div class="waitlist-form">
+            <form id="waitlist-form" method="POST">
+                {% if csrf_token is defined %}
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                {% endif %}
+                <div class="form-group">
+                    <label for="email" class="form-label">Email Address *</label>
+                    <input type="email" id="email" name="email" class="form-input" required
+                           placeholder="your.email@example.com">
+                </div>
+
+                <!-- Priority Tiers -->
+                <div class="form-group">
+                    <label class="form-label">Priority Access Level</label>
+                    <div class="priority-tiers">
+                        <div class="tier-option" data-tier="early_bird">
+                            <div class="tier-title">Early Bird</div>
+                            <div class="tier-description">First access + exclusive content</div>
+                        </div>
+                        <div class="tier-option selected" data-tier="beta">
+                            <div class="tier-title">Beta Access</div>
+                            <div class="tier-description">Beta testing + launch pricing</div>
+                        </div>
+                        <div class="tier-option" data-tier="general">
+                            <div class="tier-title">General Access</div>
+                            <div class="tier-description">Launch notification + updates</div>
+                        </div>
+                    </div>
+                    <input type="hidden" name="priority_tier" id="priority-tier" value="beta">
+                </div>
+
+                <!-- Referral Code (Optional) -->
+                <div class="form-group">
+                    <label for="referral_code" class="form-label">Referral Code (Optional)</label>
+                    <input type="text" id="referral_code" name="referral_code" class="form-input"
+                           placeholder="Enter referral code for bonus priority">
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <span>Join the Waitlist</span>
+                    <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                </button>
+            </form>
+        </div>
+
+        <!-- Benefits -->
+        <div class="waitlist-benefits">
+            <div class="benefit-item">
+                <div class="benefit-icon">
+                    <i class="fas fa-rocket"></i>
+                </div>
+                <h3>Priority Beta Access</h3>
+                <p>Get early access to test new features and provide feedback directly to our development team.</p>
+            </div>
+            <div class="benefit-item">
+                <div class="benefit-icon">
+                    <i class="fas fa-tag"></i>
+                </div>
+                <h3>Exclusive Launch Pricing</h3>
+                <p>Lock in special pricing available only to waitlist members when we officially launch.</p>
+            </div>
+            <div class="benefit-item">
+                <div class="benefit-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3>Direct Founder Access</h3>
+                <p>Join our private community and get direct access to the founders for support and feature requests.</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Priority tier selection
+        document.querySelectorAll('.tier-option').forEach(option => {
+            option.addEventListener('click', () => {
+                document.querySelectorAll('.tier-option').forEach(opt => opt.classList.remove('selected'));
+                option.classList.add('selected');
+                document.getElementById('priority-tier').value = option.dataset.tier;
+                if (window.StylesUtils) {
+                    window.StylesUtils.addRippleEffect(option);
+                }
+            });
+        });
+
+        // Load dynamic waitlist stats
+    fetch('/site/api/waitlist/stats')
+            .then(response => response.json())
+            .then(data => {
+                const waitlistCount = document.getElementById('waitlist-count');
+                const todayCount = document.getElementById('today-count');
+                if (waitlistCount) waitlistCount.textContent = data.total.toLocaleString();
+                if (todayCount) todayCount.textContent = data.today;
+            })
+            .catch(() => {/* ignore */});
+
+        // Simple form validation
+        const form = document.getElementById('waitlist-form');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                const email = document.getElementById('email').value;
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                    e.preventDefault();
+                    if (window.showNotification) {
+                        window.showNotification('Please enter a valid email address', 'error');
+                    } else {
+                        alert('Please enter a valid email address.');
+                    }
+                    return false;
+                }
+                const submitBtn = form.querySelector('button[type="submit"]');
+                if (window.StylesUtils && submitBtn) {
+                    window.StylesUtils.setLoadingState(submitBtn, true);
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

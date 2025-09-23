@@ -1,0 +1,56 @@
+<div class="social-share" data-url="{{ (url if url and (url.startswith('http://') or url.startswith('https://')) else request.url) | e }}" data-title="{{ (title or 'Check out CultivAR!') | e }}">
+  {% set share_url = (url if url and (url.startswith('http://') or url.startswith('https://')) else request.url) %}
+  {% set share_title = title or 'Check out CultivAR!' %}
+
+  {# If social_platforms provided, render dynamic buttons that hit the API to generate URLs #}
+  {% if social_platforms %}
+    {% for key, cfg in social_platforms.items() %}
+  <a class="btn btn-ghost" href="#" data-platform="{{ key }}" onclick="return generateShareURL(this);">Share on {{ cfg.name }}</a>
+    {% endfor %}
+  {% else %}
+    {# Fallback to minimal X/LinkedIn #}
+  <a class="btn btn-ghost" href="https://twitter.com/intent/tweet?text={{ share_title|urlencode }}&url={{ share_url|urlencode }}" target="_blank" rel="noopener">Share on X</a>
+  <a class="btn btn-ghost" href="https://www.linkedin.com/sharing/share-offsite/?url={{ share_url|urlencode }}" target="_blank" rel="noopener">Share on LinkedIn</a>
+  {% endif %}
+
+  <a class="btn btn-ghost" href="#" onclick="return copyShareLink(this);">Copy Link</a>
+</div>
+
+<script>
+async function generateShareURL(el) {
+  try {
+    const root = el.closest('.social-share');
+    const platform = el.getAttribute('data-platform');
+    const url = root.getAttribute('data-url') || window.location.href;
+    const title = root.getAttribute('data-title') || document.title;
+    const resp = await fetch(`/social/api/generate-share-url?platform=${encodeURIComponent(platform)}&url=${encodeURIComponent(url)}&title=${encodeURIComponent(title)}`);
+    const data = await resp.json();
+    if (data.share_url) {
+      window.open(data.share_url, '_blank', 'noopener');
+    } else {
+      console.warn('Share URL generation failed, falling back');
+      window.open(url, '_blank', 'noopener');
+    }
+  } catch (e) {
+    console.error('Error generating share URL', e);
+  }
+  return false;
+}
+
+async function copyShareLink(el) {
+  try {
+    const root = el.closest('.social-share');
+    const url = root.getAttribute('data-url') || window.location.href;
+    await navigator.clipboard.writeText(url);
+    const prev = el.innerText;
+    el.innerText = 'Copied!';
+    setTimeout(() => el.innerText = prev, 1500);
+  } catch (e) {
+    console.warn('Clipboard copy failed, showing prompt');
+    const root = el.closest('.social-share');
+    const url = root.getAttribute('data-url') || window.location.href;
+    window.prompt('Copy link:', url);
+  }
+  return false;
+}
+</script>
