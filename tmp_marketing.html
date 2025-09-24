@@ -35,11 +35,9 @@
     <!-- Make CSP nonce available to JavaScript early in the head so scripts can use it -->
     
     
-    <meta name="csrf-token" content="IjY0N2JkMDI0ZjFhZTVmNjcxMjk0MzhhYzA3MGI1ZWNlZGQ3ZWMwZmYi.aM-17A.BLmGDZI0n3OUeoFhgYKOUOCnQpI">
-    
-    <script nonce="Z7NoWjTackmo0U-sC24U6TyJ11CQOE0Y">
-        window.cspNonce = 'Z7NoWjTackmo0U-sC24U6TyJ11CQOE0Y';
-    </script>
+    <!-- CSRF token and CSP nonce should be injected server-side. Do NOT hardcode secrets in static files. -->
+    <!-- Example Jinja usage: <meta name="csrf-token" content="{{ csrf_token() }}"> -->
+    <!-- Example Jinja for CSP nonce: <script nonce="{{ csp_nonce }}">window.cspNonce = '{{ csp_nonce }}';</script> -->
     
     
 </head>

@@ -46,7 +46,7 @@ Get-ChildItem -Path $PatchDir -Filter "*.patch" | Sort-Object Name | ForEach-Obj
     Get-Content -Raw -Path $patch | Set-Content -Path $tmpPatch -NoNewline:$false
 
     try {
-        git apply --index $tmpPatch
+        git apply --index -- "$tmpPatch"
     } catch {
         Write-Warning "Patch failed to apply cleanly: $patchName. Aborting branch and leaving patch for manual review."
         git checkout $BaseBranch
@@ -67,16 +67,23 @@ Get-ChildItem -Path $PatchDir -Filter "*.patch" | Sort-Object Name | ForEach-Obj
     }
 
     $checkSucceeded = $true
-    if (Test-Path (Join-Path (Get-Location) $CheckCmd.Split(' ')[1])) {
-        Write-Host "Running checks: $CheckCmd"
-        try {
-            pwsh -NoProfile -Command $CheckCmd
-        } catch {
-            $checkSucceeded = $false
-            Write-Warning "Checks failed for $patchName. Leaving branch $branch for manual fix."
+    # If CheckCmd is a simple script path like 'python scripts/check_all_jinja.py' try to validate the script exists
+    $checkParts = $CheckCmd -split '\s+'
+    if ($checkParts.Length -ge 2) {
+        $checkPath = $checkParts[1]
+        if (Test-Path (Resolve-Path -Path $checkPath -ErrorAction SilentlyContinue)) {
+            Write-Host "Running checks: $CheckCmd"
+            try {
+                pwsh -NoProfile -Command $CheckCmd
+            } catch {
+                $checkSucceeded = $false
+                Write-Warning "Checks failed for $patchName. Leaving branch $branch for manual fix."
+            }
+        } else {
+            Write-Warning "Check script not found at $checkPath; skipping checks for $patchName."
         }
     } else {
-        Write-Warning "Check script not found; skipping checks for $patchName."
+        Write-Host "No check command provided; skipping checks for $patchName."
     }
 
     if (-not $checkSucceeded) {
@@ -89,13 +96,18 @@ Get-ChildItem -Path $PatchDir -Filter "*.patch" | Sort-Object Name | ForEach-Obj
     $title = "Automated: apply patch $patchName"
     $body = "Auto-generated patch application for $patchName\n\nThis branch was created by scripts/auto_apply_patches_and_create_prs.ps1.\nPlease review and merge via normal workflow."
 
-    $ghCmd = "gh pr create --title `"$title`" --body `"$body`" --base $BaseBranch --head $branch"
-    if ($Label) { $ghCmd += " --label `"$Label`"" }
-    if ($Reviewer) { $ghCmd += " --reviewer $Reviewer" }
-    if (Test-Path $PrTemplatePath) { $ghCmd += " --body-file $PrTemplatePath" }
+    # Build gh arguments safely to avoid command injection
+    $ghArgs = @('pr','create','--title',$title,'--body',$body,'--base',$BaseBranch,'--head',$branch)
+    if ($Label) { $ghArgs += @('--label',$Label) }
+    if ($Reviewer) { $ghArgs += @('--reviewer',$Reviewer) }
+    if (Test-Path $PrTemplatePath) { $ghArgs += @('--body-file',$PrTemplatePath) }
 
-    Invoke-Expression $ghCmd
-
-    Write-Host "PR created for $branch"
+    try {
+        $proc = Start-Process -FilePath 'gh' -ArgumentList $ghArgs -NoNewWindow -Wait -PassThru -ErrorAction Stop
+        if ($proc.ExitCode -ne 0) { Write-Warning "gh returned exit code $($proc.ExitCode) while creating PR for $branch" }
+        else { Write-Host "PR created for $branch" }
+    } catch {
+        Write-Warning "Failed to create PR via gh for $branch: $_"
+    }
 }
 Write-Host "All patches processed."

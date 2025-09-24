@@ -65,7 +65,11 @@ def create_app():
     @login_manager.user_loader
     def load_user(user_id):
         from app.models.base_models import User
-        return db.session.get(User, ident=int(user_id))
+        # SQLAlchemy Session.get expects (Model, primary_key). Ensure we pass an int id.
+        try:
+            return db.session.get(User, int(user_id))
+        except Exception:
+            return None
 
     # Configure Flask session settings
     app.config['SESSION_COOKIE_SECURE'] = not app.config.get('DEBUG', False)
@@ -76,7 +80,8 @@ def create_app():
 
     # Configure Flask-Talisman for enterprise-grade security headers
     # Adjust security settings based on environment
-    app.config['DEBUG'] = True  # Force debug mode for development testing
+    # Use the configured DEBUG value from Config rather than forcing True
+    app.config['DEBUG'] = getattr(Config, 'DEBUG', False)
     is_production = not app.config.get('DEBUG', False)
 
     # Use different Talisman configurations for production vs development

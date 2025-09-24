@@ -7,10 +7,16 @@
     <meta name="description" content="The most advanced self-hosted cannabis grow journal. Track plants, monitor environments, optimize yields. Your grow, your data, your success.">
     
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    
-    <!-- Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+          rel="stylesheet"
+          integrity="sha384-XYZ-placeholder-integrity-hash-for-google-fonts-inter"
+          crossorigin="anonymous">
+
+    <!-- Icons (CDN) -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+          integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+          crossorigin="anonymous">
     
     <!-- Apple-style CSS -->
     <link rel="stylesheet" href="/static/css/landing.css">
@@ -96,7 +102,7 @@
                             <div class="widget environmental">
                                 <div class="widget-icon"><i class="fas fa-thermometer-half"></i></div>
                                 <div class="widget-data">
-                                    <div class="widget-number">75øF</div>
+                                    <div class="widget-number">75ï¿½F</div>
                                     <div class="widget-label">Temperature</div>
                                 </div>
                             </div>
@@ -432,9 +438,22 @@
                     <p>Get exclusive cultivation tips, product updates, and industry insights delivered to your phone.</p>
                 </div>
                 <div class="newsletter-form">
-                    <form id="newsletter-form" class="newsletter-signup">
+                    <form id="newsletter-form" class="newsletter-signup" method="POST" action="/newsletter/subscribe">
                         <div class="input-group">
-                            <input type="tel" placeholder="Enter your phone number" id="phone-input" required>
+                            <!-- Phone is optional, add clear privacy/consent information -->
+                            <input type="tel" name="phone" placeholder="Enter your phone number (optional)" id="phone-input" aria-label="Phone number">
+                            <div class="phone-consent-info">
+                                <p class="privacy-text">
+                                    <i class="fas fa-info-circle"></i>
+                                    Phone number is optional. If provided, we will send occasional SMS updates about new cultivation tips and product features.
+                                    Standard message and data rates may apply. You can unsubscribe at any time.
+                                    <a href="/privacy" target="_blank">View our privacy policy</a>.
+                                </p>
+                                <label for="sms-consent" class="consent-label">
+                                    <input type="checkbox" id="sms-consent" name="sms_consent" value="yes">
+                                    <strong>Yes, I consent to receive SMS messages</strong> and understand I can opt-out anytime.
+                                </label>
+                            </div>
                             <button type="submit" class="btn-newsletter">
                                 <span>Subscribe</span>
                                 <i class="fas fa-paper-plane"></i>

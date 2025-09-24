@@ -7,6 +7,7 @@ Tests the actual password update process as done by the admin interface.
 import sys
 import os
 import traceback
+from datetime import datetime
 
 # Add app directory to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'app'))
@@ -75,47 +76,58 @@ def test_password_update():
             # Test EXACTLY what the admin interface is doing
             print("\nDEBUG: Testing password update simulation...")
 
-            # Step 1: Get user by ID (this is where session.get() is failing)
+            # Step 1: Get user by ID (try SQLAlchemy 2.0 Session.get() style)
             print("STEP 1: Getting user by ID...")
             try:
                 # Try the NEW SQLAlchemy 2.0 way first
                 print("  - Trying SQLAlchemy 2.0+ Session.get() syntax...")
-                target_user = db.session.get(User, ident=admin_user.id)
+                # session.get takes (model, primary_key) in SQLAlchemy 2.x
+                target_user = db.session.get(User, admin_user.id)
                 if target_user:
-                    print("  ✅ SUCCESS: User found using modern syntax"                    print(f"  - Found user: {target_user.username} (ID: {target_user.id})")
+                    print("  ✅ SUCCESS: User found using modern syntax")
+                    print(f"  - Found user: {target_user.username} (ID: {target_user.id})")
                 else:
-                    print("  ❌ FAILED: User not found using modern syntax"
+                    print("  ❌ FAILED: User not found using modern syntax")
             except Exception as e:
-                print.f(f"  ❌ ERROR with modern syntax: {e}")
+                print(f"  ❌ ERROR with modern syntax: {e}")
                 print("  💡 NOTE: This confirms the SQLAlchemy 2.0 compatibility issue")
 
             # Step 2: Update password if user found
             if 'target_user' in locals() and target_user:
                 print("\nSTEP 2: Updating password...")
                 try:
-                    old_hash = target_user.password_hash[:10] + "..."
+                    ph = getattr(target_user, 'password_hash', None)
+                    old_hash = (ph[:10] + "...") if (ph and isinstance(ph, str)) else '<none>'
                     print(f"  - Old password hash: {old_hash}")
 
-                    # Generate new password hash
+                    # Generate new password hash (test value)
                     new_password_hash = generate_password_hash("1238")
                     print(f"  - New password hash generated: {new_password_hash[:10]}...")
 
                     # Update user
                     target_user.password_hash = new_password_hash
-                    target_user.updated_at = None  # Will be set to current time
-                    print("  - User object updated successfully"
+                    # Set updated_at to current time explicitly to avoid relying on DB defaults
+                    target_user.updated_at = datetime.utcnow()
+                    print("  - User object updated successfully")
+
                     # Commit changes
                     db.session.commit()
-                    print("  ✅ SUCCESS: Password update committed to database"
-                    # Verify
-                    updated_user = User.query.get(admin_user.id)
+                    print("  ✅ SUCCESS: Password update committed to database")
+
+                    # Verify using session.get for SQLAlchemy 2.x
+                    updated_user = db.session.get(User, admin_user.id)
                     if updated_user:
-                        print("  ✅ VERIFICATION: User found after update"                        print(f"  - Password hash: {updated_user.password_hash[:10]}...")
-                        print("  - Updated timestamp: Available"
-                        print("  🎉 PASSWORD UPDATE SUCCESSFUL!"
+                        print("  ✅ VERIFICATION: User found after update")
+                        uph = getattr(updated_user, 'password_hash', None)
+                        if uph and isinstance(uph, str):
+                            print(f"  - Password hash: {uph[:10]}...")
+                        else:
+                            print("  - Password hash: <none>")
+                        print("  - Updated timestamp: Available")
+                        print("  🎉 PASSWORD UPDATE SUCCESSFUL!")
                         return True
                     else:
-                        print("  ❌ VERIFICATION FAILED: User not found after update"
+                        print("  ❌ VERIFICATION FAILED: User not found after update")
                 except Exception as e:
                     print(f"  ❌ ERROR updating password: {e}")
                     traceback.print_exc()
