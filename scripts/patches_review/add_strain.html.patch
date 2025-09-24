@@ -1,10 +1,38 @@
---- a/app/web/templates/views/add_strain.html
-+++ b/app/web/templates/views/add_strain.html
-@@ -92,7 +92,7 @@
-                         </div>
-                         <div class="d-flex justify-content-between">
-                             <a href="/" class="btn btn-secondary">Cancel</a>
--                            <button type="button" onclick="saveStrain()" class="btn btn-primary">Save Strain</button>
-+                            <button type="button" data-action="saveStrain" class="btn btn-primary">Save Strain</button>
-                         </div>
-                     </form>
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Add Strain</h1>
+    <form id="addStrainForm">
+        <div class="mb-3">
+            <label for="strainName" class="form-label">Strain Name</label>
+            <input type="text" class="form-control" id="strainName" name="strainName" required>
+        </div>
+        <div class="mb-3">
+            <label for="strainType" class="form-label">Strain Type</label>
+            <select class="form-select" id="strainType" name="strainType" required>
+                <option value="">Select Strain Type</option>
+                <option value="indica">Indica</option>
+                <option value="sativa">Sativa</option>
+                <option value="hybrid">Hybrid</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="thcContent" class="form-label">THC Content (%)</label>
+            <input type="number" step="0.1" class="form-control" id="thcContent" name="thcContent" required>
+        </div>
+        <div class="mb-3">
+            <label for="cbdContent" class="form-label">CBD Content (%)</label>
+            <input type="number" step="0.1" class="form-control" id="cbdContent" name="cbdContent" required>
+        </div>
+        <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+        </div>
+        <div class="d-flex justify-content-between">
+            <a href="/" class="btn btn-secondary">Cancel</a>
+            <button type="button" data-action="saveStrain" class="btn btn-primary">Save Strain</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

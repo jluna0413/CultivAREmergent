@@ -1,10 +1,25 @@
---- a/app/web/templates/views/add_breeder.html
-+++ b/app/web/templates/views/add_breeder.html
-@@ -30,7 +30,7 @@
-                         </div>
-                         <div class="d-flex justify-content-between">
-                             <a href="/" class="btn btn-secondary">Cancel</a>
--                            <button type="button" onclick="saveBreeder()" class="btn btn-primary">Save Breeder</button>
-+                            <button type="button" data-action="saveBreeder" class="btn btn-primary">Save Breeder</button>
-                         </div>
-                     </form>
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Add Breeder</h2>
+    <form id="addBreederForm">
+        <div class="mb-3">
+            <label for="name" class="form-label">Name</label>
+            <input type="text" class="form-control" id="name" required>
+        </div>
+        <div class="mb-3">
+            <label for="location" class="form-label">Location</label>
+            <input type="text" class="form-control" id="location" required>
+        </div>
+        <div class="mb-3">
+            <label for="contact" class="form-label">Contact</label>
+            <input type="text" class="form-control" id="contact" required>
+        </div>
+        <div class="d-flex justify-content-between">
+            <a href="/" class="btn btn-secondary">Cancel</a>
+            <button type="button" data-action="saveBreeder" class="btn btn-primary">Save Breeder</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,11 +1,73 @@
---- a/app/web/templates/views/plant.html
-+++ b/app/web/templates/views/plant.html
-@@ -5,7 +5,7 @@
- {% block header %}
- <div class="plant-header">
-     <div class="plant-title-section">
+{% extends "base.html" %}
+
+{% block header %}
+
+<div class="plant-header">
+
+    <div class="plant-title-section">
+
 -        <button class="btn btn-sm btn-secondary back-btn" onclick="history.back()">
+
 +        <button class="btn btn-sm btn-secondary back-btn" data-action="back">
+
              <i class="fas fa-arrow-left"></i> Back
+
          </button>
+
          <h1 class="plant-title">{{ plant.name }}</h1>
+
+     </div>
+
+ </div>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="plant-content">
+
+    <div class="plant-details">
+
+        <h2>Details</h2>
+
+        <p><strong>Scientific Name:</strong> {{ plant.scientific_name }}</p>
+
+        <p><strong>Family:</strong> {{ plant.family }}</p>
+
+        <p><strong>Genus:</strong> {{ plant.genus }}</p>
+
+        <p><strong>Order:</strong> {{ plant.order }}</p>
+
+        <p><strong>Class:</strong> {{ plant.class }}</p>
+
+        <p><strong>Division:</strong> {{ plant.division }}</p>
+
+    </div>
+
+    <div class="plant-description">
+
+        <h2>Description</h2>
+
+        <p>{{ plant.description }}</p>
+
+    </div>
+
+    <div class="plant-images">
+
+        <h2>Images</h2>
+
+        {% for image in plant.images %}
+
+        <div class="plant-image">
+
+            <img src="{{ image.url }}" alt="{{ plant.name }}" />
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+{% endblock %}
