@@ -1,0 +1,31 @@
+name: Flutter CI - Analyze
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+
+jobs:
+  analyze:
+    name: Run flutter analyze if a Flutter project is present
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Detect and analyze Flutter app
+        run: |
+          if [ -f flutter_app/pubspec.yaml ]; then
+            echo "Found flutter_app/pubspec.yaml — running flutter analyze"
+            cd flutter_app
+            flutter pub get
+            flutter analyze
+          else
+            echo "No flutter_app/pubspec.yaml found — skipping flutter analyze"
+          fi
