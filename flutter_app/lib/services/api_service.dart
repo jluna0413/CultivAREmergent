@@ -3,7 +3,6 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
-import 'package:flutter/foundation.dart';
 import '../core/logging.dart';
 import '../models/cultivar.dart';
 
@@ -242,8 +241,8 @@ class ApiService {
         return Cultivar.fromJson(jsonResponse);
       }
     } catch (e) {
-      // Return mock data if API fails
-      debugPrint('API call failed, updating mock cultivar: $e');
+  // Return mock data if API fails
+  AppLogger.error('API call failed, updating mock cultivar', e);
       
       // Return the original cultivar with updated fields
       final mockData = MockData.getMockCultivars();
