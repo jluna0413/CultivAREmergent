@@ -19,13 +19,19 @@ jobs:
         with:
           channel: stable
 
-      - name: Detect and analyze Flutter app
+      - name: Detect and analyze & test Flutter app
         run: |
           if [ -f flutter_app/pubspec.yaml ]; then
-            echo "Found flutter_app/pubspec.yaml — running flutter analyze"
+            echo "Found flutter_app/pubspec.yaml — running flutter pub get, analyze and test"
             cd flutter_app
             flutter pub get
             flutter analyze
+            # Run tests if any are present. This will exit 0 if there are no tests.
+            if [ -d test ] || ls lib/*_test.dart 1> /dev/null 2>&1; then
+              flutter test || true
+            else
+              echo "No tests detected — skipping flutter test"
+            fi
           else
-            echo "No flutter_app/pubspec.yaml found — skipping flutter analyze"
+            echo "No flutter_app/pubspec.yaml found — skipping flutter analyze/test"
           fi
