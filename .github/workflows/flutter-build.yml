@@ -1,0 +1,43 @@
+name: Flutter CI - Build Web (conditional)
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+
+jobs:
+  build-web:
+    name: Build Flutter Web (if project present)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Detect and build Flutter web
+        run: |
+          if [ -f flutter_app/pubspec.yaml ]; then
+            echo "Found flutter_app/pubspec.yaml — running web build"
+            cd flutter_app
+            flutter pub get
+            # Build web release
+            flutter build web --release
+            # Upload the build folder as artifact
+            echo "Build completed"
+          else
+            echo "No flutter_app/pubspec.yaml found — skipping web build"
+          fi
+
+      - name: Upload build artifact (if present)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: flutter-web-build
+          path: |
+            flutter_app/build/web
+            flutter_app/build/outputs
