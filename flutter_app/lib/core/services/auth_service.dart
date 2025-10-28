@@ -2,7 +2,6 @@
 /// Handles user authentication, token management, and session persistence
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter/foundation.dart';
 import '../logging.dart';
 
 import '../models/auth_models.dart';

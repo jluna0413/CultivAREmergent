@@ -2,7 +2,6 @@
 /// Handles HTTP requests, authentication, and error handling
 import 'package:dio/dio.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
-import 'package:flutter/foundation.dart';
 import '../logging.dart';
 
 import '../config/app_config.dart';

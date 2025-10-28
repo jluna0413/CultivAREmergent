@@ -1,0 +1,118 @@
+# CultivAR - Cannabis Grow platform.
+
+## Project Overview
+CultivAR is a comprehensive cannabis cultivation management platform built with Python Flask and FastAPI. It provides growers with tools to track plants, manage cultivars, monitor environmental conditions, and maintain detailed grow journals.
+
+## Core Features
+
+### Plant Management
+- Track plant lifecycle from seedling to harvest
+- Monitor growth stages and development progress
+- Record plant measurements and observations
+- Manage multiple grow rooms and environments
+
+### Cultivar Database
+- Maintain comprehensive strain library
+- Track genetics and breeding information
+- Store detailed cultivar characteristics
+- Support for custom strain creation
+
+### Environmental Monitoring
+- Integration with environmental sensors (AC Infinity, Ecowitt)
+- Real-time temperature, humidity, and CO2 monitoring
+- Automated data collection and visualization
+- Historical environmental data analysis
+
+### User Management
+- Multi-user support with role-based access
+- Secure authentication and authorization
+- Admin dashboard for user management
+- Activity logging and audit trails
+
+### Blog and Marketing
+- Built-in blogging platform
+- Marketing site integration
+- Newsletter subscription system
+- Social media sharing capabilities
+
+## Technical Architecture
+
+### Backend Technologies
+- **Flask**: Primary web framework for core application
+- **FastAPI**: REST API for modern frontend integration
+- **SQLAlchemy**: ORM for database management
+- **SQLite/PostgreSQL**: Database support
+- **Redis**: Session management and caching
+
+### Frontend Technologies
+- **Bootstrap**: Responsive UI framework
+- **JavaScript**: Interactive client-side functionality
+- **Chart.js**: Data visualization
+- **CKEditor**: Rich text editing
+
+### Integration Points
+- Environmental sensor APIs (AC Infinity, Ecowitt)
+- Social media platforms
+- Email service integration
+- File upload and image management
+
+## Development Workflow
+
+### Code Organization
+- Blueprint-based Flask architecture
+- Separation of concerns with handlers, models, and routes
+- Async/await support for I/O operations
+- Comprehensive test suite
+
+### Database Schema
+- Normalized relational database design
+- Migration support for schema evolution
+- Data integrity constraints
+- Backup and recovery procedures
+
+## Deployment Options
+
+### Docker Support
+- SQLite-based container for simple deployment
+- PostgreSQL container for production use
+- Multi-stage Dockerfiles for optimization
+
+### Environment Configuration
+- Comprehensive environment variable support
+- SSL/TLS configuration
+- Logging and monitoring setup
+- Security hardening options
+
+## Current Development Focus
+
+### Immediate Priorities
+1. Complete FastAPI migration from Flask
+2. Implement async database operations
+3. Enhance sensor integration reliability
+4. Improve user experience and UI/UX
+
+### Technical Debt
+- Consolidate duplicate model definitions
+- Implement comprehensive testing strategy
+- Documentation updates and API references
+- Performance optimization and caching
+
+## Success Metrics
+
+### User Experience
+- Intuitive plant tracking workflow
+- Responsive design across devices
+- Fast load times and smooth interactions
+- Comprehensive help and documentation
+
+### System Performance
+- Support for concurrent users
+- Efficient database queries
+- Reliable sensor data collection
+- Minimal downtime and errors
+
+### Developer Experience
+- Clear code organization and patterns
+- Comprehensive test coverage
+- Easy deployment and configuration
+- Extensible plugin architecture
