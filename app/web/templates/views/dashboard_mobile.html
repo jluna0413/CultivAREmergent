@@ -252,16 +252,37 @@ function showNotification(message, type = 'info') {
     }, 3000);
 }
 
-// Register service worker for PWA
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/static/sw.js')
-        .then(function(registration) {
-            console.log('Service Worker registered successfully');
-        })
-        .catch(function(error) {
-            console.log('Service Worker registration failed');
+// Register service worker for PWA, but guard registration in unsupported contexts
+(function() {
+    function canRegisterServiceWorker() {
+        try {
+            if (!('serviceWorker' in navigator)) return false;
+            // Avoid registering inside iframes or embedded webviews
+            if (window.self !== window.top) return false;
+            // Service workers require a secure context: https or localhost
+            if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') return false;
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }
+
+    if (canRegisterServiceWorker()) {
+        window.addEventListener('load', function() {
+            navigator.serviceWorker.register('/static/sw.js')
+                .then(function(registration) {
+                    console.log('Service Worker registered successfully', registration.scope);
+                })
+                .catch(function(error) {
+                    console.warn('Service Worker registration failed', error);
+                });
         });
-}
+    } else {
+        if (typeof console !== 'undefined' && console.debug) {
+            console.debug('Service Worker registration skipped: unsupported context or insecure origin');
+        }
+    }
+})();
 </script>
 
 <style>
