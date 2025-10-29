@@ -1,3 +1,21 @@
+// Minimal service worker stub to satisfy registration during development.
+// This worker does not implement caching and is intentionally simple.
+
+'use strict';
+
+self.addEventListener('install', event => {
+  // Activate immediately
+  self.skipWaiting();
+});
+
+self.addEventListener('activate', event => {
+  event.waitUntil(self.clients.claim());
+});
+
+self.addEventListener('fetch', event => {
+  // Default to network; keep this worker minimal and non-intrusive.
+  event.respondWith(fetch(event.request));
+});
 const CACHE_NAME = 'cultivar-v1.0.0';
 const urlsToCache = [
   '/',
