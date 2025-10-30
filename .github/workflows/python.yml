@@ -1,0 +1,199 @@
+name: Python CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.8, 3.9, 3.10, 3.11]
+
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_DB: cultivar_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements_fastapi.txt
+        pip install -r requirements.txt
+        pip install pytest pytest-asyncio httpx
+
+    - name: Install FastAPI app in development mode
+      run: |
+        pip install -e .
+
+    - name: Run linting
+      run: |
+        flake8 app/ --max-line-length=88 --ignore=E203,W503
+        pylint app/ --errors-only
+
+    - name: Run unit tests
+      env:
+        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/cultivar_test
+        SECRET_KEY: test-secret-key
+        FRONTEND_ORIGINS: http://localhost:3000
+        ALLOWED_HOSTS: localhost,127.0.0.1
+      run: |
+        pytest tests/ -v --cov=app --cov-report=xml --cov-report=html
+
+    - name: Generate OpenAPI JSON
+      env:
+        FASTAPI_SKIP_ROUTERS: "1"
+        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/cultivar_test
+        SECRET_KEY: test-secret-key
+      run: |
+        python scripts/generate_openapi.py
+
+    - name: Verify OpenAPI snapshot
+      run: |
+        # Verify OpenAPI schema was generated successfully
+        if [ ! -f "docs/generated/openapi.json" ]; then
+          echo "❌ OpenAPI schema generation failed"
+          exit 1
+        fi
+        
+        echo "✅ OpenAPI schema generated successfully"
+        echo "Schema size: $(wc -l < docs/generated/openapi.json) lines"
+        
+        # Show endpoint summary
+        python3 -c "
+        import json
+        with open('docs/generated/openapi.json', 'r') as f:
+            schema = json.load(f)
+        paths = schema.get('paths', {})
+        print(f'Found {len(paths)} endpoints:')
+        for path in sorted(paths.keys())[:10]:  # Show first 10
+            methods = list(paths[path].keys())
+            print(f'  {path} ({", ".join(methods)})')
+        if len(paths) > 10:
+            print(f'  ... and {len(paths) - 10} more')
+        "
+
+    - name: Check OpenAPI schema changes
+      id: openapi-check
+      run: |
+        # Check if OpenAPI schema has changed
+        if git diff --quiet docs/generated/openapi.json; then
+          echo "status=unchanged" >> $GITHUB_OUTPUT
+          echo "✅ OpenAPI schema unchanged - no regressions detected"
+        else
+          echo "status=changed" >> $GITHUB_OUTPUT
+          echo "❌ OpenAPI schema has changed!"
+          echo ""
+          echo "Changes detected:"
+          git diff docs/generated/openapi.json
+          echo ""
+          echo "This indicates potential API regressions or intentional changes."
+          echo "Review the changes and update the snapshot if intentional."
+          exit 1
+        fi
+        
+    - name: Comment PR with OpenAPI changes
+      if: github.event_name == 'pull_request' && steps.openapi-check.outputs.status == 'changed'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          
+          let comment = '## ⚠️ OpenAPI Schema Changes Detected\\n\\n';
+          comment += 'The OpenAPI schema has been modified. This could indicate:\\n';
+          comment += '- API regressions during migration\\n';
+          comment += '- Intentional API changes\\n';
+          comment += '- Documentation updates\\n\\n';
+          comment += 'Please review the changes:\\n\\n';
+          comment += '```diff\\n';
+          
+          const { execSync } = require('child_process');
+          const diff = execSync('git diff docs/generated/openapi.json', { encoding: 'utf-8' });
+          comment += diff;
+          comment += '```\\n\\n';
+          comment += '**Action Required:** If these changes are intentional, update the OpenAPI snapshot by committing the changes.\\n';
+          comment += 'If unintended, investigate and fix the regression.\\n';
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: comment
+          });
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: false
+
+  integration:
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements_fastapi.txt
+        pip install pytest httpx
+
+    - name: Run integration tests
+      env:
+        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/cultivar_test
+        SECRET_KEY: test-secret-key
+        FRONTEND_ORIGINS: http://localhost:3000
+        ALLOWED_HOSTS: localhost,127.0.0.1
+      run: |
+        # Start FastAPI app in background
+        uvicorn app.fastapi_app:app --host 127.0.0.1 --port 8000 &
+        
+        # Wait for app to start
+        sleep 10
+        
+        # Run integration tests
+        pytest tests/test_integration/ -v
+
+    - name: Test API endpoints
+      run: |
+        # Test basic endpoints
+        curl -f http://127.0.0.1:8000/health || exit 1
+        curl -f http://127.0.0.1:8000/api/v1/system/info || exit 1

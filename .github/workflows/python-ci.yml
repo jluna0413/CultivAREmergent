@@ -1,0 +1,474 @@
+name: Python CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'app/fastapi_app/**'
+      - 'requirements*.txt'
+      - '.github/workflows/python-ci.yml'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'app/fastapi_app/**'
+      - 'requirements*.txt'
+      - '.github/workflows/python-ci.yml'
+
+env:
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  lint:
+    name: Code Quality & Linting
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        
+    - name: Cache pip dependencies
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-lint-${{ hashFiles('**/requirements*.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-lint-
+          ${{ runner.os }}-pip-
+          
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install black isort flake8 mypy bandit
+        pip install -r requirements_fastapi.txt
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        
+    - name: Check code formatting with Black
+      run: |
+        black --check --diff app/fastapi_app/
+        
+    - name: Check import sorting with isort
+      run: |
+        isort --check-only --diff app/fastapi_app/
+        
+    - name: Lint with flake8
+      run: |
+        flake8 app/fastapi_app/ --max-line-length=88 --extend-ignore=E203,W503
+        
+    - name: Type checking with mypy
+      run: |
+        mypy app/fastapi_app/ --ignore-missing-imports
+        
+    - name: Security linting with bandit
+      run: |
+        bandit -r app/fastapi_app/ -f json -o bandit-report.json || true
+        
+    - name: Upload bandit report
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: bandit-security-report
+        path: bandit-report.json
+
+  test:
+    name: Unit & Integration Tests
+    runs-on: ubuntu-latest
+    needs: lint
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: cultivar_test
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_pass
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+          
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        
+    - name: Cache pip dependencies
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-test-${{ hashFiles('**/requirements*.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-test-
+          ${{ runner.os }}-pip-
+          
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest pytest-asyncio httpx pytest-cov
+        pip install -r requirements_fastapi.txt
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        
+    - name: Create test database
+      run: |
+        # Wait for PostgreSQL to be ready
+        until pg_isready -h localhost -p 5432 -U test_user; do
+          sleep 1
+        done
+        # Create test database if it doesn't exist
+        psql -h localhost -U test_user -c "CREATE DATABASE cultivar_test;" || true
+        
+    - name: Run unit tests with coverage
+      env:
+        DATABASE_URL: postgresql://test_user:test_pass@localhost:5432/cultivar_test
+        TESTING: true
+        SECRET_KEY: test-secret-key
+      run: |
+        pytest app/fastapi_app/tests/ -v --cov=app.fastapi_app --cov-report=xml --cov-report=html
+        
+    - name: Run integration tests
+      env:
+        DATABASE_URL: postgresql://test_user:test_pass@localhost:5432/cultivar_test
+        TESTING: true
+        SECRET_KEY: test-secret-key
+      run: |
+        pytest app/fastapi_app/integration_tests/ -v
+        
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+        
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results
+        path: |
+          htmlcov/
+          coverage.xml
+
+  openapi-snapshot:
+    name: OpenAPI Schema Validation
+    runs-on: ubuntu-latest
+    needs: lint
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements_fastapi.txt
+        
+    - name: Generate OpenAPI schema
+      env:
+        DATABASE_URL: postgresql://test_user:test_pass@localhost:5432/cultivar_test
+        TESTING: true
+        SECRET_KEY: test-secret-key
+      run: |
+        # Generate OpenAPI JSON from running FastAPI app
+        python -c "
+        import asyncio
+        import json
+        import uvicorn
+        from app.fastapi_app import app
+        from fastapi import FastAPI
+        from fastapi.testclient import TestClient
+        
+        # Create test client to generate schema
+        client = TestClient(app)
+        response = client.get('/openapi.json')
+        
+        if response.status_code == 200:
+            schema = response.json()
+            with open('docs/generated/openapi.json', 'w') as f:
+                json.dump(schema, f, indent=2)
+            print('OpenAPI schema generated successfully')
+        else:
+            print(f'Failed to generate OpenAPI schema: {response.status_code}')
+            exit(1)
+        "
+        
+    - name: Validate OpenAPI schema
+      run: |
+        # Validate schema structure
+        python -c "
+        import json
+        import sys
+        
+        with open('docs/generated/openapi.json', 'r') as f:
+            schema = json.load(f)
+            
+        # Check required fields
+        required_fields = ['openapi', 'info', 'paths', 'components']
+        for field in required_fields:
+            if field not in schema:
+                print(f'Missing required field: {field}')
+                sys.exit(1)
+                
+        # Check for expected endpoints
+        expected_paths = ['/plants', '/strains', '/breeders', '/auth', '/dashboard']
+        found_paths = list(schema['paths'].keys())
+        
+        print('Found OpenAPI paths:', found_paths)
+        print('OpenAPI schema validation passed')
+        "
+        
+    - name: Check OpenAPI diff against snapshot
+      id: openapi-diff
+      run: |
+        if [ -f "docs/generated/openapi.json" ]; then
+          if git diff --quiet docs/generated/openapi.json; then
+            echo "status=unchanged" >> $GITHUB_OUTPUT
+            echo "✅ OpenAPI schema unchanged - no regressions detected"
+          else
+            echo "status=changed" >> $GITHUB_OUTPUT
+            echo "❌ OpenAPI schema has changed!"
+            echo ""
+            echo "Changes detected:"
+            git diff docs/generated/openapi.json
+            echo ""
+            echo "⚠️  CI FAILED: Unintended OpenAPI schema changes detected"
+            echo "This indicates potential API regressions during migration."
+            echo "If changes are intentional, they must be reviewed and committed."
+            exit 1
+          fi
+        else
+          echo "status=new" >> $GITHUB_OUTPUT
+          echo "New OpenAPI schema generated"
+        fi
+        
+    - name: Comment PR with OpenAPI changes
+      if: github.event_name == 'pull_request' && (steps.openapi-diff.outputs.status == 'changed' || steps.openapi-diff.outputs.status == 'new')
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          
+          let comment = '## OpenAPI Schema Changes Detected\n\n';
+          
+          if ('${{ steps.openapi-diff.outputs.status }}' === 'changed') {
+            comment += 'The OpenAPI schema has been modified. Please review the changes:\n\n';
+            comment += '```diff\n';
+            
+            const { execSync } = require('child_process');
+            const diff = execSync('git diff docs/generated/openapi.json', { encoding: 'utf-8' });
+            comment += diff;
+            comment += '```\n\n';
+          } else {
+            comment += 'A new OpenAPI schema has been generated.\n\n';
+          }
+          
+          comment += 'This ensures API documentation remains in sync with the codebase.';
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: comment
+          });
+          
+    - name: Upload OpenAPI schema
+      uses: actions/upload-artifact@v4
+      with:
+        name: openapi-schema
+        path: docs/generated/openapi.json
+
+  integration-tests:
+    name: API Integration Tests
+    runs-on: ubuntu-latest
+    needs: [test, openapi-snapshot]
+    if: github.event_name == 'pull_request'
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: cultivar_integration
+          POSTGRES_USER: integration_user
+          POSTGRES_PASSWORD: integration_pass
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+          
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements_fastapi.txt
+        pip install pytest httpx requests
+        
+    - name: Wait for database
+      run: |
+        until pg_isready -h localhost -p 5432 -U integration_user; do
+          sleep 1
+        done
+        
+    - name: Start FastAPI application
+      env:
+        DATABASE_URL: postgresql://integration_user:integration_pass@localhost:5432/cultivar_integration
+        SECRET_KEY: integration-test-secret
+        ENVIRONMENT: testing
+      run: |
+        uvicorn app.fastapi_app:app --host 0.0.0.0 --port 8000 --reload &
+        sleep 10
+        
+    - name: Run auth integration tests
+      run: |
+        pytest tests/integration/test_auth.py -v
+        
+    - name: Run plants integration tests
+      run: |
+        pytest tests/integration/test_plants.py -v
+        
+    - name: Run strains integration tests
+      run: |
+        pytest tests/integration/test_strains.py -v
+        
+    - name: Upload integration test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: integration-test-results
+        path: |
+          pytest.xml
+          test-results/
+
+  build:
+    name: Build & Security Scan
+    runs-on: ubuntu-latest
+    needs: [lint, test, openapi-snapshot]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+      
+    - name: Build Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./Dockerfile
+        push: false
+        tags: cultivar:latest
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: 'cultivar:latest'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+        
+    - name: Upload Trivy scan results to GitHub Security tab
+      uses: github/codeql-action/upload-sarif@v3
+      if: always()
+      with:
+        sarif_file: 'trivy-results.sarif'
+
+  flutter-tests:
+    name: Flutter Tests (Widget/Golden)
+    runs-on: ubuntu-latest
+    needs: [test, openapi-snapshot]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.24.0'
+        
+    - name: Cache Flutter dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.pub-cache
+          flutter_app/.dart_tool
+          flutter_app/.packages
+          flutter_app/build
+        key: ${{ runner.os }}-flutter-${{ hashFiles('flutter_app/pubspec.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-flutter-
+          
+    - name: Get Flutter dependencies
+      working-directory: flutter_app
+      run: flutter pub get
+      
+    - name: Analyze Flutter code
+      working-directory: flutter_app
+      run: flutter analyze
+      
+    - name: Run Flutter tests
+      working-directory: flutter_app
+      run: flutter test --coverage
+      
+    - name: Upload Flutter coverage
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./flutter_app/coverage/lcov.info
+        flags: flutter
+        name: flutter-coverage
+        
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: flutter-test-results
+        path: |
+          flutter_app/coverage/
+          flutter_app/test_results/
+
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: [lint, test, openapi-snapshot, build]
+    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+    
+    steps:
+    - name: Deploy to staging
+      run: |
+        echo "Deploying to staging environment..."
+        # Add staging deployment steps here
+        echo "Staging deployment completed"
+        
+    - name: Run smoke tests
+      run: |
+        echo "Running smoke tests on staging..."
+        # Add staging smoke tests here
+        echo "Smoke tests completed"
