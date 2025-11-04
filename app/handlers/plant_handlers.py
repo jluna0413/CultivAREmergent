@@ -258,7 +258,7 @@ def get_harvested_plants():
                 "name": plant.name,
                 "description": plant.description,
                 "clone": plant.is_clone,
-                "strain_name": plant.strain_name,
+                "cultivar_name": plant.cultivar_name,
                 "breeder_name": plant.breeder_name,
                 "zone_name": plant.zone_name,
                 "start_dt": (
@@ -268,7 +268,7 @@ def get_harvested_plants():
                 "status": plant.status_name,
                 "status_date": status_date,
                 "cycle_time": cycle_time,
-                "strain_url": plant.strain_url,
+                "cultivar_url": plant.cultivar_url,
                 "harvest_date": plant.harvest_date,
                 "autoflower": plant.autoflower,
             }
@@ -319,7 +319,7 @@ def get_dead_plants():
                 "name": plant.name,
                 "description": plant.description,
                 "clone": plant.is_clone,
-                "strain_name": plant.strain_name,
+                "cultivar_name": plant.cultivar_name,
                 "breeder_name": plant.breeder_name,
                 "zone_name": plant.zone_name,
                 "start_dt": (
@@ -328,7 +328,7 @@ def get_dead_plants():
                 "status": plant.status_name,
                 "status_date": status_date,
                 "cycle_time": cycle_time,
-                "strain_url": plant.strain_url,
+                "cultivar_url": plant.cultivar_url,
                 "autoflower": plant.autoflower,
             }
 
@@ -390,7 +390,7 @@ def get_plants_by_cultivar(cultivar_id):
                 "name": plant.name,
                 "description": plant.description,
                 "clone": plant.is_clone,
-                "strain_name": plant.strain_name,
+                "cultivar_name": plant.cultivar_name,
                 "breeder_name": plant.breeder_name,
                 "zone_name": plant.zone_name,
                 "start_dt": (
@@ -405,7 +405,7 @@ def get_plants_by_cultivar(cultivar_id):
                 "status": plant.status_name,
                 "status_date": status_date,
                 "cycle_time": plant.cycle_time,
-                "strain_url": plant.strain_url,
+                "cultivar_url": plant.cultivar_url,
                 "est_harvest_date": est_harvest_date,
                 "autoflower": plant.autoflower,
                 "harvest_date": plant.harvest_date,
@@ -442,7 +442,7 @@ def add_plant(data):
             name=data.get("name"),
             description=data.get("description", ""),
             status_id=status_id,
-            strain_id=data.get("strain_id"),
+            cultivar_id=data.get("cultivar_id"),
             zone_id=data.get("zone_id"),
             is_clone=data.get("is_clone", False),
             start_dt=datetime.now(),
