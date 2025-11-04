@@ -1,0 +1,598 @@
+{% extends 'common/base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">{{ cultivar.name }}</h5>
+                    <div>
+                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#editCultivarModal">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="cultivar-info-section">
+                                <h6 class="text-muted mb-3">Basic Information</h6>
+                                <div class="info-item">
+                                    <span class="info-label">Breeder:</span>
+                                    <span class="info-value">
+                                        {% for breeder in breeders %}
+                                            {% if breeder.id == cultivar.breeder_id %}
+                                                {{ breeder.name }}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Genetics:</span>
+                                    <span class="info-value">{{ cultivar.short_description }}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Type:</span>
+                                    <span class="info-value">
+                                        {% if cultivar.autoflower %}
+                                            Autoflower
+                                        {% else %}
+                                            Photoperiod
+                                        {% endif %}
+                                    </span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Indica/Sativa:</span>
+                                    <span class="info-value">{{ cultivar.indica }}% / {{ cultivar.sativa }}%</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Cycle Time:</span>
+                                    <span class="info-value">{{ cultivar.cycle_time }} days</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Seeds in Stock:</span>
+                                    <span class="info-value">{{ cultivar.seed_count }}</span>
+                                </div>
+                                {% if cultivar.url %}
+                                <div class="info-item">
+                                    <span class="info-label">Breeder URL:</span>
+                                    <span class="info-value">
+                                        <a href="{{ cultivar.url }}" target="_blank" class="text-accent">
+                                            {{ cultivar.url }} <i class="fas fa-external-link-alt"></i>
+                                        </a>
+                                    </span>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="cultivar-genetics-chart mb-4">
+                                <h6 class="text-muted mb-3">Genetic Profile</h6>
+                                <div class="text-center">
+                                    <div class="d-inline-block position-relative" style="width: 200px; height: 200px;">
+                                        <!-- Static SVG Doughnut Chart -->
+                                        <svg width="200" height="200" viewBox="0 0 200 200">
+                                            {% set indica_percent = cultivar.indica %}
+                                            {% set sativa_percent = cultivar.sativa %}
+
+                                            {% if indica_percent == 100 %}
+                                                <!-- 100% Indica case -->
+                                                <circle cx="100" cy="100" r="80" fill="rgba(76, 175, 80, 0.8)" />
+                                            {% elif sativa_percent == 100 %}
+                                                <!-- 100% Sativa case -->
+                                                <circle cx="100" cy="100" r="80" fill="rgba(33, 150, 243, 0.8)" />
+                                            {% else %}
+                                                <!-- Draw the full circle as Sativa (blue) first -->
+                                                <circle cx="100" cy="100" r="80" fill="rgba(33, 150, 243, 0.8)" />
+
+                                                <!-- Then overlay the Indica portion (green) -->
+                                                {% if indica_percent > 0 %}
+                                                    {% set indica_angle = indica_percent / 100 * 360 %}
+                                                    {% set large_arc = 1 if indica_percent > 50 else 0 %}
+
+                                                    <!-- Calculate end point of arc -->
+                                                    {% set end_angle = indica_angle * math.pi / 180 %}
+                                                    {% set end_x = 100 + 80 * math.sin(end_angle) %}
+                                                    {% set end_y = 100 - 80 * math.cos(end_angle) %}
+
+                                                    <!-- Draw Indica portion as a pie slice -->
+                                                    <path d="M100,100 L100,20 A80,80 0 {{ large_arc }},1 {{ end_x }},{{ end_y }} z"
+                                                          fill="rgba(76, 175, 80, 0.8)" />
+                                                {% endif %}
+                                            {% endif %}
+
+                                            <!-- Inner circle (hole) -->
+                                            <circle cx="100" cy="100" r="40" fill="#2a2a2a" />
+                                        </svg>
+                                        <!-- Legend -->
+                                        <div class="mt-3 text-center">
+                                            <div class="d-flex justify-content-center">
+                                                <div class="me-3">
+                                                    <span class="d-inline-block" style="width: 12px; height: 12px; background-color: rgba(76, 175, 80, 0.8); margin-right: 5px;"></span>
+                                                    <span>Indica {{ cultivar.indica }}%</span>
+                                                </div>
+                                                <div>
+                                                    <span class="d-inline-block" style="width: 12px; height: 12px; background-color: rgba(33, 150, 243, 0.8); margin-right: 5px;"></span>
+                                                    <span>Sativa {{ cultivar.sativa }}%</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <h6 class="text-muted mb-3">Description</h6>
+                            <p class="cultivar-description">{{ cultivar.description }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Plants with this Cultivar</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="cultivar-plants-list">
+                        <div class="list-group list-group-flush" id="cultivarPlantsList">
+                            <!-- Plants will be loaded via JavaScript -->
+                            <div class="text-center py-4">
+                                <div style="position: relative; height: 100px;">
+                                    <!-- Static loading indicator -->
+                                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                                        <i class="fas fa-seedling text-accent" style="font-size: 24px;"></i>
+                                        <div class="mt-2">Loading plants...</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#addPlantModal">
+                        <i class="fas fa-plus"></i> Start New Plant
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Cultivar Modal -->
+<div class="modal fade" id="editCultivarModal" tabindex="-1" aria-labelledby="editCultivarModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editCultivarModalLabel">Edit Cultivar</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editCultivarForm">
+                    <input type="hidden" id="cultivarId" value="{{ cultivar.id }}">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="cultivarName" class="form-label">Cultivar Name</label>
+                                <input type="text" class="form-control" id="cultivarName" value="{{ cultivar.name }}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="cultivarBreeder" class="form-label">Breeder</label>
+                                <select class="form-select" id="cultivarBreeder" required>
+                                    {% for breeder in breeders %}
+                                        <option value="{{ breeder.id }}" {% if breeder.id == cultivar.breeder_id %}selected{% endif %}>
+                                            {{ breeder.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="cultivarGenetics" class="form-label">Genetics</label>
+                                <input type="text" class="form-control" id="cultivarGenetics" value="{{ cultivar.short_description }}">
+                            </div>
+                            <div class="mb-3">
+                                <label for="cultivarCycleTime" class="form-label">Cycle Time (days)</label>
+                                <input type="number" class="form-control" id="cultivarCycleTime" value="{{ cultivar.cycle_time }}">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Type</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="cultivarType" id="typePhotoperiod" value="photoperiod" {% if not cultivar.autoflower %}checked{% endif %}>
+                                    <label class="form-check-label" for="typePhotoperiod">
+                                        Photoperiod
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="cultivarType" id="typeAutoflower" value="autoflower" {% if cultivar.autoflower %}checked{% endif %}>
+                                    <label class="form-check-label" for="typeAutoflower">
+                                        Autoflower
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="cultivarIndica" class="form-label">Indica %</label>
+                                <input type="range" class="form-range" id="cultivarIndica" min="0" max="100" value="{{ cultivar.indica }}" oninput="updateSativaValue(this.value)">
+                                <div class="d-flex justify-content-between">
+                                    <span id="indicaValue">{{ cultivar.indica }}%</span>
+                                    <span id="sativaValue">{{ cultivar.sativa }}%</span>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="cultivarSeedCount" class="form-label">Seeds in Stock</label>
+                                <input type="number" class="form-control" id="cultivarSeedCount" value="{{ cultivar.seed_count }}">
+                            </div>
+                            <div class="mb-3">
+                                <label for="cultivarUrl" class="form-label">Breeder URL</label>
+                                <input type="url" class="form-control" id="cultivarUrl" value="{{ cultivar.url }}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="cultivarDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="cultivarDescription" rows="4">{{ cultivar.description }}</textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger me-auto" id="deleteCultivarBtn">Delete Cultivar</button>
+                <button type="button" class="btn btn-primary" id="saveCultivarBtn">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Plant Modal -->
+<div class="modal fade" id="addPlantModal" tabindex="-1" aria-labelledby="addPlantModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addPlantModalLabel">Start New Plant</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addPlantForm">
+                    <input type="hidden" id="newPlantCultivarId" value="{{ cultivar.id }}">
+                    <div class="mb-3">
+                        <label for="plantName" class="form-label">Plant Name</label>
+                        <input type="text" class="form-control" id="plantName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="plantZone" class="form-label">Growing Zone</label>
+                        <select class="form-select" id="plantZone" required>
+                            <option value="" selected disabled>Select a zone</option>
+                            <!-- Zones will be loaded via JavaScript -->
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Plant Type</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="plantType" id="typeSeed" value="seed" checked>
+                            <label class="form-check-label" for="typeSeed">
+                                From Seed
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="plantType" id="typeClone" value="clone">
+                            <label class="form-check-label" for="typeClone">
+                                From Clone
+                            </label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="plantDescription" class="form-label">Description (Optional)</label>
+                        <textarea class="form-control" id="plantDescription" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="addPlantBtn">Start Plant</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let geneticsChart; // Define chart variable in a wider scope
+
+        // Set up chart configuration
+        const config = {
+            type: 'doughnut',
+            data: {
+                labels: ['Indica', 'Sativa'],
+                datasets: [{
+                    data: [{{ cultivar.indica }}, {{ cultivar.sativa }}],
+                    backgroundColor: [
+                        'rgba(76, 175, 80, 0.8)',
+                        'rgba(33, 150, 243, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgba(76, 175, 80, 1)',
+                        'rgba(33, 150, 243, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                animation: {
+                    duration: 800, // Animation duration in milliseconds
+                    easing: 'easeOutQuart', // Easing function for smooth animation
+                    animateRotate: true, // Enable rotation animation
+                    animateScale: false // Keep scale animation disabled to prevent issues
+                },
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: 'rgba(255, 255, 255, 0.7)'
+                        }
+                    }
+                }
+            }
+        };
+
+        // Get the canvas element
+        const canvas = document.getElementById('geneticsChart');
+
+        // Create the chart
+        geneticsChart = new Chart(canvas, config);
+
+        // Load plants with this cultivar
+        loadPlantsWithCultivar();
+
+        // Load zones for the add plant modal
+        loadZones();
+
+        // Edit cultivar form
+        document.getElementById('saveCultivarBtn').addEventListener('click', function() {
+            saveCultivarChanges();
+        });
+
+        // Delete cultivar button
+        document.getElementById('deleteCultivarBtn').addEventListener('click', function() {
+            if (confirm('Are you sure you want to delete this cultivar? This action cannot be undone.')) {
+                deleteCultivar();
+            }
+        });
+
+        // Add plant button
+        document.getElementById('addPlantBtn').addEventListener('click', function() {
+            addNewPlant();
+        });
+
+        // Clean up chart when page is unloaded
+        window.addEventListener('beforeunload', function() {
+            if (geneticsChart) {
+                geneticsChart.destroy();
+            }
+        });
+    });
+
+    // Update Sativa value when Indica slider changes
+    function updateSativaValue(indicaValue) {
+        const sativaValue = 100 - indicaValue;
+        document.getElementById('indicaValue').textContent = indicaValue + '%';
+        document.getElementById('sativaValue').textContent = sativaValue + '%';
+    }
+
+    // Load plants with this cultivar
+    function loadPlantsWithCultivar() {
+        const cultivarId = {{ strain.id }};
+
+        // Add a slight delay to ensure the page is fully rendered
+        setTimeout(() => {
+            fetch(`/plants/by-cultivar/${cultivarId}`)
+                .then(response => response.json())
+                .then(plants => {
+                    const plantsList = document.getElementById('cultivarPlantsList');
+
+                    // Clear the list completely
+                    while (plantsList.firstChild) {
+                        plantsList.removeChild(plantsList.firstChild);
+                    }
+
+                    if (plants.length === 0) {
+                        const noPlants = document.createElement('div');
+                        noPlants.className = 'text-center py-4';
+                        noPlants.innerHTML = '<p class="text-muted">No plants found with this cultivar.</p>';
+                        plantsList.appendChild(noPlants);
+                        return;
+                    }
+
+                    // Create and append plant items one by one
+                    plants.forEach(plant => {
+                        const plantItem = document.createElement('a');
+                        plantItem.href = `/plant/${plant.id}`;
+                        plantItem.className = 'list-group-item list-group-item-action';
+                        plantItem.innerHTML = `
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">${plant.name}</h6>
+                                <small>${plant.current_day} days</small>
+                            </div>
+                            <p class="mb-1">${plant.status}</p>
+                            <small>${plant.zone}</small>
+                        `;
+                        plantsList.appendChild(plantItem);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading plants:', error);
+                    const plantsList = document.getElementById('cultivarPlantsList');
+
+                    // Clear the list and show error message
+                    while (plantsList.firstChild) {
+                        plantsList.removeChild(plantsList.firstChild);
+                    }
+
+                    const errorMsg = document.createElement('div');
+                    errorMsg.className = 'text-center py-4';
+                    errorMsg.innerHTML = '<p class="text-danger">Error loading plants. Please try again.</p>';
+                    plantsList.appendChild(errorMsg);
+                });
+        }, 500); // 500ms delay to ensure DOM is ready
+    }
+
+    // Load zones for the add plant modal
+    function loadZones() {
+        const zoneSelect = document.getElementById('plantZone');
+        zoneSelect.innerHTML = '<option value="" selected disabled>Select a zone</option>';
+
+        // Use the zones from the Config object passed to the template
+        {% if config.Zones %}
+        const zones = [
+            {% for zone in config.Zones %}
+            { id: {{ zone.id }}, name: "{{ zone.name }}" },
+            {% endfor %}
+        ];
+        {% else %}
+        // Fallback if zones aren't available in config
+        const zones = [
+            { id: 1, name: 'Veg Tent' },
+            { id: 2, name: 'Flower Tent' },
+            { id: 3, name: 'Seedling Area' }
+        ];
+        {% endif %}
+
+        zones.forEach(zone => {
+            const option = document.createElement('option');
+            option.value = zone.id;
+            option.textContent = zone.name;
+            zoneSelect.appendChild(option);
+        });
+    }
+
+    // Save cultivar changes
+    function saveCultivarChanges() {
+        const cultivarId = document.getElementById('cultivarId').value;
+        const cultivarData = {
+            id: cultivarId,
+            name: document.getElementById('cultivarName').value,
+            breeder_id: document.getElementById('cultivarBreeder').value,
+            short_description: document.getElementById('cultivarGenetics').value,
+            cycle_time: document.getElementById('cultivarCycleTime').value,
+            autoflower: document.querySelector('input[name="cultivarType"]:checked').value === 'autoflower',
+            indica: document.getElementById('cultivarIndica').value,
+            sativa: 100 - document.getElementById('cultivarIndica').value,
+            seed_count: document.getElementById('cultivarSeedCount').value,
+            url: document.getElementById('cultivarUrl').value,
+            description: document.getElementById('cultivarDescription').value
+        };
+
+        fetch(`/cultivars/${cultivarId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(cultivarData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Close modal and reload page
+                const modal = bootstrap.Modal.getInstance(document.getElementById('editCultivarModal'));
+                modal.hide();
+                window.location.reload();
+            } else {
+                alert('Error saving cultivar: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error saving cultivar:', error);
+            alert('An error occurred while saving the cultivar.');
+        });
+    }
+
+    // Delete cultivar
+    function deleteCultivar() {
+        const cultivarId = document.getElementById('cultivarId').value;
+
+        fetch(`/cultivars/${cultivarId}`, {
+            method: 'DELETE'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Redirect to cultivars page
+                window.location.href = '/cultivars';
+            } else {
+                alert('Error deleting cultivar: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error deleting cultivar:', error);
+            alert('An error occurred while deleting the cultivar.');
+        });
+    }
+
+    // Add new plant
+    function addNewPlant() {
+        // Validate form
+        const plantName = document.getElementById('plantName').value;
+        const zoneId = document.getElementById('plantZone').value;
+
+        if (!plantName) {
+            alert('Please enter a plant name');
+            return;
+        }
+
+        if (!zoneId) {
+            alert('Please select a growing zone');
+            return;
+        }
+
+        const plantData = {
+            name: plantName,
+            cultivar_id: document.getElementById('newPlantCultivarId').value,
+            zone_id: zoneId,
+            is_clone: document.querySelector('input[name="plantType"]:checked').value === 'clone',
+            description: document.getElementById('plantDescription').value,
+            status_id: 1 // Default to Seedling status
+        };
+
+        console.log('Sending plant data:', plantData);
+
+        fetch('/plants', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(plantData)
+        })
+        .then(response => {
+            console.log('Response status:', response.status);
+            return response.json();
+        })
+        .then(data => {
+            console.log('Response data:', data);
+            if (data.success && data.id) {
+                // Close modal and redirect to the new plant page
+                const modal = bootstrap.Modal.getInstance(document.getElementById('addPlantModal'));
+                modal.hide();
+                window.location.href = `/plant/${data.id}`;
+            } else {
+                alert('Error adding plant: ' + (data.error || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            console.error('Error adding plant:', error);
+            alert('An error occurred while adding the plant.');
+        });
+    }
+</script>
+{% endblock %}

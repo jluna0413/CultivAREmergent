@@ -1,0 +1,50 @@
+{
+  "id": "phase-2-api-layer",
+  "title": "Phase 2: Migrate API Layer (Routers, Schemas, Handlers)",
+  "description": "Rename strains.py→cultivars.py for routers and schemas, update all Pydantic models, rename handler modules, implement dual-mounting for backward compatibility",
+  "status": "TODO",
+  "priority": "HIGH",
+  "type": "FEATURE",
+  "estimated_effort_hours": 8,
+  "actual_effort_hours": null,
+  "parent_task_id": "cultivar-migration-master",
+  "dependencies": ["phase-1-backend-models"],
+  "blocking": ["phase-3-frontend-flutter"],
+  "subtasks": [
+    "task-2-1-pydantic-schemas-rename",
+    "task-2-2-fastapi-router-rename",
+    "task-2-3-fastapi-init-update",
+    "task-2-4-handler-sync-rename",
+    "task-2-5-handler-async-rename",
+    "task-2-6-activity-handlers-update",
+    "task-2-7-activity-router-update",
+    "task-2-8-activity-pydantic-update",
+    "task-2-9-flask-blueprint-rename",
+    "task-2-10-blueprint-init-update",
+    "task-2-11-cultivar-app-update",
+    "task-2-12-breeder-router-update",
+    "task-2-13-breeder-pydantic-update"
+  ],
+  "assignee": "@traycerai",
+  "tags": ["migration", "api", "routers"],
+  "created_at": "2025-11-03T18:46:46Z",
+  "updated_at": "2025-11-03T18:46:46Z",
+  "started_at": null,
+  "completed_at": null,
+  "files_affected": [
+    "app/fastapi_app/routers/strains.py",
+    "app/fastapi_app/models/strains.py"
+  ],
+  "acceptance_criteria": [
+    "/api/v1/cultivars/* endpoints exist and work",
+    "/api/v1/strains/* endpoints exist as deprecated aliases",
+    "All Pydantic schemas use Cultivar prefix",
+    "All handler modules use cultivar naming",
+    "Activity types use cultivar_add, cultivar_edit, cultivar_deleted",
+    "Flask blueprint registered at /cultivars",
+    "All API tests pass",
+    "OpenAPI spec shows both endpoint sets"
+  ],
+  "notes": "Phase 2 - API layer transformation with backward compatibility",
+  "linear_issue_id": null
+}

@@ -1,0 +1,14 @@
+{
+  "timestamp": "2025-11-04T08:51:36.650442",
+  "strict_mode": true,
+  "project_root": "a:\\dev\\CultivAREmergant",
+  "summary": {
+    "total_issues": 0,
+    "total_warnings": 0,
+    "passed": true,
+    "strict_passed": true
+  },
+  "issues": {},
+  "warnings": {},
+  "recommendations": []
+}

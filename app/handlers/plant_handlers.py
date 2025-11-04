@@ -83,8 +83,8 @@ def get_plant(plant_id):
             "description": plant.description,
             "status": plant.status_name,
             "status_id": plant.status_id,
-            "strain_name": plant.strain_name,
-            "strain_id": plant.strain_id,
+            "cultivar_name": plant.cultivar_name,
+            "cultivar_id": plant.cultivar_id,
             "breeder_name": plant.breeder_name,
             "zone_name": plant.zone_name,
             "zone_id": plant.zone_id,
@@ -137,7 +137,7 @@ def get_plant(plant_id):
             "harvest_weight": plant.harvest_weight,
             "harvest_date": plant.harvest_date,
             "cycle_time": plant.cycle_time,
-            "strain_url": plant.strain_url,
+            "cultivar_url": plant.cultivar_url,
             "est_harvest_date": est_harvest_date,
             "autoflower": plant.autoflower,
             "parent_id": plant.parent_id,
@@ -198,7 +198,7 @@ def get_living_plants():
                 "name": plant.name,
                 "description": plant.description,
                 "clone": plant.is_clone,
-                "strain_name": plant.strain_name,
+                "cultivar_name": plant.cultivar_name,
                 "breeder_name": plant.breeder_name,
                 "zone_name": plant.zone_name,
                 "start_dt": (
@@ -213,7 +213,7 @@ def get_living_plants():
                 "status": plant.status_name,
                 "status_date": status_date,
                 "cycle_time": plant.cycle_time,
-                "strain_url": plant.strain_url,
+                "cultivar_url": plant.cultivar_url,
                 "est_harvest_date": est_harvest_date,
                 "autoflower": plant.autoflower,
             }
@@ -340,18 +340,18 @@ def get_dead_plants():
         return []
 
 
-def get_plants_by_strain(strain_id):
+def get_plants_by_cultivar(cultivar_id):
     """
-    Get all plants for a strain.
+    Get all plants for a cultivar.
 
     Args:
-        strain_id (int): The ID of the strain.
+        cultivar_id (int): The ID of the cultivar.
 
     Returns:
-        list: The plants for the strain.
+        list: The plants for the cultivar.
     """
     try:
-        plants = Plant.query.filter_by(strain_id=strain_id).all()
+        plants = Plant.query.filter_by(cultivar_id=cultivar_id).all()
 
         plant_list = []
         for plant in plants:
@@ -415,8 +415,12 @@ def get_plants_by_strain(strain_id):
 
         return plant_list
     except Exception as e:
-        logger.error(f"Error getting plants by strain: {e}")
+        logger.error(f"Error getting plants by cultivar: {e}")
         return []
+
+
+# Backward compatibility alias
+get_plants_by_strain = get_plants_by_cultivar
 
 
 def add_plant(data):
@@ -513,14 +517,14 @@ def update_plant(data):
                     plant.cycle_time = delta.days
 
         # Update other fields
-        plant.strain_id = data.get("strain_id", plant.strain_id)
+        plant.cultivar_id = data.get("cultivar_id", plant.cultivar_id)
         plant.zone_id = data.get("zone_id", plant.zone_id)
         plant.current_height = data.get("current_height", plant.current_height)
         plant.height_date = (
             datetime.now() if data.get("current_height") else plant.height_date
         )
         plant.harvest_weight = data.get("harvest_weight", plant.harvest_weight)
-        plant.strain_url = data.get("strain_url", plant.strain_url)
+        plant.cultivar_url = data.get("cultivar_url", plant.cultivar_url)
         plant.autoflower = data.get("autoflower", plant.autoflower)
 
         # Update watering and feeding dates

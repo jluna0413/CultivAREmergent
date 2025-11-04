@@ -1,0 +1,22 @@
+{
+  "mcpServers": {
+    "byterover-mcp": {
+      "url": "https://sse.byterover.dev/sse?machineId=1f08699e-fcad-60d0-ad89-2ad5689b7a52"
+    },
+    "taskmaster-ai": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "task-master-ai"
+      ],
+      "env": {
+        "OLLAMA_BASE_URL": "http://localhost:11435",
+        "OLLAMA_MODEL": "gemma3:270m",
+        "TASKMASTER_MODE": "all",
+        "NODE_ENV": "development",
+        "LOG_LEVEL": "info"
+      },
+      "cwd": "a:/dev/CultivAREmergant"
+    }
+  }
+}

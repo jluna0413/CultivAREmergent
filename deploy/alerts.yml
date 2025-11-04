@@ -1,0 +1,263 @@
+# Alert Configuration for Flask-to-FastAPI Migration Monitoring
+# This file defines alerting rules for elevated 5xx errors and latency issues
+# Compatible with Prometheus Alertmanager, Grafana, and other monitoring systems
+
+groups:
+  - name: cultvar_fastapi_migration_alerts
+    rules:
+
+      # Health Check Failures
+      - alert: FastAPIHealthCheckFailed
+        expr: health_status != "healthy"
+        for: 1m
+        labels:
+          severity: warning
+          service: cultvar-fastapi
+          migration_phase: "cutover"
+        annotations:
+          summary: "FastAPI health check failure detected"
+          description: "The FastAPI application health check has been failing for {{ $value }} minutes. Service may be experiencing issues."
+          runbook_url: "https://docs.cultivar.com/runbooks/fastapi-health-failure"
+
+      # High Error Rate (5xx)
+      - alert: FastAPIHighErrorRate
+        expr: |
+          (
+            rate(http_requests_total{service="cultvar-fastapi",status_code=~"5.."}[5m]) 
+            / 
+            rate(http_requests_total{service="cultvar-fastapi"}[5m])
+          ) * 100 > 5
+        for: 2m
+        labels:
+          severity: critical
+          service: cultvar-fastapi
+          migration_phase: "cutover"
+        annotations:
+          summary: "FastAPI 5xx error rate above threshold"
+          description: "FastAPI 5xx error rate is {{ $value }}% (threshold: 5%) for service {{ $labels.service }}"
+          runbook_url: "https://docs.cultivar.com/runbooks/high-error-rate"
+          rollback_trigger: "true"
+
+      # Elevated Error Rate Warning
+      - alert: FastAPIElevatedErrorRate
+        expr: |
+          (
+            rate(http_requests_total{service="cultvar-fastapi",status_code=~"5.."}[5m]) 
+            / 
+            rate(http_requests_total{service="cultvar-fastapi"}[5m])
+          ) * 100 > 1
+        for: 3m
+        labels:
+          severity: warning
+          service: cultvar-fastapi
+          migration_phase: "cutover"
+        annotations:
+          summary: "FastAPI 5xx error rate elevated"
+          description: "FastAPI 5xx error rate is {{ $value }}% (warning threshold: 1%) for service {{ $labels.service }}"
+          runbook_url: "https://docs.cultivar.com/runbooks/elevated-error-rate"
+
+      # High Response Time
+      - alert: FastAPIHighResponseTime
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{service="cultvar-fastapi"}[5m])) > 2.0
+        for: 2m
+        labels:
+          severity: warning
+          service: cultvar-fastapi
+          migration_phase: "cutover"
+        annotations:
+          summary: "FastAPI response time above threshold"
+          description: "95th percentile response time is {{ $value }}s (threshold: 2.0s) for service {{ $labels.service }}"
+          runbook_url: "https://docs.cultivar.com/runbooks/high-response-time"
+
+      # Critical Response Time
+      - alert: FastAPICriticalResponseTime
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{service="cultvar-fastapi"}[5m])) > 5.0
+        for: 1m
+        labels:
+          severity: critical
+          service: cultvar-fastapi
+          migration_phase: "cutover"
+        annotations:
+          summary: "FastAPI response time critically high"
+          description: "95th percentile response time is {{ $value }}s (critical threshold: 5.0s) for service {{ $labels.service }}"
+          runbook_url: "https://docs.cultivar.com/runbooks/critical-response-time"
+          rollback_trigger: "true"
+
+      # Database Connectivity Issues
+      - alert: FastAPIDatabaseConnectionFailure
+        expr: database_status != "healthy"
+        for: 1m
+        labels:
+          severity: critical
+          service: cultvar-fastapi
+          migration_phase: "cutover"
+        annotations:
+          summary: "FastAPI database connection failure"
+          description: "Database connectivity check failed. Status: {{ $value }}"
+          runbook_url: "https://docs.cultivar.com/runbooks/database-connection"
+          rollback_trigger: "true"
+
+      # Memory Usage High
+      - alert: FastAPIHighMemoryUsage
+        expr: (process_resident_memory_bytes / 1024 / 1024 / 1024) > 0.8 * (system_memory_total_bytes / 1024 / 1024 / 1024)
+        for: 3m
+        labels:
+          severity: warning
+          service: cultvar-fastapi
+          migration_phase: "cutover"
+        annotations:
+          summary: "FastAPI memory usage above 80%"
+          description: "Memory usage is {{ $value }}% (threshold: 80%) for service {{ $labels.service }}"
+          runbook_url: "https://docs.cultivar.com/runbooks/high-memory"
+
+      # CPU Usage High
+      - alert: FastAPIHighCPUUsage
+        expr: rate(process_cpu_seconds_total[5m]) * 100 > 80
+        for: 3m
+        labels:
+          severity: warning
+          service: cultvar-fastapi
+          migration_phase: "cutover"
+        annotations:
+          summary: "FastAPI CPU usage above 80%"
+          description: "CPU usage is {{ $value }}% (threshold: 80%) for service {{ $labels.service }}"
+          runbook_url: "https://docs.cultivar.com/runbooks/high-cpu"
+
+      # Disk Space Critical
+      - alert: FastAPICriticalDiskSpace
+        expr: (disk_free_bytes / disk_total_bytes) * 100 < 10
+        for: 1m
+        labels:
+          severity: critical
+          service: cultvar-fastapi
+          migration_phase: "cutover"
+        annotations:
+          summary: "FastAPI disk space critically low"
+          description: "Disk space is {{ $value }}% free (critical threshold: 10%)"
+          runbook_url: "https://docs.cultivar.com/runbooks/low-disk-space"
+
+      # Migration SLO Violation
+      - alert: FastAPISLOViolation
+        expr: |
+          (
+            (
+              rate(http_requests_total{service="cultvar-fastapi",status_code!~"5.."}[5m]) 
+              / 
+              rate(http_requests_total{service="cultvar-fastapi"}[5m])
+            ) * 100 < 99.9
+          ) or (
+            histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{service="cultvar-fastapi"}[5m])) > 0.2
+          )
+        for: 1m
+        labels:
+          severity: critical
+          service: cultvar-fastapi
+          migration_phase: "cutover"
+        annotations:
+          summary: "FastAPI SLO violation detected"
+          description: "Service Level Objectives violated for service {{ $labels.service }}. Availability < 99.9% or 95th percentile latency > 200ms"
+          runbook_url: "https://docs.cultivar.com/runbooks/slo-violation"
+          rollback_trigger: "true"
+
+      # Slow Request Detection
+      - alert: FastAPISlowRequests
+        expr: rate(slow_requests_total{service="cultvar-fastapi"}[5m]) > 10
+        for: 2m
+        labels:
+          severity: warning
+          service: cultvar-fastapi
+          migration_phase: "cutover"
+        annotations:
+          summary: "FastAPI slow request rate elevated"
+          description: "{{ $value }} slow requests per second detected (threshold: 10/s)"
+          runbook_url: "https://docs.cultivar.com/runbooks/slow-requests"
+
+      # Suspicious Activity
+      - alert: FastAPISuspiciousActivity
+        expr: rate(suspicious_requests_total{service="cultvar-fastapi"}[5m]) > 5
+        for: 1m
+        labels:
+          severity: critical
+          service: cultvar-fastapi
+          migration_phase: "cutover"
+          security: "true"
+        annotations:
+          summary: "FastAPI suspicious activity detected"
+          description: "{{ $value }} suspicious requests per second detected"
+          runbook_url: "https://docs.cultivar.com/runbooks/suspicious-activity"
+
+# Alert routing configuration
+route:
+  group_by: ['alertname', 'cluster', 'service']
+  group_wait: 10s
+  group_interval: 10s
+  repeat_interval: 1h
+  receiver: 'cultivar-team'
+  routes:
+    - match:
+        rollback_trigger: "true"
+      receiver: 'cultivar-critical'
+      group_wait: 30s
+      repeat_interval: 5m
+
+    - match:
+        severity: critical
+      receiver: 'cultivar-critical'
+      group_wait: 30s
+      repeat_interval: 15m
+
+    - match:
+        severity: warning
+      receiver: 'cultivar-team'
+      repeat_interval: 1h
+
+# Notification receivers
+receivers:
+  - name: 'cultivar-team'
+    slack_configs:
+      - channel: '#cultivar-ops'
+        title: 'FastAPI Migration Alert'
+        text: '{{ range .Alerts }}{{ .Annotations.summary }}{{ end }}'
+        send_resolved: true
+
+    email_configs:
+      - to: 'ops@cultivar.com'
+        subject: '[FastAPI Migration] {{ .GroupLabels.alertname }}'
+        body: |
+          {{ range .Alerts }}
+          Alert: {{ .Annotations.summary }}
+          Description: {{ .Annotations.description }}
+          Severity: {{ .Labels.severity }}
+          Time: {{ .StartsAt }}
+          {{ end }}
+
+  - name: 'cultivar-critical'
+    slack_configs:
+      - channel: '#cultivar-critical'
+        title: 'CRITICAL - FastAPI Migration Alert'
+        text: '{{ range .Alerts }}{{ .Annotations.summary }}{{ end }}'
+        send_resolved: true
+
+    email_configs:
+      - to: 'ops@cultivar.com,engineering@cultivar.com'
+        subject: '[CRITICAL] FastAPI Migration Alert'
+        body: |
+          IMMEDIATE ATTENTION REQUIRED
+          
+          {{ range .Alerts }}
+          Alert: {{ .Annotations.summary }}
+          Description: {{ .Annotations.description }}
+          Severity: {{ .Labels.severity }}
+          Time: {{ .StartsAt }}
+          
+          Rollback trigger: {{ .Annotations.rollback_trigger }}
+          
+          {{ end }}
+
+# Inhibition rules
+inhibit_rules:
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname', 'cluster', 'service']

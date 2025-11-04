@@ -1,54 +1,39 @@
 {
+  "version": "1.0",
   "project": {
-    "name": "CultivAR",
-    "description": "Cannabis Grow Journal Application",
-    "version": "1.0.0",
-    "root": ".",
-    "workflowIntegration": {
+    "name": "CultivAR Emergant",
+    "description": "Cannabis cultivation management platform",
+    "repository": "a:/dev/CultivAREmergant/"
+  },
+  "taskmaster": {
+    "enabled": true,
+    "task_directory": ".taskmaster/tasks",
+    "default_assignee": "@traycerai",
+    "status_values": ["TODO", "IN_PROGRESS", "BLOCKED", "REVIEW", "DONE"],
+    "priority_values": ["LOW", "MEDIUM", "HIGH", "CRITICAL"],
+    "type_values": ["EPIC", "FEATURE", "BUG", "REFACTOR", "DOCS", "TEST"]
+  },
+  "integrations": {
+    "linear": {
       "enabled": true,
-      "autoTaskCreation": true,
-      "contextAwareSuggestions": true,
-      "codeReviewIntegration": true,
-      "documentationSync": true
+      "sync_enabled": false,
+      "workspace": "cultivar-emergant"
+    },
+    "git": {
+      "enabled": true,
+      "auto_commit_on_task_complete": false,
+      "branch_naming_pattern": "task/{task-id}-{task-slug}"
     }
   },
-  "ai": {
-    "provider": "ollama",
-    "model": "gemma3:270m",
-    "baseUrl": "http://localhost:11435",
-    "maxTokens": 4096,
-    "temperature": 0.7
+  "automation": {
+    "auto_create_subtasks": true,
+    "auto_update_parent_status": true,
+    "auto_calculate_effort": false,
+    "notify_on_blocking_tasks": true
   },
-  "features": {
-    "parsePrd": true,
-    "taskGeneration": true,
-    "codeAnalysis": true,
-    "documentation": true,
-    "workflowEmbedding": true,
-    "contextAwareness": true,
-    "collaborativeFeatures": true
-  },
-  "workflow": {
-    "taskIntegration": {
-      "autoCreateTasks": true,
-      "linkPRs": true,
-      "syncDocumentation": true
-    },
-    "collaboration": {
-      "enableComments": true,
-      "shareInsights": true,
-      "teamSync": true
-    },
-    "automation": {
-      "codeReview": true,
-      "testGeneration": true,
-      "deploymentChecks": true
-    }
-  },
-  "output": {
-    "format": "json",
-    "includeMetadata": true,
-    "saveHistory": true,
-    "workflowTracking": true
+  "reporting": {
+    "generate_daily_summary": true,
+    "generate_weekly_report": true,
+    "track_velocity": true
   }
 }

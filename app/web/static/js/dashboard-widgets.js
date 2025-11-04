@@ -37,7 +37,7 @@ class DashboardWidgetSystem {
         return {
             widgets: [
                 { id: 'plants', enabled: true, order: 1, size: 'large' },
-                { id: 'strains', enabled: true, order: 2, size: 'medium' },
+                { id: 'cultivars', enabled: true, order: 2, size: 'medium' },
                 { id: 'sensors', enabled: true, order: 3, size: 'medium' },
                 { id: 'harvests', enabled: true, order: 4, size: 'medium' },
                 { id: 'timeline', enabled: true, order: 5, size: 'large' },
@@ -108,7 +108,7 @@ class DashboardWidgetSystem {
             case 'plants':
                 return this.getActivePlantsWidget();
             case 'strains':
-                return this.getStrainsWidget();
+                return this.getCultivarsWidget();
             case 'sensors':
                 return this.getSensorsWidget();
             case 'harvests':
@@ -237,7 +237,7 @@ class DashboardWidgetSystem {
             </div>
             <div class="widget-content">
                 <div class="widget-stat">
-                    <div class="stat-number" id="strains-count">0</div>
+                    <div class="stat-number" id="cultivars-count">0</div>
                     <div class="stat-label">In Collection</div>
                 </div>
             </div>

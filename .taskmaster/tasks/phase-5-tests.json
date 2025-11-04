@@ -1,0 +1,47 @@
+{
+  "id": "phase-5-tests",
+  "title": "Phase 5: Migrate Test Suite",
+  "description": "Update all test files, test data, assertions, and test descriptions to use 'cultivar' terminology",
+  "status": "TODO",
+  "priority": "MEDIUM",
+  "type": "FEATURE",
+  "estimated_effort_hours": 5,
+  "actual_effort_hours": null,
+  "parent_task_id": "cultivar-migration-master",
+  "dependencies": ["phase-4-templates-js"],
+  "blocking": ["phase-6-documentation"],
+  "subtasks": [
+    "task-5-1-plant-card-test-update",
+    "task-5-2-plant-models-test-update",
+    "task-5-3-model-test-update",
+    "task-5-4-providers-integration-test-update",
+    "task-5-5-plants-integration-test-update",
+    "task-5-6-plants-integration-py-test-update",
+    "task-5-7-strains-test-rename",
+    "task-5-8-strains-integration-test-rename",
+    "task-5-9-router-fixes-test-update",
+    "task-5-10-verify-router-script-update",
+    "task-5-11-verify-simple-script-update"
+  ],
+  "assignee": "@traycerai",
+  "tags": ["migration", "tests"],
+  "created_at": "2025-11-03T18:48:03Z",
+  "updated_at": "2025-11-03T18:48:03Z",
+  "started_at": null,
+  "completed_at": null,
+  "files_affected": [
+    "tests/integration/test_strains.py",
+    "flutter_app/test/widget/plant_card_test.dart"
+  ],
+  "acceptance_criteria": [
+    "All test files use cultivar terminology",
+    "All test data uses 'cultivar' in descriptions",
+    "All test function names use test_cultivar_* pattern",
+    "All test assertions check for cultivar fields",
+    "All API endpoint tests use /cultivars/* paths",
+    "All tests pass (100% pass rate)",
+    "No test references to strain (except in migration tests)"
+  ],
+  "notes": "Phase 5 - Test suite modernization",
+  "linear_issue_id": null
+}

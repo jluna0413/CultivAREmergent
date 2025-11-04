@@ -2,7 +2,7 @@
   "providers": {
     "ollama": {
       "type": "local",
-  "baseUrl": "${OLLAMA_BASEURL:-http://localhost:11435}",
+      "baseUrl": "${OLLAMA_BASEURL:-http://localhost:11434}",
       "apiKey": "${OLLAMA_API_KEY:-}",
       "description": "Project-level overrides for Ollama. Keep secrets out of git; set OLLAMA_BASEURL or OLLAMA_API_KEY in your environment or in a local .env file (gitignored)."
     }
@@ -11,7 +11,7 @@
     "taskmaster-ai": {
       "env": {
         "OLLAMA_API_KEY": "${OLLAMA_API_KEY:-}",
-  "OLLAMA_BASEURL": "${OLLAMA_BASEURL:-http://localhost:11435}"
+        "OLLAMA_BASEURL": "${OLLAMA_BASEURL:-http://localhost:11434}"
       }
     }
   }

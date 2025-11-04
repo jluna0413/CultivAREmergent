@@ -14,7 +14,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from main import create_app
 from app.models import db
 from app.models.base_models import (
-    Breeder, Strain, Zone, Status, Activity, Metric,
+    Breeder, Cultivar, Zone, Status, Activity, Metric,
     Plant, Sensor, SensorData, Settings
 )
 
@@ -40,16 +40,16 @@ def populate_breeders():
     db.session.commit()
     print(f"Added {len(breeders)} breeders")
 
-def populate_strains():
-    """Add sample strains to the database."""
-    strains = [
+def populate_cultivars():
+    """Add sample cultivars to the database."""
+    cultivars = [
         {
             "name": "Wedding Cake",
             "breeder_name": "Barney's Farm",
             "indica": 70,
             "sativa": 30,
             "autoflower": False,
-            "description": "Wedding Cake is a potent indica-hybrid strain known for its rich and tangy flavor profile with earthy and peppery notes. The buds are dense, colorful and coated with trichomes. Effects are relaxing and euphoric, making it ideal for evening use.",
+            "description": "Wedding Cake is a potent indica-hybrid cultivar known for its rich and tangy flavor profile with earthy and peppery notes. The buds are dense, colorful and coated with trichomes. Effects are relaxing and euphoric, making it ideal for evening use.",
             "short_description": "Cherry Pie x Girl Scout Cookies",
             "seed_count": 5,
             "cycle_time": 63,
@@ -62,7 +62,7 @@ def populate_strains():
             "indica": 80,
             "sativa": 20,
             "autoflower": False,
-            "description": "Blueberry is a classic indica strain that has been popular since the 1970s. It's known for its sweet berry aroma and flavor. The effects are deeply relaxing and long-lasting, perfect for stress relief and insomnia.",
+            "description": "Blueberry is a classic indica cultivar that has been popular since the 1970s. It's known for its sweet berry aroma and flavor. The effects are deeply relaxing and long-lasting, perfect for stress relief and insomnia.",
             "short_description": "Thai x Purple Thai x Afghani",
             "seed_count": 3,
             "cycle_time": 56,
@@ -88,7 +88,7 @@ def populate_strains():
             "indica": 90,
             "sativa": 10,
             "autoflower": False,
-            "description": "Northern Lights is one of the most famous indica strains of all time. It produces resinous buds with a sweet and spicy aroma. The effects are deeply relaxing and sedating, perfect for evening use and sleep aid.",
+            "description": "Northern Lights is one of the most famous indica cultivars of all time. It produces resinous buds with a sweet and spicy aroma. The effects are deeply relaxing and sedating, perfect for evening use and sleep aid.",
             "short_description": "Afghani x Thai",
             "seed_count": 10,
             "cycle_time": 49,
@@ -101,7 +101,7 @@ def populate_strains():
             "indica": 40,
             "sativa": 60,
             "autoflower": False,
-            "description": "Sour Diesel is a sativa-dominant strain known for its pungent diesel aroma. It provides energetic and uplifting effects that are great for daytime use, creativity, and social activities.",
+            "description": "Sour Diesel is a sativa-dominant cultivar known for its pungent diesel aroma. It provides energetic and uplifting effects that are great for daytime use, creativity, and social activities.",
             "short_description": "Chemdawg x Super Skunk",
             "seed_count": 6,
             "cycle_time": 70,
@@ -123,22 +123,22 @@ def populate_strains():
         }
     ]
 
-    for strain_data in strains:
+    for cultivar_data in cultivars:
         # Get breeder ID
-        breeder_name = strain_data.pop("breeder_name")
+        breeder_name = cultivar_data.pop("breeder_name")
         breeder = Breeder.query.filter_by(name=breeder_name).first()
 
         if breeder:
-            # Check if strain already exists
-            if not Strain.query.filter_by(name=strain_data["name"]).first():
+            # Check if cultivar already exists
+            if not Cultivar.query.filter_by(name=cultivar_data["name"]).first():
                 # Remove price as it's not in the model
-                price = strain_data.pop("price", None)
+                price = cultivar_data.pop("price", None)
 
-                strain = Strain(breeder_id=breeder.id, **strain_data)
-                db.session.add(strain)
+                cultivar = Cultivar(breeder_id=breeder.id, **cultivar_data)
+                db.session.add(cultivar)
 
     db.session.commit()
-    print(f"Added {len(strains)} strains")
+    print(f"Added {len(cultivars)} cultivars")
 
 def populate_zones():
     """Add sample growing zones to the database."""
@@ -305,9 +305,9 @@ def populate_sensors():
 
 def populate_plants():
     """Add sample plants to the database."""
-    # Get strains
-    wedding_cake = Strain.query.filter_by(name="Wedding Cake").first()
-    blueberry = Strain.query.filter_by(name="Blueberry").first()
+    # Get cultivars
+    wedding_cake = Cultivar.query.filter_by(name="Wedding Cake").first()
+    blueberry = Cultivar.query.filter_by(name="Blueberry").first()
 
     # Get zones
     veg_tent = Zone.query.filter_by(name="Veg Tent").first()
@@ -329,7 +329,7 @@ def populate_plants():
             "name": "WC #1",
             "description": "Wedding Cake plant, started from seed.",
             "status_id": seedling_status.id,
-            "strain_id": wedding_cake.id,
+            "cultivar_id": wedding_cake.id,
             "zone_id": veg_tent.id,
             "current_day": 7,
             "current_week": 1,
@@ -341,7 +341,7 @@ def populate_plants():
             "name": "BB #1",
             "description": "Blueberry plant, started from seed.",
             "status_id": veg_status.id,
-            "strain_id": blueberry.id,
+            "cultivar_id": blueberry.id,
             "zone_id": veg_tent.id,
             "current_day": 21,
             "current_week": 3,
@@ -353,7 +353,7 @@ def populate_plants():
             "name": "WC #2",
             "description": "Wedding Cake plant, in flowering stage.",
             "status_id": flower_status.id,
-            "strain_id": wedding_cake.id,
+            "cultivar_id": wedding_cake.id,
             "zone_id": flower_tent.id,
             "current_day": 42,
             "current_week": 6,
@@ -402,7 +402,7 @@ def main():
 
         # Populate the database with sample data
         populate_breeders()
-        populate_strains()
+        populate_cultivars()
         populate_zones()
         populate_statuses()
         populate_activities()

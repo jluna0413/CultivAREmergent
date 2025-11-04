@@ -18,7 +18,7 @@ The application has a sidebar menu that provides access to all the main features
 
 - **Dashboard**: Overview of your grow operation
 - **Plants**: Manage your plants
-- **Strains**: Manage your cannabis strains
+- **Cultivars**: Manage your cannabis cultivars
 - **Sensors**: Monitor environmental conditions (if available)
 - **Settings**: Configure application settings
 
@@ -29,7 +29,7 @@ The application has a sidebar menu that provides access to all the main features
 1. **Adding a Plant**:
    - Go to the Plants page
    - Click the "Add Plant" button
-   - Fill in the required information (name, strain, status, etc.)
+   - Fill in the required information (name, cultivar, status, etc.)
    - Click "Save"
 
 2. **Tracking Plant Growth**:
@@ -48,13 +48,13 @@ The application has a sidebar menu that provides access to all the main features
 1. **Adding a Strain**:
    - Go to the Strains page
    - Click the "Add Strain" button
-   - Fill in the strain information (name, breeder, genetics, etc.)
+   - Fill in the cultivar information (name, breeder, genetics, etc.)
    - Click "Save"
 
 2. **Managing Strain Inventory**:
    - Update seed count
-   - View plants associated with each strain
-   - Track strain performance
+   - View plants associated with each cultivar
+   - Track cultivar performance
 
 ### Settings
 

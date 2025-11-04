@@ -1,0 +1,440 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../models/cart_models.dart';
+
+/// Cart provider state
+class CartProviderState {
+  const CartProviderState({
+    required this.items,
+    this.isLoading,
+    this.error,
+    this.promoCode,
+    this.discountPercentage,
+  });
+
+  final List<CartItem> items;
+  final bool? isLoading;
+  final String? error;
+  final String? promoCode;
+  final double? discountPercentage;
+
+  bool get hasError => error != null;
+  bool get isEmpty => items.isEmpty;
+  bool get hasPromoCode => promoCode != null;
+
+  double get subtotal => items.fold(0.0, (sum, item) => sum + item.totalPrice);
+  
+  double get discountAmount => discountPercentage != null 
+    ? subtotal * discountPercentage! / 100 
+    : 0.0;
+  
+  double get tax => subtotal * 0.08; // 8% tax rate
+  
+  double get total => subtotal - discountAmount + tax;
+  
+  int get totalItems => items.fold(0, (sum, item) => sum + item.quantity);
+
+  CartProviderState copyWith({
+    List<CartItem>? items,
+    bool? isLoading,
+    String? error,
+    String? promoCode,
+    double? discountPercentage,
+  }) {
+    return CartProviderState(
+      items: items ?? this.items,
+      isLoading: isLoading ?? this.isLoading,
+      error: error ?? this.error,
+      promoCode: promoCode ?? this.promoCode,
+      discountPercentage: discountPercentage ?? this.discountPercentage,
+    );
+  }
+
+  List<CartItem> get uniqueItems {
+    final Map<String, CartItem> uniqueItemsMap = {};
+    for (final item in items) {
+      final key = '${item.productId}_${item.variantId ?? "default"}';
+      if (uniqueItemsMap.containsKey(key)) {
+        // If item already exists, update quantity
+        uniqueItemsMap[key] = uniqueItemsMap[key]!.copyWith(
+          quantity: uniqueItemsMap[key]!.quantity + item.quantity,
+        );
+      } else {
+        uniqueItemsMap[key] = item;
+      }
+    }
+    return uniqueItemsMap.values.toList();
+  }
+}
+
+/// Cart notifier
+class CartNotifier extends StateNotifier<CartProviderState> {
+  CartNotifier() : super(const CartProviderState(items: [])) {
+    _loadCart();
+  }
+
+  static const String _cartKey = 'shopping_cart';
+  static const String _promoKey = 'cart_promo_code';
+
+  Future<void> _loadCart() async {
+    try {
+      state = state.copyWith(isLoading: true, error: null);
+
+      final prefs = await SharedPreferences.getInstance();
+      
+      final cartJson = prefs.getString(_cartKey);
+      final promoCode = prefs.getString(_promoKey);
+
+      List<CartItem> items = [];
+      double? discountPercentage;
+
+      if (cartJson != null) {
+        items = _deserializeCart(cartJson);
+      }
+
+      if (promoCode != null) {
+        discountPercentage = _validatePromoCode(promoCode);
+      }
+
+      state = state.copyWith(
+        items: items,
+        isLoading: false,
+        promoCode: promoCode,
+        discountPercentage: discountPercentage,
+      );
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        error: 'Failed to load cart: $e',
+      );
+    }
+  }
+
+  Future<void> _saveCart() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_cartKey, _serializeCart(state.items));
+      if (state.promoCode != null) {
+        await prefs.setString(_promoKey, state.promoCode!);
+      }
+    } catch (e) {
+      // Handle save error silently for now
+      print('Failed to save cart: $e');
+    }
+  }
+
+  String _serializeCart(List<CartItem> items) {
+    final json = items.map((item) => item.toJson()).toList();
+    return json.toString();
+  }
+
+  List<CartItem> _deserializeCart(String cartJson) {
+    try {
+      // This is a simplified deserialization - in production, use proper JSON
+      final List<CartItem> items = [];
+      // For now, return empty list as placeholder
+      return items;
+    } catch (e) {
+      return [];
+    }
+  }
+
+  double? _validatePromoCode(String code) {
+    // Mock promo code validation
+    switch (code.toUpperCase()) {
+      case 'WELCOME10':
+        return 10.0;
+      case 'SAVE15':
+        return 15.0;
+      case 'SPRING20':
+        return 20.0;
+      default:
+        return null;
+    }
+  }
+
+  Future<void> addItem(CartItem item) async {
+    try {
+      state = state.copyWith(isLoading: true, error: null);
+
+      final existingItems = List<CartItem>.from(state.items);
+      final existingIndex = existingItems.indexWhere(
+        (existingItem) => 
+            existingItem.productId == item.productId && 
+            existingItem.variantId == item.variantId,
+      );
+
+      if (existingIndex >= 0) {
+        // Update existing item quantity
+        existingItems[existingIndex] = existingItems[existingIndex].copyWith(
+          quantity: existingItems[existingIndex].quantity + item.quantity,
+        );
+      } else {
+        // Add new item
+        existingItems.add(item);
+      }
+
+      state = state.copyWith(
+        items: existingItems,
+        isLoading: false,
+      );
+
+      await _saveCart();
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        error: 'Failed to add item to cart: $e',
+      );
+    }
+  }
+
+  Future<void> updateQuantity(String productId, String? variantId, int quantity) async {
+    try {
+      if (quantity <= 0) {
+        await removeItem(productId, variantId);
+        return;
+      }
+
+      state = state.copyWith(isLoading: true, error: null);
+
+      final newItems = state.items.map((item) {
+        if (item.productId == productId && item.variantId == variantId) {
+          return item.copyWith(quantity: quantity);
+        }
+        return item;
+      }).toList();
+
+      state = state.copyWith(
+        items: newItems,
+        isLoading: false,
+      );
+
+      await _saveCart();
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        error: 'Failed to update quantity: $e',
+      );
+    }
+  }
+
+  Future<void> removeItem(String productId, String? variantId) async {
+    try {
+      state = state.copyWith(isLoading: true, error: null);
+
+      final newItems = state.items.where((item) {
+        return !(item.productId == productId && item.variantId == variantId);
+      }).toList();
+
+      state = state.copyWith(
+        items: newItems,
+        isLoading: false,
+      );
+
+      await _saveCart();
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        error: 'Failed to remove item: $e',
+      );
+    }
+  }
+
+  Future<void> clearCart() async {
+    try {
+      state = state.copyWith(isLoading: true, error: null);
+
+      state = state.copyWith(
+        items: [],
+        isLoading: false,
+      );
+
+      await _saveCart();
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        error: 'Failed to clear cart: $e',
+      );
+    }
+  }
+
+  Future<void> applyPromoCode(String code) async {
+    try {
+      state = state.copyWith(isLoading: true, error: null);
+
+      final discountPercentage = _validatePromoCode(code);
+      
+      if (discountPercentage == null) {
+        state = state.copyWith(
+          isLoading: false,
+          error: 'Invalid promo code',
+        );
+        return;
+      }
+
+      state = state.copyWith(
+        promoCode: code,
+        discountPercentage: discountPercentage,
+        isLoading: false,
+      );
+
+      await _saveCart();
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        error: 'Failed to apply promo code: $e',
+      );
+    }
+  }
+
+  Future<void> removePromoCode() async {
+    try {
+      state = state.copyWith(
+        promoCode: null,
+        discountPercentage: null,
+      );
+
+      await _saveCart();
+    } catch (e) {
+      state = state.copyWith(
+        error: 'Failed to remove promo code: $e',
+      );
+    }
+  }
+
+  void clearError() {
+    if (state.hasError) {
+      state = state.copyWith(error: null);
+    }
+  }
+
+  CartItem? getItem(String productId, String? variantId) {
+    try {
+      return state.items.firstWhere(
+        (item) => item.productId == productId && item.variantId == variantId,
+      );
+    } catch (e) {
+      return null;
+    }
+  }
+
+  bool isInCart(String productId, String? variantId) {
+    return getItem(productId, variantId) != null;
+  }
+
+  int getQuantityForItem(String productId, String? variantId) {
+    final item = getItem(productId, variantId);
+    return item?.quantity ?? 0;
+  }
+}
+
+/// Auto-dispose provider for cart
+final cartProvider =
+    StateNotifierProvider<CartNotifier, CartProviderState>((ref) {
+  return CartNotifier();
+});
+
+/// Convenience providers
+final cartItemsProvider = Provider<List<CartItem>>((ref) {
+  final cartState = ref.watch(cartProvider);
+  return cartState.items;
+});
+
+final cartSubtotalProvider = Provider<double>((ref) {
+  final cartState = ref.watch(cartProvider);
+  return cartState.subtotal;
+});
+
+final cartTotalProvider = Provider<double>((ref) {
+  final cartState = ref.watch(cartProvider);
+  return cartState.total;
+});
+
+final cartDiscountProvider = Provider<double>((ref) {
+  final cartState = ref.watch(cartProvider);
+  return cartState.discountAmount;
+});
+
+final cartTaxProvider = Provider<double>((ref) {
+  final cartState = ref.watch(cartProvider);
+  return cartState.tax;
+});
+
+final cartTotalItemsProvider = Provider<int>((ref) {
+  final cartState = ref.watch(cartProvider);
+  return cartState.totalItems;
+});
+
+final cartIsEmptyProvider = Provider<bool>((ref) {
+  final cartState = ref.watch(cartProvider);
+  return cartState.isEmpty;
+});
+
+final cartLoadingProvider = Provider<bool>((ref) {
+  final cartState = ref.watch(cartProvider);
+  return cartState.isLoading ?? false;
+});
+
+final cartErrorProvider = Provider<String?>((ref) {
+  final cartState = ref.watch(cartProvider);
+  return cartState.error;
+});
+
+final cartPromoCodeProvider = Provider<String?>((ref) {
+  final cartState = ref.watch(cartProvider);
+  return cartState.promoCode;
+});
+
+final cartDiscountPercentageProvider = Provider<double?>((ref) {
+  final cartState = ref.watch(cartProvider);
+  return cartState.discountPercentage;
+});
+
+final cartUniqueItemsProvider = Provider<List<CartItem>>((ref) {
+  final cartState = ref.watch(cartProvider);
+  return cartState.uniqueItems;
+});
+
+/// Search providers
+final cartItemProvider = Provider.family<CartItem?, String>((ref, productId) {
+  // This would need to be used with a key that includes variantId
+  return null; // Placeholder
+});
+
+/// Specific cart metrics
+final cartHealthScoreProvider = Provider<double>((ref) {
+  final cartState = ref.watch(cartProvider);
+  
+  if (cartState.items.isEmpty) return 1.0;
+  
+  // Calculate a "health score" based on cart composition
+  final totalValue = cartState.subtotal;
+  final itemCount = cartState.items.length;
+  
+  // Simple heuristic: more items = better diversity (up to a point)
+  final diversityScore = itemCount <= 10 ? itemCount / 10.0 : 1.0;
+  
+  // Balance diversity and total value (prefer reasonable total values)
+  final valueScore = totalValue <= 1000 ? totalValue / 1000.0 : 1.0;
+  
+  return (diversityScore + valueScore) / 2.0;
+});
+
+final cartInsightsProvider = Provider<Map<String, dynamic>>((ref) {
+  final cartState = ref.watch(cartProvider);
+  
+  return {
+    'averageItemPrice': cartState.items.isNotEmpty 
+      ? cartState.subtotal / cartState.items.length 
+      : 0.0,
+    'highestPricedItem': cartState.items.isNotEmpty 
+      ? cartState.items.map((item) => item.price).reduce((a, b) => a > b ? a : b)
+      : 0.0,
+    'lowestPricedItem': cartState.items.isNotEmpty 
+      ? cartState.items.map((item) => item.price).reduce((a, b) => a < b ? a : b)
+      : 0.0,
+    'totalCategories': cartState.items.map((item) => item.category).toSet().length,
+    'promoSavings': cartState.discountAmount,
+  };
+});

@@ -30,7 +30,7 @@
         <div class="admin-stat-card success">
             <div class="admin-stat-card-body">
                 <div class="admin-stat-card-content">
-                    <div class="admin-stat-card-title">Active Strains</div>
+                    <div class="admin-stat-card-title">Active Cultivars</div>
                     <div class="admin-stat-card-value">{{ strain_count }}</div>
                 </div>
                 <div class="admin-stat-card-icon">
@@ -166,8 +166,8 @@
                                     <span class="badge bg-info"><i class="fas fa-sign-in-alt"></i> Login</span>
                                     {% elif activity.type == 'plant_add' %}
                                     <span class="badge bg-success"><i class="fas fa-seedling"></i> Plant Added</span>
-                                    {% elif activity.type == 'strain_edit' %}
-                                    <span class="badge bg-warning"><i class="fas fa-dna"></i> Strain Edited</span>
+                                    {% elif activity.type == 'cultivar_edit' %}
+                                    <span class="badge bg-warning"><i class="fas fa-dna"></i> Cultivar Edited</span>
                                     {% elif activity.type == 'sensor_reading' %}
                                     <span class="badge bg-primary"><i class="fas fa-thermometer-half"></i> Sensor</span>
                                     {% elif activity.type == 'user_add' %}
@@ -181,8 +181,8 @@
                                     User login
                                     {% elif activity.type == 'plant_add' %}
                                     Added {{ activity.plant }}
-                                    {% elif activity.type == 'strain_edit' %}
-                                    Edited {{ activity.strain }}
+                                    {% elif activity.type == 'cultivar_edit' %}
+                                    Edited {{ activity.cultivar }}
                                     {% elif activity.type == 'sensor_reading' %}
                                     {{ activity.sensor }}: {{ activity.value }}
                                     {% elif activity.type == 'user_add' %}
@@ -230,7 +230,7 @@
                         <div class="form-group">
                             <label for="page-url">Page URL</label>
                             <div class="input-group">
-                                <input type="text" class="form-control" id="page-url" placeholder="e.g., /strains" value="/admin">
+                                <input type="text" class="form-control" id="page-url" placeholder="e.g., /cultivars" value="/admin">
                                 <div class="input-group-append">
                                     <button class="btn btn-primary" id="run-page-diagnostics">Run</button>
                                 </div>
@@ -242,7 +242,7 @@
                         <div class="form-group">
                             <label for="api-endpoint">API Endpoint</label>
                             <div class="input-group">
-                                <input type="text" class="form-control" id="api-endpoint" placeholder="e.g., /strains/1" value="/api/admin/diagnostics/test">
+                                <input type="text" class="form-control" id="api-endpoint" placeholder="e.g., /cultivars/1" value="/api/admin/diagnostics/test">
                                 <div class="input-group-append">
                                     <button class="btn btn-primary" id="test-api-endpoint">Test</button>
                                 </div>
@@ -433,7 +433,7 @@
                             badgeClass = 'bg-success';
                             badgeIcon = 'fa-seedling';
                             badgeText = 'Plant Added';
-                        } else if (activity.type === 'strain_edit') {
+                        } else if (activity.type === 'cultivar_edit') {
                             badgeClass = 'bg-warning';
                             badgeIcon = 'fa-dna';
                             badgeText = 'Strain Edited';
@@ -462,8 +462,8 @@
                             detailsText = 'User login';
                         } else if (activity.type === 'plant_add' && activity.plant) {
                             detailsText = `Added ${activity.plant}`;
-                        } else if (activity.type === 'strain_edit' && activity.strain) {
-                            detailsText = `Edited ${activity.strain}`;
+                        } else if (activity.type === 'cultivar_edit' && activity.cultivar) {
+                            detailsText = `Edited ${activity.cultivar}`;
                         } else if (activity.type === 'sensor_reading' && activity.sensor) {
                             detailsText = `${activity.sensor}: ${activity.value}`;
                         } else if (activity.type === 'user_add' && activity.new_user) {
@@ -543,19 +543,19 @@
                 'User login successful',
                 'Database connection failed',
                 'Database connection restored',
-                'Plant added: {strain}',
+                'Plant added: {cultivar}',
                 'Sensor reading: Temp={temp}°F, Humidity={humidity}%',
                 'High temperature detected: {temp}°F',
                 'User logged out',
                 'Image uploaded for plant #{id}',
-                'API request to /strains',
+                'API request to /cultivars',
                 'New user registered: {user}',
                 'Password reset requested for user {user}',
                 'System backup completed',
                 'Notification sent to user {user}'
             ];
 
-            const strains = ['Blue Dream', 'OG Kush', 'Sour Diesel', 'Girl Scout Cookies', 'White Widow'];
+            const cultivars = ['Blue Dream', 'OG Kush', 'Sour Diesel', 'Girl Scout Cookies', 'White Widow'];
             const users = ['admin', 'john', 'sarah', 'mike', 'emma'];
 
             for (let i = 0; i < 50; i++) {
@@ -567,7 +567,7 @@
                 let message = messages[Math.floor(Math.random() * messages.length)];
 
                 // Replace placeholders
-                message = message.replace('{strain}', strains[Math.floor(Math.random() * strains.length)]);
+                message = message.replace('{cultivar}', cultivars[Math.floor(Math.random() * cultivars.length)]);
                 message = message.replace('{temp}', (70 + Math.random() * 20).toFixed(1));
                 message = message.replace('{humidity}', (50 + Math.random() * 40).toFixed(0));
                 message = message.replace('{user}', users[Math.floor(Math.random() * users.length)]);

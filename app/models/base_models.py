@@ -112,7 +112,7 @@ class Plant(db.Model):
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text)
     status_id = db.Column(db.Integer, db.ForeignKey("status.id"), nullable=False)
-    strain_id = db.Column(db.Integer, db.ForeignKey("strain.id"))
+    cultivar_id = db.Column(db.Integer, db.ForeignKey("cultivar.id"))
     zone_id = db.Column(db.Integer, db.ForeignKey("zone.id"))
     current_day = db.Column(db.Integer, default=0)
     current_week = db.Column(db.Integer, default=0)
@@ -125,14 +125,14 @@ class Plant(db.Model):
     harvest_weight = db.Column(db.Float)
     harvest_date = db.Column(db.DateTime)
     cycle_time = db.Column(db.Integer)
-    strain_url = db.Column(db.String(255))
+    cultivar_url = db.Column(db.String(255))
     est_harvest_date = db.Column(db.DateTime)
     autoflower = db.Column(db.Boolean, default=False)
     parent_id = db.Column(db.Integer, db.ForeignKey("plant.id"))
 
     # Relationships
     status = db.relationship("Status", foreign_keys=[status_id], backref="plants")
-    strain = db.relationship("Strain", backref="plants")
+    cultivar = db.relationship("Cultivar", backref="plants")
     zone = db.relationship("Zone", backref="plants")
     measurements = db.relationship(
         "Measurement", backref="plant", cascade="all, delete-orphan"
@@ -150,12 +150,12 @@ class Plant(db.Model):
         return self.status.status if self.status else None
 
     @property
-    def strain_name(self):
-        return self.strain.name if self.strain else None
+    def cultivar_name(self):
+        return self.cultivar.name if self.cultivar else None
 
     @property
     def breeder_name(self):
-        return self.strain.breeder.name if self.strain and self.strain.breeder else None
+        return self.cultivar.breeder.name if self.cultivar and self.cultivar.breeder else None
 
     @property
     def zone_name(self):
@@ -165,12 +165,12 @@ class Plant(db.Model):
     def parent_name(self):
         return self.parent.name if self.parent else None
 
-    def __init__(self, name=None, description=None, status_id=None, strain_id=None, zone_id=None, current_day=0, current_week=0, current_height=None, height_date=None, last_water_date=None, last_feed_date=None, is_clone=False, start_dt=None, harvest_weight=None, harvest_date=None, cycle_time=None, strain_url=None, est_harvest_date=None, autoflower=False, parent_id=None, **kwargs):
+    def __init__(self, name=None, description=None, status_id=None, cultivar_id=None, zone_id=None, current_day=0, current_week=0, current_height=None, height_date=None, last_water_date=None, last_feed_date=None, is_clone=False, start_dt=None, harvest_weight=None, harvest_date=None, cycle_time=None, cultivar_url=None, est_harvest_date=None, autoflower=False, parent_id=None, **kwargs):
         super().__init__(**kwargs)
         self.name = name
         self.description = description
         self.status_id = status_id
-        self.strain_id = strain_id
+        self.cultivar_id = cultivar_id
         self.zone_id = zone_id
         self.current_day = current_day
         self.current_week = current_week
@@ -183,7 +183,7 @@ class Plant(db.Model):
         self.harvest_weight = harvest_weight
         self.harvest_date = harvest_date
         self.cycle_time = cycle_time
-        self.strain_url = strain_url
+        self.cultivar_url = cultivar_url
         self.est_harvest_date = est_harvest_date
         self.autoflower = autoflower
         self.parent_id = parent_id
@@ -288,8 +288,8 @@ class Status(db.Model):
     )
 
 
-class Strain(db.Model):
-    """Cannabis strain model."""
+class Cultivar(db.Model):
+    """Cannabis cultivar model."""
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
@@ -304,7 +304,7 @@ class Strain(db.Model):
     short_description = db.Column(db.Text)
 
     # Relationships
-    breeder = db.relationship("Breeder", backref="strains")
+    breeder = db.relationship("Breeder", backref="cultivars")
 
     def __init__(self, name=None, breeder_id=None, indica=0, sativa=0, autoflower=False, description=None, seed_count=0, cycle_time=None, url=None, short_description=None, **kwargs):
         super().__init__(**kwargs)
@@ -393,7 +393,7 @@ class BlogPost(db.Model):
     slug = db.Column(db.String(200), unique=True, nullable=False)
     content = db.Column(db.Text, nullable=False)
     excerpt = db.Column(db.String(300))
-    category = db.Column(db.String(50))  # growing_tips, strain_reviews, industry_news, etc.
+    category = db.Column(db.String(50))  # growing_tips, cultivar_reviews, industry_news, etc.
     author = db.Column(db.String(100))
     publish_date = db.Column(db.DateTime, default=datetime.utcnow)
     is_published = db.Column(db.Boolean, default=False)
@@ -498,3 +498,7 @@ class NewsletterSubscriber(db.Model):
     @property
     def is_unsubscribed(self):
         return self.unsubscribe_date is not None
+
+
+# Backward compatibility alias
+Strain = Cultivar

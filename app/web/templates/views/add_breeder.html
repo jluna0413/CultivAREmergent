@@ -60,18 +60,18 @@
                                 if (data.success) {
                                     alert('Breeder added successfully!');
 
-                                    // Check if we came from the add strain page
+                                    // Check if we came from the add cultivar page
                                     const referrer = document.referrer;
-                                    if (referrer.includes('/strains/add')) {
+                                    if (referrer.includes('/cultivars/add')) {
                                         // Store the new breeder ID in sessionStorage
                                         sessionStorage.setItem('newBreederId', data.breeder_id);
                                         sessionStorage.setItem('newBreederName', data.name);
 
-                                        // Go back to the add strain page
-                                        window.location.href = '/strains/add';
+                                        // Go back to the add cultivar page
+                                        window.location.href = '/cultivars/add';
                                     } else {
-                                        // Otherwise go to the strains page
-                                        window.location.href = '/strains';
+                                        // Otherwise go to the cultivars page
+                                        window.location.href = '/cultivars';
                                     }
                                 } else {
                                     alert('Error adding breeder: ' + (data.error || 'Unknown error'));

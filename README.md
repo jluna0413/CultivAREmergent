@@ -80,7 +80,8 @@ CultivAR is a self-hosted cannabis grow journal application. It allows you to tr
 
 CultivAR can be configured using environment variables:
 
-- `SECRET_KEY`: Secret key for session management
+### Core Application Settings
+- `SECRET_KEY`: Secret key for JWT authentication (CHANGE IN PRODUCTION)
 - `CULTIVAR_DB_DRIVER`: Database driver (`sqlite` or `postgres`)
 - `CULTIVAR_DB_HOST`: PostgreSQL host (default: `localhost`)
 - `CULTIVAR_DB_PORT`: PostgreSQL port (default: `5432`)
@@ -89,6 +90,32 @@ CultivAR can be configured using environment variables:
 - `CULTIVAR_DB_NAME`: PostgreSQL database name (default: `cultivardb`)
 - `CULTIVAR_PORT`: Application port (default: `5000`)
 - `DEBUG`: Debug mode (`true` or `false`)
+
+### Security Configuration
+
+**CORS Origins:**
+- `FRONTEND_ORIGINS`: Comma-separated list of allowed frontend origins for CORS
+  - Example: `http://localhost:3000,https://myapp.com`
+  - Filters empty entries automatically for security
+  - Default: `http://localhost:3000,http://localhost:8000`
+
+**Trusted Hosts:**
+- `ALLOWED_HOSTS`: Comma-separated list of allowed hosts for TrustedHostMiddleware
+  - Example: `localhost,127.0.0.1,myapp.com,*.myapp.com`
+  - Filters empty hosts and prevents header injection attacks
+  - Default: `localhost,127.0.0.1,*.localhost`
+
+**JWT Security:**
+- Implements JWT with JTI (JSON Token Identifier) for token tracking
+- Supports refresh token rotation to prevent reuse attacks
+- Includes token revocation store for immediate invalidation
+- Access tokens expire in 30 minutes, refresh tokens in 7 days
+- Admin role validation through JWT claims
+
+**Rate Limiting:**
+- Built-in rate limiting by IP address
+- Configurable limits and time windows
+- Prevents abuse and DDoS attacks
 
 ## License
 

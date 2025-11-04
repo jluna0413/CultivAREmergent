@@ -78,3 +78,4 @@ node_modules
 .kiro/steering/byterover-rules.md
 .qoder/rules/byterover-rules.md
 .augment/rules/byterover-rules.md
+.aider*

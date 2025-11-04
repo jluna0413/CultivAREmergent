@@ -27,7 +27,7 @@
                     <div class="node-content">
                         <i class="fas fa-seedling"></i>
                         <h4>{{ lineage.grandparent.name }}</h4>
-                        <p class="strain">{{ lineage.grandparent.strain_name }}</p>
+                        <p class="cultivar">{{ lineage.grandparent.cultivar_name }}</p>
                         <span class="node-type">Grandparent</span>
                     </div>
                 </div>
@@ -45,7 +45,7 @@
                     <div class="node-content">
                         <i class="fas fa-tree"></i>
                         <h4>{{ lineage.parent.name }}</h4>
-                        <p class="strain">{{ lineage.parent.strain_name }}</p>
+                        <p class="cultivar">{{ lineage.parent.cultivar_name }}</p>
                         <p class="status">{{ lineage.parent.status }}</p>
                         {% if lineage.parent.start_date %}
                         <p class="date">Started: {{ lineage.parent.start_date }}</p>
@@ -53,7 +53,7 @@
                         <span class="node-type">Parent Plant</span>
                     </div>
                     <div class="node-actions">
-                        <a href="{{ url_for('clone_lineage', clone_id=lineage.parent.id) }}" 
+                        <a href="{{ url_for('clone_lineage', clone_id=lineage.parent.id) }}"
                            class="btn btn-sm btn-info">
                             <i class="fas fa-eye"></i> View Details
                         </a>
@@ -98,7 +98,7 @@
                         <div class="node-content">
                             <i class="fas fa-star"></i>
                             <h4>{{ lineage.plant.name }}</h4>
-                            <p class="strain">{{ lineage.plant.strain_name }}</p>
+                            <p class="cultivar">{{ lineage.plant.cultivar_name }}</p>
                             <span class="node-type current-marker">Current Plant</span>
                             {% if lineage.plant.is_clone %}
                             <span class="clone-badge">Clone</span>
@@ -194,8 +194,8 @@
                     <i class="fas fa-dna"></i>
                 </div>
                 <div class="card-content">
-                    <h3>Strain</h3>
-                    <p>{{ lineage.plant.strain_name }}</p>
+                    <h3>Cultivar</h3>
+                    <p>{{ lineage.plant.cultivar_name }}</p>
                 </div>
             </div>
         </div>
@@ -343,7 +343,7 @@
     font-size: 0.85rem;
 }
 
-.strain {
+.cultivar {
     color: #4CAF50 !important;
     font-weight: 500;
 }

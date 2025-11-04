@@ -36,7 +36,7 @@ Click on a plant in the list to view its details page. From here, you can:
 
 ## Strains
 
-The Strains page allows you to manage your collection of cannabis strains.
+The Cultivars page allows you to manage your collection of cannabis cultivars.
 
 ### Adding a Strain
 

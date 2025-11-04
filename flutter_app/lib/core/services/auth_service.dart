@@ -39,17 +39,17 @@ class AuthService {
 
   Future<void> initialize() async {
     _prefs = await SharedPreferences.getInstance();
-    
+
     // Load stored authentication data
     await _loadAuthData();
-    
+
     // Set token for API client if available
     if (_authToken != null) {
       _apiClient.setAuthToken(_authToken!);
     }
-    
+
     AppLogger.log('AuthService initialized');
-    AppLogger.log('User logged in: ${isLoggedIn}');
+    AppLogger.log('User logged in: $isLoggedIn');
     if (_currentUser != null) {
       AppLogger.log('Current user: ${_currentUser!.user.username}');
     }
@@ -63,21 +63,21 @@ class AuthService {
   Future<AuthResponse> login(String email, String password) async {
     try {
       final response = await _apiClient.login(email, password);
-      
+
       // Store authentication data
       await _storeAuthData(response);
-      
+
       // Set token for API client
       _apiClient.setAuthToken(response.accessToken);
-      
+
       _currentUser = response;
       _authToken = response.accessToken;
       _refreshToken = response.refreshToken;
-      
-    AppLogger.log('Login successful for: ${response.user.username}');
+
+      AppLogger.log('Login successful for: ${response.user.username}');
       return response;
     } catch (e) {
-    AppLogger.error('Login failed', e);
+      AppLogger.error('Login failed', e);
       rethrow;
     }
   }
@@ -94,21 +94,21 @@ class AuthService {
         email: email,
         password: password,
       );
-      
+
       // Store authentication data
       await _storeAuthData(response);
-      
+
       // Set token for API client
       _apiClient.setAuthToken(response.accessToken);
-      
+
       _currentUser = response;
       _authToken = response.accessToken;
       _refreshToken = response.refreshToken;
-      
-    AppLogger.log('Registration successful for: ${response.user.username}');
+
+      AppLogger.log('Registration successful for: ${response.user.username}');
       return response;
     } catch (e) {
-    AppLogger.error('Registration failed', e);
+      AppLogger.error('Registration failed', e);
       rethrow;
     }
   }
@@ -121,24 +121,26 @@ class AuthService {
         await _apiClient.logout();
       }
     } catch (e) {
-  AppLogger.error('Logout API call failed', e);
+      AppLogger.error('Logout API call failed', e);
       // Continue with logout even if API call fails
     } finally {
       // Clear local authentication data
       await _clearAuthData();
       _apiClient.clearAuthToken();
-      
+
       _currentUser = null;
       _authToken = null;
       _refreshToken = null;
-      
-    AppLogger.log('User logged out');
+
+      AppLogger.log('User logged out');
     }
   }
 
   /// Check if user is currently logged in
   bool get isLoggedIn {
-    return _authToken != null && _currentUser != null && _currentUser!.user.isActive;
+    return _authToken != null &&
+        _currentUser != null &&
+        _currentUser!.user.isActive;
   }
 
   /// Get current user
@@ -154,7 +156,7 @@ class AuthService {
   /// Check if token needs refresh (within 5 minutes of expiry)
   bool get needsTokenRefresh {
     if (_refreshToken == null) return false;
-    
+
     // This would need JWT parsing to check expiry
     // For now, we'll implement a simple refresh strategy
     return true; // Always refresh for demo purposes
@@ -163,18 +165,18 @@ class AuthService {
   /// Refresh authentication token
   Future<bool> refreshToken() async {
     if (_refreshToken == null) {
-  AppLogger.log('No refresh token available');
+      AppLogger.log('No refresh token available');
       return false;
     }
 
     try {
       // This would call a refresh endpoint in a real implementation
-    AppLogger.log('Token refresh would be implemented here');
-      
+      AppLogger.log('Token refresh would be implemented here');
+
       // For now, we'll simulate a successful refresh
       return true;
     } catch (e) {
-    AppLogger.error('Token refresh failed', e);
+      AppLogger.error('Token refresh failed', e);
       await logout();
       return false;
     }
@@ -190,16 +192,17 @@ class AuthService {
       // Store tokens in secure storage
       await _secureStorage.write(key: _tokenKey, value: response.accessToken);
       if (response.refreshToken != null) {
-        await _secureStorage.write(key: _refreshTokenKey, value: response.refreshToken);
+        await _secureStorage.write(
+            key: _refreshTokenKey, value: response.refreshToken);
       }
-      
+
       // Store user data in shared preferences
       await _prefs.setString(_userKey, response.user.toJson().toString());
       await _prefs.setBool(_isLoggedInKey, true);
-      
-    AppLogger.log('Auth data stored securely');
+
+      AppLogger.log('Auth data stored securely');
     } catch (e) {
-    AppLogger.error('Failed to store auth data', e);
+      AppLogger.error('Failed to store auth data', e);
     }
   }
 
@@ -209,18 +212,18 @@ class AuthService {
       // Load tokens from secure storage
       _authToken = await _secureStorage.read(key: _tokenKey);
       _refreshToken = await _secureStorage.read(key: _refreshTokenKey);
-      
+
       // Load user data from shared preferences
       final userJsonString = _prefs.getString(_userKey);
       final isLoggedIn = _prefs.getBool(_isLoggedInKey) ?? false;
-      
+
       if (userJsonString != null && isLoggedIn) {
         // Parse user data (would need proper JSON parsing in real implementation)
         // For now, we'll just set a placeholder
-  AppLogger.log('Loaded stored auth data');
+        AppLogger.log('Loaded stored auth data');
       }
     } catch (e) {
-  AppLogger.error('Failed to load auth data', e);
+      AppLogger.error('Failed to load auth data', e);
     }
   }
 
@@ -230,14 +233,14 @@ class AuthService {
       // Clear secure storage
       await _secureStorage.delete(key: _tokenKey);
       await _secureStorage.delete(key: _refreshTokenKey);
-      
+
       // Clear shared preferences
       await _prefs.remove(_userKey);
       await _prefs.setBool(_isLoggedInKey, false);
-      
-    AppLogger.log('Auth data cleared');
+
+      AppLogger.log('Auth data cleared');
     } catch (e) {
-    AppLogger.error('Failed to clear auth data', e);
+      AppLogger.error('Failed to clear auth data', e);
     }
   }
 
@@ -251,26 +254,26 @@ class AuthService {
     String? email,
   }) async {
     if (!isLoggedIn) {
-      throw AuthException('User not authenticated');
+      throw const AuthException('User not authenticated');
     }
 
     try {
       // This would call a profile update endpoint
-    AppLogger.log('Profile update would be implemented here');
-      
+      AppLogger.log('Profile update would be implemented here');
+
       // For demo, return current user with updated data
       final updatedUser = _currentUser!.user.copyWith(
         username: username ?? _currentUser!.user.username,
         email: email ?? _currentUser!.user.email,
       );
-      
+
       // Update stored user data
       await _prefs.setString(_userKey, updatedUser.toJson().toString());
       _currentUser = _currentUser!.copyWith(user: updatedUser);
-      
+
       return updatedUser;
     } catch (e) {
-    AppLogger.error('Profile update failed', e);
+      AppLogger.error('Profile update failed', e);
       rethrow;
     }
   }
@@ -281,16 +284,16 @@ class AuthService {
     required String newPassword,
   }) async {
     if (!isLoggedIn) {
-      throw AuthException('User not authenticated');
+      throw const AuthException('User not authenticated');
     }
 
     try {
       // This would call a password change endpoint
-    AppLogger.log('Password change would be implemented here');
-      
-    AppLogger.log('Password changed successfully');
+      AppLogger.log('Password change would be implemented here');
+
+      AppLogger.log('Password changed successfully');
     } catch (e) {
-    AppLogger.error('Password change failed', e);
+      AppLogger.error('Password change failed', e);
       rethrow;
     }
   }
@@ -331,18 +334,18 @@ class AuthService {
 
 class AuthException implements Exception {
   final String message;
-  
+
   const AuthException(this.message);
-  
+
   @override
   String toString() => 'AuthException: $message';
 }
 
 class TokenExpiredException implements Exception {
   final String message;
-  
+
   const TokenExpiredException(this.message);
-  
+
   @override
   String toString() => 'TokenExpiredException: $message';
 }

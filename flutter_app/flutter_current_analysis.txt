@@ -1,0 +1,38 @@
+Analyzing flutter_app...                                        
+
+   info - Use 'const' with the constructor to improve performance - lib\core\providers\strains_provider.dart:360:7 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\core\providers\strains_provider.dart:376:7 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\core\providers\strains_provider.dart:391:7 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\core\providers\strains_provider.dart:406:7 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\core\providers\strains_provider.dart:421:7 - prefer_const_constructors
+   info - Use 'const' literals as arguments to constructors of '@immutable' classes - lib\core\theme\app_theme.dart:526:18 - prefer_const_literals_to_create_immutables
+   info - Use 'const' with the constructor to improve performance - lib\core\widgets\filter_bar.dart:558:20 - prefer_const_constructors
+   info - Use 'const' literals as arguments to constructors of '@immutable' classes - lib\core\widgets\plant_card.dart:83:20 - prefer_const_literals_to_create_immutables
+   info - Use 'const' with the constructor to improve performance - lib\core\widgets\plant_card.dart:251:11 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\core\widgets\plant_card.dart:266:11 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\core\widgets\plant_card.dart:281:11 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\core\widgets\plant_card.dart:394:13 - prefer_const_constructors
+   info - Use 'const' literals as arguments to constructors of '@immutable' classes - lib\core\widgets\sensor_card.dart:102:20 - prefer_const_literals_to_create_immutables
+warning - The value of the local variable 'icon' isn't used - lib\core\widgets\sensor_card.dart:211:14 - unused_local_variable
+   info - Use 'const' with the constructor to improve performance - lib\core\widgets\sensor_card.dart:257:9 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\core\widgets\sensor_card.dart:429:13 - prefer_const_constructors
+warning - The value of the local variable 'bgPath' isn't used - lib\core\widgets\sensor_card.dart:569:11 - unused_local_variable
+   info - Use 'const' literals as arguments to constructors of '@immutable' classes - lib\core\widgets\stat_card.dart:47:24 - prefer_const_literals_to_create_immutables
+   info - Use 'const' literals as arguments to constructors of '@immutable' classes - lib\core\widgets\stat_card.dart:154:24 - prefer_const_literals_to_create_immutables
+   info - Use 'const' literals as arguments to constructors of '@immutable' classes - lib\core\widgets\strain_card.dart:98:20 - prefer_const_literals_to_create_immutables
+   info - Use 'const' with the constructor to improve performance - lib\core\widgets\strain_card.dart:361:11 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\core\widgets\strain_card.dart:376:11 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\core\widgets\strain_card.dart:391:11 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\core\widgets\strain_card.dart:592:13 - prefer_const_constructors
+warning - The value of the local variable 'theme' isn't used - lib\core\widgets\theme_toggle_button.dart:161:11 - unused_local_variable
+warning - The value of the local variable 'isDark' isn't used - lib\core\widgets\theme_toggle_button.dart:282:11 - unused_local_variable
+warning - The value of the local variable 'theme' isn't used - lib\core\widgets\theme_toggle_button.dart:381:11 - unused_local_variable
+   info - Use 'const' literals as arguments to constructors of '@immutable' classes - lib\core\widgets\timeline_widget.dart:89:20 - prefer_const_literals_to_create_immutables
+   info - Use 'const' literals as arguments to constructors of '@immutable' classes - lib\core\widgets\timeline_widget.dart:154:20 - prefer_const_literals_to_create_immutables
+   info - Use 'const' with the constructor to improve performance - lib\core\widgets\timeline_widget.dart:164:13 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\core\widgets\timeline_widget.dart:302:21 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\auth\screens\welcome_modal.dart:103:31 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\auth\screens\welcome_modal.dart:106:28 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\auth\screens\welcome_modal.dart:108:30 - prefer_const_constructors
+
+34 issues found. (ran in 1.7s)

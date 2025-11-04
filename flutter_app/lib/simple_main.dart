@@ -28,7 +28,8 @@ void main() {
   AppLogger.log('');
   AppLogger.log('Commands to run the Flutter app:');
   AppLogger.log('- flutter run (web): flutter run -d chrome');
-  AppLogger.log('- flutter run (mobile): flutter run -d android or flutter run -d ios');
+  AppLogger.log(
+      '- flutter run (mobile): flutter run -d android or flutter run -d ios');
   AppLogger.log('- flutter build web: flutter build web');
   AppLogger.log('- flutter build apk: flutter build apk');
   AppLogger.log('- flutter build ios: flutter build ios');

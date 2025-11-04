@@ -2,7 +2,7 @@
 
 ## Introduction
 
-CultivAR is a self-hosted cannabis grow journal application. It allows you to track your plants, strains, and environmental data.
+CultivAR is a self-hosted cannabis grow journal application. It allows you to track your plants, cultivars, and environmental data.
 
 ## Getting Started
 
@@ -33,7 +33,7 @@ The Plants page allows you to manage your plants.
    - Name: A name for your plant.
    - Description: Optional description.
    - Status: The current growth stage (Seedling, Vegetative, Flowering, etc.).
-   - Strain: The cannabis strain.
+   - Cultivar: The cannabis cultivar.
    - Zone: The growing zone.
    - Is Clone: Check if the plant is a clone.
    - Parent: If it's a clone, select the parent plant.
@@ -51,7 +51,7 @@ Click on a plant to view its details. From here, you can:
 
 ### Strains
 
-The Strains page allows you to manage your cannabis strains.
+The Cultivars page allows you to manage your cannabis cultivars.
 
 #### Adding a Strain
 

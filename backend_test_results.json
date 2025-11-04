@@ -4,314 +4,300 @@
     "status": "PASS",
     "details": "Health endpoint working",
     "response_code": 200,
-    "timestamp": "2025-08-11T00:45:41.168938"
+    "timestamp": "2025-10-28T14:41:56.154758"
   },
   {
     "test": "Login Page Access",
     "status": "PASS",
     "details": "Login page accessible",
     "response_code": 200,
-    "timestamp": "2025-08-11T00:45:41.212485"
+    "timestamp": "2025-10-28T14:41:56.170021"
   },
   {
     "test": "Valid Login",
     "status": "PASS",
     "details": "Admin login successful",
     "response_code": 200,
-    "timestamp": "2025-08-11T00:45:41.830339"
+    "timestamp": "2025-10-28T14:41:56.369192"
   },
   {
     "test": "Invalid Login",
     "status": "PASS",
     "details": "Invalid login properly rejected",
     "response_code": 200,
-    "timestamp": "2025-08-11T00:45:41.853208"
+    "timestamp": "2025-10-28T14:41:56.387411"
   },
   {
     "test": "Signup Page Access",
     "status": "PASS",
     "details": "Signup page accessible",
     "response_code": 200,
-    "timestamp": "2025-08-11T00:45:41.861534"
+    "timestamp": "2025-10-28T14:41:56.396342"
   },
   {
     "test": "User Signup",
     "status": "PASS",
     "details": "Signup functionality working",
     "response_code": 200,
-    "timestamp": "2025-08-11T00:45:41.867395"
+    "timestamp": "2025-10-28T14:41:56.511387"
   },
   {
     "test": "Protected Route: Dashboard",
     "status": "PASS",
     "details": "Route accessible after login",
     "response_code": 200,
-    "timestamp": "2025-08-11T00:45:41.872879"
+    "timestamp": "2025-10-28T14:41:56.530924"
   },
   {
     "test": "Protected Route: Plants Page",
     "status": "PASS",
     "details": "Route accessible after login",
     "response_code": 200,
-    "timestamp": "2025-08-11T00:45:41.894937"
+    "timestamp": "2025-10-28T14:41:56.543584"
   },
   {
     "test": "Protected Route: Strains Page",
     "status": "PASS",
     "details": "Route accessible after login",
     "response_code": 200,
-    "timestamp": "2025-08-11T00:45:41.926413"
+    "timestamp": "2025-10-28T14:41:56.556796"
   },
   {
     "test": "Protected Route: Sensors Page",
     "status": "PASS",
     "details": "Route accessible after login",
     "response_code": 200,
-    "timestamp": "2025-08-11T00:45:41.948813"
-  },
-  {
-    "test": "Protected Route: Settings Page",
-    "status": "PASS",
-    "details": "Route accessible after login",
-    "response_code": 200,
-    "timestamp": "2025-08-11T00:45:41.993285"
+    "timestamp": "2025-10-28T14:41:56.572200"
   },
   {
     "test": "Protected Route: Seed Bank",
     "status": "PASS",
     "details": "Route accessible after login",
     "response_code": 200,
-    "timestamp": "2025-08-11T00:45:42.015423"
+    "timestamp": "2025-10-28T14:41:56.585458"
   },
   {
     "test": "Protected Route: Extensions",
     "status": "PASS",
     "details": "Route accessible after login",
     "response_code": 200,
-    "timestamp": "2025-08-11T00:45:42.035225"
+    "timestamp": "2025-10-28T14:41:56.598685"
   },
   {
     "test": "Protected Route: Gear",
     "status": "PASS",
     "details": "Route accessible after login",
     "response_code": 200,
-    "timestamp": "2025-08-11T00:45:42.056729"
+    "timestamp": "2025-10-28T14:41:56.611809"
   },
   {
     "test": "Mobile Dashboard - Container",
-    "status": "PASS",
-    "details": "Dashboard container found",
+    "status": "FAIL",
+    "details": "Dashboard container not found",
     "response_code": 200,
-    "timestamp": "2025-08-11T00:45:42.063225"
+    "timestamp": "2025-10-28T14:41:56.630290"
   },
   {
     "test": "Mobile Dashboard - Widget System",
-    "status": "PASS",
-    "details": "Widget system found",
+    "status": "FAIL",
+    "details": "Widget system not found",
     "response_code": 200,
-    "timestamp": "2025-08-11T00:45:42.063242"
+    "timestamp": "2025-10-28T14:41:56.630290"
   },
   {
     "test": "Mobile Dashboard - Customize Button",
-    "status": "PASS",
-    "details": "Customize button found",
+    "status": "FAIL",
+    "details": "Customize button not found",
     "response_code": 200,
-    "timestamp": "2025-08-11T00:45:42.063249"
+    "timestamp": "2025-10-28T14:41:56.631294"
   },
   {
     "test": "Mobile Dashboard - Settings Panel",
-    "status": "PASS",
-    "details": "Settings panel found",
+    "status": "FAIL",
+    "details": "Settings panel not found",
     "response_code": 200,
-    "timestamp": "2025-08-11T00:45:42.063256"
+    "timestamp": "2025-10-28T14:41:56.631294"
   },
   {
     "test": "Mobile Dashboard - CSS",
-    "status": "PASS",
-    "details": "Dashboard widgets CSS included",
+    "status": "FAIL",
+    "details": "Dashboard widgets CSS not included",
     "response_code": 200,
-    "timestamp": "2025-08-11T00:45:42.063261"
+    "timestamp": "2025-10-28T14:41:56.631294"
   },
   {
     "test": "Mobile Dashboard - JavaScript",
-    "status": "PASS",
-    "details": "Dashboard widgets JS included",
+    "status": "FAIL",
+    "details": "Dashboard widgets JS not included",
     "response_code": 200,
-    "timestamp": "2025-08-11T00:45:42.063272"
+    "timestamp": "2025-10-28T14:41:56.631294"
   },
   {
     "test": "PWA - Manifest Structure",
     "status": "PASS",
     "details": "All required manifest fields present",
     "response_code": 200,
-    "timestamp": "2025-08-11T00:45:42.068433"
+    "timestamp": "2025-10-28T14:41:56.636832"
   },
   {
     "test": "PWA - App Name",
     "status": "PASS",
     "details": "Correct app name in manifest",
     "response_code": 200,
-    "timestamp": "2025-08-11T00:45:42.068449"
+    "timestamp": "2025-10-28T14:41:56.636832"
   },
   {
     "test": "PWA - Service Worker",
     "status": "PASS",
     "details": "Service worker has install event",
     "response_code": 200,
-    "timestamp": "2025-08-11T00:45:42.079023"
+    "timestamp": "2025-10-28T14:41:56.642869"
   },
   {
     "test": "PWA - Caching",
     "status": "PASS",
     "details": "Service worker has caching functionality",
     "response_code": 200,
-    "timestamp": "2025-08-11T00:45:42.079038"
+    "timestamp": "2025-10-28T14:41:56.642869"
   },
   {
     "test": "Widget System - Responsive CSS",
     "status": "PASS",
     "details": "Responsive design CSS found",
     "response_code": 200,
-    "timestamp": "2025-08-11T00:45:42.084364"
+    "timestamp": "2025-10-28T14:41:56.648629"
   },
   {
     "test": "Widget System - Widget Classes",
     "status": "PASS",
     "details": "Widget CSS classes found",
     "response_code": 200,
-    "timestamp": "2025-08-11T00:45:42.084379"
+    "timestamp": "2025-10-28T14:41:56.648629"
   },
   {
     "test": "Widget System - JavaScript Class",
     "status": "PASS",
     "details": "DashboardWidgetSystem class found",
     "response_code": 200,
-    "timestamp": "2025-08-11T00:45:42.088234"
+    "timestamp": "2025-10-28T14:41:56.653830"
   },
   {
     "test": "Widget System - Drag & Drop",
     "status": "PASS",
     "details": "Drag and drop functionality found",
     "response_code": 200,
-    "timestamp": "2025-08-11T00:45:42.088251"
+    "timestamp": "2025-10-28T14:41:56.653830"
   },
   {
     "test": "Widget System - Mobile Handlers",
     "status": "PASS",
     "details": "Mobile handlers found",
     "response_code": 200,
-    "timestamp": "2025-08-11T00:45:42.088257"
+    "timestamp": "2025-10-28T14:41:56.653830"
   },
   {
     "test": "Dashboard Data - Load Function",
-    "status": "PASS",
-    "details": "Data loading function found",
+    "status": "FAIL",
+    "details": "Data loading function not found",
     "response_code": 200,
-    "timestamp": "2025-08-11T00:45:42.093921"
+    "timestamp": "2025-10-28T14:41:56.673423"
   },
   {
     "test": "Dashboard Data - Plant Data",
-    "status": "PASS",
-    "details": "Plant data loading found",
+    "status": "FAIL",
+    "details": "Plant data loading not found",
     "response_code": 200,
-    "timestamp": "2025-08-11T00:45:42.093942"
+    "timestamp": "2025-10-28T14:41:56.673423"
   },
   {
     "test": "Dashboard Data - Environmental Data",
-    "status": "PASS",
-    "details": "Environmental data loading found",
+    "status": "FAIL",
+    "details": "Environmental data loading not found",
     "response_code": 200,
-    "timestamp": "2025-08-11T00:45:42.093954"
+    "timestamp": "2025-10-28T14:41:56.673936"
   },
   {
     "test": "Dashboard Data - Sensor Data",
-    "status": "PASS",
-    "details": "Sensor data loading found",
+    "status": "FAIL",
+    "details": "Sensor data loading not found",
     "response_code": 200,
-    "timestamp": "2025-08-11T00:45:42.093967"
+    "timestamp": "2025-10-28T14:41:56.673936"
   },
   {
     "test": "Admin API: Get Users API",
-    "status": "PASS",
-    "details": "API working, returned data",
+    "status": "WARN",
+    "details": "API accessible but non-JSON response",
     "response_code": 200,
-    "timestamp": "2025-08-11T00:45:42.134128"
+    "timestamp": "2025-10-28T14:41:56.885880"
   },
   {
     "test": "Admin API: System Logs API",
-    "status": "PASS",
-    "details": "API working, returned data",
-    "response_code": 200,
-    "timestamp": "2025-08-11T00:45:42.149688"
+    "status": "WARN",
+    "details": "Authentication required (expected for admin API)",
+    "response_code": 401,
+    "timestamp": "2025-10-28T14:41:56.890677"
   },
   {
     "test": "Admin API: System Info API",
-    "status": "PASS",
-    "details": "API working, returned data",
-    "response_code": 200,
-    "timestamp": "2025-08-11T00:45:42.158195"
+    "status": "WARN",
+    "details": "Authentication required (expected for admin API)",
+    "response_code": 401,
+    "timestamp": "2025-10-28T14:41:56.896097"
   },
   {
     "test": "Admin API: Diagnostics Test API",
     "status": "PASS",
     "details": "API working, returned data",
     "response_code": 200,
-    "timestamp": "2025-08-11T00:45:42.662180"
+    "timestamp": "2025-10-28T14:41:57.433294"
   },
   {
     "test": "Create User API",
-    "status": "PASS",
-    "details": "User creation API working",
-    "response_code": 201,
-    "timestamp": "2025-08-11T00:45:43.173454"
-  },
-  {
-    "test": "List Users API",
-    "status": "FAIL",
-    "details": "HTTP 404",
-    "response_code": 404,
-    "timestamp": "2025-08-11T00:45:43.179015"
+    "status": "WARN",
+    "details": "Authentication required for user creation",
+    "response_code": 401,
+    "timestamp": "2025-10-28T14:41:57.438637"
   },
   {
     "test": "DB Connectivity: Dashboard Database Access",
     "status": "PASS",
     "details": "Database-dependent page loaded successfully",
     "response_code": 200,
-    "timestamp": "2025-08-11T00:45:43.195524"
+    "timestamp": "2025-10-28T14:41:57.655273"
   },
   {
     "test": "DB Connectivity: Plants Database Access",
-    "status": "PASS",
-    "details": "Database-dependent page loaded successfully",
-    "response_code": 200,
-    "timestamp": "2025-08-11T00:45:43.200297"
+    "status": "FAIL",
+    "details": "HTTP 404",
+    "response_code": 404,
+    "timestamp": "2025-10-28T14:41:57.661242"
   },
   {
     "test": "DB Connectivity: Strains Database Access",
     "status": "PASS",
     "details": "Database-dependent page loaded successfully",
     "response_code": 200,
-    "timestamp": "2025-08-11T00:45:43.205071"
+    "timestamp": "2025-10-28T14:41:57.676091"
   },
   {
     "test": "DB Connectivity: Sensors Database Access",
-    "status": "PASS",
-    "details": "Database-dependent page loaded successfully",
-    "response_code": 200,
-    "timestamp": "2025-08-11T00:45:43.210309"
+    "status": "FAIL",
+    "details": "HTTP 404",
+    "response_code": 404,
+    "timestamp": "2025-10-28T14:41:57.681963"
   },
   {
     "test": "Static Assets: Favicon",
     "status": "PASS",
     "details": "Favicon served successfully",
     "response_code": 200,
-    "timestamp": "2025-08-11T00:45:43.213403"
+    "timestamp": "2025-10-28T14:41:57.688405"
   },
   {
     "test": "Logout",
     "status": "PASS",
     "details": "Logout endpoint working",
     "response_code": 200,
-    "timestamp": "2025-08-11T00:45:43.222537"
+    "timestamp": "2025-10-28T14:41:57.703617"
   }
 ]

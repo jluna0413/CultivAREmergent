@@ -1,4 +1,4 @@
-# Multi-stage Dockerfile for CultivAR
+# FastAPI-only Dockerfile for CultivAR v2.0.0
 FROM python:3.11-slim AS build
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -6,7 +6,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
-# system deps
+# system deps for FastAPI and async database drivers
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential curl gcc libpq-dev && \
     rm -rf /var/lib/apt/lists/*
@@ -33,43 +33,9 @@ COPY . /app
 RUN useradd --create-home appuser && chown -R appuser:appuser /app
 USER appuser
 
-EXPOSE 5000
+EXPOSE 5002
 
-# Use gunicorn and the factory create_app() for production. In dev docker-compose uses flask run --reload
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "cultivar_app:create_app()", "--workers", "3", "--worker-class", "gthread", "--threads", "2"]
-FROM python:3.9-slim
-
-# Set working directory
-WORKDIR /app
-
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1 \
-    FLASK_APP=cultivar_app.py \
-    FLASK_ENV=production
-
-# Install system dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    gcc \
-    postgresql-client \
-    libpq-dev \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copy requirements file
-COPY requirements.txt .
-
-# Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy project
-COPY . .
-
-# Create necessary directories
-RUN mkdir -p data uploads/plants uploads/streams uploads/logos logs
-
-# Expose port
-EXPOSE 5000
-
-# Run the application
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "cultivar_app:create_app()"]
+# Run FastAPI with Uvicorn
+# In production: Use gunicorn with uvicorn workers
+# In development: Use uvicorn with reload
+CMD ["uvicorn", "app.fastapi_app:app", "--host", "0.0.0.0", "--port", "5002"]

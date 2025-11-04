@@ -1,0 +1,50 @@
+Analyzing flutter_app...                                        
+
+warning - Unused import: 'package:flutter/material.dart' - lib\core\providers\sensors_provider.dart:3:8 - unused_import
+warning - Unused import: 'package:flutter/material.dart' - lib\core\providers\settings_provider.dart:3:8 - unused_import
+warning - Unused import: 'package:flutter/material.dart' - lib\core\providers\strains_provider.dart:3:8 - unused_import
+   info - Use 'const' with the constructor to improve performance - lib\core\providers\strains_provider.dart:360:7 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\core\providers\strains_provider.dart:376:7 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\core\providers\strains_provider.dart:391:7 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\core\providers\strains_provider.dart:406:7 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\core\providers\strains_provider.dart:421:7 - prefer_const_constructors
+warning - The value of the field '_delegate' isn't used - lib\core\theme\app_theme.dart:8:21 - unused_field
+   info - Use 'const' literals as arguments to constructors of '@immutable' classes - lib\core\theme\app_theme.dart:527:18 - prefer_const_literals_to_create_immutables
+  error - The getter 'dataset_off' isn't defined for the type 'Icons' - lib\core\widgets\empty_state.dart:309:22 - undefined_getter
+   info - Use 'const' literals as arguments to constructors of '@immutable' classes - lib\core\widgets\filter_bar.dart:119:20 - prefer_const_literals_to_create_immutables
+warning - This default clause is covered by the previous cases - lib\core\widgets\filter_bar.dart:224:7 - unreachable_switch_default
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\core\widgets\filter_bar.dart:247:13 - deprecated_member_use
+warning - The value of the local variable 'theme' isn't used - lib\core\widgets\filter_bar.dart:517:11 - unused_local_variable
+   info - Use 'const' with the constructor to improve performance - lib\core\widgets\filter_bar.dart:558:20 - prefer_const_constructors
+   info - Use 'const' literals as arguments to constructors of '@immutable' classes - lib\core\widgets\plant_card.dart:83:20 - prefer_const_literals_to_create_immutables
+   info - Use 'const' with the constructor to improve performance - lib\core\widgets\plant_card.dart:251:11 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\core\widgets\plant_card.dart:266:11 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\core\widgets\plant_card.dart:281:11 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\core\widgets\plant_card.dart:394:13 - prefer_const_constructors
+   info - Use 'const' literals as arguments to constructors of '@immutable' classes - lib\core\widgets\sensor_card.dart:102:20 - prefer_const_literals_to_create_immutables
+warning - The value of the local variable 'icon' isn't used - lib\core\widgets\sensor_card.dart:211:14 - unused_local_variable
+   info - Use 'const' with the constructor to improve performance - lib\core\widgets\sensor_card.dart:257:9 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\core\widgets\sensor_card.dart:429:13 - prefer_const_constructors
+warning - The value of the local variable 'bgPath' isn't used - lib\core\widgets\sensor_card.dart:569:11 - unused_local_variable
+   info - Use 'const' literals as arguments to constructors of '@immutable' classes - lib\core\widgets\stat_card.dart:47:24 - prefer_const_literals_to_create_immutables
+   info - Use 'const' literals as arguments to constructors of '@immutable' classes - lib\core\widgets\stat_card.dart:154:24 - prefer_const_literals_to_create_immutables
+   info - Use 'const' literals as arguments to constructors of '@immutable' classes - lib\core\widgets\strain_card.dart:98:20 - prefer_const_literals_to_create_immutables
+   info - Use 'const' with the constructor to improve performance - lib\core\widgets\strain_card.dart:361:11 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\core\widgets\strain_card.dart:376:11 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\core\widgets\strain_card.dart:391:11 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\core\widgets\strain_card.dart:592:13 - prefer_const_constructors
+warning - The value of the local variable 'theme' isn't used - lib\core\widgets\theme_toggle_button.dart:161:11 - unused_local_variable
+   info - 'activeColor' is deprecated and shouldn't be used. Use activeThumbColor instead. This feature was deprecated after v3.31.0-2.0.pre - lib\core\widgets\theme_toggle_button.dart:169:7 - deprecated_member_use
+warning - The value of the local variable 'isDark' isn't used - lib\core\widgets\theme_toggle_button.dart:282:11 - unused_local_variable
+warning - The value of the local variable 'theme' isn't used - lib\core\widgets\theme_toggle_button.dart:381:11 - unused_local_variable
+   info - Use 'const' literals as arguments to constructors of '@immutable' classes - lib\core\widgets\timeline_widget.dart:89:20 - prefer_const_literals_to_create_immutables
+   info - Use 'const' literals as arguments to constructors of '@immutable' classes - lib\core\widgets\timeline_widget.dart:154:20 - prefer_const_literals_to_create_immutables
+   info - Use 'const' with the constructor to improve performance - lib\core\widgets\timeline_widget.dart:164:13 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\core\widgets\timeline_widget.dart:302:21 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\auth\screens\welcome_modal.dart:103:31 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\auth\screens\welcome_modal.dart:106:28 - prefer_const_constructors
+   info - Use 'const' with the constructor to improve performance - lib\features\auth\screens\welcome_modal.dart:108:30 - prefer_const_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\dashboard\dashboard_screen.dart:199:33 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\dashboard\dashboard_screen.dart:464:30 - deprecated_member_use
+
+46 issues found. (ran in 1.4s)

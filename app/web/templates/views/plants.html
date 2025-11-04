@@ -442,11 +442,11 @@
                 </select>
             </div>
             <div class="filter-group">
-                <label for="filter-strain">Strain</label>
-                <select id="filter-strain" class="form-control form-control-sm">
-                    <option value="all">All Strains</option>
-                    {% for strain_option in strains %}
-                    <option value="{{ strain_option.id }}">{{ strain_option.name }}</option>
+                <label for="filter-cultivar">Cultivar</label>
+                <select id="filter-cultivar" class="form-control form-control-sm">
+                    <option value="all">All Cultivars</option>
+                    {% for cultivar_option in cultivars %}
+                    <option value="{{ cultivar_option.id }}">{{ cultivar_option.name }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -504,7 +504,7 @@
             <div class="plant-card-wrapper"
                  data-status="{{ plant.status|lower }}"
                  data-zone="{{ plant.zone }}"
-                 data-strain="{{ plant.strain_id }}">
+                 data-cultivar="{{ plant.cultivar_id }}">
                 <div class="plant-card">
                     <div class="plant-card-header">
                         <div class="plant-image-container">
@@ -526,7 +526,7 @@
                         <div class="plant-meta">
                             <div class="meta-item">
                                 <i class="fas fa-dna"></i>
-                                <span>{{ plant.strain_name }}</span>
+                                <span>{{ plant.cultivar_name }}</span>
                             </div>
                             <div class="meta-item">
                                 <i class="fas fa-calendar"></i>
@@ -595,11 +595,11 @@
                                 <input type="text" class="form-control" id="name" name="name" required placeholder="e.g., Northern Lights #1">
                             </div>
                             <div class="form-group">
-                                <label for="strain_id">Strain *</label>
-                                <select class="form-control" id="strain_id" name="strain_id" required>
-                                    <option value="">Select Strain</option>
-                                    {% for strain_option in strains %}
-                                    <option value="{{ strain_option.id }}">{{ strain_option.name }}</option>
+                                <label for="cultivar_id">Cultivar *</label>
+                                <select class="form-control" id="cultivar_id" name="cultivar_id" required>
+                                    <option value="">Select Cultivar</option>
+                                    {% for cultivar_option in cultivars %}
+                                    <option value="{{ cultivar_option.id }}">{{ cultivar_option.name }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -767,14 +767,14 @@
             function filterPlants() {
                 const status = $('#filter-status').val();
                 const zone = $('#filter-zone').val();
-                const strain = $('#filter-strain').val();
+                const cultivar = $('#filter-cultivar').val();
                 const search = $('#search-plants').val().toLowerCase();
 
                 $('.plant-card-wrapper').each(function() {
                     const $card = $(this);
                     const itemStatus = $card.data('status');
                     const itemZone = $card.data('zone');
-                    const itemStrain = $card.data('strain');
+                    const itemCultivar = $card.data('cultivar');
                     const itemName = $card.find('.plant-name').text().toLowerCase();
 
                     let show = true;
@@ -787,7 +787,7 @@
                         show = false;
                     }
 
-                    if (strain !== 'all' && itemStrain !== strain) {
+                    if (cultivar !== 'all' && itemCultivar !== cultivar) {
                         show = false;
                     }
 
@@ -817,7 +817,7 @@
             }
 
             // Attach filter events
-            $('#filter-status, #filter-zone, #filter-strain').change(filterPlants);
+            $('#filter-status, #filter-zone, #filter-cultivar').change(filterPlants);
             $('#search-plants').on('input', filterPlants);
 
             // Save plant button

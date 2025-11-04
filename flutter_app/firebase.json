@@ -1,0 +1,205 @@
+{
+  "projects": {
+    "default": "cultivaremergant-prod",
+    "development": "cultivaremergant-dev",
+    "staging": "cultivaremergant-staging",
+    "production": "cultivaremergant-prod"
+  },
+  "targets": {
+    "cultivaremergant-prod": {
+      "android": {
+        "cultivar_app": [
+          "cultivaremergant-prod"
+        ]
+      },
+      "ios": {
+        "cultivar_app": [
+          "cultivaremergant-prod"
+        ]
+      }
+    },
+    "cultivaremergant-staging": {
+      "android": {
+        "cultivar_app": [
+          "cultivaremergant-staging"
+        ]
+      },
+      "ios": {
+        "cultivar_app": [
+          "cultivaremergant-staging"
+        ]
+      }
+    },
+    "cultivaremergant-dev": {
+      "android": {
+        "cultivar_app": [
+          "cultivaremergant-dev"
+        ]
+      },
+      "ios": {
+        "cultivar_app": [
+          "cultivaremergant-dev"
+        ]
+      }
+    }
+  },
+  "configuration": {
+    "cultivaremergant-prod": {
+      "appId": "1:123456789012:android:abcdef1234567890",
+      "apiKey": "AIzaSyAbcdef1234567890abcdef1234567890",
+      "projectId": "cultivaremergant-prod",
+      "authDomain": "cultivaremergant-prod.firebaseapp.com",
+      "databaseURL": "https://cultivaremergant-prod.firebaseio.com",
+      "storageBucket": "cultivaremergant-prod.appspot.com",
+      "messagingSenderId": "123456789012",
+      "measurementId": "G-abcdefghijk"
+    },
+    "cultivaremergant-staging": {
+      "appId": "1:123456789012:android:staging1234567890",
+      "apiKey": "AIzaSyStaging1234567890staging1234567890",
+      "projectId": "cultivaremergant-staging",
+      "authDomain": "cultivaremergant-staging.firebaseapp.com",
+      "databaseURL": "https://cultivaremergant-staging.firebaseio.com",
+      "storageBucket": "cultivaremergant-staging.appspot.com",
+      "messagingSenderId": "123456789012",
+      "measurementId": "G-staginghijklmnop"
+    },
+    "cultivaremergant-dev": {
+      "appId": "1:123456789012:android:dev1234567890",
+      "apiKey": "AIzaSyDev1234567890dev1234567890",
+      "projectId": "cultivaremergant-dev",
+      "authDomain": "cultivaremergant-dev.firebaseapp.com",
+      "databaseURL": "https://cultivaremergant-dev.firebaseio.com",
+      "storageBucket": "cultivaremergant-dev.appspot.com",
+      "messagingSenderId": "123456789012",
+      "measurementId": "G-devhijklmnopqrst"
+    }
+  },
+  "firestore": {
+    "projects": {
+      "default": "cultivaremergant-prod"
+    },
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "functions": {
+    "projects": {
+      "default": "cultivaremergant-prod"
+    },
+    "source": "functions",
+    "runtime": {
+      "node_version": "18",
+      "timeout": 300,
+      "memory": "256MB"
+    }
+  },
+  "hosting": {
+    "public": "web/build",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ],
+    "headers": [
+      {
+        "source": "**/*.@(js|css)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "max-age=31536000"
+          }
+        ]
+      }
+    ]
+  },
+  "storage": {
+    "rules": "storage.rules",
+    "default": "cultivaremergant-prod"
+  },
+  "emulators": {
+    "auth": {
+      "port": 9099
+    },
+    "functions": {
+      "port": 5001
+    },
+    "firestore": {
+      "port": 8080
+    },
+    "hosting": {
+      "port": 5000
+    },
+    "storage": {
+      "port": 9199
+    },
+    "ui": {
+      "enabled": true,
+      "port": 4000
+    }
+  },
+  "crashlytics": {
+    "group_id": "com.cultivaremergant.app",
+    "crash_reporting": {
+      "enabled": true,
+      "auto_crash_detection_enabled": true,
+      "disable_auto_upload": false,
+      "enable_diagnostics": true
+    },
+    "groups": {
+      "qa-team": {
+        "users": [
+          "qa@cultivaremergant.app"
+        ]
+      },
+      "beta-testers": {
+        "users": [
+          "beta@cultivaremergant.app"
+        ]
+      },
+      "external-testers": {
+        "users": [
+          "external@cultivaremergant.app"
+        ]
+      }
+    }
+  },
+  "analytics": {
+    "projects": {
+      "default": "cultivaremergant-prod"
+    },
+    "events": {
+      "app_install": {
+        "enabled": true
+      },
+      "app_open": {
+        "enabled": true,
+        "parameters": {
+          "app_version": "app_version",
+          "user_type": "user_type"
+        }
+      },
+      "cultivation_action": {
+        "enabled": true,
+        "parameters": {
+          "action": "action",
+          "plant_type": "plant_type",
+          "plant_id": "plant_id"
+        }
+      },
+      "sensor_data": {
+        "enabled": true,
+        "parameters": {
+          "sensor_type": "sensor_type",
+          "value": "value",
+          "device_id": "device_id"
+        }
+      }
+    }
+  }
+}

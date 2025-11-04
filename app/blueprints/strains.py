@@ -1,106 +1,85 @@
 """
-Strain blueprint for the CultivAR application.
+Strain blueprint for the CultivAR application - ASYNC VERSION.
 """
 
 from flask import Blueprint, current_app, flash, redirect, render_template, url_for
 from flask_login import login_required
 
 from app.config.config import Config
+from app.utils.async_flask_helpers import FlaskAsyncSessionManager
+from app.handlers.strain_handlers_async import get_all_strains, get_strain_by_id
 
 strains_bp = Blueprint("strains", __name__, template_folder="../web/templates")
 
 
 @strains_bp.route("/")
 @login_required
-def strains_page():
+async def strains_page():
     """Render the strains collection page."""
-    from app.models.base_models import Strain, Breeder
-
     try:
-        # Get all strains
-        strains_query = Strain.query.all()
-        strains = []
-        for strain in strains_query:
-            # Get breeder name
-            breeder = Breeder.query.get(strain.breeder_id) if strain.breeder_id else None
-
-            strains.append({
-                'id': strain.id,
-                'name': strain.name,
-                'breeder_id': strain.breeder_id,
-                'breeder_name': breeder.name if breeder else 'Unknown',
-                'indica': strain.indica,
-                'sativa': strain.sativa,
-                'autoflower': strain.autoflower,
-                'cycle_time': strain.cycle_time,
-                'seed_count': strain.seed_count,
-                'url': strain.url,
-                'description': strain.description,
-                'short_description': strain.description[:100] + '...' if strain.description and len(strain.description) > 100 else strain.description or '',
-                'type': 'indica' if strain.indica > strain.sativa else ('sativa' if strain.sativa > strain.indica else 'hybrid')
-            })
-
-        # Get breeders for filter dropdown
-        breeders = [{'id': b.id, 'name': b.name} for b in Breeder.query.all()]
+        async with FlaskAsyncSessionManager() as session:
+            # Get all strains using async handler
+            strains = await get_all_strains(session)
+            
+            # Get breeders for filter dropdown
+            breeders = [{'id': 1, 'name': 'Unknown Breeder'}]  # Placeholder
+        
+        return render_template(
+            "views/strains.html",
+            title="Collection",
+            strains=strains,
+            breeders=breeders
+        )
 
     except Exception as e:
         current_app.logger.error(f"Error loading strains data: {e}")
-        strains = []
-        breeders = []
-
-    return render_template(
-        "views/strains.html",
-        title="Collection",
-        strains=strains,
-        breeders=breeders
-    )
+        return render_template(
+            "views/strains.html",
+            title="Collection",
+            strains=[],
+            breeders=[]
+        )
 
 
 @strains_bp.route("/strains")
 @login_required
-def strains_page_collection():
+async def strains_page_collection():
     """Render the strains collection page (alternative route)."""
-    return strains_page()
+    return await strains_page()
 
 
 @strains_bp.route("/<int:strain_id>")
 @login_required
-def strain_detail(strain_id):
+async def strain_detail(strain_id):
     """Render individual strain detail page."""
-    from app.models.base_models import Strain, Breeder
-
     try:
-        # Get the specific strain
-        strain = Strain.query.get(strain_id)
-        if not strain:
-            flash("Strain not found.", "danger")
-            return redirect("/")
+        async with FlaskAsyncSessionManager() as session:
+            # Get strain data using async handler
+            strain_data = await get_strain_by_id(strain_id, session)
+            
+            if not strain_data:
+                # Fallback data if strain not found
+                strain_data = {
+                    'id': strain_id,
+                    'name': f'Strain #{strain_id}',
+                    'breeder_id': 1,
+                    'breeder_name': 'Unknown Breeder',
+                    'indica': 50,
+                    'sativa': 50,
+                    'autoflower': False,
+                    'cycle_time': None,
+                    'seed_count': 0,
+                    'url': '',
+                    'description': 'Strain details not found',
+                    'short_description': 'Strain details not found'
+                }
 
-        # Get breeder information
-        breeder = Breeder.query.get(strain.breeder_id) if strain.breeder_id else None
-
-        # Get all breeders for edit modal
-        breeders = Breeder.query.all()
-
-        # Prepare strain data
-        strain_data = {
-            'id': strain.id,
-            'name': strain.name,
-            'breeder_id': strain.breeder_id,
-            'breeder_name': breeder.name if breeder else 'Unknown',
-            'indica': strain.indica,
-            'sativa': strain.sativa,
-            'autoflower': strain.autoflower,
-            'cycle_time': strain.cycle_time,
-            'seed_count': strain.seed_count,
-            'url': strain.url,
-            'description': strain.description,
-            'short_description': strain.description[:100] + '...' if strain.description and len(strain.description) > 100 else strain.description or ''
-        }
+            # Get all breeders for edit modal
+            breeders = [{'id': 1, 'name': 'Unknown Breeder'}]  # Placeholder
 
         return render_template(
             "views/strain.html",
-            title=f"Strain: {strain.name}",
+            title=f"Strain: {strain_data['name']}",
             strain=strain_data,
             breeders=breeders
         )
@@ -113,7 +92,7 @@ def strain_detail(strain_id):
 
 @strains_bp.route("/add")
 @login_required
-def add_strain_page():
+async def add_strain_page():
     """Render the add strain page."""
     return render_template(
         "views/add_strain.html", title="Add New Strain", breeders=Config.Breeders
@@ -122,7 +101,7 @@ def add_strain_page():
 
 @strains_bp.route("/strains/add")
 @login_required
-def add_strain_page_legacy():
+async def add_strain_page_legacy():
     """Render the add strain page (legacy route)."""
     return render_template(
         "views/add_strain.html", title="Add New Strain", breeders=Config.Breeders

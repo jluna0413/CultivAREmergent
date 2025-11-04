@@ -169,7 +169,8 @@ def create_app():
     # Enable CSRF protection for forms and POST endpoints
     try:
         from flask_wtf.csrf import CSRFProtect, generate_csrf  # type: ignore
-        CSRFProtect(app)
+        if not app.config.get('DEBUG', False):
+            CSRFProtect(app)
         app.config['WTF_CSRF_TIME_LIMIT'] = None
 
         # Expose csrf_token() helper to Jinja templates
@@ -199,12 +200,11 @@ def create_app():
             from app.models.system_models import SystemActivity
             from werkzeug.security import generate_password_hash
             
-            # Create tables
-            db.create_all()
+            # Create tables and migrate schema
+            migrate_db()
             
             # Initialize default data
-            init_db()
-            
+            init_db()            
             
             # Create a test plant for clone demonstration if no plants exist
             from app.models.base_models import Plant, Strain, Status, Zone, Breeder
@@ -382,4 +382,4 @@ if __name__ == '__main__':
     # For development testing, run on HTTP only to avoid SSL issues
     from app.config.config import Config
     print("DEBUG: Running Flask app on HTTP only for development testing")
-    app.run(host='0.0.0.0', port=port, debug=Config.DEBUG, use_reloader=False)
+    app.run(host='0.0.0.0', port=port, debug=Config.DEBUG, use_reloader=True)

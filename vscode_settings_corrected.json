@@ -1,0 +1,58 @@
+{
+  "dart.flutterSdkPath": "A:\\dev\\SDKs\\flutter",
+  "dart.sdkPath": "A:\\dev\\SDKs\\dart-sdk",
+  "dart.analysisExcludedFolders": [
+    "flutter_app/.dart_tool",
+    "flutter_app/build",
+    "flutter_app/.flutter-plugins",
+    "flutter_app/.flutter-plugins-dependencies"
+  ],
+  "mcpServers": {
+    "taskmaster-ai": {
+      "command": "npx",
+      "args": ["-y", "task-master-ai"],
+      "env": {
+        "OLLAMA_BASE_URL": "http://localhost:11435",
+        "OLLAMA_MODEL": "gemma3:270m",
+        "ANTHROPIC_API_KEY": "YOUR_ANTHROPIC_API_KEY_HERE",
+        "PERPLEXITY_API_KEY": "YOUR_PERPLEXITY_API_KEY_HERE",
+        "OPENAI_API_KEY": "YOUR_OPENAI_KEY_HERE",
+        "GOOGLE_API_KEY": "YOUR_GOOGLE_API_KEY_HERE",
+        "MISTRAL_API_KEY": "YOUR_MISTRAL_KEY_HERE",
+        "OPENROUTER_API_KEY": "YOUR_OPENROUTER_KEY_HERE",
+        "XAI_API_KEY": "YOUR_XAI_KEY_HERE",
+        "AZURE_OPENAI_API_KEY": "YOUR_AZURE_KEY_HERE"
+      }
+    },
+    "archon": {
+      "command": "npx",
+      "args": [
+        "mcp-remote",
+        "http://localhost:8051/mcp"
+      ]
+    },
+    "byterover-mcp": {
+      "url": "https://sse.byterover.dev/sse?machineId=1f08699e-fcad-60d0-ad89-2ad5689b7a52"
+    }
+  },
+  "python.testing.pytestArgs": ["."],
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true,
+  "makefile.configureOnOpen": true,
+  "traycer.enableAutoAnalysis": true,
+  "traycer.alwaysAllowPayToRun": true,
+  "traycer.enableCommentsHighlighting": true,
+  "traycer.additionalAgents": ["Cline", "Roo Code", "Gemini", "Codex"],
+  "html.validate.scripts": false,
+  "javascript.validate.enable": false,
+  "python.analysis.diagnosticSeverityOverrides": {
+    "reportAttributeAccessIssue": "none",
+    "reportArgumentType": "none"
+  },
+  "taskmaster": {
+    "autoAnalyze": true,
+    "contextAware": true,
+    "integrateWithGit": true,
+    "syncWithMCP": true
+  }
+}

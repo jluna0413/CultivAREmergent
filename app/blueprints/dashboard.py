@@ -1,6 +1,11 @@
 from datetime import datetime
 from flask import Blueprint, current_app, flash, redirect, render_template, url_for
 from flask_login import current_user, login_required
+from sqlalchemy import select
+
+from app.logger import logger
+from app.models_async import User, SystemActivity
+from app.utils.async_flask_helpers import FlaskAsyncSessionManager
 
 dashboard_bp = Blueprint("dashboard", __name__, url_prefix="/dashboard", template_folder="../web/templates")
 
@@ -14,99 +19,83 @@ def dashboard():
 
 @dashboard_bp.route("/plants")
 @login_required
-def plants():
+async def plants():
     """Render the plants page."""
-    # Import Plant model
-    from app.models.base_models import Plant, Strain, Status, Zone
-
-    # Get all plants for the current user
+    from app.handlers.plant_handlers_async import get_living_plants
+    from app.handlers.strain_handlers_async import get_all_strains
+    
     plants_data = []
+    strains = []
+    zones = []
+    statuses = []
+    
     try:
-        plants_query = Plant.query.filter_by(user_id=current_user.id).all()
-        for plant in plants_query:
-            # Get related data
-            strain = Strain.query.get(plant.strain_id) if plant.strain_id else None
-            status = Status.query.get(plant.status_id) if plant.status_id else None
-            zone = Zone.query.get(plant.zone_id) if plant.zone_id else None
-
-            # Calculate age in days
-            age = 0
-            if plant.start_dt:
-                age = (datetime.now() - plant.start_dt).days
-
-            plants_data.append({
-                'id': plant.id,
-                'name': plant.name,
-                'strain_name': strain.name if strain else 'Unknown',
-                'status': status.name if status else 'Unknown',
-                'zone': zone.name if zone else 'Unknown',
-                'age': age,
-                'image_url': plant.image_url
-            })
-
-        # Get filter options
-        strains = [{'id': s.id, 'name': s.name} for s in Strain.query.all()]
-        zones = [z.name for z in Zone.query.all()]
-        statuses = [s.name for s in Status.query.all()]
-
+        async with FlaskAsyncSessionManager() as session:
+            # Get plants, strains, and zones data using async handlers
+            plants_data = await get_living_plants(session)
+            strains = await get_all_strains(session)
+            
+            # TODO: Add zones and statuses async handlers when available
+            zones = []  # Placeholder for zones
+            statuses = []  # Placeholder for statuses
+        
+        return render_template("views/plants.html",
+                              title="My Plants",
+                              plants=plants_data,
+                              strains=strains,
+                              zones=zones,
+                              statuses=statuses)
     except Exception as e:
         current_app.logger.error(f"Error loading plants data: {e}")
-        plants_data = []
-        strains = []
-        zones = []
-        statuses = []
-
-    return render_template("views/plants.html",
-                          title="My Plants",
-                          plants=plants_data,
-                          strains=strains,
-                          zones=zones,
-                          statuses=statuses)
+        flash("Error loading plants data.", "danger")
+        return redirect(url_for("dashboard.dashboard"))
 
 
 @dashboard_bp.route("/plant/<int:plant_id>")
 @login_required
-def plant(plant_id):
+async def plant(plant_id):
     """Render individual plant view."""
-    from app.models.base_models import Plant, Strain, Status, Zone
-
+    from app.handlers.plant_handlers_async import get_plant
+    
     try:
-        # Get the specific plant
-        plant = Plant.query.filter_by(id=plant_id, user_id=current_user.id).first()
-        if not plant:
-            flash("Plant not found.", "danger")
-            return redirect(url_for("dashboard.plants"))
-
-        # Get related data
-        strain = Strain.query.get(plant.strain_id) if plant.strain_id else None
-        status = Status.query.get(plant.status_id) if plant.status_id else None
-        zone = Zone.query.get(plant.zone_id) if plant.zone_id else None
-
-        # Calculate age in days
-        age = 0
-        if plant.start_dt:
-            age = (datetime.now() - plant.start_dt).days
-
-        plant_data = {
-            'id': plant.id,
-            'name': plant.name,
-            'strain_name': strain.name if strain else 'Unknown',
-            'status': status.name if status else 'Unknown',
-            'zone': zone.name if zone else 'Unknown',
-            'age': age,
-            'image_url': plant.image_url,
-            'description': plant.description or '',
-            'start_date': plant.start_dt.strftime('%Y-%m-%d') if plant.start_dt else '',
-            'is_clone': plant.is_clone,
-            'current_week': plant.current_week or 0,
-            'current_day': plant.current_day or 0
-        }
-
+        async with FlaskAsyncSessionManager() as session:
+            plant_data = await get_plant(plant_id, session)
+            
+            if not plant_data:
+                flash("Plant not found.", "warning")
+                return redirect(url_for("dashboard.plants"))
+        
         return render_template("views/plant.html",
-                              title=f"Plant: {plant.name}",
+                              title=f"Plant: {plant_data['name']}",
                               plant=plant_data)
 
     except Exception as e:
         current_app.logger.error(f"Error loading plant {plant_id}: {e}")
         flash("Error loading plant details.", "danger")
         return redirect(url_for("dashboard.plants"))
+
+
+@dashboard_bp.route("/sensors")
+@login_required
+async def sensors():
+    """Render the sensors page."""
+    from app.handlers.sensor_handlers_async import get_grouped_sensors_with_latest_reading
+
+    try:
+        async with FlaskAsyncSessionManager() as session:
+            grouped_sensors = await get_grouped_sensors_with_latest_reading(session)
+              
+        total_sensors = grouped_sensors.get("total_sensors", 0)
+        active_sensors = total_sensors  # All zones are considered active
+        warning_sensors = 0  # Placeholder for actual warning logic
+
+        return render_template("views/sensors.html",
+                               title="My Sensors",
+                               grouped_sensors=grouped_sensors,
+                               total_sensors=total_sensors,
+                               active_sensors=active_sensors,
+                               warning_sensors=warning_sensors)
+    except Exception as e:
+        current_app.logger.error(f"Error loading sensors data: {e}")
+        flash("Error loading sensors data.", "danger")
+        return redirect(url_for("dashboard.dashboard"))

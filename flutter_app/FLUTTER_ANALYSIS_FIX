@@ -1,0 +1,94 @@
+# Flutter Analyze Issues Resolution Report
+
+## Summary
+**Total Issues**: 52  
+**Critical Errors**: 2 (Invalid constant values)  
+**Warnings**: 12 (Unused imports, variables, deprecated members)  
+**Info**: 38 (Missing const constructors/literals)  
+
+## Detailed Issue Breakdown
+
+### Critical Errors (2)
+1. **EmptyState.dart lines 86 & 107**: Invalid constant values - conditional expressions in const contexts
+   - **Status**: ✅ FIXED - Constructor made const, conditional logic extracted to methods
+
+### Unused Imports (5)
+1. **auth_provider.dart:3**: `import 'package:flutter/material.dart'` unused
+2. **plants_provider.dart:3**: `import 'package:flutter/material.dart'` unused  
+3. **sensors_provider.dart:3**: `import 'package:flutter/material.dart'` unused
+4. **settings_provider.dart:3**: `import 'package:flutter/material.dart'` unused
+5. **strains_provider.dart:3**: `import 'package:flutter/material.dart'` unused
+
+### Unused Fields/Variables (7)
+1. **app_theme.dart:8**: `_delegate` field not used
+2. **filter_bar.dart:517**: `theme` local variable unused
+3. **filter_bar.dart:224**: Unreachable switch default case
+4. **filter_bar.dart:247**: `value` parameter deprecated
+5. **sensor_card.dart:211**: `icon` local variable unused
+6. **sensor_card.dart:569**: `bgPath` local variable unused
+7. **theme_toggle_button.dart:161**: `theme` local variable unused
+8. **theme_toggle_button.dart:282**: `isDark` local variable unused
+9. **theme_toggle_button.dart:381**: `theme` local variable unused
+
+### Deprecated Member Usage (5)
+1. **filter_bar.dart:247**: `value` deprecated, use `initialValue`
+2. **theme_toggle_button.dart:169**: `activeColor` deprecated, use `activeThumbColor`
+3. **dashboard_screen.dart:199**: `withOpacity` deprecated, use `withValues()`
+4. **dashboard_screen.dart:464**: `withOpacity` deprecated, use `withValues()`
+
+### Missing Const Constructors/Literals (32)
+
+#### Strains Provider (5)
+- Lines 360, 376, 391, 406, 421: Missing const constructors
+
+#### Widgets Missing Const (27)
+- **app_theme.dart:527**: Const literals needed
+- **empty_state.dart**: Const constructor added ✅
+- **empty_state.dart:75**: Const literals needed ✅
+- **empty_state.dart:190**: Const constructors needed ✅
+- **filter_bar.dart:119, 558**: Const literals needed
+- **plant_card.dart:83, 251, 266, 281, 394**: Const constructors/literals needed
+- **sensor_card.dart:102, 257, 429**: Const constructors/literals needed
+- **stat_card.dart:47, 154**: Const literals needed
+- **strain_card.dart:98, 361, 376, 391, 592**: Const constructors/literals needed
+- **timeline_widget.dart:89, 154, 164, 302**: Const constructors/literals needed
+- **welcome_modal.dart:103, 106, 108**: Const constructors needed
+
+## Progress Status
+
+### Completed ✅
+1. Fixed EmptyState constructor to be const
+2. Extracted conditional logic to helper methods
+3. Fixed invalid constant expressions
+
+### In Progress 🔄
+- Addressing unused imports across provider files
+- Fixing deprecated member usage
+- Adding missing const constructors and literals
+
+### Next Steps 📋
+1. Remove unused imports from provider files
+2. Fix deprecated member usage with modern alternatives
+3. Add const constructors where missing
+4. Add const literals to constructor calls
+5. Remove unused variables/fields
+6. Re-run analysis to verify fixes
+
+## File Changes Made
+
+### flutter_app/lib/core/widgets/empty_state.dart
+- Made EmptyState constructor `const`
+- Added helper methods: `_getPadding()`, `_getSpacing()`, `_getMessageSpacing()`
+- Extracted conditional logic from const contexts
+- Removed invalid constant expressions
+- Made SizedBox.shrink() const
+
+## Verification Commands
+```bash
+cd flutter_app && flutter analyze --no-pub --no-fatal-infos
+# Expected: 0 issues after all fixes applied
+```
+
+---
+*Report generated: 11/2/2025 6:13 PM*
+*Task Status: In Progress - Systematically addressing each issue*

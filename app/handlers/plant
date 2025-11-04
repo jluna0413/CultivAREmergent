@@ -1,0 +1,415 @@
+"""
+Plant management handlers for the CultivAR application - ASYNC VERSION.
+"""
+
+from datetime import datetime, timedelta
+from typing import List, Dict, Any, Optional
+
+from sqlalchemy import select, and_, desc
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.logger import logger
+from app.models_async import Plant, Cultivar, Status, Zone, User, SystemActivity
+
+
+async def get_all_plants(session: AsyncSession) -> List[Dict[str, Any]]:
+    """
+    Get all plants with their details - ASYNC VERSION.
+
+    Args:
+        session: AsyncSession for database operations
+
+    Returns:
+        List[Dict[str, Any]]: List of plant data dictionaries.
+    """
+    try:
+        result = await session.execute(select(Plant).order_by(Plant.name))
+        plants = result.scalars().all()
+
+        plant_list = []
+        for plant in plants:
+            plant_data = {
+                "id": plant.id,
+                "name": plant.name,
+                "description": plant.description or "",
+                "status": plant.status_name,
+                "status_id": plant.status_id,
+                "strain_name": plant.cultivar_name,
+                "strain_id": plant.cultivar_id,
+                "breeder_name": plant.breeder_name,
+                "zone_name": plant.zone_name,
+                "zone_id": plant.zone_id,
+                "clone": plant.is_clone,
+                "parent_name": plant.parent_name,
+                "start_dt": plant.start_dt.strftime("%Y-%m-%d") if plant.start_dt else "",
+                "current_week": plant.current_week,
+                "current_day": plant.current_day,
+                "current_height": plant.current_height,
+                "last_water_date": plant.last_water_date.strftime("%Y-%m-%d") if plant.last_water_date else "",
+                "last_feed_date": plant.last_feed_date.strftime("%Y-%m-%d") if plant.last_feed_date else "",
+                "harvest_weight": plant.harvest_weight,
+                "harvest_date": plant.harvest_date.strftime("%Y-%m-%d") if plant.harvest_date else "",
+                "cycle_time": plant.cycle_time,
+                "autoflower": plant.autoflower,
+                "grow_name": plant.grow_name,
+            }
+            plant_list.append(plant_data)
+
+        return plant_list
+    except Exception as e:
+        logger.error(f"Error getting all plants: {e}")
+        return []
+
+
+async def get_plant_by_id(plant_id: int, session: AsyncSession) -> Optional[Dict[str, Any]]:
+    """
+    Get a specific plant by ID - ASYNC VERSION.
+
+    Args:
+        plant_id (int): The ID of the plant.
+        session: AsyncSession for database operations
+
+    Returns:
+        Optional[Dict[str, Any]]: Plant data or None if not found.
+    """
+    try:
+        result = await session.execute(select(Plant).where(Plant.id == plant_id))
+        plant = result.scalars().first()
+        
+        if not plant:
+            return None
+
+        plant_data = {
+            "id": plant.id,
+            "name": plant.name,
+            "description": plant.description or "",
+            "status": plant.status_name,
+            "status_id": plant.status_id,
+            "strain_name": plant.cultivar_name,
+            "strain_id": plant.cultivar_id,
+            "breeder_name": plant.breeder_name,
+            "zone_name": plant.zone_name,
+            "zone_id": plant.zone_id,
+            "clone": plant.is_clone,
+            "parent_name": plant.parent_name,
+            "start_dt": plant.start_dt.strftime("%Y-%m-%d") if plant.start_dt else "",
+            "current_week": plant.current_week,
+            "current_day": plant.current_day,
+            "current_height": plant.current_height,
+            "last_water_date": plant.last_water_date.strftime("%Y-%m-%d") if plant.last_water_date else "",
+            "last_feed_date": plant.last_feed_date.strftime("%Y-%m-%d") if plant.last_feed_date else "",
+            "harvest_weight": plant.harvest_weight,
+            "harvest_date": plant.harvest_date.strftime("%Y-%m-%d") if plant.harvest_date else "",
+            "cycle_time": plant.cycle_time,
+            "autoflower": plant.autoflower,
+            "grow_name": plant.grow_name,
+        }
+
+        return plant_data
+    except Exception as e:
+        logger.error(f"Error getting plant by ID: {e}")
+        return None
+
+
+async def create_plant(data: Dict[str, Any], session: AsyncSession) -> Dict[str, Any]:
+    """
+    Create a new plant - ASYNC VERSION.
+
+    Args:
+        data (Dict[str, Any]): Plant data.
+        session: AsyncSession for database operations
+
+    Returns:
+        Dict[str, Any]: Result of the operation.
+    """
+    try:
+        # Create new plant
+        new_plant = Plant(
+            name=data.get("name"),
+            description=data.get("description"),
+            user_id=data.get("user_id"),
+            status_id=data.get("status_id", 1),  # Default to first status
+            cultivar_id=data.get("cultivar_id"),
+            zone_id=data.get("zone_id"),
+            grow_id=data.get("grow_id"),
+            parent_id=data.get("parent_id"),
+            start_dt=data.get("start_dt") or datetime.now(),
+            autoflower=data.get("autoflower", False),
+            is_clone=bool(data.get("parent_id")),
+        )
+
+        session.add(new_plant)
+        await session.commit()
+        await session.refresh(new_plant)
+
+        # Log system activity
+        activity = SystemActivity(
+            user_id=data.get("user_id"),
+            type="plant_created",
+            details=f"Plant created: {new_plant.name}",
+            timestamp=datetime.now(),
+        )
+        session.add(activity)
+        await session.commit()
+
+        return {
+            "success": True,
+            "plant_id": new_plant.id,
+            "message": f"Plant '{new_plant.name}' created successfully",
+        }
+    except Exception as e:
+        await session.rollback()
+        logger.error(f"Error creating plant: {e}")
+        return {"success": False, "error": str(e)}
+
+
+async def update_plant(plant_id: int, data: Dict[str, Any], session: AsyncSession) -> Dict[str, Any]:
+    """
+    Update an existing plant - ASYNC VERSION.
+
+    Args:
+        plant_id (int): The ID of the plant to update.
+        data (Dict[str, Any]): Updated plant data.
+        session: AsyncSession for database operations
+
+    Returns:
+        Dict[str, Any]: Result of the operation.
+    """
+    try:
+        result = await session.execute(select(Plant).where(Plant.id == plant_id))
+        plant = result.scalars().first()
+        
+        if not plant:
+            return {"success": False, "error": "Plant not found"}
+
+        # Update fields
+        plant.name = data.get("name", plant.name)
+        plant.description = data.get("description", plant.description)
+        plant.status_id = data.get("status_id", plant.status_id)
+        plant.cultivar_id = data.get("cultivar_id", plant.cultivar_id)
+        plant.zone_id = data.get("zone_id", plant.zone_id)
+        plant.current_week = data.get("current_week", plant.current_week)
+        plant.current_day = data.get("current_day", plant.current_day)
+        plant.current_height = data.get("current_height", plant.current_height)
+        plant.last_water_date = data.get("last_water_date", plant.last_water_date)
+        plant.last_feed_date = data.get("last_feed_date", plant.last_feed_date)
+        plant.harvest_date = data.get("harvest_date", plant.harvest_date)
+        plant.harvest_weight = data.get("harvest_weight", plant.harvest_weight)
+        plant.cycle_time = data.get("cycle_time", plant.cycle_time)
+
+        await session.commit()
+
+        # Log system activity
+        activity = SystemActivity(
+            user_id=data.get("user_id"),
+            type="plant_updated",
+            details=f"Plant updated: {plant.name}",
+            timestamp=datetime.now(),
+        )
+        session.add(activity)
+        await session.commit()
+
+        return {
+            "success": True,
+            "message": f"Plant '{plant.name}' updated successfully",
+        }
+    except Exception as e:
+        await session.rollback()
+        logger.error(f"Error updating plant: {e}")
+        return {"success": False, "error": str(e)}
+
+
+async def delete_plant(plant_id: int, session: AsyncSession) -> Dict[str, Any]:
+    """
+    Delete a plant - ASYNC VERSION.
+
+    Args:
+        plant_id (int): The ID of the plant to delete.
+        session: AsyncSession for database operations
+
+    Returns:
+        Dict[str, Any]: Result of the operation.
+    """
+    try:
+        result = await session.execute(select(Plant).where(Plant.id == plant_id))
+        plant = result.scalars().first()
+        
+        if not plant:
+            return {"success": False, "error": "Plant not found"}
+
+        plant_name = plant.name
+        await session.delete(plant)
+        await session.commit()
+
+        # Log system activity
+        activity = SystemActivity(
+            user_id=1,  # System user
+            type="plant_deleted",
+            details=f"Plant deleted: {plant_name}",
+            timestamp=datetime.now(),
+        )
+        session.add(activity)
+        await session.commit()
+
+        return {"success": True, "message": f"Plant '{plant_name}' deleted successfully"}
+    except Exception as e:
+        await session.rollback()
+        logger.error(f"Error deleting plant: {e}")
+        return {"success": False, "error": str(e)}
+
+
+async def get_living_plants(session: AsyncSession) -> List[Dict[str, Any]]:
+    """
+    Get all living plants (not harvested or dead) - ASYNC VERSION.
+
+    Args:
+        session: AsyncSession for database operations
+
+    Returns:
+        List[Dict[str, Any]]: List of living plant data dictionaries.
+    """
+    try:
+        # Assuming status_id 4 = Harvested, 5 = Dead
+        result = await session.execute(
+            select(Plant).where(~Plant.status_id.in_([4, 5])).order_by(Plant.name)
+        )
+        plants = result.scalars().all()
+
+        plant_list = []
+        for plant in plants:
+            plant_data = {
+                "id": plant.id,
+                "name": plant.name,
+                "strain_name": plant.cultivar_name,
+                "zone_name": plant.zone_name,
+                "current_week": plant.current_week,
+                "current_day": plant.current_day,
+                "status": plant.status_name,
+            }
+            plant_list.append(plant_data)
+
+        return plant_list
+    except Exception as e:
+        logger.error(f"Error getting living plants: {e}")
+        return []
+
+
+async def get_harvested_plants(session: AsyncSession) -> List[Dict[str, Any]]:
+    """
+    Get all harvested plants - ASYNC VERSION.
+
+    Args:
+        session: AsyncSession for database operations
+
+    Returns:
+        List[Dict[str, Any]]: List of harvested plant data dictionaries.
+    """
+    try:
+        # Assuming status_id 4 = Harvested
+        result = await session.execute(
+            select(Plant).where(Plant.status_id == 4).order_by(Plant.harvest_date.desc())
+        )
+        plants = result.scalars().all()
+
+        plant_list = []
+        for plant in plants:
+            plant_data = {
+                "id": plant.id,
+                "name": plant.name,
+                "strain_name": plant.cultivar_name,
+                "harvest_date": plant.harvest_date.strftime("%Y-%m-%d") if plant.harvest_date else "",
+                "harvest_weight": plant.harvest_weight,
+                "cycle_time": plant.cycle_time,
+            }
+            plant_list.append(plant_data)
+
+        return plant_list
+    except Exception as e:
+        logger.error(f"Error getting harvested plants: {e}")
+        return []
+
+
+async def get_dead_plants(session: AsyncSession) -> List[Dict[str, Any]]:
+    """
+    Get all dead plants - ASYNC VERSION.
+
+    Args:
+        session: AsyncSession for database operations
+
+    Returns:
+        List[Dict[str, Any]]: List of dead plant data dictionaries.
+    """
+    try:
+        # Assuming status_id 5 = Dead
+        result = await session.execute(
+            select(Plant).where(Plant.status_id == 5).order_by(Plant.start_dt.desc())
+        )
+        plants = result.scalars().all()
+
+        plant_list = []
+        for plant in plants:
+            plant_data = {
+                "id": plant.id,
+                "name": plant.name,
+                "strain_name": plant.cultivar_name,
+                "zone_name": plant.zone_name,
+                "start_dt": plant.start_dt.strftime("%Y-%m-%d") if plant.start_dt else "",
+            }
+            plant_list.append(plant_data)
+
+        return plant_list
+    except Exception as e:
+        logger.error(f"Error getting dead plants: {e}")
+        return []
+
+
+async def get_plant_statistics(session: AsyncSession) -> Dict[str, int]:
+    """
+    Get plant-related statistics - ASYNC VERSION.
+
+    Args:
+        session: AsyncSession for database operations
+
+    Returns:
+        Dict[str, int]: Plant statistics.
+    """
+    try:
+        # Get total plants
+        all_plants_result = await session.execute(select(Plant))
+        all_plants = all_plants_result.scalars().all()
+
+        # Count by status
+        living_count = 0
+        harvested_count = 0
+        dead_count = 0
+        clone_count = 0
+
+        for plant in all_plants:
+            if plant.status_id == 4:
+                harvested_count += 1
+            elif plant.status_id == 5:
+                dead_count += 1
+            else:
+                living_count += 1
+
+            if plant.is_clone:
+                clone_count += 1
+
+        stats = {
+            "total_plants": len(all_plants),
+            "living_plants": living_count,
+            "harvested_plants": harvested_count,
+            "dead_plants": dead_count,
+            "clone_plants": clone_count,
+        }
+
+        return stats
+    except Exception as e:
+        logger.error(f"Error getting plant statistics: {e}")
+        return {
+            "total_plants": 0,
+            "living_plants": 0,
+            "harvested_plants": 0,
+            "dead_plants": 0,
+            "clone_plants": 0,
+        }

@@ -1,7 +1,7 @@
 from flask import Flask, render_template, redirect, url_for, request, session, flash, jsonify
 import os
 from app.models import db, migrate_db, init_db
-from app.handlers import plant_handlers, strain_handlers, sensor_handlers
+from app.handlers import plant_handlers, cultivar_handlers, sensor_handlers
 from app.config import Config
 from app.config.load_config import load_config_from_db
 
@@ -29,7 +29,7 @@ with app.app_context():
 @app.route('/')
 def dashboard():
     plants = plant_handlers.get_living_plants()
-    strains = len(Config.Strains) if hasattr(Config, 'Strains') else 0
+    cultivars = len(Config.Cultivars) if hasattr(Config, 'Cultivars') else 0
     sensors = sensor_handlers.get_sensors()
     sensors_count = len(sensors) if sensors else 0
     harvests = plant_handlers.get_harvested_plants()
@@ -38,7 +38,7 @@ def dashboard():
     return render_template('views/index.html',
                           title='Dashboard',
                           plants=plants,
-                          strains=strains,
+                          cultivars=cultivars,
                           sensors=sensors_count,
                           harvests=harvests_count,
                           activities=Config.Activities)

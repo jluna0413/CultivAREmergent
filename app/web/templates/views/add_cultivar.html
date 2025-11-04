@@ -1,19 +1,19 @@
 {% extends 'common/base.html' %}
 
-{% block title %}Add New Strain - CultivAR{% endblock %}
+{% block title %}Add New Cultivar - CultivAR{% endblock %}
 
-{% block header %}Add New Strain{% endblock %}
+{% block header %}Add New Cultivar{% endblock %}
 
 {% block content %}
 <div class="container">
     <div class="row mb-4">
         <div class="col-12">
-            <h2>Add New Strain</h2>
+            <h2>Add New Cultivar</h2>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ url_for('dashboard.dashboard') }}">Dashboard</a></li>
                     <li class="breadcrumb-item"><a href="/">Collection</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Add New Strain</li>
+                    <li class="breadcrumb-item active" aria-current="page">Add New Cultivar</li>
                 </ol>
             </nav>
         </div>
@@ -23,11 +23,11 @@
         <div class="col-lg-8 offset-lg-2">
             <div class="card">
                 <div class="card-body">
-                    <form id="strain-form">
+                    <form id="cultivar-form">
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="name" class="form-label">Strain Name</label>
+                                    <label for="name" class="form-label">Cultivar Name</label>
                                     <input type="text" class="form-control" id="name" name="name" required>
                                 </div>
                                 <div class="mb-3">
@@ -81,7 +81,7 @@
                                     <input type="number" class="form-control" id="seed_count" name="seed_count" min="0" value="0">
                                 </div>
                                 <div class="mb-3">
-                                    <label for="url" class="form-label">Strain URL (optional)</label>
+                                    <label for="url" class="form-label">Cultivar URL (optional)</label>
                                     <input type="url" class="form-control" id="url" name="url" placeholder="https://...">
                                 </div>
                             </div>
@@ -92,7 +92,7 @@
                         </div>
                         <div class="d-flex justify-content-between">
                             <a href="/" class="btn btn-secondary">Cancel</a>
-                            <button type="button" onclick="saveStrain()" class="btn btn-primary">Save Strain</button>
+                            <button type="button" onclick="saveCultivar()" class="btn btn-primary">Save Cultivar</button>
                         </div>
                     </form>
 
@@ -156,7 +156,7 @@
                             }
                         });
 
-                        function saveStrain() {
+                        function saveCultivar() {
                             // Get form data
                             const name = document.getElementById('name').value;
                             const breederId = document.getElementById('breeder_id').value;
@@ -170,12 +170,12 @@
 
                             // Validate form
                             if (!name) {
-                                alert('Please enter a strain name');
+                                alert('Please enter a cultivar name');
                                 return;
                             }
 
                             // Prepare data for API
-                            const strainData = {
+                            const cultivarData = {
                                 name: name,
                                 breeder_id: breederId || null,
                                 indica: indica,
@@ -189,26 +189,26 @@
                             };
 
                             // Send data to API
-                            fetch('/strains', {
+                            fetch('/cultivars', {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json',
                                     'Accept': 'application/json'
                                 },
-                                body: JSON.stringify(strainData)
+                                body: JSON.stringify(cultivarData)
                             })
                             .then(response => response.json())
                             .then(data => {
                                 if (data.success) {
-                                    alert('Strain added successfully!');
-                                    window.location.href = '/strains';
+                                    alert('Cultivar added successfully!');
+                                    window.location.href = '/cultivars';
                                 } else {
-                                    alert('Error adding strain: ' + (data.error || 'Unknown error'));
+                                    alert('Error adding cultivar: ' + (data.error || 'Unknown error'));
                                 }
                             })
                             .catch(error => {
                                 console.error('Error:', error);
-                                alert('Error adding strain: ' + error);
+                                alert('Error adding cultivar: ' + error);
                             });
                         }
                     </script>

@@ -6,8 +6,7 @@ if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
 from cultivar_app import create_app
-from app.models import db
-from app.models.base_models import LeadMagnet
+from app.models_async.marketing import LeadMagnet
 
 app = create_app()
 with app.app_context():

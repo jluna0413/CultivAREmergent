@@ -68,10 +68,10 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                Strains
+                                Cultivars
                             </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="strains-count">
-                                {{ strains|length if strains else 0 }}
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="cultivars-count">
+                                {{ cultivars|length if cultivars else 0 }}
                             </div>
                         </div>
                         <div class="col-auto">
@@ -127,7 +127,7 @@
                                 <thead>
                                     <tr>
                                         <th>Name</th>
-                                        <th>Strain</th>
+                                        <th>Cultivar</th>
                                         <th>Status</th>
                                         <th>Age</th>
                                         <th>Actions</th>
@@ -137,7 +137,7 @@
                                     {% for plant in plants[:5] %}
                                     <tr>
                                         <td>{{ plant.name }}</td>
-                                        <td>{{ plant.strain_name or 'Unknown' }}</td>
+                                        <td>{{ plant.cultivar_name or 'Unknown' }}</td>
                                         <td>
                                             <span class="badge badge-{{ plant.status|lower == 'active' ? 'success' : 'secondary' }}">
                                                 {{ plant.status or 'Unknown' }}
@@ -239,8 +239,8 @@
                             </button>
                         </div>
                         <div class="col-md-3 col-6 mb-3">
-                            <button class="btn btn-outline-success btn-block" id="quick-add-strain">
-                                <i class="fas fa-dna"></i> Add Strain
+                            <button class="btn btn-outline-success btn-block" id="quick-add-cultivar">
+                                <i class="fas fa-dna"></i> Add Cultivar
                             </button>
                         </div>
                         <div class="col-md-3 col-6 mb-3">
@@ -297,8 +297,8 @@ document.addEventListener('DOMContentLoaded', function() {
         window.location.href = '/dashboard/plants?action=add';
     });
 
-    document.getElementById('quick-add-strain').addEventListener('click', function() {
-        window.location.href = '/strains?action=add';
+    document.getElementById('quick-add-cultivar').addEventListener('click', function() {
+        window.location.href = '/cultivars?action=add';
     });
 
     document.getElementById('quick-add-activity').addEventListener('click', function() {

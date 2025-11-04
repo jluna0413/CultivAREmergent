@@ -1,0 +1,320 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "Cultivar Collection Management API",
+    "description": "Advanced cannabis cultivar tracking and analytics platform",
+    "version": "2.0.0",
+    "contact": {
+      "name": "Cultivar Collection Management",
+      "email": "support@cultivar.api"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8000",
+      "description": "Development server"
+    },
+    {
+      "url": "https://api.cultivar.production",
+      "description": "Production server"
+    }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "Root endpoint",
+        "description": "Welcome message and API information",
+        "tags": ["Root"],
+        "responses": {
+          "200": {
+            "description": "API information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {"type": "string"},
+                    "version": {"type": "string"},
+                    "docs": {"type": "string"},
+                    "available_endpoints": {
+                      "type": "object",
+                      "additionalProperties": {"type": "string"}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ping": {
+      "get": {
+        "summary": "Health check",
+        "description": "Simple health check endpoint",
+        "tags": ["Health"],
+        "responses": {
+          "200": {
+            "description": "Service is healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {"type": "string"},
+                    "system": {"type": "string"}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "summary": "User login",
+        "description": "Authenticate user and get access token",
+        "tags": ["Authentication"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {"type": "string", "description": "Username or email"},
+                  "password": {"type": "string", "description": "User password"}
+                },
+                "required": ["username", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "access_token": {"type": "string"},
+                    "token_type": {"type": "string", "example": "bearer"}
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid credentials"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/register": {
+      "post": {
+        "summary": "User registration",
+        "description": "Register a new user account",
+        "tags": ["Authentication"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {"type": "string", "description": "Unique username"},
+                  "email": {"type": "string", "format": "email"},
+                  "password": {"type": "string", "minLength": 8},
+                  "full_name": {"type": "string"}
+                },
+                "required": ["username", "email", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {"type": "string"},
+                    "username": {"type": "string"},
+                    "email": {"type": "string"}
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or user already exists"
+          }
+        }
+      }
+    },
+    "/plants/": {
+      "get": {
+        "summary": "List plants",
+        "description": "Get list of plants with optional filtering",
+        "tags": ["Plants"],
+        "security": [{"Bearer": []}],
+        "parameters": [
+          {
+            "name": "strain_id",
+            "in": "query",
+            "description": "Filter by strain ID",
+            "schema": {"type": "string"}
+          },
+          {
+            "name": "growth_stage",
+            "in": "query",
+            "description": "Filter by growth stage",
+            "schema": {"type": "string"}
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Number of items to return",
+            "schema": {"type": "integer", "default": 20}
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Number of items to skip",
+            "schema": {"type": "integer", "default": 0}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of plants",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {"type": "string"},
+                      "name": {"type": "string"},
+                      "strain_id": {"type": "string"},
+                      "growth_stage": {"type": "string"},
+                      "created_at": {"type": "string", "format": "date-time"}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create plant",
+        "description": "Create a new plant record",
+        "tags": ["Plants"],
+        "security": [{"Bearer": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {"type": "string"},
+                  "strain_id": {"type": "string"},
+                  "breeder_id": {"type": "string"},
+                  "growth_stage": {"type": "string"},
+                  "pot_size": {"type": "number"},
+                  "medium": {"type": "string"},
+                  "location": {"type": "string"},
+                  "purchase_date": {"type": "string", "format": "date"},
+                  "notes": {"type": "string"}
+                },
+                "required": ["name", "strain_id"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Plant created successfully"
+          },
+          "422": {
+            "description": "Validation error"
+          }
+        }
+      }
+    },
+    "/strains/": {
+      "get": {
+        "summary": "List strains",
+        "description": "Get list of cannabis strains",
+        "tags": ["Strains"],
+        "security": [{"Bearer": []}],
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "description": "Filter by strain type (indica, sativa, hybrid)",
+            "schema": {"type": "string"}
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Search in strain name and description",
+            "schema": {"type": "string"}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of strains",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {"type": "string"},
+                      "name": {"type": "string"},
+                      "type": {"type": "string"},
+                      "genetics": {"type": "string"},
+                      "thc_content": {"type": "number"},
+                      "cbd_content": {"type": "number"}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "Bearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {"type": "string"},
+              "message": {"type": "string"}
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -19,22 +19,23 @@ def migrate_db():
     """
     from app.models.acinfinity_models import ACInfinityDevice, ACInfinityToken
     from app.models.base_models import (
-        Activity,
-        Breeder,
-        Measurement,
-        Metric,
-        Plant,
-        PlantActivity,
-        PlantImage,
-        Sensor,
-        SensorData,
-        Settings,
-        Status,
-        Strain,
-        Stream,
-        User,
-        Zone,
-    )
+            Activity,
+            Breeder,
+            Cultivar,
+            Measurement,
+            Metric,
+            Plant,
+            PlantActivity,
+            PlantImage,
+            Sensor,
+            SensorData,
+            Settings,
+            Status,
+            Strain,
+            Stream,
+            User,
+            Zone,
+        )
     from app.models.ecowitt_models import EcowittDevice
     from app.models.system_models import SystemActivity
 
@@ -118,4 +119,26 @@ def init_db():
     # Commit changes
     db.session.commit()
 
+    from app.models.base_models import User
+    from werkzeug.security import generate_password_hash
+
+    # Ensure session is committed before checking user count
+    db.session.commit()
+
+    # Add default admin user if no users exist
+    logger.info(f"User count before admin creation: {User.query.count()}")
+    if User.query.count() == 0:
+        admin_user = User(username='admin', email='admin@example.com', is_admin=True)
+        admin_user.password_hash = generate_password_hash('isley') # Default password
+        db.session.add(admin_user)
+        db.session.commit()
+        logger.info("Default admin user created.")
+
     logger.info("Database initialization completed")
+
+
+# Import both for backward compatibility
+from app.models.base_models import Cultivar, Strain
+
+# Explicit backward compatibility alias
+Strain = Cultivar

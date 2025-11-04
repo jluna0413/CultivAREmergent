@@ -51,7 +51,7 @@ class ApiService {
     try {
       final client = HttpClient();
       final request = await client.openUrl(method, Uri.parse(url));
-      
+
       // Add headers
       _buildHeaders().forEach((key, value) {
         request.headers.set(key, value);
@@ -83,7 +83,8 @@ class ApiService {
   static Exception _handleErrorResponse(int statusCode, String responseBody) {
     try {
       final jsonResponse = json.decode(responseBody);
-      final message = jsonResponse['message'] ?? jsonResponse['error'] ?? 'Unknown error';
+      final message =
+          jsonResponse['message'] ?? jsonResponse['error'] ?? 'Unknown error';
       return Exception(message);
     } catch (e) {
       switch (statusCode) {
@@ -104,21 +105,22 @@ class ApiService {
   // GET /api/cultivars/list - Get list of cultivars
   static Future<List<Cultivar>> getCultivars() async {
     try {
-      final responseBody = await _makeRequest('GET', '$baseUrl$apiEndpoint/list', null);
+      final responseBody =
+          await _makeRequest('GET', '$baseUrl$apiEndpoint/list', null);
       final jsonResponse = json.decode(responseBody);
-      
+
       if (jsonResponse is Map && jsonResponse.containsKey('data')) {
         final data = jsonResponse['data'];
         if (data is List) {
           return data.map((item) => Cultivar.fromJson(item)).toList();
         }
       }
-      
+
       // Fallback to mock data for development
       return MockData.getMockCultivars();
     } catch (e) {
-  // Return mock data if API fails
-  AppLogger.error('API call failed, using mock data', e);
+      // Return mock data if API fails
+      AppLogger.error('API call failed, using mock data', e);
       return MockData.getMockCultivars();
     }
   }
@@ -126,17 +128,18 @@ class ApiService {
   // GET /api/cultivars/{id} - Get single cultivar
   static Future<Cultivar> getCultivar(int id) async {
     try {
-      final responseBody = await _makeRequest('GET', '$baseUrl$apiEndpoint/$id', null);
+      final responseBody =
+          await _makeRequest('GET', '$baseUrl$apiEndpoint/$id', null);
       final jsonResponse = json.decode(responseBody);
-      
+
       if (jsonResponse is Map && jsonResponse.containsKey('data')) {
         return Cultivar.fromJson(jsonResponse['data']);
       } else {
         return Cultivar.fromJson(jsonResponse);
       }
     } catch (e) {
-  // Return mock data if API fails
-  AppLogger.error('API call failed, using mock data', e);
+      // Return mock data if API fails
+      AppLogger.error('API call failed, using mock data', e);
       final mockData = MockData.getMockCultivars();
       return mockData.firstWhere(
         (cultivar) => cultivar.id == id,
@@ -173,18 +176,19 @@ class ApiService {
     };
 
     try {
-      final responseBody = await _makeRequest('POST', '$baseUrl$apiEndpoint/create', data);
+      final responseBody =
+          await _makeRequest('POST', '$baseUrl$apiEndpoint/create', data);
       final jsonResponse = json.decode(responseBody);
-      
+
       if (jsonResponse is Map && jsonResponse.containsKey('data')) {
         return Cultivar.fromJson(jsonResponse['data']);
       } else {
         return Cultivar.fromJson(jsonResponse);
       }
     } catch (e) {
-  // Return mock data if API fails
-  AppLogger.error('API call failed, creating mock cultivar', e);
-      
+      // Return mock data if API fails
+      AppLogger.error('API call failed, creating mock cultivar', e);
+
       // Create a mock cultivar with a random ID
       final randomId = Random().nextInt(1000) + 100;
       return Cultivar(
@@ -232,25 +236,26 @@ class ApiService {
     if (url != null) data['url'] = url;
 
     try {
-      final responseBody = await _makeRequest('PUT', '$baseUrl$apiEndpoint/$id', data);
+      final responseBody =
+          await _makeRequest('PUT', '$baseUrl$apiEndpoint/$id', data);
       final jsonResponse = json.decode(responseBody);
-      
+
       if (jsonResponse is Map && jsonResponse.containsKey('data')) {
         return Cultivar.fromJson(jsonResponse['data']);
       } else {
         return Cultivar.fromJson(jsonResponse);
       }
     } catch (e) {
-  // Return mock data if API fails
-  AppLogger.error('API call failed, updating mock cultivar', e);
-      
+      // Return mock data if API fails
+      AppLogger.error('API call failed, updating mock cultivar', e);
+
       // Return the original cultivar with updated fields
       final mockData = MockData.getMockCultivars();
       final originalCultivar = mockData.firstWhere(
         (cultivar) => cultivar.id == id,
         orElse: () => mockData.first,
       );
-      
+
       return originalCultivar.copyWith(
         name: name,
         description: description,
@@ -271,25 +276,26 @@ class ApiService {
     try {
       await _makeRequest('DELETE', '$baseUrl$apiEndpoint/$id', null);
     } catch (e) {
-  // Log but don't throw for mock data
-  AppLogger.error('API call failed', e);
+      // Log but don't throw for mock data
+      AppLogger.error('API call failed', e);
     }
   }
 
   // GET /api/cultivars/stats - Get cultivar statistics
   static Future<CultivarStats> getCultivarStats() async {
     try {
-      final responseBody = await _makeRequest('GET', '$baseUrl$apiEndpoint/stats', null);
+      final responseBody =
+          await _makeRequest('GET', '$baseUrl$apiEndpoint/stats', null);
       final jsonResponse = json.decode(responseBody);
-      
+
       if (jsonResponse is Map && jsonResponse.containsKey('data')) {
         return CultivarStats.fromJson(jsonResponse['data']);
       } else {
         return CultivarStats.fromJson(jsonResponse);
       }
     } catch (e) {
-  // Return mock data if API fails
-  AppLogger.error('API call failed, using mock stats', e);
+      // Return mock data if API fails
+      AppLogger.error('API call failed, using mock stats', e);
       return MockData.getMockStats();
     }
   }
@@ -298,7 +304,7 @@ class ApiService {
   static Future<bool> login(String email, String password) async {
     // Simulate API call delay
     await Future.delayed(const Duration(seconds: 1));
-    
+
     // Mock successful login (in real app, this would call backend API)
     if (email.isNotEmpty && password.isNotEmpty) {
       setAuthToken('mock_token_123', email);
@@ -310,7 +316,7 @@ class ApiService {
   static Future<bool> signup(String email, String password, String name) async {
     // Simulate API call delay
     await Future.delayed(const Duration(seconds: 1));
-    
+
     // Mock successful signup
     if (email.isNotEmpty && password.isNotEmpty && name.isNotEmpty) {
       setAuthToken('mock_token_123', email);

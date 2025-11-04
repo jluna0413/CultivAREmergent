@@ -70,14 +70,14 @@
             <div class="parent-card">
                 <div class="parent-info">
                     <h4>{{ parent.name }}</h4>
-                    <p class="strain-name">{{ parent.strain_name }}</p>
+                    <p class="cultivar-name">{{ parent.cultivar_name }}</p>
                     <div class="clone-count">
                         <i class="fas fa-sitemap"></i>
                         <span>{{ parent.clone_count }} clones</span>
                     </div>
                 </div>
                 <div class="parent-actions">
-                    <a href="{{ url_for('clone_lineage', clone_id=parent.id) }}" 
+                    <a href="{{ url_for('clone_lineage', clone_id=parent.id) }}"
                        class="btn btn-sm btn-primary">
                         <i class="fas fa-project-diagram"></i> View Lineage
                     </a>
@@ -107,7 +107,7 @@
                     <tr>
                         <th>Clone Name</th>
                         <th>Parent Plant</th>
-                        <th>Strain</th>
+                        <th>Cultivar</th>
                         <th>Status</th>
                         <th>Age</th>
                         <th>Week/Day</th>
@@ -132,7 +132,7 @@
                                 {{ clone.parent_name }}
                             </a>
                         </td>
-                        <td>{{ clone.strain_name }}</td>
+                        <td>{{ clone.cultivar_name }}</td>
                         <td>
                             {% if clone.status_id == 1 %}
                                 <span class="badge badge-seedling">{{ clone.status }}</span>
@@ -160,7 +160,7 @@
                         <td>{{ clone.zone_name }}</td>
                         <td>
                             <div class="action-buttons">
-                                <a href="{{ url_for('clone_lineage', clone_id=clone.id) }}" 
+                                <a href="{{ url_for('clone_lineage', clone_id=clone.id) }}"
                                    class="btn btn-sm btn-info" title="View Lineage">
                                     <i class="fas fa-project-diagram"></i>
                                 </a>
@@ -285,7 +285,7 @@
     font-size: 1rem;
 }
 
-.strain-name {
+.cultivar-name {
     color: #bbb;
     margin: 0 0 8px 0;
     font-size: 0.85rem;

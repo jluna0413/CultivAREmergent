@@ -27,13 +27,13 @@
             </div>
             
             <div class="stat-card">
-                <div class="stat-icon strain-icon">
+                <div class="stat-icon cultivar-icon">
                     <i class="fas fa-dna"></i>
                 </div>
                 <div class="stat-info">
-                    <h3>{{ export_stats.total_strains }}</h3>
-                    <p>Total Strains</p>
-                    <small>{{ export_stats.in_stock_strains }} in stock, {{ export_stats.out_of_stock_strains }} out of stock</small>
+                    <h3>{{ export_stats.total_cultivars }}</h3>
+                    <p>Total Cultivars</p>
+                    <small>{{ export_stats.in_stock_cultivars }} in stock, {{ export_stats.out_of_stock_cultivars }} out of stock</small>
                 </div>
             </div>
             
@@ -83,18 +83,18 @@
                 </div>
             </div>
 
-            <!-- Strains Export -->
+            <!-- Cultivars Export -->
             <div class="export-card">
                 <div class="export-header">
                     <i class="fas fa-dna"></i>
-                    <h3>Strains Data</h3>
+                    <h3>Cultivars Data</h3>
                 </div>
-                <p>Export strain collection with genetics, seed counts, and breeder information.</p>
+                <p>Export cultivar collection with genetics, seed counts, and breeder information.</p>
                 <div class="export-actions">
-                    <a href="{{ url_for('export_strains', format='csv') }}" class="btn btn-export csv-btn">
+                    <a href="{{ url_for('export_cultivars', format='csv') }}" class="btn btn-export csv-btn">
                         <i class="fas fa-file-csv"></i> CSV Format
                     </a>
-                    <a href="{{ url_for('export_strains', format='json') }}" class="btn btn-export json-btn">
+                    <a href="{{ url_for('export_cultivars', format='json') }}" class="btn btn-export json-btn">
                         <i class="fas fa-file-code"></i> JSON Format
                     </a>
                 </div>
@@ -155,10 +155,10 @@
                 </div>
                 <div class="backup-details">
                     <h3>Full System Backup</h3>
-                    <p>Create a comprehensive backup containing all your CultivAR data in multiple formats. Includes plants, strains, activities, users, sensors, and system metadata.</p>
+                    <p>Create a comprehensive backup containing all your CultivAR data in multiple formats. Includes plants, cultivars, activities, users, sensors, and system metadata.</p>
                     <ul class="backup-includes">
                         <li><i class="fas fa-check"></i> All plants data (CSV + JSON)</li>
-                        <li><i class="fas fa-check"></i> Complete strain collection (CSV + JSON)</li>
+                        <li><i class="fas fa-check"></i> Complete cultivar collection (CSV + JSON)</li>
                         <li><i class="fas fa-check"></i> Activity logs and history</li>
                         <li><i class="fas fa-check"></i> User accounts and permissions</li>
                         <li><i class="fas fa-check"></i> Sensor configurations and readings</li>
@@ -257,7 +257,7 @@
 }
 
 .plant-icon { color: #4CAF50; }
-.strain-icon { color: #9C27B0; }
+.cultivar-icon { color: #9C27B0; }
 .activity-icon { color: #FF9800; }
 .sensor-icon { color: #2196F3; }
 

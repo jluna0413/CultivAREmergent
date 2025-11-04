@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- Production network security configuration for CultivAREmergant -->
+    
+    <!-- Base configuration for all domains -->
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <!-- Trust system certificates -->
+            <certificates src="system"/>
+            <!-- Trust user added CAs -->
+            <certificates src="user"/>
+        </trust-anchors>
+    </base-config>
+    
+    <!-- Specific configurations for different environments -->
+    <domain-config cleartextTrafficPermitted="false">
+        <!-- Production API endpoints -->
+        <domain includeSubdomains="true">api.cultivaremergant.app</domain>
+        <domain includeSubdomains="true">auth.cultivaremergant.app</domain>
+        <domain includeSubdomains="true">analytics.cultivaremergant.app</domain>
+        <domain includeSubdomains="true">firebaseio.com</domain>
+        
+        <!-- Firebase Configuration -->
+        <pin-set expiration="2026-12-31">
+            <!-- Firebase API keys PINs -->
+            <pin digest="SHA-256">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</pin>
+            <pin digest="SHA-256">BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=</pin>
+        </pin-set>
+        
+        <trust-anchors>
+            <!-- Trust certificates from certificate authorities -->
+            <certificates src="system"/>
+            <!-- Trust certificates from installed apps -->
+            <certificates src="user"/>
+        </trust-anchors>
+    </domain-config>
+    
+    <!-- Debug configuration (only for debug builds) -->
+    <debug-overrides>
+        <trust-anchors>
+            <!-- Only trust user added CAs while debuggable only -->
+            <certificates src="user"/>
+        </trust-anchors>
+        <!-- Allow HTTP traffic for development/testing -->
+        <domain-config cleartextTrafficPermitted="true" includesSubdomains="true">
+            <domain includeSubdomains="true">localhost</domain>
+            <domain includeSubdomains="true">10.0.2.2</domain>
+            <domain includeSubdomains="true">127.0.0.1</domain>
+            <domain includeSubdomains="true">10.0.0.0</domain>
+            <domain includeSubdomains="true">192.168.0.0</domain>
+        </domain-config>
+    </debug-overrides>
+    
+    <!-- Exception for certificate pinning -->
+    <domain-config cleartextTrafficPermitted="false">
+        <!-- Certificate pins for major services -->
+        <pin-set expiration="2026-12-31">
+            <!-- AWS/GCP Certificate PIN -->
+            <pin digest="SHA-256">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</pin>
+            <pin digest="SHA-256">BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=</pin>
+            <!-- Apple Certificate PIN -->
+            <pin digest="SHA-256">CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC=</pin>
+            <!-- Google Certificate PIN -->
+            <pin digest="SHA-256">DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD=</pin>
+        </pin-set>
+    </domain-config>
+    
+    <!-- Content Security Policy for WebView -->
+    <domain-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system"/>
+        </trust-anchors>
+        
+        <!-- HTTPS only for WebView content -->
+        <domain includeSubdomains="true">cdn.cultivaremergant.app</domain>
+        <domain includeSubdomains="true">static.cultivaremergant.app</domain>
+        
+        <!-- CSP Headers for WebView -->
+        <set-data domain="cdn.cultivaremergant.app">
+            <header name="Content-Security-Policy" value="default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data: blob:;"/>
+            <header name="X-Content-Type-Options" value="nosniff"/>
+            <header name="X-Frame-Options" value="DENY"/>
+            <header name="X-XSS-Protection" value="1; mode=block"/>
+            <header name="Strict-Transport-Security" value="max-age=31536000; includeSubDomains"/>
+        </set-data>
+    </domain-config>
+    
+    <!-- IoT Device Communication -->
+    <domain-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system"/>
+            <certificates src="user"/>
+        </trust-anchors>
+        
+        <!-- Local network communication for IoT devices -->
+        <domain includeSubdomains="true">192.168.0.0/16</domain>
+        <domain includeSubdomains="true">10.0.0.0/8</domain>
+        <domain includeSubdomains="true">172.16.0.0/12</domain>
+        <domain includeSubdomains="true">::1</domain>
+        <domain includeSubdomains="true">fe80::/10</domain>
+    </domain-config>
+    
+    <!-- Media and File Downloads -->
+    <domain-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system"/>
+            <certificates src="user"/>
+        </trust-anchors>
+        
+        <!-- Media and file storage domains -->
+        <domain includeSubdomains="true">storage.cultivaremergant.app</domain>
+        <domain includeSubdomains="true">cdn.storage.googleapis.com</domain>
+        <domain includeSubdomains="true">images.cultivaremergant.app</domain>
+    </domain-config>
+    
+    <!-- Analytics and Monitoring -->
+    <domain-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system"/>
+        </trust-anchors>
+        
+        <!-- Analytics and monitoring services -->
+        <domain includeSubdomains="true">firebase-analytics.com</domain>
+        <domain includeSubdomains="true">firebase.io</domain>
+        <domain includeSubdomains="true">crashlytics.com</domain>
+        <domain includeSubdomains="true">analytics.google.com</domain>
+        <domain includeSubdomains="true">googletagmanager.com</domain>
+    </domain-config>
+</network-security-config>

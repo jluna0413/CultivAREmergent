@@ -11,7 +11,7 @@ import time
 from datetime import datetime
 
 class CultivARTester:
-    def __init__(self, base_url="http://localhost:8001"):
+    def __init__(self, base_url="http://localhost:5000"):
         self.base_url = base_url
         self.session = requests.Session()
         self.test_results = []
@@ -49,7 +49,7 @@ class CultivARTester:
         """Test login with valid and invalid credentials"""
         # Test GET login page
         try:
-            response = self.session.get(f"{self.base_url}/login")
+            response = self.session.get(f"{self.base_url}/auth/login")
             if response.status_code == 200:
                 self.log_test("Login Page Access", "PASS", "Login page accessible", response.status_code)
             else:
@@ -63,7 +63,7 @@ class CultivARTester:
                 "username": self.admin_credentials["username"],
                 "password": self.admin_credentials["password"]
             }
-            response = self.session.post(f"{self.base_url}/login", data=login_data)
+            response = self.session.post(f"{self.base_url}/auth/login", data=login_data)
             if response.status_code == 302 or response.status_code == 200:
                 self.log_test("Valid Login", "PASS", "Admin login successful", response.status_code)
             else:
@@ -74,7 +74,7 @@ class CultivARTester:
         # Test invalid login
         try:
             invalid_data = {"username": "invalid", "password": "wrong"}
-            response = self.session.post(f"{self.base_url}/login", data=invalid_data)
+            response = self.session.post(f"{self.base_url}/auth/login", data=invalid_data)
             if response.status_code in [200, 302]:
                 self.log_test("Invalid Login", "PASS", "Invalid login properly rejected", response.status_code)
             else:
@@ -86,10 +86,10 @@ class CultivARTester:
         """Test protected routes that require authentication"""
         protected_routes = [
             ("/dashboard", "Dashboard"),
-            ("/plants", "Plants Page"),
+            ("/dashboard/plants", "Plants Page"),
             ("/strains", "Strains Page"),
-            ("/sensors", "Sensors Page"),
-            ("/settings", "Settings Page"),
+            ("/dashboard/sensors", "Sensors Page"),
+
             ("/market/seed-bank", "Seed Bank"),
             ("/market/extensions", "Extensions"),
             ("/market/gear", "Gear")
@@ -109,17 +109,16 @@ class CultivARTester:
                 
     def test_admin_api_endpoints(self):
         """Test admin API endpoints"""
-        # First, ensure we have admin session
-        self.session.post(f"{self.base_url}/login", data=self.admin_credentials)
+        self.session.post(f"{self.base_url}/auth/login", data=self.admin_credentials)
         
         # Set admin session manually (since the app uses session-based auth for admin API)
         # We need to check if admin session is properly set
         
         admin_endpoints = [
-            ("/api/admin/users", "GET", "Get Users API"),
-            ("/api/admin/system/logs", "GET", "System Logs API"),
-            ("/api/admin/system/info", "GET", "System Info API"),
-            ("/api/admin/diagnostics/test", "GET", "Diagnostics Test API")
+            ("/admin/api/users", "GET", "Get Users API"),
+            ("/admin/api/system/logs", "GET", "System Logs API"),
+            ("/admin/api/system/info", "GET", "System Info API"),
+            ("/admin/api/diagnostics/test", "GET", "Diagnostics Test API")
         ]
         
         for endpoint, method, name in admin_endpoints:
@@ -151,7 +150,7 @@ class CultivARTester:
                 "password": "testpass123",
                 "email": "test@example.com"
             }
-            response = self.session.post(f"{self.base_url}/api/admin/users", json=new_user_data)
+            response = self.session.post(f"{self.base_url}/admin/api/users", json=new_user_data)
             if response.status_code in [200, 201]:
                 self.log_test("Create User API", "PASS", "User creation API working", response.status_code)
                 
@@ -179,7 +178,7 @@ class CultivARTester:
     def test_logout_functionality(self):
         """Test logout functionality"""
         try:
-            response = self.session.get(f"{self.base_url}/logout")
+            response = self.session.get(f"{self.base_url}/auth/logout")
             if response.status_code in [200, 302]:
                 self.log_test("Logout", "PASS", "Logout endpoint working", response.status_code)
             else:
@@ -191,7 +190,7 @@ class CultivARTester:
         """Test signup functionality"""
         try:
             # Test GET signup page
-            response = self.session.get(f"{self.base_url}/signup")
+            response = self.session.get(f"{self.base_url}/auth/signup")
             if response.status_code == 200:
                 self.log_test("Signup Page Access", "PASS", "Signup page accessible", response.status_code)
             else:
@@ -199,11 +198,10 @@ class CultivARTester:
                 
             # Test POST signup
             signup_data = {
-                "username": "newuser123",
+                "email": "newuser123@example.com",
                 "password": "newpass123",
-                "confirm_password": "newpass123"
             }
-            response = self.session.post(f"{self.base_url}/signup", data=signup_data)
+            response = self.session.post(f"{self.base_url}/auth/signup", data=signup_data)
             if response.status_code in [200, 302]:
                 self.log_test("User Signup", "PASS", "Signup functionality working", response.status_code)
             else:
@@ -214,7 +212,7 @@ class CultivARTester:
     def test_database_connectivity(self):
         """Test database connectivity through API responses"""
         # Login first to access protected endpoints
-        self.session.post(f"{self.base_url}/login", data=self.admin_credentials)
+        self.session.post(f"{self.base_url}/auth/login", data=self.admin_credentials)
         
         # Test endpoints that would require database access
         db_dependent_endpoints = [
@@ -535,7 +533,7 @@ class CultivARTester:
             print("  - Address warnings for optimal functionality.")
             
         # Save detailed results to file
-        with open('/app/backend_test_results.json', 'w') as f:
+        with open('backend_test_results.json', 'w') as f:
             json.dump(self.test_results, f, indent=2)
         print(f"\n📄 Detailed results saved to: /app/backend_test_results.json")
 
@@ -544,7 +542,7 @@ def main():
     if len(sys.argv) > 1:
         base_url = sys.argv[1]
     else:
-        base_url = "http://localhost:8001"
+        base_url = "http://localhost:5000"
         
     print(f"Testing CultivAR application at: {base_url}")
     

@@ -170,11 +170,17 @@ def record_plant_add_activity(plant_name, plant_id):
     )
 
 
-def record_strain_edit_activity(strain_name, strain_id):
-    """Record a strain edit activity."""
+def record_cultivar_edit_activity(cultivar_name, cultivar_id):
+    """Record a cultivar edit activity."""
     return record_system_activity(
-        "strain_edit", {"strain": strain_name, "strain_id": strain_id}
+        "cultivar_edit", {"cultivar": cultivar_name, "cultivar_id": cultivar_id}
     )
+
+
+# Backward compatibility alias
+def record_strain_edit_activity(strain_name, strain_id):
+    """Record a strain edit activity. (Deprecated - use record_cultivar_edit_activity)"""
+    return record_cultivar_edit_activity(strain_name, strain_id)
 
 
 def record_user_add_activity(new_username):

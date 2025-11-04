@@ -1,0 +1,352 @@
+# Fastlane configuration for CultivAREmergant deployment automation
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+
+default_platform(:android)
+
+platform :android do
+  # Environment variables for different deployment environments
+  ENV["FASTLANE_HIDE_GITHUB_ISSUES"] = "1"
+
+  before_all do
+    # Ensure we have the latest version of Fastlane
+    setup_circle_ci if ENV['CI']
+    
+    # Verify environment
+    puts "🔧 Deployment Environment: #{ENV['DEPLOYMENT_ENV'] || 'development'}"
+    puts "📱 App Bundle ID: #{ENV['ANDROID_APP_ID'] || 'com.cultivaremergant.app'}"
+  end
+
+  desc "Run all tests"
+  lane :test do
+    # Run Flutter tests
+    sh("flutter", "test", "--no-pub")
+    
+    # Run integration tests if they exist
+    if File.exist?("integration_test/")
+      sh("flutter", "test", "integration_test/", "--no-pub")
+    end
+  end
+
+  desc "Build and upload debug APK"
+  lane :build_debug do
+    # Clean previous builds
+    sh("flutter", "clean")
+    sh("flutter", "pub", "get")
+    
+    # Build debug APK
+    sh("flutter", "build", "apk", "--debug")
+    
+    # Upload to Firebase App Distribution for testing
+    upload_to_firebase_app_distribution(
+      app: ENV['FIREBASE_APP_ID_ANDROID'],
+      groups: "qa-team,stakeholders",
+      release_notes: "Debug build for internal testing"
+    ) if ENV['FIREBASE_TOKEN']
+  end
+
+  desc "Build and upload release APK for testing"
+  lane :build_release do
+    # Build release APK
+    sh("flutter", "build", "apk", "--release", "--obfuscate", "--split-debug-info=build/debug-info/")
+    
+    # Upload to Firebase App Distribution
+    upload_to_firebase_app_distribution(
+      app: ENV['FIREBASE_APP_ID_ANDROID'],
+      groups: "beta-testers,external-testers",
+      release_notes: ENV['RELEASE_NOTES'] || "Latest release build for beta testing"
+    ) if ENV['FIREBASE_TOKEN']
+  end
+
+  desc "Build and deploy to Play Store Internal Testing"
+  lane :deploy_internal do
+    # Build App Bundle
+    sh("flutter", "build", "appbundle", "--release", "--obfuscate", "--split-debug-info=build/debug-info/")
+    
+    # Deploy to Play Store Internal Testing
+    upload_to_play_store(
+      package_name: ENV['ANDROID_PACKAGE_NAME'],
+      track: "internal",
+      aab: "build/app/outputs/bundle/release/app-release.aab",
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+  end
+
+  desc "Deploy to Play Store Alpha Testing"
+  lane :deploy_alpha do
+    # Build App Bundle
+    sh("flutter", "build", "appbundle", "--release", "--obfuscate", "--split-debug-info=build/debug-info/")
+    
+    # Deploy to Play Store Alpha
+    upload_to_play_store(
+      package_name: ENV['ANDROID_PACKAGE_NAME'],
+      track: "alpha",
+      aab: "build/app/outputs/bundle/release/app-release.aab",
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+  end
+
+  desc "Deploy to Play Store Production"
+  lane :deploy_production do
+    # Validate environment
+    validate_environment
+    
+    # Build App Bundle with production optimizations
+    sh("flutter", "build", "appbundle", "--release", "--obfuscate", "--split-debug-info=build/debug-info/", "--tree-shake-icons", "--source-maps")
+    
+    # Deploy to Play Store Production
+    upload_to_play_store(
+      package_name: ENV['ANDROID_PACKAGE_NAME'],
+      track: "production",
+      aab: "build/app/outputs/bundle/release/app-release.aab",
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      release_status: "draft"
+    )
+  end
+
+  desc "Deploy to Google Play Store Closed Beta"
+  lane :deploy_closed_beta do
+    # Build App Bundle
+    sh("flutter", "build", "appbundle", "--release", "--obfuscate", "--split-debug-info=build/debug-info/")
+    
+    # Deploy to Play Store Closed Beta
+    upload_to_play_store(
+      package_name: ENV['ANDROID_PACKAGE_NAME'],
+      track: "closed-beta",
+      aab: "build/app/outputs/bundle/release/app-release.aab",
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+  end
+
+  desc "Full release pipeline"
+  lane :release do
+    # Ensure we're on the right branch
+    ensure_git_branch(branch: "release/*") unless ENV['CI']
+    
+    # Run tests
+    test
+    
+    # Build App Bundle
+    sh("flutter", "build", "appbundle", "--release", "--obfuscate", "--split-debug-info=build/debug-info/")
+    
+    # Deploy to appropriate track based on environment
+    case ENV['DEPLOYMENT_ENV']
+    when "staging"
+      deploy_alpha
+    when "production"
+      deploy_production
+    else
+      deploy_internal
+    end
+  end
+
+  desc "Deploy to Firebase App Distribution"
+  lane :firebase_distribute do |options|
+    # Set release notes
+    release_notes = options[:release_notes] || generate_release_notes
+    
+    # Build App Bundle
+    sh("flutter", "build", "appbundle", "--release", "--obfuscate", "--split-debug-info=build/debug-info/")
+    
+    # Deploy to Firebase
+    upload_to_firebase_app_distribution(
+      app: ENV['FIREBASE_APP_ID_ANDROID'],
+      aab_file: "build/app/outputs/bundle/release/app-release.aab",
+      groups: options[:groups] || "beta-testers",
+      release_notes: release_notes
+    )
+  end
+
+  desc "Generate release notes"
+  lane :generate_release_notes do
+    # Generate release notes from git commits
+    git_log = sh("git", "log", "--pretty=format:'- %s'", "HEAD~5..HEAD").split("\n").reject(&:empty?).join("\n")
+    
+    release_notes = [
+      "## Release #{ENV['VERSION_NAME'] || 'Latest'}",
+      "",
+      "**Build Date:** #{Time.now.strftime('%Y-%m-%d %H:%M:%S')}",
+      "**Version:** #{ENV['VERSION_NAME'] || 'Development'}",
+      "",
+      "### Changes",
+      git_log.empty? ? "- Initial release" : git_log,
+      "",
+      "### Installation",
+      "Download the latest APK or install from the Play Store when available."
+    ].join("\n")
+    
+    # Write to file
+    File.write("RELEASE_NOTES.md", release_notes)
+    
+    # Return release notes
+    release_notes
+  end
+
+  desc "Validate Play Store configuration"
+  lane :validate_play_store_config do
+    # Validate required environment variables
+    required_vars = [
+      'ANDROID_PACKAGE_NAME',
+      'PLAY_STORE_JSON_KEY_PATH'
+    ]
+    
+    missing_vars = required_vars.select { |var| ENV[var].nil? }
+    
+    unless missing_vars.empty?
+      UI.user_error!("Missing required environment variables: #{missing_vars.join(', ')}")
+    end
+    
+    # Validate package name format
+    package_name = ENV['ANDROID_PACKAGE_NAME']
+    unless package_name.match?(/^[a-z][a-z0-9_]*(\.[a-z0-9_]*)+$/)
+      UI.user_error!("Invalid package name format: #{package_name}")
+    end
+    
+    UI.success("✅ Play Store configuration is valid")
+  end
+
+  desc "Update app metadata for Play Store"
+  lane :update_play_store_metadata do
+    # Upload metadata if it exists
+    if File.exist?("metadata/android/")
+      upload_to_play_store(
+        package_name: ENV['ANDROID_PACKAGE_NAME'],
+        skip_upload_apk: true,
+        skip_upload_aab: true,
+        skip_upload_images: false,
+        skip_upload_screenshots: false,
+        submit_for_review: false
+      )
+    end
+  end
+
+  desc "Create screenshots for Play Store"
+  lane :create_screenshots do
+    # This would run a screenshot generation script
+    # For now, we'll assume screenshots are already created
+    UI.message("📸 Screenshots available in store_assets/screenshots/")
+  end
+
+  desc "Clean build artifacts"
+  lane :clean do
+    # Clean Flutter build artifacts
+    sh("flutter", "clean")
+    
+    # Clean Fastlane artifacts
+    sh("rm", "-rf", "fastlane/report.xml")
+    sh("rm", "-rf", "fastlane/screenshots")
+    sh("rm", "-rf", "fastlane/metadata")
+    
+    UI.success("🧹 Build artifacts cleaned")
+  end
+
+  desc "Increment version number"
+  lane :increment_version do |options|
+    version_type = options[:type] || "patch"
+    
+    # Get current version
+    current_version = ENV['VERSION_NAME'] || "1.0.0"
+    current_parts = current_version.split('.').map(&:to_i)
+    
+    # Increment based on type
+    case version_type
+    when "major"
+      current_parts[0] += 1
+      current_parts[1] = 0
+      current_parts[2] = 0
+    when "minor"
+      current_parts[1] += 1
+      current_parts[2] = 0
+    when "patch"
+      current_parts[2] += 1
+    end
+    
+    new_version = current_parts.join('.')
+    
+    # Update environment variable
+    ENV['VERSION_NAME'] = new_version
+    
+    # Update pubspec.yaml
+    update_pubspec_version(new_version)
+    
+    UI.success("Version incremented to #{new_version}")
+  end
+
+  private_lane :validate_environment do
+    # Validate deployment environment
+    env = ENV['DEPLOYMENT_ENV'] || 'development'
+    
+    case env
+    when 'production'
+      UI.user_error!("Deployment to production requires manual confirmation") unless ENV['CONFIRM_PRODUCTION'] == 'true'
+    when 'staging'
+      UI.message("Deploying to staging environment")
+    when 'development'
+      UI.message("Deploying to development environment")
+    end
+  end
+
+  private_lane :update_pubspec_version do |version|
+    # Update version in pubspec.yaml
+    pubspec_content = File.read("pubspec.yaml")
+    updated_content = pubspec_content.gsub(/version: [\d\.]+\+\d+/, "version: #{version}+1")
+    File.write("pubspec.yaml", updated_content) unless updated_content == pubspec_content
+  end
+
+  error do |lane, exception|
+    # Handle deployment errors
+    UI.error("Deployment failed: #{exception.message}")
+    
+    # Send notification about failure (Slack, email, etc.)
+    # notify_failure(exception.message) if ENV['NOTIFICATION_WEBHOOK']
+  end
+end
+
+platform :ios do
+  before_all do
+    setup_circle_ci if ENV['CI']
+  end
+
+  desc "Build and deploy iOS app"
+  lane :build_and_deploy do
+    # Build iOS app
+    build_app(
+      scheme: "Runner",
+      configuration: "Release",
+      export_method: "app-store"
+    )
+    
+    # Upload to App Store Connect
+    upload_to_app_store(
+      app_identifier: ENV['IOS_BUNDLE_ID'],
+      skip_screenshots: true,
+      skip_metadata: false
+    )
+  end
+
+  error do |lane, exception|
+    UI.error("iOS deployment failed: #{exception.message}")
+  end
+end
+
+# Helper methods
+def generate_release_notes
+  # Generate release notes from git history
+  commits = sh("git", "log", "--pretty=format:'%s'", "HEAD~10..HEAD").split("\n").reject(&:empty?)
+  
+  release_notes = [
+    "## Latest Release",
+    "",
+    commits.map { |commit| "- #{commit}" }.join("\n")
+  ].join("\n")
+  
+  release_notes
+end

@@ -1,0 +1,94 @@
+================================================================================
+COMPREHENSIVE MCP INTEGRATION TEST REPORT
+================================================================================
+Test Date: 2025-11-02 22:47:01 UTC
+Test Environment: Windows 11
+
+SUMMARY
+----------------------------------------
+Total Tests: 16
+Passed: 13
+Failed: 3
+Warnings: 0
+
+DETAILED RESULTS
+----------------------------------------
+Test: JSON Validation - cline_mcp_settings_corrected.json
+Status: PASS
+Details: Valid JSON with 3 MCP servers
+
+Test: JSON Validation - mcp_corrected.json
+Status: PASS
+Details: Valid JSON with 2 MCP servers
+
+Test: JSON Validation - vscode_settings_corrected.json
+Status: PASS
+Details: Valid JSON with 3 MCP servers
+
+Test: TaskMaster AI Package
+Status: FAIL
+Details: Package check error: [WinError 2] The system cannot find the file specified
+Issues: [WinError 2] The system cannot find the file specified
+
+Test: TaskMaster AI Execution
+Status: FAIL
+Details: Execution error: [WinError 2] The system cannot find the file specified
+Issues: [WinError 2] The system cannot find the file specified
+
+Test: OLLAMA Service
+Status: PASS
+Details: Service accessible, version 0.12.9
+
+Test: OLLAMA Model Availability
+Status: PASS
+Details: Target model 'gemma3:270m' found in 63 available models
+
+Test: MCP Naming - byterover-mcp
+Status: PASS
+Details: Valid naming convention in cline_mcp_settings_corrected.json
+
+Test: MCP Naming - taskmaster-ai
+Status: PASS
+Details: Valid naming convention in cline_mcp_settings_corrected.json
+
+Test: MCP Naming - archon
+Status: PASS
+Details: Valid naming convention in cline_mcp_settings_corrected.json
+
+Test: MCP Naming - taskmaster-ai
+Status: PASS
+Details: Valid naming convention in mcp_corrected.json
+
+Test: MCP Naming - archon
+Status: PASS
+Details: Valid naming convention in mcp_corrected.json
+
+Test: MCP Naming - taskmaster-ai
+Status: PASS
+Details: Valid naming convention in vscode_settings_corrected.json
+
+Test: MCP Naming - archon
+Status: PASS
+Details: Valid naming convention in vscode_settings_corrected.json
+
+Test: MCP Naming - byterover-mcp
+Status: PASS
+Details: Valid naming convention in vscode_settings_corrected.json
+
+Test: End-to-End Integration
+Status: FAIL
+Details: Integration test error: [WinError 2] The system cannot find the file specified
+Issues: [WinError 2] The system cannot find the file specified
+
+ISSUES REQUIRING ATTENTION
+----------------------------------------
+Critical Issues:
+  • TaskMaster AI Package: Package check error: [WinError 2] The system cannot find the file specified
+  • TaskMaster AI Execution: Execution error: [WinError 2] The system cannot find the file specified
+  • End-to-End Integration: Integration test error: [WinError 2] The system cannot find the file specified
+
+RECOMMENDATIONS
+----------------------------------------
+[FAIL] Several critical issues must be resolved before production use.
+
+================================================================================

@@ -22,6 +22,9 @@
 
 ### Database
 - [ ] Database schema finalized
+- [ ] **Alembic migrations generated** (`alembic revision --autogenerate`)
+- [ ] **Alembic migrations applied** (`alembic upgrade head`)
+- [ ] **Migration status verified** (`alembic current`)
 - [ ] Initial data seeded (if needed)
 - [ ] Database backup procedure documented
 
@@ -43,7 +46,9 @@
 - [ ] Code deployed to server
 - [ ] Environment variables configured
 - [ ] Static assets optimized
-- [ ] Database migrations run
+- [ ] **Database migrations run** (`alembic upgrade head`)
+- [ ] **Migration success verified** (`alembic current`)
+- [ ] **Database schema matches expected state**
 
 ### Monitoring
 - [ ] Logging configured

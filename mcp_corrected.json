@@ -1,0 +1,31 @@
+{
+  "providers": {
+    "ollama": {
+      "type": "local",
+      "baseUrl": "${OLLAMA_BASE_URL:-http://localhost:11435}",
+      "apiKey": "${OLLAMA_API_KEY:-}",
+      "description": "Project-level overrides for Ollama. Keep secrets out of git; set OLLAMA_BASE_URL or OLLAMA_API_KEY in your environment or in a local .env file (gitignored)."
+    }
+  },
+  "mcpServers": {
+    "taskmaster-ai": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "task-master-ai"
+      ],
+      "env": {
+        "OLLAMA_API_KEY": "${OLLAMA_API_KEY:-}",
+        "OLLAMA_BASE_URL": "${OLLAMA_BASE_URL:-http://localhost:11435}",
+        "OLLAMA_MODEL": "${OLLAMA_MODEL:-gemma3:270m}"
+      }
+    },
+    "archon": {
+      "command": "npx",
+      "args": [
+        "mcp-remote",
+        "http://localhost:8051/mcp"
+      ]
+    }
+  }
+}
