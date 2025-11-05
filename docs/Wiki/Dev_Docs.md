@@ -44,7 +44,7 @@ The application uses SQLAlchemy models to represent database entities:
 
 - **User**: Authentication user
 - **Plant**: Cannabis plant
-- **Strain**: Cannabis strain
+- **Cultivar**: Cannabis cultivar
 - **Breeder**: Seed breeder/bank
 - **Zone**: Growing zone
 - **Sensor**: Environmental sensor
@@ -59,7 +59,7 @@ The application uses SQLAlchemy models to represent database entities:
 Handlers contain the business logic of the application:
 
 - **plant_handlers.py**: Plant management
-- **strain_handlers.py**: Strain management
+- **cultivar_handlers.py**: Cultivar management
 - **sensor_handlers.py**: Sensor management
 - **settings_handlers.py**: Settings management
 
@@ -69,7 +69,7 @@ Routes define the application endpoints:
 
 - **Basic Routes**: Health check, favicon
 - **Authentication Routes**: Login, logout, password change
-- **Protected Routes**: Dashboard, plants, strains, sensors, settings
+- **Protected Routes**: Dashboard, plants, cultivars, sensors, settings
 - **API Routes**: JSON endpoints for AJAX requests
 
 ### Watcher

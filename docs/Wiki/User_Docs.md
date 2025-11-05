@@ -49,23 +49,23 @@ Click on a plant to view its details. From here, you can:
 - Upload images
 - View growth history
 
-### Strains
+### Cultivars
 
 The Cultivars page allows you to manage your cannabis cultivars.
 
-#### Adding a Strain
+#### Adding a Cultivar
 
-1. Click the "Add Strain" button.
-2. Fill in the strain details:
-   - Name: The strain name.
+1. Click the "Add Cultivar" button.
+2. Fill in the cultivar details:
+   - Name: The cultivar name.
    - Breeder: The breeder or seed bank.
    - Indica/Sativa: The indica/sativa percentages.
-   - Autoflower: Check if it's an autoflowering strain.
-   - Description: Strain description.
+   - Autoflower: Check if it's an autoflowering cultivar.
+   - Description: Cultivar description.
    - Seed Count: Number of seeds you have.
    - Cycle Time: Expected flowering time in days.
-   - URL: Optional link to strain information.
-3. Click "Save" to create the strain.
+   - URL: Optional link to cultivar information.
+3. Click "Save" to create the cultivar.
 
 ### Sensors
 
@@ -101,6 +101,6 @@ The Settings page allows you to configure the application.
 ## Tips and Tricks
 
 - **Watering Schedule**: Use the dashboard to quickly see which plants need watering.
-- **Strain Selection**: Use the seed count to keep track of which strains you have available.
+- **Cultivar Selection**: Use the seed count to keep track of which cultivars you have available.
 - **Environmental Data**: Monitor temperature and humidity trends to optimize growing conditions.
 - **Plant Images**: Take regular photos to track plant development over time.

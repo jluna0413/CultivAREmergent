@@ -334,7 +334,7 @@ Each domain implements comprehensive Pydantic models:
 - `app/fastapi_app/models/common.py` - Common response models ✅
 - `app/fastapi_app/models/dashboard.py` - Dashboard schemas ✅
 - `app/fastapi_app/models/sensors.py` - Sensor schemas ✅
-- `app/fastapi_app/models/strains.py` - Strain schemas ✅
+- `app/fastapi_app/models/cultivars.py` - Cultivar schemas ✅
 - `app/fastapi_app/models/users.py` - User management schemas ✅
 
 **Legacy Schemas:**
@@ -384,7 +384,7 @@ Each domain implements comprehensive Pydantic models:
 |--------|-------------|--------|---------------|-----------------|
 | Plants | `plants.py` & `plants_api.py` | ✅ Complete | 15+ | ✅ Complete |
 | Dashboard | `dashboard.py` | ✅ Complete | 8+ | ✅ Complete |
-| Strains | `strains.py` | ✅ Complete | 12+ | ✅ Complete |
+| Cultivars | `cultivars.py` | ✅ Complete | 12+ | ✅ Complete |
 | Breeder | `breeders.py` | ✅ Complete | 10+ | ✅ Complete |
 | Clones | `clones.py` | ✅ Complete | 10+ | ✅ Complete |
 | Authentication | `auth.py` | ✅ Complete | 10+ | ✅ Complete |

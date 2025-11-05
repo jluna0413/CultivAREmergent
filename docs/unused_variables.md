@@ -20,8 +20,8 @@ This document lists unused variables and imports that were identified during the
 - `app.handlers.export_handlers.export_plants_csv`
 - `app.handlers.export_handlers.export_plants_json`
 - `app.handlers.export_handlers.export_sensors_csv`
-- `app.handlers.export_handlers.export_strains_csv`
-- `app.handlers.export_handlers.export_strains_json`
+- `app.handlers.export_handlers.export_cultivars_csv`
+- `app.handlers.export_handlers.export_cultivars_json`
 - `app.handlers.export_handlers.export_users_csv`
 - `app.handlers.export_handlers.get_export_statistics`
 - `app.handlers.plant_handlers.get_dead_plants`
@@ -32,9 +32,9 @@ This document lists unused variables and imports that were identified during the
 - `app.handlers.sensor_handlers.get_sensors`
 - `app.handlers.settings_handlers.get_settings`
 - `app.handlers.settings_handlers.update_user_password`
-- `app.handlers.strain_handlers.get_in_stock_strains`
-- `app.handlers.strain_handlers.get_out_of_stock_strains`
-- `app.handlers.strain_handlers.get_strain`
+- `app.handlers.cultivar_handlers.get_in_stock_cultivars`
+- `app.handlers.cultivar_handlers.get_out_of_stock_cultivars`
+- `app.handlers.cultivar_handlers.get_cultivar`
 - `app.handlers.user_handlers.create_user`
 - `app.handlers.user_handlers.delete_user`
 - `app.handlers.user_handlers.force_password_reset`

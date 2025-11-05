@@ -90,16 +90,31 @@ def get_activity_types() -> List[ActivityTypeResponse]:
             is_system=False
         ),
         ActivityTypeResponse(
+            type="cultivar_add",
+            display_name="Cultivar Added",
+            description="Cultivar creation activities",
+            category="system",
+            is_system=True
+        ),
+        ActivityTypeResponse(
+            type="cultivar_edit",
+            display_name="Cultivar Updated",
+            description="Cultivar update activities",
+            category="system",
+            is_system=True
+        ),
+        # Legacy strain types for backward compatibility
+        ActivityTypeResponse(
             type="strain_add",
-            display_name="Strain Added",
-            description="Strain creation activities",
+            display_name="Strain Added (Legacy)",
+            description="Legacy strain creation activities - use cultivar_add instead",
             category="system",
             is_system=True
         ),
         ActivityTypeResponse(
             type="strain_edit",
-            display_name="Strain Updated",
-            description="Strain update activities",
+            display_name="Strain Updated (Legacy)",
+            description="Legacy strain update activities - use cultivar_edit instead",
             category="system",
             is_system=True
         ),

@@ -71,7 +71,7 @@ app/blueprints/
 
 #### Blog Integration
 - SEO-optimized article structure
-- Categories (Growing Tips, Strain Reviews, Industry News)
+- Categories (Growing Tips, Cultivar Reviews, Industry News)
 - Social sharing capabilities
 - Author profiles
 

@@ -31,14 +31,14 @@ This test plan outlines the testing approach for the CultivAR MVP release. The g
 | PLANT-04 | Record Activity | 1. Navigate to plant details<br>2. Click "Add Activity"<br>3. Fill in activity details<br>4. Click "Save" | Activity is recorded and displayed in history | |
 | PLANT-05 | Upload Image | 1. Navigate to plant details<br>2. Click "Upload Image"<br>3. Select an image<br>4. Click "Upload" | Image is uploaded and displayed | |
 
-### 3. Strain Management
+### 3. Cultivar Management
 
 | Test ID | Description | Steps | Expected Result | Status |
 |---------|-------------|-------|-----------------|--------|
-| STRAIN-01 | Add Strain | 1. Navigate to Strains page<br>2. Click "Add Strain"<br>3. Fill in required fields<br>4. Click "Save" | Strain is created and appears in the list | |
-| STRAIN-02 | Edit Strain | 1. Navigate to Strains page<br>2. Click on a strain<br>3. Click "Edit"<br>4. Modify fields<br>5. Click "Save" | Strain is updated with new information | |
-| STRAIN-03 | Delete Strain | 1. Navigate to Strains page<br>2. Click on a strain<br>3. Click "Delete"<br>4. Confirm deletion | Strain is removed from the list | |
-| STRAIN-04 | View Strain Details | 1. Navigate to Strains page<br>2. Click on a strain | Strain details are displayed | |
+| CULTIVAR-01 | Add Cultivar | 1. Navigate to Cultivars page<br>2. Click "Add Cultivar"<br>3. Fill in required fields<br>4. Click "Save" | Cultivar is created and appears in the list | |
+| CULTIVAR-02 | Edit Cultivar | 1. Navigate to Cultivars page<br>2. Click on a cultivar<br>3. Click "Edit"<br>4. Modify fields<br>5. Click "Save" | Cultivar is updated with new information | |
+| CULTIVAR-03 | Delete Cultivar | 1. Navigate to Cultivars page<br>2. Click on a cultivar<br>3. Click "Delete"<br>4. Confirm deletion | Cultivar is removed from the list | |
+| CULTIVAR-04 | View Cultivar Details | 1. Navigate to Cultivars page<br>2. Click on a cultivar | Cultivar details are displayed | |
 
 ### 4. Dashboard
 
@@ -80,5 +80,5 @@ The MVP is ready for beta testing when:
 
 1. All critical and high-priority test cases pass
 2. No blocking bugs remain
-3. Core functionality (authentication, plant management, strain management) works as expected
+3. Core functionality (authentication, plant management, cultivar management) works as expected
 4. The application is usable on desktop and mobile devices

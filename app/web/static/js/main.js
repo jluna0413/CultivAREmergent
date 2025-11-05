@@ -139,7 +139,7 @@ function initStrainForm() {
         const formData = $(this).serialize();
 
         $.ajax({
-            url: '/strains',
+            url: '/cultivars',
             type: 'POST',
             data: formData,
             success: function(response) {

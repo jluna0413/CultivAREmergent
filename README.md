@@ -1,11 +1,11 @@
 # CultivAR
 
-CultivAR is a self-hosted cannabis grow journal application. It allows you to track your plants, strains, and environmental data.
+CultivAR is a self-hosted cannabis grow journal application. It allows you to track your plants, cultivars, and environmental data.
 
 ## Features
 
 - Plant tracking (growth stages, activities, measurements)
-- Strain management
+- Cultivar management
 - Sensor integration (AC Infinity, Ecowitt)
 - Image uploads
 - Environmental data visualization

@@ -79,11 +79,11 @@ async def breeders_list_page(
         # Transform to match legacy template format
         breeder_data = []
         for breeder in breeders:
-            strain_count = len(breeder.cultivars) if breeder.cultivars else 0
+            cultivar_count = len(breeder.cultivars) if breeder.cultivars else 0
             breeder_data.append({
                 'id': breeder.id,
                 'name': breeder.name,
-                'strain_count': strain_count,
+                'cultivar_count': cultivar_count,
             })
         
         context.update({
@@ -120,20 +120,20 @@ async def breeder_detail_page(
         breeder_data = {
             'id': breeder.id,
             'name': breeder.name,
-            'strain_count': len(breeder.cultivars) if breeder.cultivars else 0,
-            'strains': []
+            'cultivar_count': len(breeder.cultivars) if breeder.cultivars else 0,
+            'cultivars': []
         }
         
-        # Add strain data if available
+        # Add cultivar data if available
         if breeder.cultivars:
-            for strain in breeder.cultivars:
-                breeder_data['strains'].append({
-                    'id': strain.id,
-                    'name': strain.name,
-                    'indica': strain.indica or 0,
-                    'sativa': strain.sativa or 0,
-                    'autoflower': strain.autoflower or False,
-                    'description': strain.description
+            for cultivar in breeder.cultivars:
+                breeder_data['cultivars'].append({
+                    'id': cultivar.id,
+                    'name': cultivar.name,
+                    'indica': cultivar.indica or 0,
+                    'sativa': cultivar.sativa or 0,
+                    'autoflower': cultivar.autoflower or False,
+                    'description': cultivar.description
                 })
         
         context.update({
@@ -200,11 +200,11 @@ async def api_breeders_list(
         # Transform to response format
         items = []
         for breeder in breeders:
-            strain_count = len(breeder.cultivars) if breeder.cultivars else 0
+            cultivar_count = len(breeder.cultivars) if breeder.cultivars else 0
             items.append(BreederResponse(
                 id=breeder.id,
                 name=breeder.name,
-                strain_count=strain_count
+                cultivar_count=cultivar_count
             ))
         
         return BreederListApiResponse(**create_paginated_response(items, total, page, page_size))
@@ -229,12 +229,12 @@ async def api_breeder_get(
         if not breeder:
             raise HTTPException(status_code=404, detail="Breeder not found")
         
-        strain_count = len(breeder.cultivars) if breeder.cultivars else 0
+        cultivar_count = len(breeder.cultivars) if breeder.cultivars else 0
         
         return BreederResponse(
             id=breeder.id,
             name=breeder.name,
-            strain_count=strain_count
+            cultivar_count=cultivar_count
         )
         
     except HTTPException:
@@ -340,14 +340,14 @@ async def api_breeder_delete(
         if not breeder:
             raise HTTPException(status_code=404, detail="Breeder not found")
         
-        # Check if breeder has associated strains
+        # Check if breeder has associated cultivars
         result = await db.execute(select(func.count(Cultivar.id)).where(Cultivar.breeder_id == breeder_id))
-        strain_count = result.scalar() or 0
+        cultivar_count = result.scalar() or 0
         
-        if strain_count > 0:
+        if cultivar_count > 0:
             raise HTTPException(
-                status_code=400, 
-                detail=f"Cannot delete breeder with {strain_count} associated strains"
+                status_code=400,
+                detail=f"Cannot delete breeder with {cultivar_count} associated cultivars"
             )
         
         await db.delete(breeder)
@@ -376,7 +376,7 @@ async def api_breeder_stats(
         result = await db.execute(select(func.count(Breeder.id)))
         total_breeders = result.scalar() or 0
         
-        # Get most prolific breeder (breeder with most strains)
+        # Get most prolific breeder (breeder with most cultivars)
         result = await db.execute(
             select(Breeder.name, func.count(Cultivar.id))
             .outerjoin(Cultivar, Breeder.id == Cultivar.breeder_id)
@@ -387,12 +387,12 @@ async def api_breeder_stats(
         top_breeder_data = result.first()
         
         most_prolific_breeder = top_breeder_data[0] if top_breeder_data else None
-        total_strains_from_top_breeder = top_breeder_data[1] if top_breeder_data else 0
+        total_cultivars_from_top_breeder = top_breeder_data[1] if top_breeder_data else 0
         
         return BreederStats(
             total_breeders=total_breeders,
             most_prolific_breeder=most_prolific_breeder,
-            total_strains_from_top_breeder=total_strains_from_top_breeder
+            total_cultivars_from_top_breeder=total_cultivars_from_top_breeder
         )
         
     except Exception as e:

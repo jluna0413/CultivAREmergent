@@ -95,13 +95,3 @@ class CultivarStats(BaseModel):
     hybrid_count: int = Field(..., description="Number of hybrid cultivars")
     autoflower_count: int = Field(..., description="Number of autoflower cultivars")
     average_cycle_time: Optional[float] = Field(None, description="Average cycle time in days")
-
-
-# Backward compatibility aliases
-StrainBase = CultivarBase
-StrainCreate = CultivarCreate
-StrainUpdate = CultivarUpdate
-StrainResponse = CultivarResponse
-StrainListResponse = CultivarListResponse
-StrainFilters = CultivarFilters
-StrainStats = CultivarStats

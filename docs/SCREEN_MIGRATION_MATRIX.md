@@ -11,7 +11,7 @@ This document provides a comprehensive screen-by-screen migration tracking matri
 | `app/web/templates/views/dashboard.html` | `flutter_app/lib/screens/dashboard/dashboard_screen.dart` | P0-Critical | In Progress | 85% | 90% | Phase 2 | AppTheme, DashboardProvider, StatCard | Visual comparison, API integration, performance test | Core screen with stats cards and plant overview |
 | `app/web/templates/views/plants.html` | `flutter_app/lib/screens/plants_screen.dart` | P0-Critical | Pending | 0% | 0% | Phase 2 | PlantsProvider, PlantCard, FilterBar | CRUD operations, filtering, pagination | Grid/list view toggle, real-time filtering |
 | `app/web/templates/views/plant.html` | `flutter_app/lib/screens/plant_detail_screen.dart` | P0-Critical | Pending | 0% | 0% | Phase 2 | TimelineWidget, ActivitiesProvider | Detail view, timeline, quick actions | Activity timeline, watering/feeding actions |
-| `app/web/templates/views/strains.html` | `flutter_app/lib/screens/strains_screen.dart` | P0-Critical | Pending | 0% | 0% | Phase 2 | StrainsProvider, StrainCard | Genetics slider, breeder management | Strain type badges, autoflower support |
+| `app/web/templates/views/cultivars.html` | `flutter_app/lib/screens/cultivars_screen.dart` | P0-Critical | Pending | 0% | 0% | Phase 2 | CultivarsProvider, CultivarCard | Genetics slider, breeder management | Cultivar type badges, autoflower support |
 | `app/web/templates/views/sensors.html` | `flutter_app/lib/screens/sensors_screen.dart` | P0-Critical | Pending | 0% | 0% | Phase 2 | SensorsProvider, SensorCard | Zone organization, real-time data | Zone-based grouping, sensor readings |
 | `app/web/templates/views/new_login.html` | `flutter_app/lib/features/auth/screens/login_screen.dart` | P0-Critical | Pending | 0% | 0% | Phase 2 | AuthProvider, AuthService | Login flow, error handling, validation | Enhanced existing implementation |
 | `app/web/templates/common/base.html` + `sidebar.html` | `flutter_app/lib/core/widgets/sidebar_drawer.dart` | P0-Critical | Pending | 0% | 0% | Phase 2 | AppRouter, AuthProvider | Navigation, active states, responsiveness | Glass morphism background, expandable menus |
@@ -32,7 +32,7 @@ This document provides a comprehensive screen-by-screen migration tracking matri
 
 ### P0 - Critical (Phase 2)
 - **Core user workflows**: Authentication, dashboard, primary CRUD operations
-- **Business critical**: Plant management, strain catalog, sensor monitoring
+- **Business critical**: Plant management, cultivar catalog, sensor monitoring
 - **Must have 100% parity before Phase 3**
 - **Timeline**: Weeks 3-5
 

@@ -75,9 +75,9 @@ This document outlines the planned features and improvements for the CultivAR ap
 - [ ] Add voice control support
 
 ### Community Features
-- [ ] Add strain reviews and ratings
+- [ ] Add cultivar reviews and ratings
 - [ ] Implement anonymous data sharing for research
-- [ ] Add community strain database integration
+- [ ] Add community cultivar database integration
 
 ## Long-term Goals
 

@@ -50,7 +50,7 @@
 
 ## Introduction
 
-This documentation provides a comprehensive overview of the CultivAR application codebase. CultivAR is a Flask-based web application designed for managing plant cultivation, including features for user authentication, plant tracking, strain management, clone management, sensor integration, and administrative functions.
+This documentation provides a comprehensive overview of the CultivAR application codebase. CultivAR is a Flask-based web application designed for managing plant cultivation, including features for user authentication, plant tracking, cultivar management, clone management, sensor integration, and administrative functions.
 
 The application is structured to be modular, utilizing Flask Blueprints for organizing different feature areas and SQLAlchemy for database interactions. Security is a key consideration, with Flask-Talisman implementing various security headers and Flask-Limiter providing DDoS protection.
 
@@ -137,7 +137,7 @@ This blueprint handles administrative functions, including user management (crea
 -   `/admin/api/users/stats` (GET): Returns user statistics (API).
 -   `/admin/export` (GET): Renders the data export page.
 -   `/admin/export/plants/<format>` (GET): Exports plant data in CSV or JSON.
--   `/admin/export/strains/<format>` (GET): Exports strain data in CSV or JSON.
+-   `/admin/export/cultivars/<format>` (GET): Exports cultivar data in CSV or JSON.
 -   `/admin/export/activities` (GET): Exports activity data in CSV.
 -   `/admin/export/users` (GET): Exports user data in CSV.
 -   `/admin/export/sensors` (GET): Exports sensor data in CSV.
@@ -283,19 +283,19 @@ This blueprint manages routes for displaying and adding plant strains. It provid
 **Routes:**
 
 -   `/` (GET): Renders the strains collection page.
--   `/strains` (GET): Alternative route for the strains collection page.
--   `/<int:strain_id>` (GET): Renders the detail page for a specific strain.
--   `/add` (GET): Renders the page to add a new strain.
--   `/strains/add` (GET): Legacy route for the add strain page.
+-   `/cultivars` (GET): Alternative route for the cultivars collection page.
+-   `/<int:cultivar_id>` (GET): Renders the detail page for a specific cultivar.
+-   `/add` (GET): Renders the page to add a new cultivar.
+-   `/cultivars/add` (GET): Legacy route for the add cultivar page.
 
 **Example Usage (Strain Detail):**
 
 ```html
-<!-- In app/web/templates/views/strain.html -->
-<h1>{{ strain.name }}</h1>
-<p>Breeder: {{ strain.breeder_name }}</p>
-<p>Indica: {{ strain.indica }}%, Sativa: {{ strain.sativa }}%</p>
-<p>Description: {{ strain.description }}</p>
+<!-- In app/web/templates/views/cultivar.html -->
+<h1>{{ cultivar.name }}</h1>
+<p>Breeder: {{ cultivar.breeder_name }}</p>
+<p>Indica: {{ cultivar.indica }}%, Sativa: {{ cultivar.sativa }}%</p>
+<p>Description: {{ cultivar.description }}</p>
 ```
 
 ### Configuration
@@ -364,10 +364,10 @@ This module provides functions for recording and retrieving various types of act
     -   Records an activity when a new plant is added.
     -   `plant_name` (str): Name of the added plant.
     -   `plant_id` (int): ID of the added plant.
--   `record_strain_edit_activity(strain_name, strain_id)`:
-    -   Records an activity when a strain is edited.
-    -   `strain_name` (str): Name of the edited strain.
-    -   `strain_id` (int): ID of the edited strain.
+-   `record_cultivar_edit_activity(cultivar_name, cultivar_id)`:
+    -   Records an activity when a cultivar is edited.
+    -   `cultivar_name` (str): Name of the edited cultivar.
+    -   `cultivar_id` (int): ID of the edited cultivar.
 -   `record_user_add_activity(new_username)`:
     -   Records an activity when a new user is added.
     -   `new_username` (str): Username of the new user.
@@ -449,7 +449,7 @@ This module provides functions for managing clone plants within the CultivAR app
 -   `get_available_parent_plants()`:
     -   Retrieves all plants that can be used as parent plants for cloning.
     -   Only living plants (status IDs 1, 2, 3) are considered valid parents.
-    -   Returns a `list` of dictionaries, each containing information about a parent plant (ID, name, strain, status, etc.).
+    -   Returns a `list` of dictionaries, each containing information about a parent plant (ID, name, cultivar, status, etc.).
 -   `create_clones(parent_id, clone_data_list, user_id)`:
     -   Creates multiple clone plants from a specified parent plant.
     -   `parent_id` (int): The ID of the parent plant.
@@ -560,17 +560,17 @@ This module provides functions for managing plant-related operations within the 
 -   `get_dead_plants()`:
     -   Retrieves all dead plants (status ID 5).
     -   Returns a `list` of dictionaries, each containing information about a dead plant.
--   `get_plants_by_strain(strain_id)`:
-    -   Retrieves all plants associated with a specific strain.
-    -   `strain_id` (int): The ID of the strain.
-    -   Returns a `list` of dictionaries, each containing information about a plant of the specified strain.
+-   `get_plants_by_cultivar(cultivar_id)`:
+    -   Retrieves all plants associated with a specific cultivar.
+    -   `cultivar_id` (int): The ID of the cultivar.
+    -   Returns a `list` of dictionaries, each containing information about a plant of the specified cultivar.
 -   `add_plant(data)`:
     -   Adds a new plant to the database.
-    -   `data` (dict): A dictionary containing the plant's data (name, description, status, strain, zone, etc.).
+    -   `data` (dict): A dictionary containing the plant's data (name, description, status, cultivar, zone, etc.).
     -   Returns `{"success": True, "id": int}` on success, `{"success": False, "error": str}` on failure.
 -   `update_plant(data)`:
     -   Updates an existing plant's information.
-    -   `data` (dict): A dictionary containing the plant's updated data (ID, name, description, status, strain, zone, etc.).
+    -   `data` (dict): A dictionary containing the plant's updated data (ID, name, description, status, cultivar, zone, etc.).
     -   Returns `{"success": True, "plant_id": int}` on success, `{"success": False, "error": str}` on failure.
 -   `delete_plant(plant_id)`:
     -   Deletes a plant from the database, including associated images, activities, measurements, and status history.
@@ -721,16 +721,16 @@ print(f"Update Setting Result: {update_result}")
 
 #### app/handlers/strain_handlers.py
 
-This module provides functions for managing plant strains within the CultivAR application. It includes functionalities for retrieving strain information, adding new strains, and handling strain-related data.
+This module provides functions for managing plant cultivars within the CultivAR application. It includes functionalities for retrieving cultivar information, adding new cultivars, and handling cultivar-related data.
 
 **Functions:**
 
 -   `get_strains()`:
-    -   Retrieves all plant strains from the database.
-    -   Returns a `list` of dictionaries, each containing information about a strain (ID, name, breeder, indica/sativa percentages, etc.).
--   `add_strain(data)`:
-    -   Adds a new plant strain to the database.
-    -   `data` (dict): A dictionary containing the strain's data (name, breeder, indica/sativa percentages, etc.).
+    -   Retrieves all plant cultivars from the database.
+        -   Returns a `list` of dictionaries, each containing information about a cultivar (ID, name, breeder, indica/sativa percentages, etc.).
+    -   `add_cultivar(data)`:
+        -   Adds a new plant cultivar to the database.
+        -   `data` (dict): A dictionary containing the cultivar's data (name, breeder, indica/sativa percentages, etc.).
     -   Returns `{"success": True, "id": int}` on success, `{"success": False, "error": str}` on failure.
 
 **Example Usage:**
@@ -922,11 +922,11 @@ This module defines the core SQLAlchemy models for the CultivAR application. The
         -   `harvest_weight` (float): Harvest weight.
         -   `harvest_date` (datetime): Harvest date.
         -   `cycle_time` (int): Total cycle time.
-        -   `strain_url` (str): URL for strain information.
+        -        `cultivar_url` (str): URL for cultivar information.
         -   `autoflower` (bool): Flag indicating if the plant is an autoflower.
         -   `parent_id` (int): Foreign key to parent plant (if clone).
--   `Strain`:
-    -   Represents a plant strain.
+-   `Cultivar`:
+    -   Represents a plant cultivar.
     -   Attributes:
         -   `id` (int): Primary key.
         -   `name` (str): Strain name.
@@ -937,7 +937,7 @@ This module defines the core SQLAlchemy models for the CultivAR application. The
         -   `cycle_time` (int): Typical cycle time in days.
         -   `seed_count` (int): Number of seeds.
         -   `url` (str): URL for strain information.
-        -   `description` (str): Strain description.
+        -        `description` (str): Cultivar description.
 -   `Zone`:
     -   Represents a growing zone.
     -   Attributes:

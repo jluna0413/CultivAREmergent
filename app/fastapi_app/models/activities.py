@@ -11,11 +11,11 @@ from pydantic import BaseModel, Field
 # Activity Models
 class ActivityBase(BaseModel):
     """Base activity model."""
-    type: str = Field(..., description="Activity type (login, plant_add, strain_edit, etc.)")
+    type: str = Field(..., description="Activity type (login, plant_add, cultivar_edit, etc.)")
     activity_type: str = Field(..., description="Activity category (system, user, plant)")
     title: Optional[str] = Field(None, description="Activity title")
     description: Optional[str] = Field(None, description="Activity description")
-    entity_type: Optional[str] = Field(None, description="Entity type (plant, strain, breeder, etc.)")
+    entity_type: Optional[str] = Field(None, description="Entity type (plant, cultivar, breeder, etc.)")
     entity_id: Optional[int] = Field(None, description="Entity ID")
     entity_name: Optional[str] = Field(None, description="Entity name")
     username: Optional[str] = Field(None, description="Username who performed the activity")

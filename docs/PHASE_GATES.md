@@ -100,7 +100,7 @@ This document defines detailed phase gate definitions with acceptance criteria f
 - [ ] **ThemeProvider**: Riverpod provider for theme management
 - [ ] **AuthProvider**: Riverpod provider for authentication state
 - [ ] **PlantsProvider**: Riverpod provider for plant management
-- [ ] **StrainsProvider**: Riverpod provider for strain management
+- [ ] **CultivarsProvider**: Riverpod provider for cultivar management
 - [ ] **SensorsProvider**: Riverpod provider for sensor management
 - [ ] **DashboardProvider**: Riverpod provider for dashboard state
 - [ ] **CartProvider**: Riverpod provider for shopping cart
@@ -117,7 +117,7 @@ This document defines detailed phase gate definitions with acceptance criteria f
   - Token refresh interceptor
 
 #### Data Models
-- [ ] **Strain Models**: Complete strain data models
+- [ ] **Cultivar Models**: Complete cultivar data models
 - [ ] **Sensor Models**: Complete sensor data models
 - [ ] **Activity Models**: Complete activity data models
 - [ ] **Breeder Models**: Complete breeder data models
@@ -171,7 +171,7 @@ N/A (no production impact)
 - [ ] **DashboardScreen**: Full implementation matching legacy
 - [ ] **PlantsScreen**: Full implementation with CRUD operations
 - [ ] **PlantDetailScreen**: Complete plant detail view
-- [ ] **StrainsScreen**: Full strain management interface
+- [ ] **CultivarsScreen**: Full cultivar management interface
 - [ ] **SensorsScreen**: Complete sensor monitoring interface
 - [ ] **Login Enhancement**: Improved authentication flow
 - [ ] **Sidebar Drawer**: Navigation drawer with glass morphism

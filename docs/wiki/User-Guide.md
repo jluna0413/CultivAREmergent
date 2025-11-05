@@ -12,7 +12,7 @@ The dashboard is the main hub of the application. It provides an at-a-glance vie
 
 *   **Active Plants:** This section shows a list of all your living plants with their current status.
 *   **Environmental Data:** This section displays the latest readings from your sensors.
-*   **Quick Actions:** This section provides shortcuts to common actions, such as adding a new plant or strain.
+*   **Quick Actions:** This section provides shortcuts to common actions, such as adding a new plant or cultivar.
 
 ## Plants
 
@@ -21,7 +21,7 @@ The Plants page is where you can manage all of your plants.
 ### Adding a Plant
 
 1.  Click the "Add Plant" button.
-2.  Fill in the plant details, including its name, strain, and current status.
+2.  Fill in the plant details, including its name, cultivar, and current status.
 3.  Click "Save" to create the new plant.
 
 ### Viewing Plant Details
@@ -34,15 +34,15 @@ Click on a plant in the list to view its details page. From here, you can:
 *   Upload images of the plant.
 *   View the plant's growth history.
 
-## Strains
+## Cultivars
 
 The Cultivars page allows you to manage your collection of cannabis cultivars.
 
-### Adding a Strain
+### Adding a Cultivar
 
-1.  Click the "Add Strain" button.
-2.  Fill in the strain details, including its name, breeder, and genetics.
-3.  Click "Save" to create the new strain.
+1.  Click the "Add Cultivar" button.
+2.  Fill in the cultivar details, including its name, breeder, and genetics.
+3.  Click "Save" to create the new cultivar.
 
 ## Sensors
 

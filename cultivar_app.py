@@ -269,6 +269,8 @@ def create_app():
     app.register_blueprint(dashboard_bp)
     from app.blueprints.strains import strains_bp
     app.register_blueprint(strains_bp)
+    from app.blueprints.cultivars import cultivars_bp
+    app.register_blueprint(cultivars_bp, url_prefix='/cultivars')
     from app.blueprints.breeders import breeders_bp
     app.register_blueprint(breeders_bp)
     from app.blueprints.admin import admin_bp

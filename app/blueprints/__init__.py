@@ -27,6 +27,7 @@ from . import (
     auth_bp,
     breeders_bp,
     clones_bp,
+    cultivars_bp,
     diagnostics_bp,
     market_bp,
     marketing_bp,
@@ -38,9 +39,10 @@ from . import (
 # Export blueprint instances
 __all__ = [
     'admin_bp',
-    'auth_bp', 
+    'auth_bp',
     'breeders_bp',
     'clones_bp',
+    'cultivars_bp',
     'diagnostics_bp',
     'market_bp',
     'marketing_bp',

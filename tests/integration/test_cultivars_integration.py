@@ -37,16 +37,18 @@ async def auth_token(client: httpx.AsyncClient) -> str:
         return ""
 
 
-class TestStrainsAPIIntegration:
-    """Integration tests for Strains API endpoints"""
+class TestCultivarsAPIIntegration:
+    """Integration tests for Cultivars API endpoints with legacy strain alias support"""
     
     @pytest.mark.asyncio
-    async def test_strains_api_root_endpoint(self, client: httpx.AsyncClient):
-        """Test strains API root endpoint"""
-        # Test both possible strain API paths
+    async def test_cultivars_api_root_endpoint(self, client: httpx.AsyncClient):
+        """Test cultivars API root endpoint"""
+        # Test both possible cultivar API paths - primary and legacy
         endpoints_to_test = [
-            "/api/v1/strains",
-            "/strains"  # Legacy endpoint
+            "/api/v1/cultivars",  # Primary endpoint
+            "/api/v1/strains",    # Legacy alias
+            "/cultivars",         # Legacy Flask endpoint
+            "/strains"            # Legacy Flask endpoint
         ]
         
         for endpoint in endpoints_to_test:
@@ -66,163 +68,216 @@ class TestStrainsAPIIntegration:
                 continue
     
     @pytest.mark.asyncio
-    async def test_strains_api_structure(self, client: httpx.AsyncClient):
-        """Test that strains API returns expected structure"""
-        response = await client.get("/api/v1/strains")
+    async def test_cultivars_api_structure(self, client: httpx.AsyncClient):
+        """Test that cultivars API returns expected structure"""
+        # Test both primary and legacy endpoints
+        endpoints_to_test = [
+            "/api/v1/cultivars",  # Primary endpoint
+            "/api/v1/strains",    # Legacy alias
+        ]
         
-        if response.status_code == 200:
-            try:
-                data = response.json()
-                
-                if isinstance(data, list):
-                    # If it's a list, check if it contains strain objects
-                    assert isinstance(data, list)
-                    if len(data) > 0:
-                        # Check first item has expected fields
-                        first_item = data[0]
-                        assert isinstance(first_item, dict)
-                        # Common strain fields: id, name, type, description, etc.
-                        # We don't require specific fields, just that it's valid JSON
-                
-                elif isinstance(data, dict):
-                    # If it's a dict, check for expected structure
-                    assert isinstance(data, dict)
-                    # Valid strain data should have some structure
-                    assert len(data) > 0
+        for endpoint in endpoints_to_test:
+            response = await client.get(endpoint)
+            
+            if response.status_code == 200:
+                try:
+                    data = response.json()
                     
-            except Exception:
-                # If response is not JSON, that's okay for legacy endpoints
-                pass
+                    if isinstance(data, list):
+                        # If it's a list, check if it contains cultivar objects
+                        assert isinstance(data, list)
+                        if len(data) > 0:
+                            # Check first item has expected fields
+                            first_item = data[0]
+                            assert isinstance(first_item, dict)
+                            # Common cultivar fields: id, name, type, description, etc.
+                            # We don't require specific fields, just that it's valid JSON
+                    
+                    elif isinstance(data, dict):
+                        # If it's a dict, check for expected structure
+                        assert isinstance(data, dict)
+                        # Valid cultivar data should have some structure
+                        assert len(data) > 0
+                        
+                except Exception:
+                    # If response is not JSON, that's okay for legacy endpoints
+                    pass
     
     @pytest.mark.asyncio
-    async def test_strains_api_with_auth(self, client: httpx.AsyncClient, auth_token: str):
-        """Test strains API with authentication"""
+    async def test_cultivars_api_with_auth(self, client: httpx.AsyncClient, auth_token: str):
+        """Test cultivars API with authentication"""
         headers = {}
         if auth_token:
             headers["Authorization"] = f"Bearer {auth_token}"
         
-        response = await client.get("/api/v1/strains", headers=headers)
+        # Test both primary and legacy endpoints
+        endpoints_to_test = [
+            "/api/v1/cultivars",  # Primary endpoint
+            "/api/v1/strains",    # Legacy alias
+        ]
         
-        # Should return 200 or 401, not 404 or 500
-        assert response.status_code in [200, 401, 403]
-        assert response.status_code != 404
-        assert response.status_code != 500
+        for endpoint in endpoints_to_test:
+            response = await client.get(endpoint, headers=headers)
+            
+            # Should return 200 or 401, not 404 or 500
+            assert response.status_code in [200, 401, 403]
+            assert response.status_code != 404
+            assert response.status_code != 500
     
     @pytest.mark.asyncio
-    async def test_strains_api_post_endpoint(self, client: httpx.AsyncClient, auth_token: str):
-        """Test POST to strains API (create strain)"""
+    async def test_cultivars_api_post_endpoint(self, client: httpx.AsyncClient, auth_token: str):
+        """Test POST to cultivars API (create cultivar)"""
         headers = {"Content-Type": "application/json"}
         if auth_token:
             headers["Authorization"] = f"Bearer {auth_token}"
         
-        # Test creating a strain with minimal data
-        strain_data = {
-            "name": "Test Strain",
+        # Test creating a cultivar with minimal data
+        cultivar_data = {
+            "name": "Test Cultivar",
             "type": "hybrid",  # sativa, indica, hybrid
-            "description": "Test strain description"
+            "description": "Test cultivar description"
         }
         
-        response = await client.post("/api/v1/strains", 
-                                   json=strain_data, 
-                                   headers=headers)
+        # Test both primary and legacy endpoints
+        endpoints_to_test = [
+            "/api/v1/cultivars",  # Primary endpoint
+            "/api/v1/strains",    # Legacy alias
+        ]
         
-        # Should return success status or auth error, not 404 or 500
-        assert response.status_code in [201, 200, 401, 403, 422]
-        assert response.status_code != 404
-        assert response.status_code != 500
+        for endpoint in endpoints_to_test:
+            response = await client.post(endpoint,
+                                       json=cultivar_data,
+                                       headers=headers)
+            
+            # Should return success status or auth error, not 404 or 500
+            assert response.status_code in [201, 200, 401, 403, 422]
+            assert response.status_code != 404
+            assert response.status_code != 500
     
     @pytest.mark.asyncio
-    async def test_strains_api_get_by_id(self, client: httpx.AsyncClient):
-        """Test getting a specific strain by ID"""
-        # Try to get strain list first
-        response = await client.get("/api/v1/strains")
+    async def test_cultivars_api_get_by_id(self, client: httpx.AsyncClient):
+        """Test getting a specific cultivar by ID"""
+        # Test both primary and legacy endpoints
+        endpoints_to_test = [
+            "/api/v1/cultivars",  # Primary endpoint
+            "/api/v1/strains",    # Legacy alias
+        ]
         
-        if response.status_code == 200:
-            try:
-                data = response.json()
-                
-                if isinstance(data, list) and len(data) > 0:
-                    # Try to get the first strain
-                    first_strain = data[0]
-                    strain_id = first_strain.get("id") or first_strain.get("strain_id")
+        for endpoint_base in endpoints_to_test:
+            # Try to get cultivar list first
+            response = await client.get(endpoint_base)
+            
+            if response.status_code == 200:
+                try:
+                    data = response.json()
                     
-                    if strain_id:
-                        response = await client.get(f"/api/v1/strains/{strain_id}")
+                    if isinstance(data, list) and len(data) > 0:
+                        # Try to get the first cultivar
+                        first_cultivar = data[0]
+                        cultivar_id = first_cultivar.get("id") or first_cultivar.get("cultivar_id") or first_cultivar.get("strain_id")
+                        
+                        if cultivar_id:
+                            response = await client.get(f"{endpoint_base}/{cultivar_id}")
+                            assert response.status_code in [200, 404, 401, 403]
+                    
+                    elif isinstance(data, dict) and "id" in data:
+                        cultivar_id = data["id"]
+                        response = await client.get(f"{endpoint_base}/{cultivar_id}")
                         assert response.status_code in [200, 404, 401, 403]
-                
-                elif isinstance(data, dict) and "id" in data:
-                    strain_id = data["id"]
-                    response = await client.get(f"/api/v1/strains/{strain_id}")
-                    assert response.status_code in [200, 404, 401, 403]
-                    
-            except Exception:
-                # If parsing fails, that's okay
-                pass
-        
-        # Test with a common test ID
-        test_ids = [1, "test-strain", "test_strain"]
-        for test_id in test_ids:
-            try:
-                response = await client.get(f"/api/v1/strains/{test_id}")
-                assert response.status_code in [200, 404, 401, 403, 422]
-            except Exception:
-                continue
+                        
+                except Exception:
+                    # If parsing fails, that's okay
+                    pass
+            
+            # Test with a common test ID
+            test_ids = [1, "test-cultivar", "test_cultivar", "test-strain", "test_strain"]
+            for test_id in test_ids:
+                try:
+                    response = await client.get(f"{endpoint_base}/{test_id}")
+                    assert response.status_code in [200, 404, 401, 403, 422]
+                except Exception:
+                    continue
     
     @pytest.mark.asyncio
-    async def test_strains_api_put_endpoint(self, client: httpx.AsyncClient, auth_token: str):
-        """Test PUT to strains API (update strain)"""
+    async def test_cultivars_api_put_endpoint(self, client: httpx.AsyncClient, auth_token: str):
+        """Test PUT to cultivars API (update cultivar)"""
         headers = {"Content-Type": "application/json"}
         if auth_token:
             headers["Authorization"] = f"Bearer {auth_token}"
         
-        # Test updating a strain
+        # Test updating a cultivar
         update_data = {
-            "name": "Updated Test Strain",
+            "name": "Updated Test Cultivar",
             "description": "Updated description",
             "type": "sativa"
         }
         
-        response = await client.put("/api/v1/strains/1", 
-                                   json=update_data, 
-                                   headers=headers)
+        # Test both primary and legacy endpoints
+        endpoints_to_test = [
+            "/api/v1/cultivars",  # Primary endpoint
+            "/api/v1/strains",    # Legacy alias
+        ]
         
-        # Should return success status or auth error, not 500
-        assert response.status_code in [200, 201, 401, 403, 404, 422]
-        assert response.status_code != 500
+        for endpoint_base in endpoints_to_test:
+            response = await client.put(f"{endpoint_base}/1",
+                                       json=update_data,
+                                       headers=headers)
+            
+            # Should return success status or auth error, not 500
+            assert response.status_code in [200, 201, 401, 403, 404, 422]
+            assert response.status_code != 500
     
     @pytest.mark.asyncio
-    async def test_strains_api_delete_endpoint(self, client: httpx.AsyncClient, auth_token: str):
-        """Test DELETE to strains API"""
+    async def test_cultivars_api_delete_endpoint(self, client: httpx.AsyncClient, auth_token: str):
+        """Test DELETE to cultivars API"""
         headers = {}
         if auth_token:
             headers["Authorization"] = f"Bearer {auth_token}"
         
-        response = await client.delete("/api/v1/strains/1", headers=headers)
+        # Test both primary and legacy endpoints
+        endpoints_to_test = [
+            "/api/v1/cultivars",  # Primary endpoint
+            "/api/v1/strains",    # Legacy alias
+        ]
         
-        # Should return success status or auth error, not 500
-        assert response.status_code in [200, 204, 401, 403, 404]
-        assert response.status_code != 500
+        for endpoint_base in endpoints_to_test:
+            response = await client.delete(f"{endpoint_base}/1", headers=headers)
+            
+            # Should return success status or auth error, not 500
+            assert response.status_code in [200, 204, 401, 403, 404]
+            assert response.status_code != 500
 
 
-class TestStrainsLegacyIntegration:
-    """Integration tests for Strains legacy HTML endpoints"""
+class TestCultivarsLegacyIntegration:
+    """Integration tests for Cultivars legacy HTML endpoints"""
     
     @pytest.mark.asyncio
-    async def test_strains_legacy_page_load(self, client: httpx.AsyncClient):
-        """Test that legacy strains page loads"""
-        response = await client.get("/strains")
-        assert response.status_code == 200
-        assert "html" in response.headers.get("content-type", "").lower()
+    async def test_cultivars_legacy_page_load(self, client: httpx.AsyncClient):
+        """Test that legacy cultivars page loads"""
+        # Test both cultivars and strains (legacy alias) pages
+        endpoints_to_test = [
+            "/cultivars",   # Primary endpoint
+            "/strains",     # Legacy alias
+        ]
+        
+        for endpoint in endpoints_to_test:
+            response = await client.get(endpoint)
+            assert response.status_code == 200
+            assert "html" in response.headers.get("content-type", "").lower()
     
     @pytest.mark.asyncio
-    async def test_strains_legacy_forms(self, client: httpx.AsyncClient):
-        """Test that strains forms are accessible"""
-        # Test common strain form pages
+    async def test_cultivars_legacy_forms(self, client: httpx.AsyncClient):
+        """Test that cultivars forms are accessible"""
+        # Test common cultivar form pages - both primary and legacy
         form_paths = [
-            "/strains/add",
-            "/strains/new", 
-            "/strains/create",
-            "/strains/form"
+            "/cultivars/add",
+            "/cultivars/new",
+            "/cultivars/create",
+            "/cultivars/form",
+            "/strains/add",     # Legacy alias
+            "/strains/new",     # Legacy alias
+            "/strains/create",  # Legacy alias
+            "/strains/form"     # Legacy alias
         ]
         
         for path in form_paths:
@@ -235,112 +290,154 @@ class TestStrainsLegacyIntegration:
                 pass
 
 
-class TestStrainsAPIStrainTypes:
-    """Integration tests for strain type functionality"""
+class TestCultivarsAPICultivarTypes:
+    """Integration tests for cultivar type functionality"""
     
     @pytest.mark.asyncio
-    async def test_strain_types_filtering(self, client: httpx.AsyncClient):
-        """Test filtering strains by type (sativa, indica, hybrid)"""
-        strain_types = ["sativa", "indica", "hybrid"]
+    async def test_cultivar_types_filtering(self, client: httpx.AsyncClient):
+        """Test filtering cultivars by type (sativa, indica, hybrid)"""
+        cultivar_types = ["sativa", "indica", "hybrid"]
         
-        for strain_type in strain_types:
-            try:
-                response = await client.get(f"/api/v1/strains?type={strain_type}")
-                assert response.status_code in [200, 404]
-                
-                if response.status_code == 200:
-                    data = response.json()
-                    assert isinstance(data, (list, dict))
+        # Test both primary and legacy endpoints
+        endpoints_to_test = [
+            "/api/v1/cultivars",  # Primary endpoint
+            "/api/v1/strains",    # Legacy alias
+        ]
+        
+        for endpoint_base in endpoints_to_test:
+            for cultivar_type in cultivar_types:
+                try:
+                    response = await client.get(f"{endpoint_base}?type={cultivar_type}")
+                    assert response.status_code in [200, 404]
                     
-            except Exception:
-                # If type filtering doesn't work, that's okay
-                continue
+                    if response.status_code == 200:
+                        data = response.json()
+                        assert isinstance(data, (list, dict))
+                        
+                except Exception:
+                    # If type filtering doesn't work, that's okay
+                    continue
     
     @pytest.mark.asyncio
-    async def test_strain_search_functionality(self, client: httpx.AsyncClient):
-        """Test strain search functionality"""
+    async def test_cultivar_search_functionality(self, client: httpx.AsyncClient):
+        """Test cultivar search functionality"""
         search_terms = ["test", "sativa", "indica", "hybrid"]
         
-        for term in search_terms:
-            try:
-                response = await client.get(f"/api/v1/strains?search={term}")
-                assert response.status_code in [200, 404]
-            except Exception:
-                # If search doesn't work, that's okay
-                continue
+        # Test both primary and legacy endpoints
+        endpoints_to_test = [
+            "/api/v1/cultivars",  # Primary endpoint
+            "/api/v1/strains",    # Legacy alias
+        ]
+        
+        for endpoint_base in endpoints_to_test:
+            for term in search_terms:
+                try:
+                    response = await client.get(f"{endpoint_base}?search={term}")
+                    assert response.status_code in [200, 404]
+                except Exception:
+                    # If search doesn't work, that's okay
+                    continue
 
 
-class TestStrainsAPIPerformance:
-    """Integration tests for strains API performance and reliability"""
+class TestCultivarsAPIPerformance:
+    """Integration tests for cultivars API performance and reliability"""
     
     @pytest.mark.asyncio
-    async def test_strains_api_response_time(self, client: httpx.AsyncClient):
-        """Test that strains API responds within reasonable time"""
+    async def test_cultivars_api_response_time(self, client: httpx.AsyncClient):
+        """Test that cultivars API responds within reasonable time"""
         import time
         
-        start_time = time.time()
-        response = await client.get("/api/v1/strains")
-        end_time = time.time()
+        # Test both primary and legacy endpoints
+        endpoints_to_test = [
+            "/api/v1/cultivars",  # Primary endpoint
+            "/api/v1/strains",    # Legacy alias
+        ]
         
-        response_time = end_time - start_time
-        
-        # Should respond within 5 seconds
-        assert response_time < 5.0
-        assert response.status_code == 200
+        for endpoint in endpoints_to_test:
+            start_time = time.time()
+            response = await client.get(endpoint)
+            end_time = time.time()
+            
+            response_time = end_time - start_time
+            
+            # Should respond within 5 seconds
+            assert response_time < 5.0
+            assert response.status_code == 200
     
     @pytest.mark.asyncio
-    async def test_strains_api_pagination(self, client: httpx.AsyncClient):
-        """Test strains API pagination if available"""
-        # Test with limit parameter
-        response = await client.get("/api/v1/strains?limit=10")
-        assert response.status_code in [200, 404]
+    async def test_cultivars_api_pagination(self, client: httpx.AsyncClient):
+        """Test cultivars API pagination if available"""
+        # Test both primary and legacy endpoints
+        endpoints_to_test = [
+            "/api/v1/cultivars",  # Primary endpoint
+            "/api/v1/strains",    # Legacy alias
+        ]
         
-        # Test with offset parameter
-        response = await client.get("/api/v1/strains?offset=0")
-        assert response.status_code in [200, 404]
+        for endpoint_base in endpoints_to_test:
+            # Test with limit parameter
+            response = await client.get(f"{endpoint_base}?limit=10")
+            assert response.status_code in [200, 404]
+            
+            # Test with offset parameter
+            response = await client.get(f"{endpoint_base}?offset=0")
+            assert response.status_code in [200, 404]
     
     @pytest.mark.asyncio
-    async def test_strains_api_sorting(self, client: httpx.AsyncClient):
-        """Test strains API sorting capabilities"""
+    async def test_cultivars_api_sorting(self, client: httpx.AsyncClient):
+        """Test cultivars API sorting capabilities"""
         sort_options = ["name", "type", "created_at"]
         
-        for sort_option in sort_options:
-            try:
-                response = await client.get(f"/api/v1/strains?sort={sort_option}")
-                assert response.status_code in [200, 404]
-            except Exception:
-                # If sorting doesn't work, that's okay
-                continue
+        # Test both primary and legacy endpoints
+        endpoints_to_test = [
+            "/api/v1/cultivars",  # Primary endpoint
+            "/api/v1/strains",    # Legacy alias
+        ]
+        
+        for endpoint_base in endpoints_to_test:
+            for sort_option in sort_options:
+                try:
+                    response = await client.get(f"{endpoint_base}?sort={sort_option}")
+                    assert response.status_code in [200, 404]
+                except Exception:
+                    # If sorting doesn't work, that's okay
+                    continue
 
 
-class TestStrainsAPIValidation:
-    """Integration tests for strains API data validation"""
+class TestCultivarsAPIValidation:
+    """Integration tests for cultivars API data validation"""
     
     @pytest.mark.asyncio
-    async def test_strains_api_validation_errors(self, client: httpx.AsyncClient, auth_token: str):
+    async def test_cultivars_api_validation_errors(self, client: httpx.AsyncClient, auth_token: str):
         """Test that API properly validates input data"""
         headers = {"Content-Type": "application/json"}
         if auth_token:
             headers["Authorization"] = f"Bearer {auth_token}"
         
-        # Test with invalid strain data
+        # Test with invalid cultivar data
         invalid_data = {
             "name": "",  # Empty name
-            "type": "invalid_type",  # Invalid strain type
+            "type": "invalid_type",  # Invalid cultivar type
             "invalid_field": "value",
             "description": 123  # Wrong type
         }
         
-        response = await client.post("/api/v1/strains", 
-                                   json=invalid_data, 
-                                   headers=headers)
+        # Test both primary and legacy endpoints
+        endpoints_to_test = [
+            "/api/v1/cultivars",  # Primary endpoint
+            "/api/v1/strains",    # Legacy alias
+        ]
         
-        # Should return validation error (422) or success, not 500
-        assert response.status_code in [200, 201, 422, 400]
-        assert response.status_code != 500
+        for endpoint in endpoints_to_test:
+            response = await client.post(endpoint,
+                                       json=invalid_data,
+                                       headers=headers)
+            
+            # Should return validation error (422) or success, not 500
+            assert response.status_code in [200, 201, 422, 400]
+            assert response.status_code != 500
     
     @pytest.mark.asyncio
-    async def test_strains_api_required_fields(self, client: httpx.AsyncClient, auth_token: str):
+    async def test_cultivars_api_required_fields(self, client: httpx.AsyncClient, auth_token: str):
         """Test API behavior with missing required fields"""
         headers = {"Content-Type": "application/json"}
         if auth_token:
@@ -353,14 +450,21 @@ class TestStrainsAPIValidation:
             {"type": "hybrid"},  # Only type
         ]
         
-        for test_data in test_cases:
-            response = await client.post("/api/v1/strains", 
-                                       json=test_data, 
-                                       headers=headers)
-            
-            # Should return validation error, not 500
-            assert response.status_code in [422, 400, 201, 200]
-            assert response.status_code != 500
+        # Test both primary and legacy endpoints
+        endpoints_to_test = [
+            "/api/v1/cultivars",  # Primary endpoint
+            "/api/v1/strains",    # Legacy alias
+        ]
+        
+        for endpoint in endpoints_to_test:
+            for test_data in test_cases:
+                response = await client.post(endpoint,
+                                           json=test_data,
+                                           headers=headers)
+                
+                # Should return validation error, not 500
+                assert response.status_code in [422, 400, 201, 200]
+                assert response.status_code != 500
 
 
 class TestStrainsAPICrossModule:

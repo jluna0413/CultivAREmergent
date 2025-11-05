@@ -16,7 +16,8 @@ if not _SKIP_ROUTERS:
     from app.fastapi_app.routers import health
     from app.fastapi_app.routers import plants
     from app.fastapi_app.routers import dashboard
-    from app.fastapi_app.routers import strains
+    from app.fastapi_app.routers import cultivars
+    from app.fastapi_app.routers import strains  # For legacy compatibility
     from app.fastapi_app.routers import breeders
     from app.fastapi_app.routers import auth
     from app.fastapi_app.routers import admin
@@ -86,9 +87,9 @@ if not _SKIP_ROUTERS:
     
     # Dual-mount cultivars router with backward compatibility
     # Primary endpoint: /api/v1/cultivars (new standard)
-    app.include_router(strains.router, prefix="/api/v1/cultivars", tags=["Cultivars"])
+    app.include_router(cultivars.router, prefix="/api/v1/cultivars", tags=["Cultivars"])
     # Legacy endpoint: /api/v1/strains (deprecated, for backward compatibility)
-    app.include_router(strains.router, prefix="/api/v1/strains", tags=["Strains (Legacy)"])
+    app.include_router(cultivars.router, prefix="/api/v1/strains", tags=["Strains (Legacy)"])
     
     app.include_router(breeders.router, prefix="/api/v1/breeders", tags=["Breeders"])
     app.include_router(auth.router, prefix="/api/v1/auth", tags=["Authentication"])
@@ -110,10 +111,11 @@ async def root():
         "health": "/health",
         "auth_docs": "/api/v1/auth/docs",
         "available_endpoints": {
-            "plants": "/plants",
-            "dashboard": "/dashboard",
-            "strains": "/strains",
-            "breeders": "/breeders"
+            "plants": "/api/v1/plants",
+            "dashboard": "/api/v1/dashboard",
+            "cultivars": "/api/v1/cultivars (primary)",
+            "strains": "/api/v1/strains (legacy)",
+            "breeders": "/api/v1/breeders"
         }
     }
 

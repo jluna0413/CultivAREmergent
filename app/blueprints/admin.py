@@ -318,10 +318,10 @@ async def export_plants_route(format):
         return jsonify({"success": False, "error": str(e)})
 
 
-@admin_bp.route("/export/strains/<format>")
+@admin_bp.route("/export/cultivars/<format>")
 @login_required
-async def export_strains_route(format):
-    """Export strains data."""
+async def export_cultivars_route(format):
+    """Export cultivars data."""
     if not current_user.is_admin:
         return jsonify({"success": False, "error": "Access denied"})
 
