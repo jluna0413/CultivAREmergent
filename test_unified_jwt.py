@@ -372,32 +372,32 @@ def run_tests():
     for test_name, test_func in tests:
         try:
             print(f"\n[RUNNING] {test_name}")
-                test_instance.setup_method()
-                test_func()
-                print(f"[PASSED] {test_name}")
-                passed += 1
-            except Exception as e:
-                print(f"[FAILED] {test_name}")
-                print(f"   Error: {str(e)}")
-                failed += 1
-        
-        print("\n" + "=" * 80)
-        print("TEST RESULTS SUMMARY")
-        print("=" * 80)
-        print(f"Total Tests: {len(tests)}")
-        print(f"Passed: {passed}")
-        print(f"Failed: {failed}")
-        print(f"Success Rate: {(passed/len(tests)*100):.1f}%")
-        
-        if failed == 0:
-            print("\n[SUCCESS] ALL TESTS PASSED! Unified JWT validation is working correctly.")
-            print("\n[COMPLETE] Comment 7 Implementation Complete:")
-            print("   - Unified JWT validation with JTI tracking")
-            print("   - Refresh token rotation with reuse prevention")
-            print("   - Token revocation store with expiration")
-            print("   - Enhanced security across all protected endpoints")
-        else:
-            print(f"\n[WARNING] {failed} tests failed. Please review the implementation.")
+            test_instance.setup_method()
+            test_func()
+            print(f"[PASSED] {test_name}")
+            passed += 1
+        except Exception as e:
+            print(f"[FAILED] {test_name}")
+            print(f"   Error: {str(e)}")
+            failed += 1
+    
+    print("\n" + "=" * 80)
+    print("TEST RESULTS SUMMARY")
+    print("=" * 80)
+    print(f"Total Tests: {len(tests)}")
+    print(f"Passed: {passed}")
+    print(f"Failed: {failed}")
+    print(f"Success Rate: {(passed/len(tests)*100):.1f}%")
+    
+    if failed == 0:
+        print("\n[SUCCESS] ALL TESTS PASSED! Unified JWT validation is working correctly.")
+        print("\n[COMPLETE] Comment 7 Implementation Complete:")
+        print("   - Unified JWT validation with JTI tracking")
+        print("   - Refresh token rotation with reuse prevention")
+        print("   - Token revocation store with expiration")
+        print("   - Enhanced security across all protected endpoints")
+    else:
+        print(f"\n[WARNING] {failed} tests failed. Please review the implementation.")
     
     return passed, failed
 

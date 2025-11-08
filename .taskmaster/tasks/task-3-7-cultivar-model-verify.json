@@ -1,0 +1,29 @@
+{
+    "id": "task-3-7-cultivar-model-verify",
+    "title": "Task 3.7: Verify Cultivar Model",
+    "description": "Verify that the main cultivar model uses correct terminology and is properly implemented",
+    "status": "TODO",
+    "priority": "HIGH",
+    "type": "FEATURE",
+    "estimated_effort_hours": 0.5,
+    "actual_effort_hours": 0,
+    "parent_task_id": "phase-3-frontend-flutter",
+    "dependencies": ["task-3-6-cultivar-models-align"],
+    "blocking": [],
+    "subtasks": [],
+    "assignee": "@traycerai",
+    "tags": ["migration", "frontend", "flutter", "model"],
+    "created_at": "2025-11-05T18:33:47Z",
+    "updated_at": "2025-11-05T18:33:47Z",
+    "started_at": null,
+    "completed_at": null,
+    "files_affected": ["flutter_app/lib/models/cultivar.dart"],
+    "acceptance_criteria": [
+        "Cultivar model uses correct terminology",
+        "No strain references in model implementation",
+        "Model properties align with backend schema",
+        "Model compiles without errors"
+    ],
+    "notes": "Verify that the main cultivar model is already correctly implemented as mentioned in migration plan",
+    "linear_issue_id": null
+}

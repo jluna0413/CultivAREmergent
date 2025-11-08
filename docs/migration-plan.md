@@ -33,7 +33,7 @@ This document defines the Flutter-driven gates and criteria for safely removing 
 **Acceptance Criteria**:
 - [ ] `/api/v1/users/*` - User management endpoints (GET, POST, PUT, DELETE)
 - [ ] `/api/v1/plants/*` - Plant management endpoints (list, detail, create, update, delete)
-- [ ] `/api/v1/strains/*` - Strain management endpoints (list, detail, create, update, delete)
+- [ ] `/api/v1/cultivars/*` - Cultivar management endpoints (list, detail, create, update, delete)
 - [ ] `/api/v1/sensors/*` - Sensor reading endpoints (list, create, readings)
 - [ ] OpenAPI contract properly generated and committed to `docs/generated/openapi.json`
 - [ ] Flutter client successfully generated and imported into Flutter app
@@ -62,7 +62,7 @@ This document defines the Flutter-driven gates and criteria for safely removing 
 - [ ] Performance benchmarks confirm Flutter performance meets requirements
 - [ ] User acceptance testing (UAT) completed for core workflows:
   - Plant lifecycle management (create, update, harvest)
-  - Strain catalog browsing and management
+  - Cultivar catalog browsing and management
   - User profile and settings management
   - Sensor data integration and monitoring
 - [ ] Data migration strategy validated (existing Flask data → FastAPI)

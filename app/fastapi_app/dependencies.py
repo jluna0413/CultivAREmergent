@@ -9,13 +9,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Optional, Dict, Any, Set
 import datetime
 import os
-from sqlalchemy.orm import Session
+from typing import AsyncGenerator
 
 # Import JWT utilities and user model
 from app.fastapi_app.jwt_utils import verify_token
 from app.models_async.auth import User
-from app.models_async.base import AsyncSessionLocal, get_async_session
-from typing import AsyncGenerator
+from app.models_async.base import AsyncSessionLocal
 
 # Security scheme
 security = HTTPBearer()
@@ -23,15 +22,19 @@ security = HTTPBearer()
 # Token revocation store - in production, use Redis or database
 revoked_tokens: Set[str] = set()
 
-# Mock user session for now
-MOCK_USERS = {
-    1: {"id": 1, "email": "admin@cultivar.com", "username": "admin", "is_active": True, "is_admin": True},
-    2: {"id": 2, "email": "user@cultivar.com", "username": "user", "is_active": True, "is_admin": False}
-}
+async def get_db() -> AsyncGenerator[AsyncSession, None]:
+    """
+    Get proper async database session dependency using models_async
+    """
+    async with AsyncSessionLocal() as session:
+        try:
+            yield session
+        finally:
+            await session.close()
 
 async def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),
-    db: AsyncSession = Depends(get_async_session)
+    db: AsyncSession = Depends(get_db)
 ) -> User:
     """
     Unified authentication dependency using JWT tokens from auth.py
@@ -86,27 +89,7 @@ async def get_current_admin_user(
         )
     return current_user
 
-async def get_db() -> AsyncGenerator[AsyncSession, None]:
-    """
-    Get proper async database session dependency using models_async
-    """
-    async with AsyncSessionLocal() as session:
-        try:
-            yield session
-        finally:
-            await session.close()
-
-async def get_async_db() -> AsyncGenerator[AsyncSession, None]:
-    """
-    Proper async database session dependency using models_async
-    """
-    async with AsyncSessionLocal() as session:
-        try:
-            yield session
-        finally:
-            await session.close()
-
-async def get_optional_user(credentials: Optional[HTTPAuthorizationCredentials] = Depends(security)) -> Optional[User]:
+async def get_optional_user(credentials: Optional[HTTPAuthorizationCredentials] = Depends(security), db: AsyncSession = Depends(get_db)) -> Optional[User]:
     """
     Optional user dependency - returns user if authenticated, None otherwise
     """
@@ -114,7 +97,7 @@ async def get_optional_user(credentials: Optional[HTTPAuthorizationCredentials] 
         return None
     
     try:
-        return await get_current_user(credentials)
+        return await get_current_user(credentials, db)
     except HTTPException:
         return None
 
@@ -230,20 +213,28 @@ async def rate_limit_check(client_ip: str, limit: int = 100, window: int = 60) -
 # ---------------------------------------------------------------------------
 
 async def require_login(
-    credentials: HTTPAuthorizationCredentials = Depends(security)
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: AsyncSession = Depends(get_db)
 ) -> User:
     """
     Updated dependency using unified JWT authentication
     """
-    return await get_current_user(credentials)
+    return await get_current_user(credentials, db)
 
 async def require_admin(
-    credentials: HTTPAuthorizationCredentials = Depends(security)
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: AsyncSession = Depends(get_db)
 ) -> User:
     """
     Updated admin dependency using unified JWT authentication
     """
-    return await get_current_admin_user(credentials)
+    user = await get_current_user(credentials, db)
+    if not getattr(user, 'is_admin', False):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not enough permissions - Admin access required"
+        )
+    return user
 
 async def inject_template_context(
     user: Optional[User] = Depends(get_optional_user)

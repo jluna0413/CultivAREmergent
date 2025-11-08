@@ -1,0 +1,29 @@
+{
+    "id": "task-1-1-base-models-rename",
+    "title": "Rename Strain to Cultivar in base_models.py",
+    "description": "Rename Strain class to Cultivar in legacy Flask models, update Plant model foreign keys, add backward compatibility alias",
+    "status": "TODO",
+    "priority": "HIGH",
+    "type": "FEATURE",
+    "estimated_effort_hours": 1,
+    "actual_effort_hours": null,
+    "parent_task_id": "phase-1-backend-models",
+    "dependencies": [],
+    "blocking": ["task-1-2-models-init-update"],
+    "subtasks": [],
+    "assignee": "@traycerai",
+    "tags": ["migration", "backend", "models"],
+    "created_at": "2025-11-05T04:38:59.543Z",
+    "updated_at": "2025-11-05T04:38:59.543Z",
+    "started_at": null,
+    "completed_at": null,
+    "files_affected": ["app/models/base_models.py"],
+    "acceptance_criteria": [
+        "Cultivar class exists in app/models/base_models.py",
+        "Strain = Cultivar alias exists for backward compatibility",
+        "Plant.cultivar_id foreign key exists",
+        "Plant.cultivar relationship exists"
+    ],
+    "notes": "",
+    "linear_issue_id": null
+}

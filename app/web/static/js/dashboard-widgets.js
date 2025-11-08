@@ -107,7 +107,7 @@ class DashboardWidgetSystem {
         switch(widget.id) {
             case 'plants':
                 return this.getActivePlantsWidget();
-            case 'strains':
+            case 'cultivars':
                 return this.getCultivarsWidget();
             case 'sensors':
                 return this.getSensorsWidget();
@@ -229,11 +229,11 @@ class DashboardWidgetSystem {
         `;
     }
 
-    // Strains Widget
-    getStrainsWidget() {
+    // Cultivars Widget
+    getCultivarsWidget() {
         return `
             <div class="widget-header">
-                <h4><i class="fas fa-dna"></i> Strains</h4>
+                <h4><i class="fas fa-dna"></i> Cultivars</h4>
             </div>
             <div class="widget-content">
                 <div class="widget-stat">

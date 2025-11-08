@@ -29,6 +29,9 @@ aiohttp==3.9.1
 # IoT/Hardware Integration
 vivosun_thermo>=1.0.0
 
+# External Data Sources
+seedfinder==0.2.1
+
 # Legacy Flask (kept for handlers migration - TODO: remove after full migration)
 Flask==3.1.1
 Flask-SQLAlchemy==3.1.1

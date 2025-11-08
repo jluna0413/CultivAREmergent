@@ -1,6 +1,6 @@
 {
   "id": "phase-7-validation",
-  "title": "Phase 7: Migration Validation and Cleanup",
+  "title": "Phase 7: Validation, Cleanup, and Migration Guides",
   "description": "Create migration guides, validation scripts, backward compatibility docs, run full test suite, verify all changes",
   "status": "TODO",
   "priority": "HIGH",
@@ -8,43 +8,32 @@
   "estimated_effort_hours": 5,
   "actual_effort_hours": null,
   "parent_task_id": "cultivar-migration-master",
-  "dependencies": ["phase-6-documentation"],
-  "blocking": [],
-  "subtasks": [
-    "task-7-1-terminology-guide-create",
-    "task-7-2-validation-script-create",
-    "task-7-3-alembic-migration-create",
-    "task-7-4-backward-compat-guide-create",
-    "task-7-5-run-backend-tests",
-    "task-7-6-run-flutter-tests",
-    "task-7-7-run-validation-script",
-    "task-7-8-verify-api-endpoints",
-    "task-7-9-verify-templates",
-    "task-7-10-verify-backward-compat",
-    "task-7-11-update-changelog",
-    "task-7-12-create-migration-announcement"
+  "dependencies": [
+    "phase-6-documentation"
   ],
+  "blocking": [],
+  "subtasks": [],
   "assignee": "@traycerai",
-  "tags": ["migration", "validation", "cleanup"],
-  "created_at": "2025-11-03T18:48:58Z",
-  "updated_at": "2025-11-03T18:48:58Z",
+  "tags": [
+    "migration",
+    "phase",
+    "cultivar"
+  ],
+  "created_at": "2025-11-07T04:25:49.392954Z",
+  "updated_at": "2025-11-07T04:25:49.392954Z",
   "started_at": null,
   "completed_at": null,
-  "files_affected": [],
-  "acceptance_criteria": [
-    "Terminology migration guide created and comprehensive",
-    "Validation script exists and passes 100%",
-    "Alembic migration created (if needed)",
-    "Backward compatibility strategy documented",
-    "All backend tests pass (100%)",
-    "All Flutter tests pass (100%)",
-    "Both /cultivars/* and /strains/* endpoints work",
-    "All templates render without errors",
-    "All backward compatibility aliases work",
-    "CHANGELOG updated",
-    "Migration announcement ready",
-    "Zero regressions detected"
+  "files_affected": [
+    "docs/TERMINOLOGY_MIGRATION_GUIDE.md",
+    "scripts/validate_terminology_migration.py",
+    "docs/BACKWARD_COMPATIBILITY_STRATEGY.md"
   ],
-  "notes": "Phase 7 - Final validation and cleanup phase",
+  "acceptance_criteria": [
+    "All specified files updated with cultivar terminology",
+    "All tests pass",
+    "No breaking changes",
+    "Backward compatibility maintained"
+  ],
+  "notes": "Part of cultivar-migration-master epic migration",
   "linear_issue_id": null
 }

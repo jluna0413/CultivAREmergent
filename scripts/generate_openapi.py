@@ -16,8 +16,9 @@ try:
     print('✅ Successfully imported FastAPI app')
     
     # Create test client and generate OpenAPI schema
-    client = TestClient(app)
-    response = client.get('/openapi.json')
+    print(app.user_middleware)
+    client = TestClient(app, base_url="http://testserver")
+    response = client.get('/openapi.json', headers={"Host": "testserver"})
     
     if response.status_code == 200:
         schema = response.json()

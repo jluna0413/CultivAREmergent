@@ -10,7 +10,7 @@ import logging
 from app.fastapi_app.dependencies import inject_template_context
 from app.config.config import Config
 
-router = APIRouter(prefix="/site", tags=["site"])
+router = APIRouter(tags=["site"])
 
 
 # Blog API Routes

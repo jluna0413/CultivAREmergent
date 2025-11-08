@@ -146,23 +146,23 @@ class TestPlantsIntegration:
         assert get_response.status_code == 404
     
     @pytest.mark.asyncio
-    async def test_get_plants_by_strain(self, authenticated_client: httpx.AsyncClient, base_url: str, test_plant_data: dict):
-        """Test filtering plants by strain"""
-        # Create a plant with specific strain
-        test_plant_data["strain_id"] = "specific_strain_789"
+    async def test_get_plants_by_cultivar(self, authenticated_client: httpx.AsyncClient, base_url: str, test_plant_data: dict):
+        """Test filtering plants by cultivar (backward compatible with strain_id)"""
+        # Create a plant with specific cultivar
+        test_plant_data["strain_id"] = "specific_cultivar_789"  # Keep backward compatibility
         plant_id = await self.test_create_plant(authenticated_client, base_url, test_plant_data)
         
-        # Filter by strain
+        # Filter by cultivar (backward compatible parameter name)
         response = await authenticated_client.get(
-            f"{base_url}/plants/?strain_id=specific_strain_789"
+            f"{base_url}/plants/?strain_id=specific_cultivar_789"
         )
         
         assert response.status_code == 200
         plants = response.json()
         
-        # Verify all returned plants have the specified strain
+        # Verify all returned plants have the specified cultivar
         for plant in plants:
-            assert plant["strain_id"] == "specific_strain_789"
+            assert plant["strain_id"] == "specific_cultivar_789"  # Keep backward compatibility
     
     @pytest.mark.asyncio
     async def test_get_plants_by_stage(self, authenticated_client: httpx.AsyncClient, base_url: str, test_plant_data: dict):
@@ -196,7 +196,7 @@ class TestPlantsIntegration:
         """Test creating plant with invalid data"""
         invalid_data = {
             "name": "",  # Empty name should be invalid
-            "strain_id": "test-strain",
+            "strain_id": "test-cultivar",  # Keep backward compatibility
             # Missing required fields
         }
         

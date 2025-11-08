@@ -7,13 +7,20 @@ from fastapi import APIRouter, Request, Depends, HTTPException
 from sqlalchemy import func, select, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime, timedelta
+from typing import List
 
 from app.fastapi_app.dependencies import require_admin, inject_template_context
 from app.models_async.base import get_async_session as get_async_db
 from app.models_async.auth import User
 from app.models_async.grow import Plant, Cultivar
+from app.fastapi_app.models.admin import AdminStats, AdminUserBulkDeleteRequest, SystemInfo, LogEntry
+from app.fastapi_app.models.users import UserResponse
 
-router = APIRouter(prefix="/admin", tags=["admin"])
+# HTML routes for backward compatibility - Legacy template support
+router = APIRouter(tags=["admin"])
+
+# Clean JSON API routes under /api/v1/admin/*
+api_router = APIRouter(tags=["admin-api"])
 
 
 @router.get("/", name="admin_home")
@@ -71,7 +78,6 @@ async def admin_dashboard(
         context
     )
 
-
 @router.get("/users", name="admin_users")
 async def admin_users(
     request: Request,
@@ -121,235 +127,106 @@ async def admin_users(
         context
     )
 
+# API Routes
 
-@router.get("/users/{user_id}", name="admin_user_detail")
-async def admin_user_detail(
-    user_id: int,
-    request: Request,
-    db: AsyncSession = Depends(get_async_db),
-    current_user: User = Depends(require_admin),
-    context: dict = Depends(inject_template_context)
-):
-    """View user details with async SQLAlchemy."""
-    try:
-        # Fetch user by ID
-        result = await db.execute(
-            select(User).where(User.id == user_id)
-        )
-        user = result.scalar_one_or_none()
-        
-        if not user:
-            raise HTTPException(status_code=404, detail="User not found")
-
-        # Get user statistics - plant count
-        plant_result = await db.execute(
-            select(func.count(Plant.id)).where(Plant.user_id == user_id)
-        )
-        plant_count = plant_result.scalar() or 0
-        
-        # Convert user to dict for Jinja2
-        user_dict = {
-            "id": user.id,
-            "username": user.username,
-            "email": user.email,
-            "is_admin": user.is_admin,
-            "created_at": user.created_at,
-        }
-
-        context.update({
-            "user": user_dict,
-            "plant_count": plant_count,
-        })
-    except HTTPException:
-        raise
-    except Exception as e:
-        print(f"Error loading user: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-    
-    return request.app.state.templates.TemplateResponse(
-        "admin/user_detail.html",
-        context
-    )
-
-
-@router.post("/api/users/{user_id}/toggle-admin", name="api_admin_toggle_admin")
-async def api_toggle_admin(
-    user_id: int,
-    db: AsyncSession = Depends(get_async_db),
-    current_user: User = Depends(require_admin)
-):
-    """Toggle admin status for a user with async SQLAlchemy."""
-    try:
-        # Prevent self-modification
-        if user_id == current_user.id:
-            return {
-                "status": "error",
-                "message": "Cannot change your own admin status"
-            }
-
-        # Fetch user by ID
-        result = await db.execute(
-            select(User).where(User.id == user_id)
-        )
-        user = result.scalar_one_or_none()
-        
-        if not user:
-            raise HTTPException(status_code=404, detail="User not found")
-
-        # Toggle admin status
-        user.is_admin = not user.is_admin
-        await db.commit()
-
-        return {
-            "status": "success",
-            "message": f"Admin status {'granted' if user.is_admin else 'revoked'}",
-            "is_admin": user.is_admin,
-        }
-    except HTTPException:
-        raise
-    except Exception as e:
-        await db.rollback()
-        return {
-            "status": "error",
-            "message": str(e),
-        }
-
-
-@router.post("/api/users/{user_id}/delete", name="api_admin_delete_user")
-async def api_delete_user(
-    user_id: int,
-    db: AsyncSession = Depends(get_async_db),
-    current_user: User = Depends(require_admin)
-):
-    """Delete a user and their data with async SQLAlchemy."""
-    try:
-        # Prevent self-deletion
-        if user_id == current_user.id:
-            return {
-                "status": "error",
-                "message": "Cannot delete your own account"
-            }
-
-        # Fetch user by ID
-        result = await db.execute(
-            select(User).where(User.id == user_id)
-        )
-        user = result.scalar_one_or_none()
-        
-        if not user:
-            raise HTTPException(status_code=404, detail="User not found")
-
-        # Delete user's plants (cascade delete)
-        await db.execute(
-            delete(Plant).where(Plant.user_id == user_id)
-        )
-        
-        # Delete user
-        await db.delete(user)
-        await db.commit()
-
-        return {
-            "status": "success",
-            "message": "User and associated data deleted"
-        }
-    except HTTPException:
-        raise
-    except Exception as e:
-        await db.rollback()
-        return {
-            "status": "error",
-            "message": str(e),
-        }
-
-
-@router.get("/api/stats", name="api_admin_stats")
-async def api_admin_stats(
+@api_router.get("/stats", response_model=AdminStats)
+async def get_admin_stats(
     db: AsyncSession = Depends(get_async_db),
     current_user: User = Depends(require_admin)
 ):
     """Get admin statistics."""
-    try:
-        result = await db.execute(select(func.count(User.id)))
-        total_users = result.scalar() or 0
-        
-        result = await db.execute(select(func.count(Plant.id)))
-        total_plants = result.scalar() or 0
-        
-        result = await db.execute(select(func.count(Cultivar.id)))
-        total_cultivars = result.scalar() or 0
+    result = await db.execute(select(func.count(User.id)))
+    total_users = result.scalar() or 0
+    
+    result = await db.execute(select(func.count(Plant.id)))
+    total_plants = result.scalar() or 0
+    
+    result = await db.execute(select(func.count(Cultivar.id)))
+    total_cultivars = result.scalar() or 0
 
-        return {
-            "status": "success",
-            "data": {
-                "total_users": total_users,
-                "total_plants": total_plants,
-                "total_cultivars": total_cultivars,
-            }
-        }
-    except Exception as e:
-        return {
-            "status": "error",
-            "message": str(e),
-        }
+    return AdminStats(
+        total_users=total_users,
+        total_plants=total_plants,
+        total_cultivars=total_cultivars,
+        total_breeders=0, # Placeholder
+        total_clones=0, # Placeholder
+        total_activities=0, # Placeholder
+        total_sensors=0 # Placeholder
+    )
 
-
-@router.get("/api/users", name="api_admin_all_users")
-async def api_admin_all_users(
+@api_router.get("/users", response_model=List[UserResponse])
+async def get_all_users(
     db: AsyncSession = Depends(get_async_db),
     current_user: User = Depends(require_admin)
 ):
     """Get all users as JSON."""
-    try:
-        result = await db.execute(
-            select(User).order_by(User.created_at.desc())
-        )
-        users = result.scalars().all()
+    result = await db.execute(select(User).order_by(User.created_at.desc()))
+    users = result.scalars().all()
+    return [UserResponse.from_orm(user) for user in users]
 
-        users_data = []
-        for user in users:
-            users_data.append({
-                "id": user.id,
-                "username": user.username,
-                "email": user.email,
-                "is_admin": user.is_admin,
-                "created_at": user.created_at.isoformat() if user.created_at else None,
-            })
-
-        return {
-            "status": "success",
-            "data": users_data,
-            "total": len(users_data),
-        }
-    except Exception as e:
-        return {
-            "status": "error",
-            "message": str(e),
-        }
-
-
-@router.get("/export", name="admin_export")
-async def export_page(
-    request: Request,
-    current_user: User = Depends(require_admin),
-    context: dict = Depends(inject_template_context)
+@api_router.post("/users/bulk-delete")
+async def bulk_delete_users(
+    request: AdminUserBulkDeleteRequest,
+    db: AsyncSession = Depends(get_async_db),
+    current_user: User = Depends(require_admin)
 ):
-    """Data export page."""
-    context.update({
-        "page_title": "Data Export",
-        "page_description": "Export your CultivAR data to various formats. Coming soon!"
-    })
-    return request.app.state.templates.TemplateResponse("views/coming_soon.html", context)
+    if current_user.id in request.user_ids:
+        raise HTTPException(status_code=400, detail="Cannot delete your own account.")
+    
+    await db.execute(delete(User).where(User.id.in_(request.user_ids)))
+    await db.commit()
+    return {"status": "success", "message": "Users deleted."}
 
-
-@router.get("/plugins", name="admin_plugins")
-async def plugins_page(
-    request: Request,
-    current_user: User = Depends(require_admin),
-    context: dict = Depends(inject_template_context)
+@api_router.post("/users/{user_id}/toggle-admin")
+async def toggle_admin(
+    user_id: int,
+    db: AsyncSession = Depends(get_async_db),
+    current_user: User = Depends(require_admin)
 ):
-    """Plugin management page."""
-    context.update({
-        "page_title": "Plugin Management",
-        "page_description": "Manage CultivAR plugins and extensions. Coming soon!"
-    })
-    return request.app.state.templates.TemplateResponse("views/coming_soon.html", context)
+    if user_id == current_user.id:
+        raise HTTPException(status_code=400, detail="Cannot change your own admin status.")
+    
+    user = await db.get(User, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found.")
+    
+    user.is_admin = not user.is_admin
+    await db.commit()
+    return {"status": "success", "is_admin": user.is_admin}
+
+@api_router.post("/users/{user_id}/force-password-reset")
+async def force_password_reset(
+    user_id: int,
+    db: AsyncSession = Depends(get_async_db),
+    current_user: User = Depends(require_admin)
+):
+    user = await db.get(User, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found.")
+    
+    user.force_password_change = True
+    await db.commit()
+    return {"status": "success", "message": "User will be required to reset password on next login."}
+
+@api_router.get("/system/info", response_model=SystemInfo)
+async def get_system_info():
+    # This is placeholder data. A real implementation would gather this dynamically.
+    return SystemInfo(
+        python_version="3.9",
+        os_name="Linux",
+        os_version="Ubuntu 20.04",
+        cpu_count="8",
+        memory_total="16 GB",
+        memory_available="8 GB",
+        disk_total="512 GB",
+        disk_free="256 GB",
+        boot_time=str(datetime.utcnow() - timedelta(days=1))
+    )
+
+@api_router.get("/system/logs", response_model=List[LogEntry])
+async def get_system_logs():
+    # This is placeholder data. A real implementation would read from a log file.
+    return [
+        LogEntry(timestamp=str(datetime.utcnow()), level="INFO", message="System started"),
+        LogEntry(timestamp=str(datetime.utcnow() - timedelta(minutes=5)), level="WARNING", message="High CPU usage detected"),
+    ]

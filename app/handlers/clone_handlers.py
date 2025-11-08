@@ -33,10 +33,10 @@ def get_available_parent_plants():
             parent_data = {
                 "id": plant.id,
                 "name": plant.name,
-                "strain_name": plant.strain.name if plant.strain else "Unknown",
+                "cultivar_name": plant.cultivar.name if plant.cultivar else "Unknown",
                 "breeder_name": (
-                    plant.strain.breeder.name
-                    if plant.strain and plant.strain.breeder
+                    plant.cultivar.breeder.name
+                    if plant.cultivar and plant.cultivar.breeder
                     else "Unknown"
                 ),
                 "status": plant.status.name if plant.status else "Unknown",
@@ -106,7 +106,7 @@ def create_clones(parent_id, clone_data_list, user_id):
                 clone = Plant(
                     name=clone_name,
                     description=description,
-                    strain_id=parent_plant.strain_id,
+                    cultivar_id=parent_plant.cultivar_id,
                     zone_id=zone_id,
                     status_id=1,  # Start as Seedling
                     is_clone=True,
@@ -199,7 +199,7 @@ def get_clone_lineage(plant_id):
                 "id": plant.id,
                 "name": plant.name,
                 "is_clone": plant.is_clone,
-                "strain_name": plant.strain.name if plant.strain else "Unknown",
+                "cultivar_name": plant.cultivar.name if plant.cultivar else "Unknown",
             },
             "parent": None,
             "children": [],
@@ -212,8 +212,8 @@ def get_clone_lineage(plant_id):
             lineage["parent"] = {
                 "id": plant.parent.id,
                 "name": plant.parent.name,
-                "strain_name": (
-                    plant.parent.strain.name if plant.parent.strain else "Unknown"
+                "cultivar_name": (
+                    plant.parent.cultivar.name if plant.parent.cultivar else "Unknown"
                 ),
                 "status": (
                     plant.parent.status.name if plant.parent.status else "Unknown"
@@ -230,9 +230,9 @@ def get_clone_lineage(plant_id):
                 lineage["grandparent"] = {
                     "id": plant.parent.parent.id,
                     "name": plant.parent.parent.name,
-                    "strain_name": (
-                        plant.parent.parent.strain.name
-                        if plant.parent.parent.strain
+                    "cultivar_name": (
+                        plant.parent.parent.cultivar.name
+                        if plant.parent.parent.cultivar
                         else "Unknown"
                     ),
                 }
@@ -331,9 +331,9 @@ def get_clone_statistics():
                         "id": parent.id,
                         "name": parent.name,
                         "clone_count": parent.clone_count,
-                        "strain_name": (
-                            parent_plant.strain.name
-                            if parent_plant.strain
+                        "cultivar_name": (
+                            parent_plant.cultivar.name
+                            if parent_plant.cultivar
                             else "Unknown"
                         ),
                     }
@@ -386,7 +386,7 @@ def get_all_clones():
                 "id": clone.id,
                 "name": clone.name,
                 "description": clone.description,
-                "strain_name": clone.strain.name if clone.strain else "Unknown",
+                "cultivar_name": clone.cultivar.name if clone.cultivar else "Unknown",
                 "parent_name": clone.parent.name if clone.parent else "Unknown",
                 "parent_id": clone.parent_id,
                 "status": clone.status.name if clone.status else "Unknown",

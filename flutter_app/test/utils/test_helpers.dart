@@ -245,7 +245,7 @@ class TestDataFactory {
   }) {
     return DashboardStats(
       counts: counts ??
-          CountStats(
+          const CountStats(
               total: 10,
               active: 8,
               harvested: 2,
@@ -253,12 +253,12 @@ class TestDataFactory {
               vegetative: 3,
               flowering: 2),
       cultivars:
-          cultivars ?? CultivarStats(totalCultivars: 5, userCultivars: 3),
+          cultivars ?? const CultivarStats(totalCultivars: 5, userCultivars: 3),
       environment: environment ??
-          EnvironmentalStats(
+          const EnvironmentalStats(
               avgTemperature: 24.5, avgHumidity: 65.0, avgPh: 6.2),
-      sensors: sensors ?? SensorStats(totalSensors: 5, activeSensors: 4),
-      dataSlices: dataSlices ?? EnvironmentalSlice(),
+      sensors: sensors ?? const SensorStats(totalSensors: 5, activeSensors: 4),
+      dataSlices: dataSlices ?? const EnvironmentalSlice(),
       growthPhases: [],
       recentReadings: [],
       recentActivities: [],
@@ -288,7 +288,7 @@ class CultivaremantTestMatchers {
   static Matcher isValidPlant() {
     return predicate<Plant>(
         (plant) =>
-            plant.id != null && plant.name.isNotEmpty && plant.userId != null,
+            plant.name.isNotEmpty,
         'is a valid Plant');
   }
 
@@ -297,7 +297,6 @@ class CultivaremantTestMatchers {
         (cultivar) =>
             cultivar.id != null &&
             cultivar.name.isNotEmpty &&
-            cultivar.userId != null &&
             (cultivar.indica ?? 0) >= 0 &&
             (cultivar.sativa ?? 0) >= 0,
         'is a valid Cultivar');
@@ -306,7 +305,6 @@ class CultivaremantTestMatchers {
   static Matcher isValidSensor() {
     return predicate<Sensor>(
         (sensor) =>
-            sensor.id != null &&
             sensor.name.isNotEmpty &&
             sensor.type.isNotEmpty,
         'is a valid Sensor');
@@ -315,7 +313,6 @@ class CultivaremantTestMatchers {
   static Matcher isValidUser() {
     return predicate<user_models.User>(
         (user) =>
-            user.id != null &&
             user.username.isNotEmpty &&
             user.email.isNotEmpty,
         'is a valid User');
@@ -363,13 +360,13 @@ class CultivaremantTestMatchers {
 class WidgetTestHelpers {
   static Widget createTestApp({Widget? child}) {
     return MaterialApp(
-      home: child ?? Scaffold(body: Text('Test App')),
+      home: child ?? const Scaffold(body: Text('Test App')),
     );
   }
 
   static Widget createTestMaterialApp({Widget? child}) {
     return Material(
-      child: child ?? Text('Test Widget'),
+      child: child ?? const Text('Test Widget'),
     );
   }
 

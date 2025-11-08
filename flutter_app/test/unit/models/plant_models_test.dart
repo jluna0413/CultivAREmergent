@@ -447,7 +447,7 @@ void main() {
         isClone: false,
         autoflower: false,
         startDate: DateTime(2024, 1, 1),
-        lastWaterDate: now.subtract(Duration(days: 1)),
+        lastWaterDate: now.subtract(const Duration(days: 1)),
         lastFeedDate: DateTime(2024, 1, 10),
         harvestDate: DateTime(2024, 4, 1),
         userId: 1,
@@ -464,7 +464,7 @@ void main() {
         isClone: false,
         autoflower: false,
         startDate: DateTime(2024, 1, 1),
-        lastWaterDate: now.subtract(Duration(days: 7)),
+        lastWaterDate: now.subtract(const Duration(days: 7)),
         lastFeedDate: DateTime(2024, 1, 10),
         harvestDate: DateTime(2024, 4, 1),
         userId: 1,
@@ -494,7 +494,7 @@ void main() {
         autoflower: false,
         startDate: DateTime(2024, 1, 1),
         lastWaterDate: DateTime(2024, 1, 15),
-        lastFeedDate: now.subtract(Duration(days: 1)),
+        lastFeedDate: now.subtract(const Duration(days: 1)),
         harvestDate: DateTime(2024, 4, 1),
         userId: 1,
         createdAt: now,
@@ -511,7 +511,7 @@ void main() {
         autoflower: false,
         startDate: DateTime(2024, 1, 1),
         lastWaterDate: DateTime(2024, 1, 15),
-        lastFeedDate: now.subtract(Duration(days: 14)),
+        lastFeedDate: now.subtract(const Duration(days: 14)),
         harvestDate: DateTime(2024, 4, 1),
         userId: 1,
         createdAt: now,
@@ -655,7 +655,7 @@ void main() {
 
   group('Plant Status Tests', () {
     test('PlantStatus should be created with valid data', () {
-      final status = PlantStatus(
+      const status = PlantStatus(
         id: 1,
         name: 'Active',
         description: 'Plant is actively growing',
@@ -669,7 +669,7 @@ void main() {
     });
 
     test('PlantStatus should serialize and deserialize correctly', () {
-      final status = PlantStatus(
+      const status = PlantStatus(
         id: 1,
         name: 'Active',
         description: 'Plant is actively growing',

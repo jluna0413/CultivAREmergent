@@ -7,6 +7,16 @@ from pydantic import BaseModel, Field, validator
 class BreederBase(BaseModel):
     """Base breeder model with common fields."""
     name: str = Field(..., min_length=1, max_length=100, description="Breeder name")
+    country: Optional[str] = Field(None, max_length=100, description="Breeder country of origin")
+    website: Optional[str] = Field(None, max_length=255, description="Breeder website URL")
+    seedfinder_id: Optional[str] = Field(None, max_length=100, description="SeedFinder API identifier")
+    description: Optional[str] = Field(None, max_length=2000, description="Detailed breeder information")
+
+    @validator('website')
+    def validate_website(cls, v):
+        if v and not v.startswith(('http://', 'https://')):
+            raise ValueError('Website must be a valid URL (e.g., http://example.com)')
+        return v
 
 
 class BreederCreate(BreederBase):
@@ -17,6 +27,16 @@ class BreederCreate(BreederBase):
 class BreederUpdate(BaseModel):
     """Model for updating an existing breeder."""
     name: Optional[str] = Field(None, min_length=1, max_length=100)
+    country: Optional[str] = Field(None, max_length=100, description="Breeder country of origin")
+    website: Optional[str] = Field(None, max_length=255, description="Breeder website URL")
+    seedfinder_id: Optional[str] = Field(None, max_length=100, description="SeedFinder API identifier")
+    description: Optional[str] = Field(None, max_length=2000, description="Detailed breeder information")
+
+    @validator('website')
+    def validate_website(cls, v):
+        if v and not v.startswith(('http://', 'https://')):
+            raise ValueError('Website must be a valid URL (e.g., http://example.com)')
+        return v
 
 
 class BreederResponse(BreederBase):

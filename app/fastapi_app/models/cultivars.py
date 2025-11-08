@@ -1,6 +1,6 @@
 """Pydantic models for Cultivars domain."""
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
 from pydantic import BaseModel, Field, validator
 
 
@@ -11,6 +11,16 @@ class CultivarBase(BaseModel):
     indica: int = Field(0, ge=0, le=100, description="Indica percentage (0-100)")
     sativa: int = Field(0, ge=0, le=100, description="Sativa percentage (0-100)")
     autoflower: bool = Field(False, description="Whether cultivar is autoflower")
+    
+    # SeedFinder and lineage fields
+    parent_1: Optional[str] = Field(None, max_length=100, description="First parent strain name")
+    parent_2: Optional[str] = Field(None, max_length=100, description="Second parent strain name")
+    lineage_json: Optional[Dict[str, Any]] = Field(None, description="Complete genetic lineage as JSON structure")
+    seedfinder_id: Optional[str] = Field(None, max_length=100, description="SeedFinder strain identifier")
+    thc_content: Optional[float] = Field(None, ge=0, le=100, description="THC percentage (0-100)")
+    cbd_content: Optional[float] = Field(None, ge=0, le=100, description="CBD percentage (0-100)")
+    flowering_type: Optional[str] = Field(None, max_length=50, description="Flowering type (photoperiod, autoflower, etc)")
+
     cycle_time: Optional[int] = Field(None, ge=1, le=365, description="Flowering cycle time in days")
     seed_count: Optional[int] = Field(None, ge=1, description="Average seed count per plant")
     url: Optional[str] = Field(None, description="Cultivar information URL")
@@ -21,6 +31,19 @@ class CultivarBase(BaseModel):
         """Validate sativa percentage against indica for hybrid classification."""
         if 'indica' in values and v + values['indica'] > 110:  # Allow small rounding error
             raise ValueError('Combined indica + sativa percentage cannot exceed 100%')
+        return v
+
+    @validator('thc_content', 'cbd_content')
+    def validate_cannabinoid_content(cls, v):
+        if v is not None and not (0 <= v <= 100):
+            raise ValueError('Cannabinoid content must be between 0 and 100')
+        return v
+
+    @validator('flowering_type')
+    def validate_flowering_type(cls, v):
+        allowed_types = ['photoperiod', 'autoflower', 'semi-autoflower', None]
+        if v and v.lower() not in allowed_types:
+            raise ValueError(f"Flowering type must be one of {allowed_types}")
         return v
 
 
@@ -40,6 +63,13 @@ class CultivarUpdate(BaseModel):
     seed_count: Optional[int] = Field(None, ge=1)
     url: Optional[str] = None
     description: Optional[str] = Field(None, max_length=1000)
+    parent_1: Optional[str] = Field(None, max_length=100)
+    parent_2: Optional[str] = Field(None, max_length=100)
+    lineage_json: Optional[Dict[str, Any]] = None
+    seedfinder_id: Optional[str] = Field(None, max_length=100)
+    thc_content: Optional[float] = Field(None, ge=0, le=100)
+    cbd_content: Optional[float] = Field(None, ge=0, le=100)
+    flowering_type: Optional[str] = Field(None, max_length=50)
 
     @validator('sativa')
     def validate_sativa_percentage(cls, v, values):
@@ -60,6 +90,11 @@ class CultivarResponse(CultivarBase):
     # Computed fields
     type: str = Field(..., description="Cultivar type (indica/sativa/hybrid)")
     breeder_name: Optional[str] = Field(None, description="Breeder name")
+    has_lineage: bool = Field(False, description="Whether lineage data is available")
+
+    @validator('has_lineage', always=True)
+    def get_has_lineage(cls, v, values):
+        return bool(values.get('lineage_json'))
 
     class Config:
         from_attributes = True
@@ -85,13 +120,22 @@ class CultivarFilters(BaseModel):
     min_cycle_time: Optional[int] = Field(None, ge=1, description="Minimum cycle time in days")
     max_cycle_time: Optional[int] = Field(None, ge=1, description="Maximum cycle time in days")
     search: Optional[str] = Field(None, description="Search term for name/description")
+    has_lineage: Optional[bool] = Field(None, description="Filter cultivars with/without lineage data")
+    min_thc: Optional[float] = Field(None, ge=0, le=100, description="Minimum THC content")
+    max_thc: Optional[float] = Field(None, ge=0, le=100, description="Maximum THC content")
+    min_cbd: Optional[float] = Field(None, ge=0, le=100, description="Minimum CBD content")
+    max_cbd: Optional[float] = Field(None, ge=0, le=100, description="Maximum CBD content")
+    flowering_type: Optional[str] = Field(None, description="Filter by flowering type")
 
 
 class CultivarStats(BaseModel):
-    """Model for cultivar statistics."""
+    """Model for cultivar statistics response."""
     total_cultivars: int = Field(..., description="Total number of cultivars")
     indica_count: int = Field(..., description="Number of indica cultivars")
     sativa_count: int = Field(..., description="Number of sativa cultivars")
     hybrid_count: int = Field(..., description="Number of hybrid cultivars")
     autoflower_count: int = Field(..., description="Number of autoflower cultivars")
     average_cycle_time: Optional[float] = Field(None, description="Average cycle time in days")
+
+    class Config:
+        use_enum_values = True

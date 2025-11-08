@@ -2,66 +2,72 @@
 
 ## Overview
 
-This test plan outlines the testing approach for the CultivAR MVP release. The goal is to ensure that all core functionality is working properly before releasing the application to beta testers.
+This test plan outlines the testing approach for the CultivAR MVP release. The goal is to ensure that all core functionality is working properly before releasing the application to beta testers. This includes both the web frontend and the FastAPI backend.
 
 ## Test Environment
 
-- **Browser**: Chrome (latest version)
-- **Operating System**: Windows 10/11
-- **Screen Resolution**: 1920x1080 (desktop), 375x812 (mobile)
+- **Web Frontend**:
+    - **Browser**: Chrome (latest version)
+    - **Operating System**: Windows 10/11
+    - **Screen Resolution**: 1920x1080 (desktop), 375x812 (mobile)
+- **API Backend**:
+    - **Tool**: Postman, Swagger UI (`/docs`), or custom Python scripts
+    - **Target**: Staging or local development server
 
-## Test Cases
+## Test Cases - Web Frontend
 
 ### 1. Authentication
 
-| Test ID | Description | Steps | Expected Result | Status |
-|---------|-------------|-------|-----------------|--------|
-| AUTH-01 | User Login | 1. Navigate to login page<br>2. Enter valid credentials<br>3. Click "Sign In" | User is logged in and redirected to dashboard | |
-| AUTH-02 | Invalid Login | 1. Navigate to login page<br>2. Enter invalid credentials<br>3. Click "Sign In" | Error message is displayed | |
-| AUTH-03 | Logout | 1. Click logout button | User is logged out and redirected to login page | |
-| AUTH-04 | Admin Login | 1. Navigate to admin login page<br>2. Enter valid admin credentials<br>3. Click "Sign In" | Admin is logged in and redirected to admin dashboard | |
+| Test ID | Description | Steps | Expected Result | Acceptance Criteria | Status |
+|---------|-------------|-------|-----------------|---------------------|--------|
+| WEB-AUTH-01 | User Login | 1. Navigate to login page<br>2. Enter valid credentials<br>3. Click "Sign In" | User is logged in and redirected to dashboard | User can log in with correct credentials. | |
+| WEB-AUTH-02 | Invalid Login | 1. Navigate to login page<br>2. Enter invalid credentials<br>3. Click "Sign In" | Error message is displayed | User cannot log in with incorrect credentials. | |
+| WEB-AUTH-03 | Logout | 1. Click logout button | User is logged out and redirected to login page | User can log out successfully. | |
 
 ### 2. Plant Management
 
-| Test ID | Description | Steps | Expected Result | Status |
-|---------|-------------|-------|-----------------|--------|
-| PLANT-01 | Add Plant | 1. Navigate to Plants page<br>2. Click "Add Plant"<br>3. Fill in required fields<br>4. Click "Save" | Plant is created and appears in the list | |
-| PLANT-02 | Edit Plant | 1. Navigate to Plants page<br>2. Click on a plant<br>3. Click "Edit"<br>4. Modify fields<br>5. Click "Save" | Plant is updated with new information | |
-| PLANT-03 | Delete Plant | 1. Navigate to Plants page<br>2. Click on a plant<br>3. Click "Delete"<br>4. Confirm deletion | Plant is removed from the list | |
-| PLANT-04 | Record Activity | 1. Navigate to plant details<br>2. Click "Add Activity"<br>3. Fill in activity details<br>4. Click "Save" | Activity is recorded and displayed in history | |
-| PLANT-05 | Upload Image | 1. Navigate to plant details<br>2. Click "Upload Image"<br>3. Select an image<br>4. Click "Upload" | Image is uploaded and displayed | |
+| Test ID | Description | Steps | Expected Result | Acceptance Criteria | Status |
+|---------|-------------|-------|-----------------|---------------------|--------|
+| WEB-PLANT-01 | View Plants | 1. Navigate to Plants page | List of plants is displayed correctly | User can view a list of their plants. | |
+| WEB-PLANT-02 | Add Plant | 1. Click "Add Plant"<br>2. Fill in form<br>3. Click "Save" | New plant appears in the list | User can add a new plant. | |
+| WEB-PLANT-03 | Edit Plant | 1. Select a plant<br>2. Click "Edit"<br>3. Modify form<br>4. Click "Save" | Plant details are updated | User can edit an existing plant. | |
 
-### 3. Cultivar Management
+## Test Cases - API Backend
 
-| Test ID | Description | Steps | Expected Result | Status |
-|---------|-------------|-------|-----------------|--------|
-| CULTIVAR-01 | Add Cultivar | 1. Navigate to Cultivars page<br>2. Click "Add Cultivar"<br>3. Fill in required fields<br>4. Click "Save" | Cultivar is created and appears in the list | |
-| CULTIVAR-02 | Edit Cultivar | 1. Navigate to Cultivars page<br>2. Click on a cultivar<br>3. Click "Edit"<br>4. Modify fields<br>5. Click "Save" | Cultivar is updated with new information | |
-| CULTIVAR-03 | Delete Cultivar | 1. Navigate to Cultivars page<br>2. Click on a cultivar<br>3. Click "Delete"<br>4. Confirm deletion | Cultivar is removed from the list | |
-| CULTIVAR-04 | View Cultivar Details | 1. Navigate to Cultivars page<br>2. Click on a cultivar | Cultivar details are displayed | |
+### 1. Authentication (`/api/v1/auth`)
 
-### 4. Dashboard
+| Test ID | Endpoint | Description | Steps | Expected Result | Acceptance Criteria | Status |
+|---------|----------|-------------|-------|-----------------|---------------------|--------|
+| API-AUTH-01 | `POST /token` | Successful login | 1. Send valid username and password | 200 OK with access and refresh tokens | A valid user can authenticate and receive tokens. | |
+| API-AUTH-02 | `POST /token` | Failed login | 1. Send invalid credentials | 401 Unauthorized | An invalid user cannot authenticate. | |
+| API-AUTH-03 | `POST /register` | Successful registration | 1. Send unique username and email | 201 Created with user details | A new user can register an account. | |
+| API-AUTH-04 | `POST /register` | Duplicate username | 1. Send existing username | 409 Conflict | A user cannot register with an existing username. | |
+| API-AUTH-05 | `GET /me` | Get current user | 1. Send request with valid token | 200 OK with current user's details | An authenticated user can retrieve their own profile. | |
 
-| Test ID | Description | Steps | Expected Result | Status |
-|---------|-------------|-------|-----------------|--------|
-| DASH-01 | View Dashboard | 1. Log in<br>2. Navigate to Dashboard | Dashboard displays summary information | |
-| DASH-02 | Dashboard Links | 1. Click on various dashboard widgets | User is navigated to the appropriate page | |
+### 2. Plants (`/api/v1/plants`)
 
-### 5. Settings
+| Test ID | Endpoint | Description | Steps | Expected Result | Acceptance Criteria | Status |
+|---------|----------|-------------|-------|-----------------|---------------------|--------|
+| API-PLANT-01 | `GET /` | List plants | 1. Send request with valid token | 200 OK with a paginated list of plants | A user can retrieve a list of their plants. | |
+| API-PLANT-02 | `POST /` | Create plant | 1. Send valid plant data and token | 201 Created with the new plant's details | A user can create a new plant. | |
+| API-PLANT-03 | `GET /{plant_id}` | Get single plant | 1. Send request for an existing plant ID | 200 OK with the plant's details | A user can retrieve a single plant by ID. | |
+| API-PLANT-04 | `PUT /{plant_id}` | Update plant | 1. Send valid update data for a plant | 200 OK with the updated plant's details | A user can update an existing plant. | |
+| API-PLANT-05 | `DELETE /{plant_id}` | Delete plant | 1. Send request to delete an existing plant | 204 No Content | A user can delete a plant. | |
 
-| Test ID | Description | Steps | Expected Result | Status |
-|---------|-------------|-------|-----------------|--------|
-| SET-01 | Change Password | 1. Navigate to Settings<br>2. Click "Change Password"<br>3. Enter current and new password<br>4. Click "Save" | Password is updated | |
-| SET-02 | Theme Settings | 1. Navigate to Settings<br>2. Toggle theme setting<br>3. Click "Save" | Theme is updated | |
-| SET-03 | Configure Zones | 1. Navigate to Settings<br>2. Add/edit zones<br>3. Click "Save" | Zones are updated | |
+### 3. Cultivars (`/api/v1/cultivars`)
 
-### 6. Responsive Design
+| Test ID | Endpoint | Description | Steps | Expected Result | Acceptance Criteria | Status |
+|---------|----------|-------------|-------|-----------------|---------------------|--------|
+| API-CULTIVAR-01 | `GET /` | List cultivars | 1. Send request with valid token | 200 OK with a paginated list of cultivars | A user can retrieve a list of cultivars. | |
+| API-CULTIVAR-02 | `POST /` | Create cultivar | 1. Send valid cultivar data and token | 201 Created with the new cultivar's details | A user can create a new cultivar. | |
 
-| Test ID | Description | Steps | Expected Result | Status |
-|---------|-------------|-------|-----------------|--------|
-| RESP-01 | Mobile View | 1. Access application on mobile device<br>2. Navigate through pages | Pages display correctly on mobile | |
-| RESP-02 | Tablet View | 1. Access application on tablet<br>2. Navigate through pages | Pages display correctly on tablet | |
-| RESP-03 | Desktop View | 1. Access application on desktop<br>2. Navigate through pages | Pages display correctly on desktop | |
+### 4. Admin (`/api/v1/admin`)
+
+| Test ID | Endpoint | Description | Steps | Expected Result | Acceptance Criteria | Status |
+|---------|----------|-------------|-------|-----------------|---------------------|--------|
+| API-ADMIN-01 | `GET /users` | List users (as admin) | 1. Send request with admin token | 200 OK with a list of all users | An admin can retrieve a list of all users. | |
+| API-ADMIN-02 | `GET /users` | List users (as non-admin) | 1. Send request with regular user token | 403 Forbidden | A non-admin user cannot retrieve a list of all users. | |
+| API-ADMIN-03 | `POST /users/bulk-delete` | Bulk delete users | 1. Send list of user IDs to delete | 200 OK with success message | An admin can bulk delete users. | |
 
 ## Bug Reporting
 
@@ -71,14 +77,14 @@ For each bug found during testing, record the following information:
 2. Description of the issue
 3. Steps to reproduce
 4. Expected vs. actual result
-5. Screenshots (if applicable)
-6. Browser/OS information
+5. Screenshots or API response snippets
+6. Browser/OS information for frontend bugs
 
 ## Test Completion Criteria
 
 The MVP is ready for beta testing when:
 
-1. All critical and high-priority test cases pass
-2. No blocking bugs remain
-3. Core functionality (authentication, plant management, cultivar management) works as expected
-4. The application is usable on desktop and mobile devices
+1. All critical and high-priority test cases pass for both frontend and backend.
+2. No blocking bugs remain in core features.
+3. Core functionality (authentication, plant management, cultivar management) works as expected via the API.
+4. The web application is usable on desktop and mobile devices.

@@ -18,10 +18,10 @@ from app.models_async.auth import User
 from app.models_async.grow import Plant, Cultivar, Status
 
 # HTML routes for backward compatibility - Legacy template support - DEPRECATED
-router = APIRouter(prefix="/plants", tags=["plants LEGACY - DEPRECATED - Use /api/v1/plants"], deprecated=True)
+router = APIRouter(tags=["plants LEGACY - DEPRECATED - Use /api/v1/plants"], deprecated=True)
 
 # Clean JSON API routes under /api/v1/plants/* - PREFERRED FOR FLUTTER
-api_router = APIRouter(prefix="/plants", tags=["plants-api FLUTTER READY"])
+api_router = APIRouter(tags=["plants-api FLUTTER READY"])
 
 
 # ==============================================================================

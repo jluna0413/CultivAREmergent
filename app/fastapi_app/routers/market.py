@@ -3,7 +3,7 @@ from fastapi import APIRouter, Request, Depends
 from app.fastapi_app.dependencies import require_login, inject_template_context
 from app.models_async.auth import User
 
-router = APIRouter(prefix="/market", tags=["market"])
+router = APIRouter(tags=["market"])
 
 @router.get("/seed-bank", name="market_seed_bank")
 async def seed_bank(request: Request, current_user: User = Depends(require_login), context: dict = Depends(inject_template_context)):

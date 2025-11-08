@@ -40,7 +40,7 @@ async def export_plants_csv(session: AsyncSession) -> Optional[str]:
             "Name",
             "Description",
             "Status",
-            "Strain",
+            "Cultivar",
             "Breeder",
             "Zone",
             "Is Clone",
@@ -133,7 +133,7 @@ async def export_strains_csv(session: AsyncSession) -> Optional[str]:
             if plant.cultivar and plant.cultivar.id not in unique_cultivars:
                 unique_cultivars[plant.cultivar.id] = plant.cultivar
 
-        # Write strain data
+        # Write cultivar data
         for cultivar in unique_cultivars.values():
             row = [
                 cultivar.id,
@@ -281,7 +281,7 @@ async def export_plants_json(session: AsyncSession) -> Optional[str]:
                     "name": plant.name,
                     "description": plant.description,
                     "status": plant.status.name if plant.status else "",
-                    "strain": plant.cultivar.name if plant.cultivar else "",
+                    "cultivar": plant.cultivar.name if plant.cultivar else "",
                     "breeder": plant.cultivar.breeder.name if plant.cultivar and plant.cultivar.breeder else "",
                     "zone": plant.zone.name if plant.zone else "",
                     "is_clone": bool(plant.parent_plant_id),
@@ -441,6 +441,30 @@ async def get_export_statistics(session: AsyncSession) -> Dict[str, Any]:
             "last_export_date": "Never",
         }
 
+async def delete_plant_async(session: AsyncSession, plant_id: int) -> Dict[str, Any]:
+    """
+    Delete a plant by id - ASYNC VERSION.
+    Minimal implementation to satisfy blueprint imports used during test collection.
+    """
+    try:
+        result = await session.execute(select(Plant).filter(Plant.id == plant_id))
+        plant = result.scalars().first()
+        if not plant:
+            return {"success": False, "error": "Plant not found"}
+        await session.delete(plant)
+        await session.commit()
+        # Record a system activity if available
+        try:
+            sa = SystemActivity(activity=f"Plant deleted: {plant_id}", created_at=datetime.utcnow())
+            session.add(sa)
+            await session.commit()
+        except Exception:
+            # non-critical - ignore logging failures here
+            pass
+        return {"success": True, "message": f"Plant {plant_id} deleted"}
+    except Exception as e:
+        logger.error(f"Error deleting plant async: {e}")
+        return {"success": False, "error": str(e)}
 
 async def export_complete_backup(session: AsyncSession) -> Optional[bytes]:
     """

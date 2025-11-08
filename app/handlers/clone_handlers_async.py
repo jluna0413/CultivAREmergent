@@ -1,3 +1,5 @@
+from sqlalchemy import select, and_, or_, func, desc
+
 """
 Clone management handlers for the CultivAR application - ASYNC VERSION.
 """
@@ -219,7 +221,7 @@ async def get_parent_plants(session: AsyncSession) -> List[Dict[str, Any]]:
                 "name": plant.name,
                 "description": plant.description,
                 "status": plant.status.name if plant.status else "",
-                "strain": plant.cultivar.name if plant.cultivar else "",
+                "cultivar": plant.cultivar.name if plant.cultivar else "",
                 "zone": plant.zone.name if plant.zone else "",
                 "clone_count": 0,  # Would need a separate query to count clones
             }

@@ -71,6 +71,11 @@ class Activity(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
 
+    def __init__(self, id=None, name=None, **kwargs):
+        super().__init__(**kwargs)
+        self.id = id
+        self.name = name
+
 
 class Breeder(db.Model):
     """Breeder model."""
@@ -500,5 +505,10 @@ class NewsletterSubscriber(db.Model):
         return self.unsubscribe_date is not None
 
 
-# Backward compatibility alias
+# Backward compatibility aliases
 Strain = Cultivar
+
+# Additional model aliases for backward compatibility
+class StrainAlias(Cultivar):
+    """Deprecated: Use Cultivar instead. This alias will be removed in a future version."""
+    pass

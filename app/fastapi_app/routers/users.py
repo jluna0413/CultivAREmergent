@@ -22,10 +22,10 @@ from app.models_async.auth import User
 from app.models_async.grow import Grow, Plant
 
 # HTML routes for backward compatibility - Legacy template support - DEPRECATED
-router = APIRouter(prefix="/users", tags=["users LEGACY - DEPRECATED - Use /api/v1/users"], deprecated=True)
+router = APIRouter(tags=["users LEGACY - DEPRECATED - Use /api/v1/users"], deprecated=True)
 
 # Clean JSON API routes under /api/v1/users/* - PREFERRED FOR FLUTTER
-api_router = APIRouter(prefix="/users", tags=["users-api FLUTTER READY"])
+api_router = APIRouter(tags=["users-api FLUTTER READY"])
 
 
 # ============================================================================

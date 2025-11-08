@@ -225,7 +225,7 @@ const CultivARDiagnostics = (function() {
                     };
                     
                     // Get relevant attributes
-                    ['data-strain-id', 'onclick', 'href', 'type'].forEach(attr => {
+                    ['data-cultivar-id', 'onclick', 'href', 'type'].forEach(attr => {
                         if (element.hasAttribute(attr)) {
                             elementInfo.attributes[attr] = element.getAttribute(attr);
                         }

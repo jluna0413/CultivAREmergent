@@ -50,6 +50,12 @@ class RefreshTokenRequest(BaseModel):
 class LogoutRequest(BaseModel):
     refresh_token: Optional[str] = Field(None, description="Refresh token to revoke")
 
+class RegisterRequest(BaseModel):
+    username: str = Field(..., min_length=1, max_length=80, description="Username")
+    email: Optional[EmailStr] = Field(None, description="Email address")
+    password: str = Field(..., min_length=1, description="Password")
+    full_name: Optional[str] = Field(None, description="Full name")
+
 class UserResponse(BaseModel):
     id: int
     username: str
@@ -62,6 +68,69 @@ class UserResponse(BaseModel):
         from_attributes = True
 
 # Authentication endpoints
+@router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
+async def register(
+    register_data: RegisterRequest,
+    db: AsyncSession = Depends(get_async_session)
+) -> UserResponse:
+    """
+    Register a new user account
+    """
+    try:
+        # Check if username already exists
+        result = await db.execute(
+            select(User).where(User.username == register_data.username)
+        )
+        existing_user = result.scalar_one_or_none()
+        
+        if existing_user:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Username already exists"
+            )
+        
+        # Check if email already exists (if provided)
+        if register_data.email:
+            result = await db.execute(
+                select(User).where(User.email == register_data.email)
+            )
+            existing_email = result.scalar_one_or_none()
+            
+            if existing_email:
+                raise HTTPException(
+                    status_code=status.HTTP_409_CONFLICT,
+                    detail="Email already exists"
+                )
+        
+        # Create new user
+        new_user = User(
+            username=register_data.username,
+            email=register_data.email,
+            is_admin=False,
+            force_password_change=False
+        )
+        new_user.set_password(register_data.password)
+        
+        # Add to database
+        db.add(new_user)
+        await db.commit()
+        await db.refresh(new_user)
+        
+        # Log successful registration
+        print(f"User {new_user.username} registered successfully")
+        
+        return UserResponse.from_orm(new_user)
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        await db.rollback()
+        print(f"Registration error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal server error during registration"
+        )
+
 @router.post("/login", response_model=TokenResponse)
 async def login(
     login_data: LoginRequest,

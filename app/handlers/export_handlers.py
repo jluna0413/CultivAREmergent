@@ -14,7 +14,7 @@ from app.handlers.plant_handlers import (
     get_harvested_plants,
     get_living_plants,
 )
-from app.handlers.strain_handlers import get_in_stock_strains, get_out_of_stock_strains
+from app.handlers.cultivar_handlers import get_in_stock_cultivars, get_out_of_stock_cultivars
 from app.handlers.user_handlers import get_all_users
 from app.logger import logger
 from app.models.base_models import (
@@ -22,7 +22,7 @@ from app.models.base_models import (
     PlantActivity,
     Sensor,
     SensorData,
-    Strain,
+    Cultivar,
     User,
 )
 
@@ -44,7 +44,7 @@ def export_plants_csv():
             "Name",
             "Description",
             "Status",
-            "Strain",
+            "Cultivar",
             "Breeder",
             "Zone",
             "Is Clone",
@@ -76,7 +76,7 @@ def export_plants_csv():
                 plant.get("name", ""),
                 plant.get("description", ""),
                 plant.get("status", ""),
-                plant.get("strain_name", ""),
+                plant.get("cultivar_name", ""),
                 plant.get("breeder_name", ""),
                 plant.get("zone_name", ""),
                 "Yes" if plant.get("clone", False) else "No",
@@ -100,9 +100,9 @@ def export_plants_csv():
         return None
 
 
-def export_strains_csv():
+def export_cultivars_csv():
     """
-    Export all strains to CSV format.
+    Export all cultivars to CSV format.
 
     Returns:
         str: CSV data as string
@@ -127,32 +127,32 @@ def export_strains_csv():
         ]
         writer.writerow(header)
 
-        # Get all strains
-        in_stock_strains = get_in_stock_strains()
-        out_of_stock_strains = get_out_of_stock_strains()
+        # Get all cultivars
+        in_stock_cultivars = get_in_stock_cultivars()
+        out_of_stock_cultivars = get_out_of_stock_cultivars()
 
-        all_strains = in_stock_strains + out_of_stock_strains
+        all_cultivars = in_stock_cultivars + out_of_stock_cultivars
 
-        # Write strain data
-        for strain in all_strains:
+        # Write cultivar data
+        for cultivar in all_cultivars:
             row = [
-                strain.get("id", ""),
-                strain.get("name", ""),
-                strain.get("breeder", ""),
-                strain.get("indica", ""),
-                strain.get("sativa", ""),
-                "Yes" if strain.get("autoflower", False) else "No",
-                strain.get("description", ""),
-                strain.get("seed_count", ""),
-                strain.get("cycle_time", ""),
-                strain.get("url", ""),
-                strain.get("short_description", ""),
+                cultivar.get("id", ""),
+                cultivar.get("name", ""),
+                cultivar.get("breeder", ""),
+                cultivar.get("indica", ""),
+                cultivar.get("sativa", ""),
+                "Yes" if cultivar.get("autoflower", False) else "No",
+                cultivar.get("description", ""),
+                cultivar.get("seed_count", ""),
+                cultivar.get("cycle_time", ""),
+                cultivar.get("url", ""),
+                cultivar.get("short_description", ""),
             ]
             writer.writerow(row)
 
         return output.getvalue()
     except Exception as e:
-        logger.error(f"Error exporting strains to CSV: {e}")
+        logger.error(f"Error exporting cultivars to CSV: {e}")
         return None
 
 
@@ -278,29 +278,29 @@ def export_plants_json():
         return None
 
 
-def export_strains_json():
+def export_cultivars_json():
     """
-    Export all strains to JSON format.
+    Export all cultivars to JSON format.
 
     Returns:
         str: JSON data as string
     """
     try:
-        # Get all strains
-        in_stock_strains = get_in_stock_strains()
-        out_of_stock_strains = get_out_of_stock_strains()
+        # Get all cultivars
+        in_stock_cultivars = get_in_stock_cultivars()
+        out_of_stock_cultivars = get_out_of_stock_cultivars()
 
         export_data = {
             "export_timestamp": datetime.now().isoformat(),
-            "export_type": "strains",
-            "in_stock_strains": in_stock_strains,
-            "out_of_stock_strains": out_of_stock_strains,
-            "total_strains": len(in_stock_strains) + len(out_of_stock_strains),
+            "export_type": "cultivars",
+            "in_stock_cultivars": in_stock_cultivars,
+            "out_of_stock_cultivars": out_of_stock_cultivars,
+            "total_cultivars": len(in_stock_cultivars) + len(out_of_stock_cultivars),
         }
 
         return json.dumps(export_data, indent=2, default=str)
     except Exception as e:
-        logger.error(f"Error exporting strains to JSON: {e}")
+        logger.error(f"Error exporting cultivars to JSON: {e}")
         return None
 
 
@@ -327,14 +327,14 @@ def export_complete_backup():
             if plants_json:
                 zip_file.writestr(f"plants_{timestamp}.json", plants_json)
 
-            # Export strains
-            strains_csv = export_strains_csv()
-            if strains_csv:
-                zip_file.writestr(f"strains_{timestamp}.csv", strains_csv)
+            # Export cultivars
+            cultivars_csv = export_cultivars_csv()
+            if cultivars_csv:
+                zip_file.writestr(f"cultivars_{timestamp}.csv", cultivars_csv)
 
-            strains_json = export_strains_json()
-            if strains_json:
-                zip_file.writestr(f"strains_{timestamp}.json", strains_json)
+            cultivars_json = export_cultivars_json()
+            if cultivars_json:
+                zip_file.writestr(f"cultivars_{timestamp}.json", cultivars_json)
 
             # Export activities
             activities_csv = export_activities_csv()
@@ -360,8 +360,8 @@ def export_complete_backup():
                 "files_included": [
                     f"plants_{timestamp}.csv",
                     f"plants_{timestamp}.json",
-                    f"strains_{timestamp}.csv",
-                    f"strains_{timestamp}.json",
+                    f"cultivars_{timestamp}.csv",
+                    f"cultivars_{timestamp}.json",
                     f"activities_{timestamp}.csv",
                     f"users_{timestamp}.csv",
                     f"sensors_{timestamp}.csv",
@@ -448,9 +448,9 @@ def get_export_statistics():
             "living_plants": Plant.query.filter(Plant.status_id.notin_([4, 5])).count(),
             "harvested_plants": Plant.query.filter_by(status_id=4).count(),
             "dead_plants": Plant.query.filter_by(status_id=5).count(),
-            "total_strains": Strain.query.count(),
-            "in_stock_strains": Strain.query.filter(Strain.seed_count > 0).count(),
-            "out_of_stock_strains": Strain.query.filter(Strain.seed_count == 0).count(),
+            "total_cultivars": Cultivar.query.count(),
+            "in_stock_cultivars": Cultivar.query.filter(Cultivar.seed_count > 0).count(),
+            "out_of_stock_cultivars": Cultivar.query.filter(Cultivar.seed_count == 0).count(),
             "total_activities": PlantActivity.query.count(),
             "total_users": User.query.count(),
             "total_sensors": Sensor.query.count(),

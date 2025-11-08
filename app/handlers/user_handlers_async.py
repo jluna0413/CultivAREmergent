@@ -498,3 +498,38 @@ async def get_user_statistics(session: AsyncSession) -> Dict[str, int]:
             "users_needing_password_reset": 0,
             "recent_registrations": 0,
         }
+
+
+# Backwards-compatible async-named wrappers used by blueprints / other modules.
+# These simply forward to the main implementations above so importers that expect
+# names like create_user_async continue to work without refactor.
+async def get_all_users_async(session: AsyncSession) -> List[Dict[str, Any]]:
+    return await get_all_users(session)
+
+
+async def get_user_by_id_async(user_id: int, session: AsyncSession) -> Optional[Dict[str, Any]]:
+    return await get_user_by_id(user_id, session)
+
+
+async def create_user_async(data: Dict[str, Any], session: AsyncSession) -> Dict[str, Any]:
+    return await create_user(data, session)
+
+
+async def update_user_async(user_id: int, data: Dict[str, Any], session: AsyncSession) -> Dict[str, Any]:
+    return await update_user(user_id, data, session)
+
+
+async def delete_user_async(user_id: int, session: AsyncSession) -> Dict[str, Any]:
+    return await delete_user(user_id, session)
+
+
+async def toggle_user_admin_status_async(user_id: int, session: AsyncSession) -> Dict[str, Any]:
+    return await toggle_user_admin_status(user_id, session)
+
+
+async def force_password_reset_async(user_id: int, session: AsyncSession) -> Dict[str, Any]:
+    return await force_password_reset(user_id, session)
+
+
+async def get_user_statistics_async(session: AsyncSession) -> Dict[str, int]:
+    return await get_user_statistics(session)

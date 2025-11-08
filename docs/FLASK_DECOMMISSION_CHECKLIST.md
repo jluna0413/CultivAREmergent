@@ -10,7 +10,7 @@ This document provides a comprehensive checklist for safely removing legacy Flas
 ### ✅ Phase 1: API Parity Verification
 - [ ] **Run comprehensive API parity tests** - All Flask endpoints have FastAPI equivalents
 - [ ] **Verify authentication system parity** - JWT vs Flask-Login functionality confirmed
-- [ ] **Test all CRUD operations** - Plants, strains, breeders, clones, zones
+- [ ] **Test all CRUD operations** - Plants, cultivars, breeders, clones, zones
 - [ ] **Verify admin functionality** - All admin operations work in FastAPI
 - [ ] **Test marketing endpoints** - Blog, newsletter, social features
 - [ ] **Confirm database operations** - All models work with async SQLAlchemy
@@ -52,7 +52,7 @@ This document provides a comprehensive checklist for safely removing legacy Flas
 - [ ] **Remove `marketing.py`** - Marketing features blueprint
 - [ ] **Remove `newsletter.py`** - Newsletter blueprint
 - [ ] **Remove `social.py`** - Social features blueprint
-- [ ] **Remove `strains.py`** - Strain management blueprint
+- [ ] **Remove `cultivars.py`** - Cultivar management blueprint
 - [ ] **Remove `__init__.py`** - Blueprints package init
 
 ### 🗑️ Flask Utility Modules

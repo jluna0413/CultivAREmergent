@@ -14,7 +14,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             theme: AppTheme.lightTheme,
-            home: Scaffold(
+            home: const Scaffold(
               body: PlantCard(
                 name: 'Northern Lights',
                 strain: 'Indica',
@@ -34,7 +34,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             theme: AppTheme.lightTheme,
-            home: Scaffold(
+            home: const Scaffold(
               body: PlantCard(
                 name: 'Test Plant',
                 strain: 'Test Strain',
@@ -55,7 +55,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             theme: AppTheme.lightTheme,
-            home: Scaffold(
+            home: const Scaffold(
               body: PlantCard(
                 name: 'Plant with Image',
                 strain: 'Strain',
@@ -74,7 +74,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             theme: AppTheme.lightTheme,
-            home: Scaffold(
+            home: const Scaffold(
               body: PlantCard(
                 name: 'Plant with Invalid Image',
                 strain: 'Strain',
@@ -90,7 +90,7 @@ void main() {
 
       testWidgets('PlantCard should render status badge when provided',
           (WidgetTester tester) async {
-        final status = PlantStatus(
+        const status = PlantStatus(
           label: 'Active',
           color: Colors.green,
           icon: Icons.check_circle,
@@ -116,14 +116,14 @@ void main() {
       testWidgets('PlantCard should render metrics when provided',
           (WidgetTester tester) async {
         final metrics = [
-          PlantMetric(
+          const PlantMetric(
             label: 'Height',
             value: '120',
             unit: 'cm',
             icon: Icons.height,
             color: Colors.blue,
           ),
-          PlantMetric(
+          const PlantMetric(
             label: 'Weight',
             value: '500',
             unit: 'g',
@@ -158,7 +158,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             theme: AppTheme.lightTheme,
-            home: Scaffold(
+            home: const Scaffold(
               body: PlantCard(
                 name: 'Plant with Details',
                 strain: 'Strain',
@@ -252,7 +252,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             theme: AppTheme.lightTheme,
-            home: Scaffold(
+            home: const Scaffold(
               body: PlantCard(
                 name: 'Light Theme Plant',
                 strain: 'Strain',
@@ -271,7 +271,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             theme: AppTheme.darkTheme,
-            home: Scaffold(
+            home: const Scaffold(
               body: PlantCard(
                 name: 'Dark Theme Plant',
                 strain: 'Strain',
@@ -289,7 +289,7 @@ void main() {
     group('PlantCard Compact Mode Tests', () {
       testWidgets('PlantCardCompact should render in compact mode',
           (WidgetTester tester) async {
-        final status = PlantStatus(
+        const status = PlantStatus(
           label: 'Bloom',
           color: Colors.purple,
           icon: Icons.local_florist,
@@ -341,7 +341,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             theme: AppTheme.lightTheme,
-            home: Scaffold(
+            home: const Scaffold(
               body: PlantCardCompact(
                 name: 'Compact Plant',
                 strain: 'Strain',
@@ -363,7 +363,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             theme: AppTheme.lightTheme,
-            home: Scaffold(
+            home: const Scaffold(
               body: PlantCardWithProgress(
                 name: 'Progress Plant',
                 strain: 'Strain',
@@ -385,7 +385,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             theme: AppTheme.lightTheme,
-            home: Scaffold(
+            home: const Scaffold(
               body: Column(
                 children: [
                   PlantCardWithProgress(
@@ -410,7 +410,7 @@ void main() {
 
       testWidgets('PlantCardWithProgress should show status when provided',
           (WidgetTester tester) async {
-        final status = PlantStatus(
+        const status = PlantStatus(
           label: 'Flowering',
           color: Colors.orange,
           icon: Icons.local_florist,
@@ -444,7 +444,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             theme: AppTheme.lightTheme,
-            home: Scaffold(
+            home: const Scaffold(
               body: PlantCard(
                 name: longName,
                 strain: 'Strain',
@@ -462,7 +462,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             theme: AppTheme.lightTheme,
-            home: Scaffold(
+            home: const Scaffold(
               body: PlantCard(
                 name: 'Plant with No Metrics',
                 strain: 'Strain',
@@ -542,7 +542,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             theme: AppTheme.lightTheme,
-            home: Scaffold(
+            home: const Scaffold(
               body: PlantCard(
                 name: 'Hierarchy Test Plant',
                 strain: 'Hierarchy Strain',
@@ -580,7 +580,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             theme: AppTheme.lightTheme,
-            home: Scaffold(
+            home: const Scaffold(
               body: PlantCard(
                 name: 'Accessible Plant',
                 strain: 'Strain',
@@ -602,7 +602,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             theme: AppTheme.lightTheme,
-            home: Scaffold(
+            home: const Scaffold(
               body: PlantCard(
                 name: 'Plant with Null Image',
                 strain: 'Strain',
@@ -621,7 +621,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             theme: AppTheme.lightTheme,
-            home: Scaffold(
+            home: const Scaffold(
               body: PlantCard(
                 name: 'Plant with Empty Strain',
                 strain: '',
@@ -639,7 +639,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             theme: AppTheme.lightTheme,
-            home: Scaffold(
+            home: const Scaffold(
               body: PlantCard(
                 name: 'Plant with Negative Age',
                 strain: 'Strain',
@@ -658,7 +658,7 @@ void main() {
   group('PlantStatus Widget Tests', () {
     testWidgets('PlantStatus should render with icon',
         (WidgetTester tester) async {
-      final status = PlantStatus(
+      const status = PlantStatus(
         label: 'Active',
         color: Colors.blue,
         icon: Icons.check_circle,
@@ -681,7 +681,7 @@ void main() {
 
     testWidgets('PlantStatus should render without icon',
         (WidgetTester tester) async {
-      final status = PlantStatus(
+      const status = PlantStatus(
         label: 'Inactive',
         color: Colors.red,
       );
@@ -704,7 +704,7 @@ void main() {
   group('PlantMetric Widget Tests', () {
     testWidgets('PlantMetric should render with all properties',
         (WidgetTester tester) async {
-      final metric = PlantMetric(
+      const metric = PlantMetric(
         label: 'Temperature',
         value: '25',
         unit: '°C',
@@ -730,7 +730,7 @@ void main() {
 
     testWidgets('PlantMetric should render with minimal properties',
         (WidgetTester tester) async {
-      final metric = PlantMetric(
+      const metric = PlantMetric(
         label: 'Label',
         value: '100',
       );

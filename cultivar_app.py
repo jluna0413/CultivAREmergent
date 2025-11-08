@@ -164,7 +164,17 @@ def create_app():
         print("DEBUG: Talisman initialized without force_https redirect for development")
 
     # Initialize Flask-Limiter for DDoS protection
-    limiter.init_app(app)
+    # Support both Flask-Limiter and slowapi limiter compatibility (slowapi Limiter may not expose init_app)
+    try:
+        if hasattr(limiter, 'init_app'):
+            limiter.init_app(app)
+        else:
+            # attach limiter instance to app.extensions for potential usage by code expecting an extension
+            app.extensions = getattr(app, 'extensions', {})
+            app.extensions['limiter'] = limiter
+    except Exception:
+        # If any unexpected error occurs initializing the limiter, continue without failing app creation
+        pass
 
     # Enable CSRF protection for forms and POST endpoints
     try:
@@ -207,7 +217,7 @@ def create_app():
             init_db()            
             
             # Create a test plant for clone demonstration if no plants exist
-            from app.models.base_models import Plant, Strain, Status, Zone, Breeder
+            from app.models.base_models import Plant, Cultivar, Status, Zone, Breeder
             if Plant.query.count() == 0:
                 # Create a test breeder
                 test_breeder = Breeder.query.filter_by(name='CultivAR Seeds').first()
@@ -218,9 +228,9 @@ def create_app():
                     db.session.flush()
                 
                 # Create a test strain
-                test_strain = Strain.query.filter_by(name='Green Goddess').first()
-                if not test_strain:
-                    test_strain = Strain(
+                test_cultivar = Cultivar.query.filter_by(name='Green Goddess').first()
+                if not test_cultivar:
+                    test_cultivar = Cultivar(
                         name='Green Goddess',
                         breeder_id=test_breeder.id,
                         indica=60,
@@ -229,7 +239,7 @@ def create_app():
                         seed_count=10,
                         cycle_time=75
                     )
-                    db.session.add(test_strain)
+                    db.session.add(test_cultivar)
                     db.session.flush()
                 
                 # Create a test zone
@@ -243,7 +253,7 @@ def create_app():
                 test_plant = Plant(
                     name='Mother Plant Alpha',
                     description='Healthy mother plant ready for cloning',
-                    strain_id=test_strain.id,
+                    cultivar_id=test_cultivar.id,
                     zone_id=test_zone.id,
                     status_id=2,  # Vegetative
                     is_clone=False,
@@ -267,8 +277,10 @@ def create_app():
     app.register_blueprint(auth_bp)
     from app.blueprints.dashboard import dashboard_bp
     app.register_blueprint(dashboard_bp)
-    from app.blueprints.strains import strains_bp
-    app.register_blueprint(strains_bp)
+    # Legacy import removed - strains blueprint now part of cultivars
+    # from app.blueprints.strains import strains_bp
+    # Blueprint registration removed - strains routes now part of cultivars
+    # app.register_blueprint(strains_bp)
     from app.blueprints.cultivars import cultivars_bp
     app.register_blueprint(cultivars_bp, url_prefix='/cultivars')
     from app.blueprints.breeders import breeders_bp

@@ -31,7 +31,6 @@ def migrate_db():
             SensorData,
             Settings,
             Status,
-            Strain,
             Stream,
             User,
             Zone,
@@ -138,7 +137,7 @@ def init_db():
 
 
 # Import both for backward compatibility
-from app.models.base_models import Cultivar, Strain
+from app.models.base_models import Cultivar
 
 # Explicit backward compatibility alias
 Strain = Cultivar

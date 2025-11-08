@@ -7,6 +7,7 @@ import pytest
 import httpx
 import asyncio
 from typing import AsyncGenerator
+import pytest_asyncio
 
 
 class TestAuthIntegration:
@@ -17,9 +18,9 @@ class TestAuthIntegration:
         """Base URL for the FastAPI test server"""
         return "http://localhost:8000"
     
-    @pytest.fixture
+    @pytest_asyncio.fixture
     async def auth_client(self) -> AsyncGenerator[httpx.AsyncClient, None]:
-        """HTTP client for making requests"""
+        """HTTP client for making requests as an async fixture."""
         async with httpx.AsyncClient() as client:
             yield client
     

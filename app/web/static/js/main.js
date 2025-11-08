@@ -56,9 +56,9 @@ $(document).ready(function() {
         initPlantForm();
     }
 
-    // Strain form handling
-    if ($('#strain-form').length) {
-        initStrainForm();
+    // Cultivar form handling
+    if ($('#cultivar-form').length) {
+        initCultivarForm();
     }
 
     // Sensor graph handling
@@ -129,11 +129,11 @@ function initPlantForm() {
 }
 
 /**
- * Initialize the strain form
+ * Initialize the cultivar form
  */
-function initStrainForm() {
+function initCultivarForm() {
     // Handle form submission
-    $('#strain-form').submit(function(e) {
+    $('#cultivar-form').submit(function(e) {
         e.preventDefault();
 
         const formData = $(this).serialize();
@@ -144,13 +144,13 @@ function initStrainForm() {
             data: formData,
             success: function(response) {
                 if (response.success) {
-                    window.location.href = '/strain/' + response.strain_id;
+                    window.location.href = '/cultivar/' + response.cultivar_id;
                 } else {
                     alert('Error: ' + response.error);
                 }
             },
             error: function() {
-                alert('An error occurred while saving the strain.');
+                alert('An error occurred while saving the cultivar.');
             }
         });
     });

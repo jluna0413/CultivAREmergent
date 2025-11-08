@@ -1,3 +1,5 @@
+from sqlalchemy import select, and_, or_, func, desc
+
 """
 Cultivars API Router for FastAPI
 Provides CRUD operations for cultivar management using real database models
@@ -6,14 +8,15 @@ Provides CRUD operations for cultivar management using real database models
 from fastapi import APIRouter, HTTPException, Depends, Query
 from typing import List, Optional
 from sqlalchemy.orm import Session
-from sqlalchemy import and_, or_, func, not_
+from sqlalchemy import select, and_, or_, func, not_
 import logging
 
-from app.fastapi_app.database import get_database as get_db
-from app.fastapi_app.models.strains import (
-    CultivarCreate, 
-    CultivarUpdate, 
-    CultivarResponse, 
+from sqlalchemy.ext.asyncio import AsyncSession
+from app.fastapi_app.dependencies import get_db
+from app.fastapi_app.models.cultivars import (
+    CultivarCreate,
+    CultivarUpdate,
+    CultivarResponse,
     CultivarListResponse,
     CultivarFilters,
     CultivarStats
@@ -22,18 +25,18 @@ from app.models.base_models import Cultivar
 from app.models_async.grow import Cultivar as AsyncCultivar
 
 logger = logging.getLogger(__name__)
-router = APIRouter()
-
+router = APIRouter(tags=["cultivars"])
 
 @router.get("/", response_model=List[CultivarResponse])
 async def list_cultivars(
     skip: int = Query(0, ge=0, description="Number of items to skip"),
     limit: int = Query(100, ge=1, le=1000, description="Number of items to return"),
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """Get all cultivars with pagination"""
     try:
-        cultivars = db.query(Cultivar).offset(skip).limit(limit).all()
+        result = await db.execute(select(Cultivar).offset(skip).limit(limit))
+        cultivars = result.scalars().all()
         return [CultivarResponse.from_orm(cultivar) for cultivar in cultivars]
     except Exception as e:
         logger.error(f"Error fetching cultivars: {e}")
@@ -44,17 +47,18 @@ async def list_cultivars(
 async def api_list_cultivars(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=1000),
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """API endpoint for backward compatibility"""
     return await list_cultivars(skip=skip, limit=limit, db=db)
 
 
 @router.get("/{cultivar_id}", response_model=CultivarResponse)
-async def get_cultivar(cultivar_id: int, db: Session = Depends(get_db)):
+async def get_cultivar(cultivar_id: int, db: AsyncSession = Depends(get_db)):
     """Get a specific cultivar by ID"""
     try:
-        cultivar = db.query(Cultivar).filter(Cultivar.id == cultivar_id).first()
+        result = await db.execute(select(Cultivar).filter(Cultivar.id == cultivar_id))
+        cultivar = result.scalars().first()
         if not cultivar:
             raise HTTPException(status_code=404, detail="Cultivar not found")
         return CultivarResponse.from_orm(cultivar)
@@ -66,17 +70,18 @@ async def get_cultivar(cultivar_id: int, db: Session = Depends(get_db)):
 
 
 @router.get("/api/{cultivar_id}", response_model=CultivarResponse)
-async def api_get_cultivar(cultivar_id: int, db: Session = Depends(get_db)):
+async def api_get_cultivar(cultivar_id: int, db: AsyncSession = Depends(get_db)):
     """API endpoint for backward compatibility"""
     return await get_cultivar(cultivar_id, db=db)
 
 
 @router.post("/", response_model=CultivarResponse)
-async def create_cultivar(cultivar_data: CultivarCreate, db: Session = Depends(get_db)):
+async def create_cultivar(cultivar_data: CultivarCreate, db: AsyncSession = Depends(get_db)):
     """Create a new cultivar"""
     try:
         # Check if cultivar name already exists
-        existing = db.query(Cultivar).filter(Cultivar.name == cultivar_data.name).first()
+        result = await db.execute(select(Cultivar).filter(Cultivar.name == cultivar_data.name))
+        existing = result.scalars().first()
         if existing:
             raise HTTPException(status_code=400, detail="Cultivar with this name already exists")
         
@@ -94,23 +99,24 @@ async def create_cultivar(cultivar_data: CultivarCreate, db: Session = Depends(g
         )
         
         db.add(db_cultivar)
-        db.commit()
-        db.refresh(db_cultivar)
+        await db.commit()
+        await db.refresh(db_cultivar)
         
         return CultivarResponse.from_orm(db_cultivar)
     except HTTPException:
         raise
     except Exception as e:
-        db.rollback()
+        await db.rollback()
         logger.error(f"Error creating cultivar: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
 @router.put("/{cultivar_id}", response_model=CultivarResponse)
-async def update_cultivar(cultivar_id: int, update_data: CultivarUpdate, db: Session = Depends(get_db)):
+async def update_cultivar(cultivar_id: int, update_data: CultivarUpdate, db: AsyncSession = Depends(get_db)):
     """Update an existing cultivar"""
     try:
-        cultivar = db.query(Cultivar).filter(Cultivar.id == cultivar_id).first()
+        result = await db.execute(select(Cultivar).filter(Cultivar.id == cultivar_id))
+        cultivar = result.scalars().first()
         if not cultivar:
             raise HTTPException(status_code=404, detail="Cultivar not found")
         
@@ -119,57 +125,60 @@ async def update_cultivar(cultivar_id: int, update_data: CultivarUpdate, db: Ses
         for field, value in update_dict.items():
             setattr(cultivar, field, value)
         
-        db.commit()
-        db.refresh(cultivar)
+        await db.commit()
+        await db.refresh(cultivar)
         
         return CultivarResponse.from_orm(cultivar)
     except HTTPException:
         raise
     except Exception as e:
-        db.rollback()
+        await db.rollback()
         logger.error(f"Error updating cultivar {cultivar_id}: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
 @router.delete("/{cultivar_id}")
-async def delete_cultivar(cultivar_id: int, db: Session = Depends(get_db)):
+async def delete_cultivar(cultivar_id: int, db: AsyncSession = Depends(get_db)):
     """Delete a cultivar"""
     try:
-        cultivar = db.query(Cultivar).filter(Cultivar.id == cultivar_id).first()
+        result = await db.execute(select(Cultivar).filter(Cultivar.id == cultivar_id))
+        cultivar = result.scalars().first()
         if not cultivar:
             raise HTTPException(status_code=404, detail="Cultivar not found")
         
-        db.delete(cultivar)
-        db.commit()
+        await db.delete(cultivar)
+        await db.commit()
         
         return {"message": "Cultivar deleted successfully"}
     except HTTPException:
         raise
     except Exception as e:
-        db.rollback()
+        await db.rollback()
         logger.error(f"Error deleting cultivar {cultivar_id}: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
 @router.get("/stats/summary", response_model=CultivarStats)
-async def get_cultivar_stats(db: Session = Depends(get_db)):
+async def get_cultivar_stats(db: AsyncSession = Depends(get_db)):
     """Get cultivar statistics"""
     try:
-        total_cultivars = db.query(Cultivar).count()
+        result = await db.execute(select(func.count(Cultivar.id)))
+        total_cultivars = result.scalars().first() or 0
         
         # Count by type
-        indica_count = db.query(Cultivar).filter(Cultivar.indica > 0.5).count()
-        sativa_count = db.query(Cultivar).filter(Cultivar.sativa > 0.5).count()
+        result = await db.execute(select(func.count(Cultivar.id)).filter(Cultivar.indica > 50))
+        indica_count = result.scalars().first() or 0
+        result = await db.execute(select(func.count(Cultivar.id)).filter(Cultivar.sativa > 50))
+        sativa_count = result.scalars().first() or 0
         hybrid_count = total_cultivars - indica_count - sativa_count
         
         # Count autoflower
-        autoflower_count = db.query(Cultivar).filter(Cultivar.autoflower == True).count()
+        result = await db.execute(select(func.count(Cultivar.id)).filter(Cultivar.autoflower == True))
+        autoflower_count = result.scalars().first() or 0
         
         # Average cycle time
-        cycle_times = db.query(Cultivar.cycle_time).filter(Cultivar.cycle_time.isnot(None)).all()
-        average_cycle_time = None
-        if cycle_times:
-            average_cycle_time = sum(ct[0] for ct in cycle_times) / len(cycle_times)
+        result = await db.execute(select(func.avg(Cultivar.cycle_time)).filter(Cultivar.cycle_time.isnot(None)))
+        average_cycle_time = result.scalars().first()
         
         return CultivarStats(
             total_cultivars=total_cultivars,
@@ -185,15 +194,16 @@ async def get_cultivar_stats(db: Session = Depends(get_db)):
 
 
 @router.get("/search/{query}", response_model=List[CultivarResponse])
-async def search_cultivars(query: str, db: Session = Depends(get_db)):
+async def search_cultivars(query: str, db: AsyncSession = Depends(get_db)):
     """Search cultivars by name or description"""
     try:
-        cultivars = db.query(Cultivar).filter(
+        result = await db.execute(select(Cultivar).filter(
             or_(
                 Cultivar.name.ilike(f"%{query}%"),
                 Cultivar.description.ilike(f"%{query}%")
             )
-        ).all()
+        ))
+        cultivars = result.scalars().all()
         
         return [CultivarResponse.from_orm(cultivar) for cultivar in cultivars]
     except Exception as e:
@@ -209,22 +219,22 @@ async def filter_cultivars(
     min_cycle_time: Optional[int] = None,
     max_cycle_time: Optional[int] = None,
     search: Optional[str] = None,
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """Filter cultivars by various criteria"""
     try:
-        query = db.query(Cultivar)
+        query = select(Cultivar)
         
         if breeder_id:
             query = query.filter(Cultivar.breeder_id == breeder_id)
         
         if cultivar_type:
             if cultivar_type.lower() == "indica":
-                query = query.filter(Cultivar.indica > 0.5)
+                query = query.filter(Cultivar.indica > 50)
             elif cultivar_type.lower() == "sativa":
-                query = query.filter(Cultivar.sativa > 0.5)
+                query = query.filter(Cultivar.sativa > 50)
             elif cultivar_type.lower() == "hybrid":
-                query = query.filter(Cultivar.indica <= 0.5, Cultivar.sativa <= 0.5)
+                query = query.filter(Cultivar.indica <= 50, Cultivar.sativa <= 50)
         
         if autoflower is not None:
             query = query.filter(Cultivar.autoflower == autoflower)
@@ -243,7 +253,8 @@ async def filter_cultivars(
                 )
             )
         
-        cultivars = query.all()
+        result = await db.execute(query)
+        cultivars = result.scalars().all()
         return [CultivarResponse.from_orm(cultivar) for cultivar in cultivars]
     except Exception as e:
         logger.error(f"Error filtering cultivars: {e}")

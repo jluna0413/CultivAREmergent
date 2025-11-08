@@ -27,7 +27,7 @@ void main() {
     test('AuthProvider should update state when user becomes authenticated',
         () {
       // Act: Update state to authenticated
-      container.read(authProvider.notifier).state = AuthState(
+      container.read(authProvider.notifier).state = const AuthState(
         isAuthenticated: true,
         user: null,
       );
@@ -41,7 +41,7 @@ void main() {
 
     test('AuthProvider should update state with error', () {
       // Act: Update state with error
-      container.read(authProvider.notifier).state = AuthState(
+      container.read(authProvider.notifier).state = const AuthState(
         isAuthenticated: false,
         error: 'Authentication failed',
       );
@@ -57,7 +57,7 @@ void main() {
       expect(container.read(isAuthenticatedProvider), false);
 
       // Update to authenticated
-      container.read(authProvider.notifier).state = AuthState(
+      container.read(authProvider.notifier).state = const AuthState(
         isAuthenticated: true,
         user: null,
       );
@@ -71,7 +71,7 @@ void main() {
       expect(container.read(currentUserProvider), null);
 
       // Update with user (using dynamic to avoid import issues)
-      final testUser = null; // We'll test with null for now
+      const testUser = null; // We'll test with null for now
 
       container.read(authProvider.notifier).state = AuthState(
         isAuthenticated: true,
@@ -87,7 +87,7 @@ void main() {
       expect(container.read(authLoadingProvider), false);
 
       // Update to loading
-      container.read(authProvider.notifier).state = AuthState(
+      container.read(authProvider.notifier).state = const AuthState(
         isAuthenticated: false,
         isLoading: true,
       );
@@ -102,7 +102,7 @@ void main() {
 
       // Update with error
       const testError = 'Test error message';
-      container.read(authProvider.notifier).state = AuthState(
+      container.read(authProvider.notifier).state = const AuthState(
         isAuthenticated: false,
         error: testError,
       );
@@ -228,7 +228,7 @@ void main() {
         expect(container.read(authProvider).isAuthenticated, false);
 
         // Simulate successful login by updating state
-        container.read(authProvider.notifier).state = AuthState(
+        container.read(authProvider.notifier).state = const AuthState(
           isAuthenticated: true,
           user: null, // Would be actual user object in real scenario
           isLoading: false,
@@ -248,7 +248,7 @@ void main() {
 
       try {
         // First login
-        container.read(authProvider.notifier).state = AuthState(
+        container.read(authProvider.notifier).state = const AuthState(
           isAuthenticated: true,
           user: null,
           isLoading: false,
@@ -271,7 +271,7 @@ void main() {
 
     test('Error state should be clearable', () {
       // Set error state
-      container.read(authProvider.notifier).state = AuthState(
+      container.read(authProvider.notifier).state = const AuthState(
         isAuthenticated: false,
         error: 'Test error',
       );

@@ -43,15 +43,15 @@ The application has a sidebar menu that provides access to all the main features
    - Change the status to "Harvested"
    - Record the harvest weight and date
 
-### Strain Management
+### Cultivar Management
 
-1. **Adding a Strain**:
-   - Go to the Strains page
-   - Click the "Add Strain" button
+1. **Adding a Cultivar**:
+   - Go to the Cultivars page
+   - Click the "Add Cultivar" button
    - Fill in the cultivar information (name, breeder, genetics, etc.)
    - Click "Save"
 
-2. **Managing Strain Inventory**:
+2. **Managing Cultivar Inventory**:
    - Update seed count
    - View plants associated with each cultivar
    - Track cultivar performance

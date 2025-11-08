@@ -60,26 +60,26 @@
 </div>
 
 <div id="cultivars-container">
-    {% if strains %}
+    {% if cultivars %}
     <div class="cultivars-grid">
-        {% for strain in strains %}
+        {% for cultivar in cultivars %}
         <div class="cultivar-item"
-             data-type="{{ strain.type|lower }}"
-             data-breeder="{{ strain.breeder_id }}"
-             data-autoflower="{{ strain.autoflower|lower }}">
+             data-type="{{ cultivar.type|lower }}"
+             data-breeder="{{ cultivar.breeder_id }}"
+             data-autoflower="{{ cultivar.autoflower|lower }}">
             <div class="cultivar-card">
                 <div class="cultivar-header">
-                    <h4 class="cultivar-name">{{ strain.name }}</h4>
+                    <h4 class="cultivar-name">{{ cultivar.name }}</h4>
                     <div class="cultivar-type">
-                        {% if strain.indica > strain.sativa %}
+                        {% if cultivar.indica > cultivar.sativa %}
                         <span class="badge badge-indica">Indica Dominant</span>
-                        {% elif strain.sativa > strain.indica %}
+                        {% elif cultivar.sativa > cultivar.indica %}
                         <span class="badge badge-sativa">Sativa Dominant</span>
                         {% else %}
                         <span class="badge badge-hybrid">Hybrid</span>
                         {% endif %}
 
-                        {% if strain.autoflower %}
+                        {% if cultivar.autoflower %}
                         <span class="badge badge-auto">Auto</span>
                         {% endif %}
                     </div>
@@ -88,35 +88,35 @@
                     <div class="cultivar-info">
                         <div class="cultivar-info-item">
                             <span class="cultivar-info-label">Breeder:</span>
-                            <span class="cultivar-info-value">{{ strain.breeder_name|default('Unknown') }}</span>
+                            <span class="cultivar-info-value">{{ cultivar.breeder_name|default('Unknown') }}</span>
                         </div>
                         <div class="cultivar-info-item">
                             <span class="cultivar-info-label">Genetics:</span>
-                            <span class="cultivar-info-value">{{ strain.indica }}% Indica / {{ strain.sativa }}% Sativa</span>
+                            <span class="cultivar-info-value">{{ cultivar.indica }}% Indica / {{ cultivar.sativa }}% Sativa</span>
                         </div>
                         <div class="cultivar-info-item">
                             <span class="cultivar-info-label">Flowering Time:</span>
-                            <span class="cultivar-info-value">{{ strain.cycle_time|default('Unknown') }}</span>
+                            <span class="cultivar-info-value">{{ cultivar.cycle_time|default('Unknown') }}</span>
                         </div>
                         <div class="cultivar-info-item">
                             <span class="cultivar-info-label">Seeds:</span>
-                            <span class="cultivar-info-value">{{ strain.seed_count }}</span>
+                            <span class="cultivar-info-value">{{ cultivar.seed_count }}</span>
                         </div>
                     </div>
-                    {% if strain.short_description %}
+                    {% if cultivar.short_description %}
                     <div class="cultivar-description">
-                        {{ strain.short_description }}
+                        {{ cultivar.short_description }}
                     </div>
                     {% endif %}
                 </div>
                 <div class="cultivar-footer">
-                    <a href="{{ url_for('cultivars.cultivar_detail', cultivar_id=strain.id) }}" class="btn btn-sm btn-primary">
+                    <a href="{{ url_for('cultivars.cultivar_detail', cultivar_id=cultivar.id) }}" class="btn btn-sm btn-primary">
                         <i class="fas fa-eye"></i> View
                     </a>
-                    <button type="button" onclick="editCultivar({{ strain.id }})" class="btn btn-sm btn-info edit-cultivar" data-cultivar-id="{{ strain.id }}">
+                    <button type="button" onclick="editCultivar({{ cultivar.id }})" class="btn btn-sm btn-info edit-cultivar" data-cultivar-id="{{ cultivar.id }}">
                         <i class="fas fa-edit"></i> Edit
                     </button>
-                    <button type="button" onclick="deleteCultivar({{ strain.id }})" class="btn btn-sm btn-danger delete-cultivar" data-cultivar-id="{{ strain.id }}">
+                    <button type="button" onclick="deleteCultivar({{ cultivar.id }})" class="btn btn-sm btn-danger delete-cultivar" data-cultivar-id="{{ cultivar.id }}">
                         <i class="fas fa-trash"></i> Delete
                     </button>
                 </div>
@@ -1165,7 +1165,7 @@
             }
 
             // Prepare data for API
-            const strainData = {
+            const cultivarData = {
                 name: name,
                 breeder_id: breeder_id || null,
                 indica: indica,
@@ -1196,7 +1196,7 @@
                 url: url,
                 type: method,
                 contentType: 'application/json',
-                data: JSON.stringify(strainData),
+                data: JSON.stringify(cultivarData),
                 success: function(response) {
                     if (response.success) {
                         // Show success message
@@ -1225,19 +1225,19 @@
             $.ajax({
                 url: `/cultivars/${cultivarId}`,
                 type: 'GET',
-                success: function(strain) {
-                    console.log('Cultivar data received:', strain);
+                success: function(cultivar) {
+                    console.log('Cultivar data received:', cultivar);
 
                     // Populate form with cultivar data
-                    $('#name').val(strain.name);
-                    $('#breeder_id').val(strain.breeder_id);
-                    $('#indica').val(strain.indica);
-                    $('#sativa').val(strain.sativa);
-                    $('#autoflower').prop('checked', strain.autoflower);
-                    $('#cycle_time').val(strain.cycle_time);
-                    $('#seed_count').val(strain.seed_count);
-                    $('#url').val(strain.url);
-                    $('#description').val(strain.description);
+                    $('#name').val(cultivar.name);
+                    $('#breeder_id').val(cultivar.breeder_id);
+                    $('#indica').val(cultivar.indica);
+                    $('#sativa').val(cultivar.sativa);
+                    $('#autoflower').prop('checked', cultivar.autoflower);
+                    $('#cycle_time').val(cultivar.cycle_time);
+                    $('#seed_count').val(cultivar.seed_count);
+                    $('#url').val(cultivar.url);
+                    $('#description').val(cultivar.description);
 
                     // Update genetics slider
                     updateGeneticsSlider();

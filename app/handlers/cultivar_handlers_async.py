@@ -1,5 +1,6 @@
 """
 Cultivar management handlers for the CultivAR application - ASYNC VERSION.
+Primary handler module with 'cultivar' terminology.
 """
 
 from datetime import datetime
@@ -376,41 +377,11 @@ async def search_cultivars(query: str, session: AsyncSession) -> List[Dict[str, 
 
 
 # Backward compatibility aliases
-async def get_all_strains(session: AsyncSession) -> List[Dict[str, Any]]:
-    """Legacy alias for get_all_cultivars"""
-    return await get_all_cultivars(session)
-
-
-async def get_strain_by_id(strain_id: int, session: AsyncSession) -> Optional[Dict[str, Any]]:
-    """Legacy alias for get_cultivar_by_id"""
-    return await get_cultivar_by_id(strain_id, session)
-
-
-async def create_strain(data: Dict[str, Any], session: AsyncSession) -> Dict[str, Any]:
-    """Legacy alias for create_cultivar"""
-    return await create_cultivar(data, session)
-
-
-async def update_strain(strain_id: int, data: Dict[str, Any], session: AsyncSession) -> Dict[str, Any]:
-    """Legacy alias for update_cultivar"""
-    return await update_cultivar(strain_id, data, session)
-
-
-async def delete_strain(strain_id: int, session: AsyncSession) -> Dict[str, Any]:
-    """Legacy alias for delete_cultivar"""
-    return await delete_cultivar(strain_id, session)
-
-
-async def get_in_stock_strains(session: AsyncSession) -> List[Dict[str, Any]]:
-    """Legacy alias for get_in_stock_cultivars"""
-    return await get_in_stock_cultivars(session)
-
-
-async def get_out_of_stock_strains(session: AsyncSession) -> List[Dict[str, Any]]:
-    """Legacy alias for get_out_of_stock_cultivars"""
-    return await get_out_of_stock_cultivars(session)
-
-
-async def search_strains(query: str, session: AsyncSession) -> List[Dict[str, Any]]:
-    """Legacy alias for search_cultivars"""
-    return await search_cultivars(query, session)
+get_all_strains = get_all_cultivars
+get_strain_by_id = get_cultivar_by_id
+create_strain = create_cultivar
+update_strain = update_cultivar
+delete_strain = delete_cultivar
+get_in_stock_strains = get_in_stock_cultivars
+get_out_of_stock_strains = get_out_of_stock_cultivars
+search_strains = search_cultivars

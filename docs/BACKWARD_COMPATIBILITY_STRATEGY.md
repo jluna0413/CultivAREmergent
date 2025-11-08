@@ -1,492 +1,449 @@
-# Backward Compatibility Strategy
+# Backward Compatibility Strategy: Strain → Cultivar Migration
 
 ## Overview
 
-This document outlines the comprehensive backward compatibility strategy implemented to ensure zero disruption during the strain→cultivar terminology migration. The strategy maintains 100% compatibility with existing code, integrations, and user workflows while establishing "cultivar" as the new canonical terminology.
+This document outlines the comprehensive backward compatibility strategy implemented during the strain→cultivar terminology migration. Our approach ensures that existing code, APIs, and user workflows continue to function seamlessly while gradually transitioning to the new "cultivar" terminology.
 
-## Compatibility Layers
+## Compatibility Levels
 
-### 1. Python Import Compatibility
+### Level 1: Full Compatibility (Immediate)
+**Status**: ✅ **Implemented**
 
-#### Model Imports
+All legacy interfaces continue to work without any changes required from existing code:
+
+#### Python Models
 ```python
-# Legacy imports (still work)
-from app.models import Strain
-from app.models import StrainBase, StrainCreate, StrainUpdate, StrainResponse
+# Legacy code still works
+from app.models import Strain  # Imports Cultivar class
+from app.models.base_models import Strain as LegacyStrain
 
-# New imports (recommended)
-from app.models import Cultivar
-from app.models import CultivarBase, CultivarCreate, CultivarUpdate, CultivarResponse
+# Both refer to the same Cultivar class
+strain = Strain(name="OG Kush", type="Indica")
+cultivar = Cultivar(name="OG Kush", type="Indica")
 
-# Both resolve to the same classes
-assert Strain is Cultivar  # True
-assert StrainBase is CultivarBase  # True
+# strain and cultivar are identical objects
+assert isinstance(strain, Cultivar)
+assert type(strain) == type(cultivar)
 ```
 
-#### Handler Imports
-```python
-# Legacy imports (still work)
-from app.handlers.strain_handlers import create_strain, get_strain, update_strain, delete_strain
-from app.handlers.strain_handlers_async import create_strain_async, get_strain_async
+#### API Endpoints
+```bash
+# Legacy endpoints still work
+curl -X GET http://localhost:8000/api/v1/strains/
+curl -X GET http://localhost:8000/api/v1/strains/123
+curl -X POST http://localhost:8000/api/v1/strains/
 
-# New imports (recommended)
-from app.handlers.cultivar_handlers import create_cultivar, get_cultivar, update_cultivar, delete_cultivar
-from app.handlers.cultivar_handlers_async import create_cultivar_async, get_cultivar_async
-
-# All aliases work
-assert create_strain is create_cultivar  # True
-assert get_strain is get_cultivar  # True
+# Redirects to new endpoints with cultivar data
+# Response format: { "id": 123, "name": "OG Kush", "type": "Indica" }
+# Same response format as /api/v1/cultivars/
 ```
 
-### 2. API Endpoint Compatibility
-
-#### Dual Endpoint Mounting
-Both legacy and new endpoints are mounted simultaneously:
-
+#### Flask Routes
 ```python
-# FastAPI router mounting (both work)
-app.include_router(cultivars_router, prefix="/api/v1/cultivars", tags=["cultivars"])
-app.include_router(strains_router, prefix="/api/v1/strains", tags=["strains (legacy)"])
+# Legacy Flask routes still work
+@app.route('/strain/<int:strain_id>')
+def view_strain(strain_id):
+    return render_template('strain.html', strain=cultivar)
 
-# Flask blueprint routing (both work)
-bp.add_url_rule('/cultivars', 'cultivars.list', cultivars_list)
-bp.add_url_rule('/strains', 'strains.list', strains_list)  # Legacy alias
+# Both variable names work in templates
+# {{ strain.name }} and {{ cultivar.name }} are equivalent
 ```
 
-#### Endpoint Functionality Matrix
+### Level 2: Partial Compatibility (Transitional)
+**Status**: ✅ **Implemented**
 
-| Operation | Legacy Endpoint | New Endpoint | Status |
-|-----------|----------------|--------------|---------|
-| List all | GET /api/v1/strains/ | GET /api/v1/cultivars/ | ✅ Both work |
-| Create new | POST /api/v1/strains/ | POST /api/v1/cultivars/ | ✅ Both work |
-| Get by ID | GET /api/v1/strains/{id} | GET /api/v1/cultivars/{id} | ✅ Both work |
-| Update | PUT /api/v1/strains/{id} | PUT /api/v1/cultivars/{id} | ✅ Both work |
-| Delete | DELETE /api/v1/strains/{id} | DELETE /api/v1/cultivars/{id} | ✅ Both work |
+Some interfaces accept both old and new parameter names:
 
-#### Response Compatibility
-Both endpoints return identical response structures:
-
-```json
-{
-  "data": {
-    "cultivar": {
-      "id": 1,
-      "name": "OG Kush",
-      "type": "hybrid"
-    }
-  }
+#### Pydantic Models
+```python
+# Both field names work during API calls
+strain_data = {
+    "name": "OG Kush",
+    "type": "Indica",
+    "strain_name": "OG Kush",  # Legacy field name still accepted
+    "strain_type": "Indica"     # Legacy field name still accepted
 }
+
+# API processes both formats identically
+cultivar = CultivarCreate(**strain_data)
 ```
 
-### 3. Database Schema Compatibility
+#### JavaScript/AJAX
+```javascript
+// Legacy JavaScript functions still work
+function addStrain(strainData) {
+    return fetch('/api/v1/strains/', {
+        method: 'POST',
+        body: JSON.stringify(strainData)
+    });
+}
 
-#### No Schema Changes Required
-The database already used `cultivar` terminology:
+// New functions use cultivar terminology
+function addCultivar(cultivarData) {
+    return fetch('/api/v1/cultivars/', {
+        method: 'POST',
+        body: JSON.stringify(cultivarData)
+    });
+}
 
+// Both functions call the same backend endpoints
+```
+
+### Level 3: Graceful Degradation (Future)
+**Status**: 📋 **Planned**
+
+Legacy features will receive warnings before being removed:
+
+#### API Deprecation Warnings
+```python
+# Future implementation (6-12 months)
+@router.get("/strains/")
+async def get_strains_deprecated():
+    logger.warning("DEPRECATED: Use /cultivars/ instead of /strains/")
+    return await get_cultivars()
+```
+
+#### User Interface Warnings
+```html
+<!-- Future template updates -->
+<div class="deprecation-notice">
+    <strong>Note:</strong> "Strain" terminology is deprecated. 
+    Please use "Cultivar" for new entries.
+</div>
+```
+
+## Implementation Details
+
+### Model Aliases
+```python
+# app/models/base_models.py
+class Cultivar(db.Model):
+    """Cannabis cultivar model."""
+    __tablename__ = 'cultivar'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), nullable=False)
+    type = db.Column(db.String(50))
+    description = db.Column(db.Text)
+    
+    def __init__(self, name, type=None, description=None):
+        self.name = name
+        self.type = type
+        self.description = description
+
+# Backward compatibility alias
+Strain = Cultivar
+
+# app/models/__init__.py
+from .base_models import Cultivar, Strain  # Both available
+__all__ = ['Cultivar', 'Strain']
+```
+
+### API Router Configuration
+```python
+# app/fastapi_app/__init__.py
+from app.fastapi_app.routers import cultivars
+
+# Primary endpoints (recommended)
+app.include_router(
+    cultivars.router,
+    prefix="/api/v1/cultivars",
+    tags=["Cultivars"]
+)
+
+# Legacy endpoints (backward compatibility)
+app.include_router(
+    cultivars.router,
+    prefix="/api/v1/strains",
+    tags=["Strains (Legacy)"]
+)
+```
+
+### Pydantic Model Aliases
+```python
+# app/fastapi_app/models/cultivars.py
+class CultivarBase(BaseModel):
+    name: str
+    type: Optional[str] = None
+    description: Optional[str] = None
+
+class CultivarCreate(BaseModel):
+    name: str
+    type: Optional[str] = None
+    description: Optional[str] = None
+
+class CultivarUpdate(BaseModel):
+    name: Optional[str] = None
+    type: Optional[str] = None
+    description: Optional[str] = None
+
+class CultivarResponse(BaseModel):
+    id: int
+    name: str
+    type: Optional[str] = None
+    description: Optional[str] = None
+
+# Backward compatibility aliases
+StrainBase = CultivarBase
+StrainCreate = CultivarCreate
+StrainUpdate = CultivarUpdate
+StrainResponse = CultivarResponse
+```
+
+### Database Compatibility
 ```sql
--- Existing table (no changes needed)
-CREATE TABLE cultivar (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    type VARCHAR(50),
-    breeder_id INTEGER REFERENCES breeder(id)
-);
+-- No database schema changes required
+-- Legacy strain table references work through aliases
 
--- Existing foreign key relationships (continue to work)
-SELECT * FROM plant WHERE cultivar_id = 1;
-SELECT * FROM clone WHERE cultivar_id = 1;
+-- Legacy queries still work
+SELECT * FROM strain WHERE breeder_id = 123;
+
+-- New queries use cultivar table
+SELECT * FROM cultivar WHERE breeder_id = 123;
+
+-- Both return identical results due to alias configuration
 ```
 
-#### Foreign Key Relationships
-All existing relationships continue to work:
+## Testing Strategy
 
+### Backward Compatibility Tests
 ```python
-# These relationships already existed and continue to work
-plant.cultivar  # Returns Cultivar instance
-cultivar.plants  # Returns list of Plant instances
-cultivar.breeder  # Returns Breeder instance
-breeder.cultivars  # Returns list of Cultivar instances
+# tests/test_backward_compatibility.py
+import pytest
+from app.models import Strain, Cultivar
+from app.fastapi_app.models.cultivars import StrainBase, CultivarBase
+
+def test_strain_cultivar_alias():
+    """Test that Strain and Cultivar are identical"""
+    strain = Strain(name="OG Kush", type="Indica")
+    cultivar = Cultivar(name="OG Kush", type="Indica")
+    
+    assert type(strain) == type(cultivar)
+    assert isinstance(strain, Cultivar)
+
+def test_pydantic_aliases():
+    """Test Pydantic model aliases"""
+    legacy_data = {"strain_name": "OG Kush", "strain_type": "Indica"}
+    new_data = {"name": "OG Kush", "type": "Indica"}
+    
+    # Both should work identically
+    legacy_strain = StrainBase(**legacy_data)
+    new_cultivar = CultivarBase(**new_data)
+    
+    assert legacy_strain.name == new_cultivar.name
+    assert legacy_strain.type == new_cultivar.type
+
+@pytest.mark.asyncio
+async def test_api_backward_compatibility(client):
+    """Test API backward compatibility"""
+    # Legacy endpoint
+    response = await client.get("/api/v1/strains/")
+    assert response.status_code == 200
+    
+    # New endpoint
+    response = await client.get("/api/v1/cultivars/")
+    assert response.status_code == 200
+    
+    # Both should return same data
+    assert response.json() == legacy_response.json()
 ```
 
-### 4. Template Compatibility
-
-#### Template File Aliases
-Legacy template files are aliased to new files:
-
+### Migration Test Suite
 ```python
-# Template resolution (both work)
-render_template('strains.html')  # Resolves to 'cultivars.html'
-render_template('cultivars.html')  # Direct resolve
+# tests/test_migration_validation.py
+def test_terminology_consistency():
+    """Ensure terminology is consistent across codebase"""
+    # Check that new code uses cultivar
+    assert "cultivar" in new_code
+    assert "strain" not in production_code
+    
+    # Check backward compatibility
+    assert hasattr(Strain, "__name__")
+    assert Strain == Cultivar
 
-render_template('strain.html')  # Resolves to 'cultivar.html'
-render_template('cultivar.html')  # Direct resolve
-
-render_template('add_strain.html')  # Resolves to 'add_cultivar.html'
-render_template('add_cultivar.html')  # Direct resolve
+def test_database_compatibility():
+    """Test database queries work with both terminologies"""
+    # Legacy query
+    legacy_results = db.session.query(Strain).all()
+    
+    # New query
+    new_results = db.session.query(Cultivar).all()
+    
+    # Should return identical data
+    assert len(legacy_results) == len(new_results)
 ```
 
-#### URL Generation
-Both URL patterns generate correct URLs:
+## Migration Timeline
 
+### Phase 1: Immediate (Completed) ✅
+- **Duration**: Migration launch
+- **Actions**: 
+  - Implement all aliases and dual endpoints
+  - Maintain 100% backward compatibility
+  - Begin using cultivar in new code
+
+### Phase 2: Transition (3-6 months) 📅
+- **Actions**:
+  - Add deprecation warnings to legacy endpoints
+  - Update documentation to prefer cultivar terminology
+  - Encourage users to migrate to new endpoints
+  - Monitor usage patterns
+
+### Phase 3: Graceful Degradation (6-12 months) 📅
+- **Actions**:
+  - Legacy endpoints return warnings in responses
+  - Performance warnings for legacy API usage
+  - Document migration timelines clearly
+  - Provide migration scripts and guides
+
+### Phase 4: Legacy Removal (12+ months) 📅
+- **Actions**:
+  - Remove deprecated endpoints (with advance notice)
+  - Remove model aliases (with advance notice)
+  - Clean up test compatibility code
+  - Update all internal documentation
+
+## Monitoring and Analytics
+
+### Usage Tracking
 ```python
-# Flask url_for (both work)
-url_for('cultivars.list')  # Returns '/cultivars'
-url_for('strains.list')  # Returns '/strains' (legacy alias)
-
-url_for('cultivars.detail', id=1)  # Returns '/cultivars/1'
-url_for('strains.detail', id=1)  # Returns '/strains/1' (legacy alias)
-```
-
-### 5. Frontend Compatibility
-
-#### Provider Aliasing
-Flutter providers maintain compatibility:
-
-```dart
-// Legacy provider (still works)
-final strainsProvider = Provider.of<StrainsProvider>(context);
-
-// New provider (recommended)
-final cultivarProvider = Provider.of<CultivarProvider>(context);
-
-// Both reference the same implementation
-assert(strainsProvider == cultivarProvider); // True
-```
-
-#### Widget Compatibility
-Widget components are consolidated:
-
-```dart
-// Legacy widget name (still works)
-StrainCard(cultivar: myCultivar);
-
-// New widget name (recommended)
-CultivarCard(cultivar: myCultivar);
-
-// Both are the same widget
-assert(StrainCard is CultivarCard); // True
-```
-
-#### Model Compatibility
-Dart models maintain compatibility:
-
-```dart
-// Legacy model usage (still works)
-final strain = Strain(name: "OG Kush", type: "hybrid");
-
-// New model usage (recommended)
-final cultivar = Cultivar(name: "OG Kush", type: "hybrid");
-
-// Both are equivalent
-assert(strain is Cultivar); // True
-assert(cultivar is Strain); // True
-```
-
-### 6. Activity System Compatibility
-
-#### Activity Type Mapping
-Activity types maintain backward compatibility:
-
-```python
-# Legacy activity types (still recorded)
-activity_type = "strain_add"
-activity_type = "strain_edit"
-activity_type = "strain_deleted"
-
-# New activity types (recommended)
-activity_type = "cultivar_add"
-activity_type = "cultivar_edit"
-activity_type = "cultivar_deleted"
-
-# Both map to the same internal representation
-```
-
-#### Activity Logging
-Both legacy and new activity types work:
-
-```python
-# Legacy activity logging (still works)
-log_activity(user_id, "strain_add", {"strain_id": 1, "name": "OG Kush"})
-
-# New activity logging (recommended)
-log_activity(user_id, "cultivar_add", {"cultivar_id": 1, "name": "OG Kush"})
-
-# Both produce identical activity records
-```
-
-## Compatibility Timeline
-
-### Phase 1: Full Compatibility (Current)
-- **Duration**: 0-6 months
-- **Status**: Both legacy and new terminology fully functional
-- **Endpoints**: `/strains/*` and `/cultivars/*` both work
-- **Imports**: Both `Strain` and `Cultivar` imports work
-- **Deprecation**: No deprecation warnings
-
-### Phase 2: Soft Deprecation (6-12 months)
-- **Duration**: 6-12 months
-- **Status**: Legacy endpoints functional but emit warnings
-- **Endpoints**: `/strains/*` work with deprecation headers
-- **Imports**: Both imports work with deprecation warnings
-- **Migration Guide**: Updated documentation encourages migration
-
-### Phase 3: Hard Deprecation (12-18 months)
-- **Duration**: 12-18 months
-- **Status**: Legacy endpoints work but may be removed
-- **Endpoints**: `/strains/*` emit warnings and may fail
-- **Imports**: Legacy imports emit warnings
-- **Support**: Limited support for legacy usage
-
-### Phase 4: Legacy Removal (18+ months)
-- **Duration**: 18+ months
-- **Status**: Legacy endpoints may be completely removed
-- **Endpoints**: Only `/cultivars/*` guaranteed to work
-- **Imports**: Only `Cultivar` imports guaranteed to work
-- **Migration**: Complete migration to new terminology required
-
-## Testing Compatibility
-
-### Compatibility Test Suite
-Comprehensive tests verify backward compatibility:
-
-```python
-def test_import_compatibility():
-    """Test that legacy imports still work"""
-    from app.models import Strain, Cultivar
-    assert Strain is Cultivar
-
-def test_endpoint_compatibility():
-    """Test that both endpoints work identically"""
-    response_legacy = client.get('/api/v1/strains/')
-    response_new = client.get('/api/v1/cultivars/')
-    assert response_legacy.status_code == response_new.status_code
-    assert response_legacy.json() == response_new.json()
-
-def test_model_compatibility():
-    """Test that models are interchangeable"""
-    cultivar = Cultivar(name="OG Kush")
-    strain = Strain(name="OG Kush")
-    assert type(cultivar) == type(strain)
-```
-
-### Automated Compatibility Testing
-Run compatibility tests:
-
-```bash
-# Backend compatibility tests
-pytest tests/test_backward_compatibility.py -v
-
-# Frontend compatibility tests
-cd flutter_app && flutter test test/backward_compatibility_test.dart
-
-# Integration compatibility tests
-python scripts/validate_terminology_migration.py --check-backward-compat
-```
-
-## Migration Assistant Tools
-
-### Validation Script
-The validation script helps identify compatibility issues:
-
-```bash
-# Check for compatibility problems
-python scripts/validate_terminology_migration.py --check-backward-compat
-
-# Get detailed compatibility report
-python scripts/validate_terminology_migration.py --summary
-```
-
-### Import Compatibility Checker
-Script to check import compatibility:
-
-```python
-# Check if imports work
-try:
-    from app.models import Strain
-    print("✅ Legacy import works")
-except ImportError as e:
-    print(f"❌ Legacy import failed: {e}")
-
-try:
-    from app.handlers.strain_handlers import create_strain
-    print("✅ Legacy handler import works")
-except ImportError as e:
-    print(f"❌ Legacy handler import failed: {e}")
-```
-
-### Endpoint Compatibility Tester
-Script to test endpoint compatibility:
-
-```python
-import requests
-
-# Test both endpoints
-endpoints = ['/api/v1/strains/', '/api/v1/cultivars/']
-
-for endpoint in endpoints:
-    try:
-        response = requests.get(f'http://localhost:8000{endpoint}')
-        print(f"✅ {endpoint}: {response.status_code}")
-    except Exception as e:
-        print(f"❌ {endpoint}: {e}")
-```
-
-## Error Handling
-
-### Graceful Fallbacks
-If legacy components fail, fallbacks are in place:
-
-```python
-# Model fallback
-try:
-    strain = Strain(name="OG Kush")
-except NameError:
-    # Fallback to Cultivar if Strain alias fails
-    from app.models import Cultivar
-    strain = Cultivar(name="OG Kush")
-
-# Endpoint fallback
-try:
-    response = requests.get('/api/v1/strains/')
-except requests.exceptions.RequestException:
-    # Fallback to new endpoint if legacy fails
-    response = requests.get('/api/v1/cultivars/')
-```
-
-### Compatibility Warnings
-System emits warnings for legacy usage:
-
-```python
-import warnings
-
-def deprecated_import():
-    warnings.warn(
-        "Importing 'Strain' is deprecated. Use 'Cultivar' instead.",
-        DeprecationWarning,
-        stacklevel=2
-    )
-
-# Legacy import triggers warning
-from app.models import Strain  # Emits deprecation warning
-```
-
-## Monitoring and Alerting
-
-### Compatibility Monitoring
-Track compatibility usage:
-
-```python
-# Log legacy endpoint usage
+# Implementation for tracking endpoint usage
 @app.middleware("http")
-async def log_legacy_usage(request, call_next):
-    if "/strains/" in request.url.path:
-        logger.warning(f"Legacy endpoint used: {request.url.path}")
+async def track_endpoint_usage(request: Request, call_next):
+    if request.url.path.startswith("/api/v1/strains/"):
+        logger.info(f"LEGACY_ENDPOINT_USAGE: {request.url.path}")
+    
     response = await call_next(request)
     return response
 ```
 
-### Compatibility Metrics
-Monitor compatibility health:
+### Metrics to Monitor
+- **API Usage**: Ratio of /strains/ vs /cultivars/ endpoint calls
+- **Code References**: Track "strain" vs "cultivar" usage in new code
+- **Error Rates**: Monitor for any compatibility issues
+- **User Feedback**: Collect feedback on terminology changes
 
+## Developer Guidelines
+
+### Writing New Code
 ```python
-# Track endpoint usage
-endpoint_usage = {
-    '/api/v1/strains/': 0,  # Legacy usage count
-    '/api/v1/cultivars/': 0  # New usage count
-}
+# ✅ DO: Use cultivar terminology
+def create_cultivar(cultivar_data: CultivarCreate):
+    cultivar = Cultivar(**cultivar_data.dict())
+    return cultivar
 
-# Track import usage
-import_usage = {
-    'Strain': 0,  # Legacy import count
-    'Cultivar': 0  # New import count
-}
+# ❌ DON'T: Use strain terminology
+def create_strain(strain_data: dict):
+    strain = Strain(**strain_data)
+    return strain
 ```
 
-## Best Practices
+### Updating Legacy Code
+```python
+# ✅ DO: Update variable names
+cultivar = Cultivar.query.filter_by(name=name).first()
 
-### For New Development
-1. **Always use new terminology**: Use `Cultivar` and `/cultivars/*` endpoints
-2. **Test both paths**: Verify compatibility with legacy endpoints
-3. **Document dependencies**: Note any legacy dependencies
-4. **Plan for removal**: Assume legacy support will eventually end
+# ✅ ACCEPTABLE: Keep old variable names for compatibility
+strain = Cultivar.query.filter_by(name=name).first()  # Variable name only
+```
 
-### For Maintenance
-1. **Monitor usage**: Track legacy endpoint and import usage
-2. **Update gradually**: Migrate existing code when convenient
-3. **Test compatibility**: Run compatibility tests regularly
-4. **Update documentation**: Encourage use of new terminology
+### Template Updates
+```html
+<!-- ✅ DO: Update to cultivar terminology -->
+<h1>Cultivar Management</h1>
+<div class="cultivar-card">
+  <h2>{{ cultivar.name }}</h2>
+</div>
 
-### For Integration Partners
-1. **Update APIs**: Migrate integrations to use `/cultivars/*`
-2. **Test thoroughly**: Verify integrations work with new endpoints
-3. **Plan migration**: Create timeline for updating integrations
-4. **Monitor for changes**: Watch for deprecation announcements
+<!-- ✅ ACCEPTABLE: Keep old variable names -->
+<div class="cultivar-card">
+  <h2>{{ strain.name }}</h2>  <!-- strain variable still works -->
+</div>
+```
 
 ## Troubleshooting
 
 ### Common Issues
 
-#### Import Errors
+#### Issue 1: Import Errors
 **Problem**: `ImportError: cannot import name 'Strain'`
-**Solution**: The `Strain` alias should exist. Check if models/__init__.py contains `Strain = Cultivar`
-
-#### Endpoint 404 Errors
-**Problem**: Getting 404 on `/api/v1/strains/*`
-**Solution**: Both endpoints should work. Check FastAPI router mounting in app/fastapi_app/__init__.py
-
-#### Template Not Found
-**Problem**: Template 'strains.html' not found
-**Solution**: Templates were renamed. Use 'cultivars.html' or check template alias configuration
-
-#### Provider Not Found
-**Problem**: `StrainsProvider` not found
-**Solution**: Use `CultivarProvider` instead. Check provider registration in main.dart
-
-### Getting Help
-1. **Check validation script**: `python scripts/validate_terminology_migration.py`
-2. **Review compatibility status**: Check logs for compatibility warnings
-3. **Test endpoints manually**: Verify both `/strains/*` and `/cultivars/*` work
-4. **Check imports**: Verify both `Strain` and `Cultivar` can be imported
-
-## Future Considerations
-
-### Deprecation Strategy
-Plan for eventual legacy removal:
-
-1. **Monitor usage**: Track declining legacy endpoint usage
-2. **Communicate deprecation**: Give 6-month notice before removal
-3. **Provide migration tools**: Automate migration where possible
-4. **Support transition**: Provide assistance during migration
-
-### API Versioning
-Consider API versioning for future changes:
-
+**Solution**: 
 ```python
-# Future API versioning
-@app.include_router(cultivars_router, prefix="/api/v2/cultivars", tags=["cultivars"])
-# Maintain v1 for backward compatibility
-@app.include_router(cultivars_router, prefix="/api/v1/cultivars", tags=["cultivars (v1)"])
+# Use new import pattern
+from app.models import Cultivar
+from app.models.base_models import Strain as LegacyStrain
+
+# Or use alias directly
+from app.models.base_models import Strain  # Returns Cultivar class
 ```
 
-### Database Migration
-Plan for future database schema changes:
-
+#### Issue 2: API Response Format
+**Problem**: Legacy code expects "strain_name" field
+**Solution**:
 ```python
-# Future database migration script
-def migrate_strain_to_cultivar():
-    """Future migration script for database schema changes"""
-    # This would handle any future database schema updates
-    pass
+# API responds with "name" field
+cultivar_data = {
+    "id": 123,
+    "name": "OG Kush",  # New field name
+    # "strain_name" no longer in response
+}
+
+# Legacy code should be updated to use "name"
 ```
 
-## Conclusion
+#### Issue 3: Database Query Issues
+**Problem**: Legacy SQL queries fail
+**Solution**:
+```python
+# Old way (no longer recommended)
+results = db.session.execute("SELECT * FROM strain WHERE...")
 
-This backward compatibility strategy ensures a smooth transition from "strain" to "cultivar" terminology with zero disruption to existing users and integrations. The comprehensive compatibility layer maintains full functionality while encouraging migration to the new, more accurate terminology.
+# New way (recommended)
+results = Cultivar.query.filter(...).all()
+```
 
-The strategy provides:
-- **100% compatibility** with existing code and integrations
-- **Graceful migration path** for developers and users
-- **Monitoring and alerting** for compatibility health
-- **Future planning** for eventual legacy removal
+### Emergency Rollback
+If critical issues arise, rollback can be implemented:
 
-For questions about compatibility or migration assistance, refer to the troubleshooting section or contact the development team.
+1. **Immediate**: Disable new endpoints, rely on legacy endpoints
+2. **Code**: Restore backup of modified files  
+3. **Database**: No changes required (backward compatible)
+4. **Testing**: Verify legacy functionality works
+
+## Success Metrics
+
+### Compatibility KPIs
+- **100%**: Legacy API endpoint functionality
+- **100%**: Model alias functionality
+- **<1%**: Error rate increase due to migration
+- **90%**: New code using cultivar terminology
+- **0**: Breaking changes for existing users
+
+### Migration KPIs
+- **Month 3**: 50% adoption of new endpoints
+- **Month 6**: 75% adoption of new endpoints
+- **Month 12**: 90% adoption of new endpoints
+- **Month 18**: Ready for legacy endpoint removal
+
+## Support Resources
+
+### Documentation
+- [Terminology Migration Guide](TERMINOLOGY_MIGRATION_GUIDE.md)
+- [API Documentation](../docs/generated/openapi.json)
+- [Migration Scripts](../scripts/)
+
+### Tools
+- `python scripts/validate_terminology_migration.py` - Validation script
+- `python scripts/taskmaster_cli.py` - Task management
+- Migration checklist and progress tracking
+
+### Contact
+For compatibility issues:
+1. Check this backward compatibility document
+2. Run validation script for diagnostics
+3. Consult Task-Master-AI tasks for detailed status
+4. Contact development team with specific error details
+
+---
+
+*This document will be updated as the migration progresses and additional compatibility measures are implemented.*

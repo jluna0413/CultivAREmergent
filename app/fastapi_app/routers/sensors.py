@@ -27,10 +27,10 @@ from app.models_async.sensors import Sensor as SensorModel, SensorData
 from app.models_async.grow import Zone
 
 # HTML routes for backward compatibility - Legacy template support
-router = APIRouter(prefix="/sensors", tags=["sensors"])
+router = APIRouter(tags=["sensors"])
 
 # Clean JSON API routes under /api/v1/sensors/*
-api_router = APIRouter(prefix="/sensors", tags=["sensors-api"])
+api_router = APIRouter(tags=["sensors-api"])
 
 
 # ============================================================================

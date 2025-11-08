@@ -1,0 +1,30 @@
+{
+  "id": "task-4-2-strain-template-rename",
+  "title": "Rename strain.html to cultivar.html template",
+  "description": "Rename strain.html to cultivar.html and update all references",
+  "status": "TODO",
+  "priority": "HIGH",
+  "type": "TASK",
+  "estimated_effort_hours": 0.5,
+  "actual_effort_hours": null,
+  "parent_task_id": "phase-4-templates-js",
+  "dependencies": [],
+  "blocking": ["task-4-13-main-js-update"],
+  "subtasks": [],
+  "assignee": "@traycerai",
+  "tags": ["migration", "templates", "file-rename"],
+  "created_at": "2025-11-05T16:47:25.000Z",
+  "updated_at": "2025-11-05T16:47:25.000Z",
+  "started_at": null,
+  "completed_at": null,
+  "files_affected": [
+    "app/web/templates/views/strain.html"
+  ],
+  "acceptance_criteria": [
+    "strain.html renamed to cultivar.html",
+    "All internal template references updated",
+    "Template renders correctly"
+  ],
+  "notes": "Part of Phase 4 templates migration",
+  "linear_issue_id": null
+}

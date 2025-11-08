@@ -1,0 +1,36 @@
+{
+  "id": "task-1-5-activity-model-update",
+  "title": "Update activity model comments",
+  "description": "Update activity model comments in app/models_async/activities.py to use cultivar terminology",
+  "status": "DONE",
+  "priority": "HIGH",
+  "type": "FEATURE",
+  "estimated_effort_hours": 0.5,
+  "actual_effort_hours": null,
+  "parent_task_id": "phase-1-backend-models",
+  "dependencies": [
+    "task-1-4-config-class-update"
+  ],
+  "blocking": [],
+  "subtasks": [],
+  "assignee": "@traycerai",
+  "tags": [
+    "migration",
+    "backend",
+    "models"
+  ],
+  "created_at": "2025-11-05T04:40:15.626Z",
+  "updated_at": "2025-11-04T23:52:29.209940",
+  "started_at": null,
+  "completed_at": "2025-11-04T23:52:29.209940",
+  "files_affected": [
+    "app/models_async/activities.py"
+  ],
+  "acceptance_criteria": [
+    "Activity model comments use 'cultivar' terminology",
+    "No references to 'strain' remain in activity model comments",
+    "All docstrings and comments updated appropriately"
+  ],
+  "notes": "",
+  "linear_issue_id": null
+}

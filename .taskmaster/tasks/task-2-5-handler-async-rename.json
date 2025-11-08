@@ -1,0 +1,31 @@
+{
+  "id": "task-2-5-handler-async-rename",
+  "title": "Task 2.5: Rename async strain handlers",
+  "description": "Rename app/handlers/strain_handlers_async.py to cultivar_handlers_async.py and update all references",
+  "status": "DONE",
+  "priority": "HIGH",
+  "type": "FEATURE",
+  "estimated_effort_hours": 1,
+  "actual_effort_hours": null,
+  "parent_task_id": "phase-2-api-layer",
+  "dependencies": [],
+  "blocking": [],
+  "subtasks": [],
+  "assignee": "@traycerai",
+  "tags": ["migration", "backend", "handlers"],
+  "created_at": "2025-11-05T16:51:00Z",
+  "updated_at": "2025-11-05T16:51:00Z",
+  "started_at": "2025-11-05T16:51:00Z",
+  "completed_at": "2025-11-05T16:51:00Z",
+  "files_affected": [
+    "app/handlers/strain_handlers_async.py",
+    "app/handlers/cultivar_handlers_async.py"
+  ],
+  "acceptance_criteria": [
+    "strain_handlers_async.py renamed to cultivar_handlers_async.py",
+    "All internal references updated to use cultivar terminology",
+    "Backward compatibility maintained"
+  ],
+  "notes": "Async handler module renamed as part of Phase 2 migration",
+  "linear_issue_id": null
+}

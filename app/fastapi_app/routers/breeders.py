@@ -1,3 +1,5 @@
+from sqlalchemy import select, and_, or_, func, desc
+
 """
 Breeders Router - CRUD operations for breeder management
 Migrated from app/blueprints/breeders.py
@@ -22,10 +24,10 @@ from app.models_async.auth import User
 from app.models_async.grow import Breeder, Cultivar
 
 # HTML routes for backward compatibility - Legacy template support
-router = APIRouter(prefix="/breeders", tags=["breeders"])
+router = APIRouter(tags=["breeders"])
 
 # Clean JSON API routes under /api/v1/breeders/*
-api_router = APIRouter(prefix="/breeders", tags=["breeders-api"])
+api_router = APIRouter(tags=["breeders-api"])
 
 
 # ============================================================================
@@ -70,7 +72,7 @@ async def breeders_list_page(
 ):
     """Display list of breeders with legacy template support."""
     try:
-        # Get breeders with eager loading of cultivars/strains
+        # Get breeders with eager loading of cultivars
         result = await db.execute(
             select(Breeder).options(selectinload(Breeder.cultivars)).order_by(Breeder.name)
         )
@@ -107,7 +109,7 @@ async def breeder_detail_page(
     current_user: User = Depends(require_login),
     context: dict = Depends(inject_template_context)
 ):
-    """Display breeder detail page with their strains."""
+    """Display breeder detail page with their cultivars."""
     try:
         result = await db.execute(
             select(Breeder).options(selectinload(Breeder.cultivars)).where(Breeder.id == breeder_id)

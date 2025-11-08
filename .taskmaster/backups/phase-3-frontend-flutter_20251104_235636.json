@@ -1,0 +1,50 @@
+{
+  "id": "phase-3-frontend-flutter",
+  "title": "Phase 3: Migrate Flutter Frontend (Models, Providers, Widgets)",
+  "description": "Consolidate duplicate providers/widgets, update all Dart code to use 'cultivar' terminology, align models with backend schema",
+  "status": "TODO",
+  "priority": "HIGH",
+  "type": "FEATURE",
+  "estimated_effort_hours": 6,
+  "actual_effort_hours": null,
+  "parent_task_id": "cultivar-migration-master",
+  "dependencies": [
+    "phase-2-api-layer"
+  ],
+  "blocking": [
+    "phase-4-templates-js"
+  ],
+  "subtasks": [
+    "task-3-1-consolidate-providers",
+    "task-3-2-consolidate-widgets",
+    "task-3-3-cultivars-screen-update",
+    "task-3-4-api-client-verify",
+    "task-3-5-cultivars-service-verify",
+    "task-3-6-cultivar-models-align",
+    "task-3-7-cultivar-model-verify",
+    "task-3-8-plant-models-update",
+    "task-3-9-create-plant-request-update"
+  ],
+  "assignee": "@traycerai",
+  "tags": [
+    "migration",
+    "backend",
+    "terminology"
+  ],
+  "created_at": "2025-11-04T22:56:01.483107",
+  "updated_at": "2025-11-04T22:56:01.483107",
+  "started_at": null,
+  "completed_at": null,
+  "files_affected": [
+    "flutter_app/lib/core/state/strains_provider.dart",
+    "flutter_app/lib/core/providers/cultivar_provider.dart",
+    "flutter_app/lib/screens/cultivars_screen.dart"
+  ],
+  "acceptance_criteria": [
+    "All files in phase-3-frontend-flutter updated with cultivar terminology",
+    "Backward compatibility maintained",
+    "All tests pass"
+  ],
+  "notes": "Phase task for phase-3-frontend-flutter",
+  "linear_issue_id": null
+}

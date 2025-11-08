@@ -14,10 +14,10 @@ from contextlib import asynccontextmanager
 _SKIP_ROUTERS = os.getenv("FASTAPI_SKIP_ROUTERS", "0") == "1"
 if not _SKIP_ROUTERS:
     from app.fastapi_app.routers import health
-    from app.fastapi_app.routers import plants
+    from app.fastapi_app.routers import plants_api
     from app.fastapi_app.routers import dashboard
     from app.fastapi_app.routers import cultivars
-    from app.fastapi_app.routers import strains  # For legacy compatibility
+    from app.fastapi_app.routers import cultivars_legacy
     from app.fastapi_app.routers import breeders
     from app.fastapi_app.routers import auth
     from app.fastapi_app.routers import admin
@@ -26,15 +26,17 @@ if not _SKIP_ROUTERS:
     from app.fastapi_app.routers import site
     from app.fastapi_app.routers import clones
     from app.fastapi_app.routers import diagnostics
-    from app.fastapi_app.routers import routes
+    from app.fastapi_app.routers import activities
+    from app.fastapi_app.routers import blog
+    from app.fastapi_app.routers import social
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
-    print("🌱 Starting Cultivar Collection Management System...")
+    print("Starting Cultivar Collection Management System...")
     yield
     # Shutdown
-    print("🌱 Shutting down Cultivar Collection Management System...")
+    print("Shutting down Cultivar Collection Management System...")
 
 # Create FastAPI application
 app = FastAPI(
@@ -74,32 +76,41 @@ app.add_middleware(
 # Add Trusted Host middleware for security
 app.add_middleware(
     TrustedHostMiddleware,
-    allowed_hosts=["localhost", "127.0.0.1", "*.localhost", os.getenv("ALLOWED_HOSTS", "")]  
-    # Production: specify exact hostnames
+    allowed_hosts=["localhost", "127.0.0.1", "*.localhost", os.getenv("ALLOWED_HOSTS", "")]
 )
 
 
 # Include routers if they were imported
 if not _SKIP_ROUTERS:
     app.include_router(health.router, prefix="/health", tags=["Health"])
-    app.include_router(plants.router, prefix="/api/v1/plants", tags=["Plants"])
+    app.include_router(plants_api.router, prefix="/api/v1/plants", tags=["Plants"])
     app.include_router(dashboard.router, prefix="/api/v1/dashboard", tags=["Dashboard"])
-    
-    # Dual-mount cultivars router with backward compatibility
-    # Primary endpoint: /api/v1/cultivars (new standard)
     app.include_router(cultivars.router, prefix="/api/v1/cultivars", tags=["Cultivars"])
-    # Legacy endpoint: /api/v1/strains (deprecated, for backward compatibility)
-    app.include_router(cultivars.router, prefix="/api/v1/strains", tags=["Strains (Legacy)"])
-    
-    app.include_router(breeders.router, prefix="/api/v1/breeders", tags=["Breeders"])
+    app.include_router(cultivars_legacy.router, prefix="/api/v1/strains", tags=["Strains (Legacy)"])
+    app.include_router(breeders.api_router, prefix="/api/v1/breeders", tags=["Breeders"])
     app.include_router(auth.router, prefix="/api/v1/auth", tags=["Authentication"])
-    app.include_router(admin.router, prefix="/admin", tags=["Admin"])
+    app.include_router(admin.api_router, prefix="/api/v1/admin", tags=["Admin"])
     app.include_router(market.router, prefix="/api/v1/market", tags=["Market"])
-    app.include_router(newsletter.router, prefix="/api/v1/newsletter", tags=["Newsletter"])
-    app.include_router(site.router, prefix="/api/v1/site", tags=["Site"])
+    app.include_router(newsletter.api_router, prefix="/api/v1/newsletter", tags=["Newsletter"])
+    app.include_router(site.router, prefix="", tags=["Site"])
     app.include_router(clones.router, prefix="/api/v1/clones", tags=["Clones"])
     app.include_router(diagnostics.router, prefix="/api/v1/diagnostics", tags=["Diagnostics"])
-    app.include_router(routes.router, prefix="/api/v1", tags=["Routes"])
+    app.include_router(activities.api_router, prefix="/api/v1/activities", tags=["Activities"])
+    app.include_router(blog.router, prefix="/api/v1/blog", tags=["Blog"])
+    app.include_router(social.router, prefix="/api/v1/social", tags=["Social"])
+
+    # Legacy HTML routes
+    from app.fastapi_app.routers import plants
+    app.include_router(plants.router, prefix="/plants", tags=["Plants Legacy"])
+    from app.fastapi_app.routers import breeders
+    app.include_router(breeders.router, prefix="/breeders", tags=["Breeders Legacy"])
+    from app.fastapi_app.routers import admin
+    app.include_router(admin.router, prefix="/admin", tags=["Admin Legacy"])
+    from app.fastapi_app.routers import newsletter
+    app.include_router(newsletter.router, prefix="/newsletter", tags=["Newsletter Legacy"])
+    from app.fastapi_app.routers import activities
+    app.include_router(activities.router, prefix="/activities", tags=["Activities Legacy"])
+
 
 # Root endpoint
 @app.get("/", tags=["Root"])

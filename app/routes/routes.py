@@ -34,10 +34,10 @@ from app.handlers import (
     plant_handlers,
     sensor_handlers,
     settings_handlers,
-    strain_handlers,
+    cultivar_handlers,
 )
 from app.logger import logger  # Corrected import path for logger as well
-from app.models.base_models import Plant, Sensor, Strain, Stream, User, db
+from app.models.base_models import Plant, Sensor, Cultivar, Stream, User, db
 
 # Removed: from utils.auth import check_password # Using werkzeug check_password_hash directly
 from app.utils.helpers import format_date, format_datetime

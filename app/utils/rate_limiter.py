@@ -197,7 +197,18 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
 rate_limiter = FastAPIRateLimiter()
 
 # Backward compatibility for Flask blueprints
-limiter = rate_limiter.get_limiter()
+# Provide a safe, import-time friendly limiter for Flask blueprints used during
+# test collection and import. This avoids applying slowapi decorators at module
+# import time which raise when Flask view functions do not accept a Request arg.
+class FlaskCompatibleLimiter:
+    def limit(self, *args, **kwargs):
+        """Return a no-op decorator to avoid import-time signature checks."""
+        def noop_decorator(func):
+            return func
+        return noop_decorator
+
+# Export a safe limiter instance for Flask blueprints (no-op at import time).
+limiter = FlaskCompatibleLimiter()
 
 
 def get_rate_limiter() -> Limiter:

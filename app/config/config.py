@@ -47,6 +47,12 @@ class Config:
     # Guest mode
     GUEST_MODE = os.getenv("GUEST_MODE", "False").lower() == "true"
 
+    # SeedFinder API Configuration
+    SEEDFINDER_API_KEY = os.getenv("SEEDFINDER_API_KEY")
+    
+    # The_Cannabis_API Configuration
+    CANNABIS_API_KEY = os.getenv("CANNABIS_API_KEY")
+
     # SSL/TLS Configuration
     SSL_ENABLED = os.getenv("SSL_ENABLED", "False").lower() == "true"
     SSL_CERT_PATH = os.getenv("SSL_CERT_PATH", "/path/to/certificate.pem")
@@ -57,7 +63,7 @@ class Config:
     Metrics = []
     Statuses = []
     Zones = []
-    Strains = []
+    Cultivars = []
     Breeders = []
 
     # Default settings

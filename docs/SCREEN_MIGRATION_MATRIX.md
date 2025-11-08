@@ -110,9 +110,9 @@ This document provides a comprehensive screen-by-screen migration tracking matri
 
 ### Phase 2 Dependencies
 - **Design System**: AppTheme, color palette, typography system
-- **Core Widgets**: StatCard, PlantCard, StrainCard, SensorCard
-- **State Management**: PlantsProvider, StrainsProvider, SensorsProvider, DashboardProvider
-- **API Integration**: Plants API, Strains API, Sensors API, Auth API
+- **Core Widgets**: StatCard, PlantCard, CultivarCard, SensorCard
+- **State Management**: PlantsProvider, CultivarsProvider, SensorsProvider, DashboardProvider
+- **API Integration**: Plants API, Cultivars API, Sensors API, Auth API
 
 ### Phase 3 Dependencies
 - **Enhanced Features**: Settings system, user management, cart system
@@ -131,7 +131,7 @@ This document provides a comprehensive screen-by-screen migration tracking matri
 - [x] Dashboard Screen (85% design parity, 90% functional parity)
 - [ ] Plants Screen (0% complete)
 - [ ] Plant Detail Screen (0% complete)
-- [ ] Strains Screen (0% complete)
+- [ ] Cultivars Screen (0% complete)
 - [ ] Sensors Screen (0% complete)
 - [ ] Login Screen Enhancement (0% complete)
 - [ ] Sidebar Drawer (0% complete)
@@ -163,7 +163,7 @@ This document provides a comprehensive screen-by-screen migration tracking matri
 - **Admin Users Screen**: Role-based access, bulk operations
 
 ### Medium Risk Screens
-- **Strains Screen**: Genetics slider, complex form inputs
+- **Cultivars Screen**: Genetics slider, complex form inputs
 - **Sensors Screen**: Real-time data, zone organization
 - **Cart Screen**: State persistence, checkout flow
 

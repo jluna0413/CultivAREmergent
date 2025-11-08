@@ -496,15 +496,15 @@ class TestStrainsAPICrossModule:
             pass
     
     @pytest.mark.asyncio
-    async def test_strains_breeders_relationship(self, client: httpx.AsyncClient):
-        """Test relationship between strains and breeders"""
+    async def test_cultivars_breeders_relationship(self, client: httpx.AsyncClient):
+        """Test relationship between cultivars and breeders"""
         try:
-            # Test that strains and breeders endpoints work together
-            strains_response = await client.get("/api/v1/strains")
+            # Test that cultivars and breeders endpoints work together
+            cultivars_response = await client.get("/api/v1/cultivars")
             breeders_response = await client.get("/api/v1/breeders")
-            
+
             # Both should respond (not 500)
-            assert strains_response.status_code in [200, 401, 403]
+            assert cultivars_response.status_code in [200, 401, 403]
             assert breeders_response.status_code in [200, 401, 403]
             
         except Exception:

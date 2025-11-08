@@ -2,5 +2,10 @@
   "dependencies": {
     "@byterover/cipher": "^0.2.2",
     "@genkit-ai/mcp": "^1.22.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "eslint": "^9.39.1",
+    "globals": "^16.5.0"
   }
 }

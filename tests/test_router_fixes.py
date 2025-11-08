@@ -72,9 +72,9 @@ class TestDataPersistence:
     """Test Comment 2: Verify data persistence works correctly."""
     
     @pytest.mark.asyncio
-    async def test_strain_persistence_via_api(self, test_db: AsyncSession):
-        """Test that strain creation via API actually persists data."""
-        from app.models_async.grow import Cultivar as Strain, Breeder
+    async def test_cultivar_persistence_via_api(self, test_db: AsyncSession):
+        """Test that cultivar creation via API actually persists data."""
+        from app.models_async.grow import Cultivar, Breeder
         
         # Create a test breeder first
         breeder = Breeder(name="Test Breeder")
@@ -82,9 +82,9 @@ class TestDataPersistence:
         await test_db.commit()
         await test_db.refresh(breeder)
         
-        # Create a test strain
-        strain = Strain(
-            name="Test Strain",
+        # Create a test cultivar
+        cultivar = Cultivar(
+            name="Test Cultivar",
             breeder_id=breeder.id,
             indica=50.0,
             sativa=50.0,
@@ -92,24 +92,24 @@ class TestDataPersistence:
             created_by=1  # Assuming user ID 1
         )
         
-        test_db.add(strain)
+        test_db.add(cultivar)
         await test_db.commit()
-        await test_db.refresh(strain)
+        await test_db.refresh(cultivar)
         
         # Verify it was actually saved
-        assert strain.id is not None
+        assert cultivar.id is not None
         
         # Query it back
         from sqlalchemy import select
-        result = await test_db.execute(select(Strain).where(Strain.id == strain.id))
-        saved_strain = result.scalar_one_or_none()
+        result = await test_db.execute(select(Cultivar).where(Cultivar.id == cultivar.id))
+        saved_cultivar = result.scalar_one_or_none()
         
-        assert saved_strain is not None
-        assert saved_strain.name == "Test Strain"
-        assert saved_strain.breeder_id == breeder.id
+        assert saved_cultivar is not None
+        assert saved_cultivar.name == "Test Cultivar"
+        assert saved_cultivar.breeder_id == breeder.id
         
         # Clean up
-        await test_db.delete(saved_strain)
+        await test_db.delete(saved_cultivar)
         await test_db.delete(breeder)
         await test_db.commit()
     
@@ -205,9 +205,9 @@ if __name__ == "__main__":
     
     # Test 4: Check db.commit calls
     print("\n4. Checking db.commit() calls...")
-    from app.fastapi_app.routers import strains
+    from app.fastapi_app.routers import cultivars
     import inspect
-    source = inspect.getsource(strains)
+    source = inspect.getsource(cultivars)
     
     if "await db.commit()" in source:
         print("   ✅ db.commit() calls have parentheses")

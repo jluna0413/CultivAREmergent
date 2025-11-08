@@ -11,7 +11,7 @@ from datetime import datetime
 
 from app.models_async.marketing import NewsletterSubscriber
 
-router = APIRouter(prefix="/newsletter", tags=["newsletter"])
+router = APIRouter(tags=["newsletter"])
 
 # HTML Pages - Legacy routes for backward compatibility
 @router.get("/subscribe", name="newsletter_subscribe")
@@ -24,7 +24,7 @@ async def unsubscribe_page(request: Request, context: dict = Depends(inject_temp
 
 
 # API Router under /api/v1/* with clean JSON contracts
-api_router = APIRouter(prefix="/newsletter", tags=["newsletter-api"])
+api_router = APIRouter(tags=["newsletter-api"])
 
 
 def _is_valid_email(email: str) -> bool:

@@ -3,15 +3,33 @@
   "project": {
     "name": "CultivAR Emergant",
     "description": "Cannabis cultivation management platform",
-    "repository": "a:/dev/CultivAREmergant/"
+    "repository": "."
   },
   "taskmaster": {
     "enabled": true,
-    "task_directory": ".taskmaster/tasks",
+    "task_directory": ".taskmaster\\tasks",
     "default_assignee": "@traycerai",
-    "status_values": ["TODO", "IN_PROGRESS", "BLOCKED", "REVIEW", "DONE"],
-    "priority_values": ["LOW", "MEDIUM", "HIGH", "CRITICAL"],
-    "type_values": ["EPIC", "FEATURE", "BUG", "REFACTOR", "DOCS", "TEST"]
+    "status_values": [
+      "TODO",
+      "IN_PROGRESS",
+      "BLOCKED",
+      "REVIEW",
+      "DONE"
+    ],
+    "priority_values": [
+      "LOW",
+      "MEDIUM",
+      "HIGH",
+      "CRITICAL"
+    ],
+    "type_values": [
+      "EPIC",
+      "FEATURE",
+      "BUG",
+      "REFACTOR",
+      "DOCS",
+      "TEST"
+    ]
   },
   "integrations": {
     "linear": {

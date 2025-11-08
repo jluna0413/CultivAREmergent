@@ -23,7 +23,7 @@ This document outlines the comprehensive migration strategy from Flask + HTML/CS
 
 **Deliverables**:
 - Complete design system mapping (CSS custom properties → Flutter theme constants)
-- Core widget library (GlassCard, StatCard, FilterBar, PlantCard, StrainCard, SensorCard, TimelineWidget, EmptyState, ThemeToggleButton)
+- Core widget library (GlassCard, StatCard, FilterBar, PlantCard, CultivarCard, SensorCard, TimelineWidget, EmptyState, ThemeToggleButton)
 - State management architecture (Riverpod providers for all domains)
 - Expanded API client covering all FastAPI endpoints
 - Data models matching backend Pydantic schemas
@@ -32,7 +32,7 @@ This document outlines the comprehensive migration strategy from Flask + HTML/CS
 **Acceptance Criteria**:
 - AppTheme implements all CSS design tokens (colors, typography, shadows, animations)
 - All core widgets created and tested
-- State providers implemented for: theme, auth, plants, strains, sensors, dashboard, cart
+- State providers implemented for: theme, auth, plants, cultivars, sensors, dashboard, cart
 - ApiClient covers all 200+ endpoints from OpenAPI spec
 - All data models match backend schemas exactly
 - Router configured with all routes and authentication guards
@@ -48,7 +48,7 @@ This document outlines the comprehensive migration strategy from Flask + HTML/CS
 - Dashboard (stats cards, plant overview, environmental data, activity timeline)
 - Plants list (filtering, grid/list toggle, CRUD operations)
 - Plant detail (image, status, info cards, timeline, quick actions)
-- Strains list (genetics slider, breeder management, type filtering)
+- Cultivars list (genetics slider, breeder management, type filtering)
 - Sensors list (zone-based organization, real-time data, status indicators)
 - Login screen (enhanced authentication, error handling, loading states)
 
@@ -160,7 +160,7 @@ flutter_app/lib/core/state/
 ├── theme_provider.dart          // ThemeMode management
 ├── auth_provider.dart           // Authentication state
 ├── plants_provider.dart         // Plants CRUD + filtering
-├── strains_provider.dart        // Strains catalog + filtering
+├── cultivars_provider.dart      // Cultivars catalog + filtering
 ├── sensors_provider.dart        // Sensors data + real-time updates
 ├── dashboard_provider.dart      // Dashboard stats + widgets
 └── cart_provider.dart           // Shopping cart state
@@ -173,7 +173,7 @@ flutter_app/lib/core/widgets/
 ├── stat_card.dart               // Dashboard statistics cards
 ├── filter_bar.dart              // Filter controls
 ├── plant_card.dart              // Plant display cards
-├── strain_card.dart             // Strain display cards
+├── cultivar_card.dart           // Cultivar display cards
 ├── sensor_card.dart             // Sensor status cards
 ├── timeline_widget.dart         // Activity timeline
 ├── empty_state.dart             // Empty state components
@@ -199,7 +199,7 @@ flutter_app/lib/core/router/
 /login → LoginScreen
 /plants → PlantsListScreen
 /plants/:id → PlantDetailScreen
-/strains → StrainsListScreen
+/cultivars → CultivarsListScreen
 /sensors → SensorsListScreen
 /settings → SettingsScreen
 /admin/users → AdminUsersScreen (admin required)

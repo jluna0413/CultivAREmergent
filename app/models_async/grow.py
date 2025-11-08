@@ -2,11 +2,10 @@
 Async Grow Models
 Plant, Cultivar, Breeder, Status, Grow, Metric, Zone models.
 """
-
 from datetime import datetime
 from typing import Optional, List, TYPE_CHECKING
 from sqlalchemy import (
-    String, Integer, Float, Boolean, DateTime, Text, ForeignKey, Index, func
+    String, Integer, Float, Boolean, DateTime, Text, ForeignKey, Index, func, JSON
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -28,16 +27,24 @@ class Breeder(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String(100), nullable=False, unique=True)
     
-    # Case-insensitive unique index
+    # SeedFinder specific fields
+    country: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    website: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    seedfinder_id: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    
+    # Case-insensitive unique index and new index for seedfinder_id
     __table_args__ = (
         Index('ux_breeder_name_lower', func.lower(name), unique=True),
+        Index('ix_breeder_seedfinder_id', 'seedfinder_id', unique=True),
     )
     
     # Relationships
     cultivars: Mapped[List["Cultivar"]] = relationship("Cultivar", back_populates="breeder", lazy="selectin")
     
     def __repr__(self) -> str:
-        return f"<Breeder(id={self.id}, name='{self.name}')>"
+        country_info = f", country='{self.country}'" if self.country else ""
+        return f"<Breeder(id={self.id}, name='{self.name}'{country_info})>"
 
 
 class Cultivar(Base):
@@ -54,12 +61,27 @@ class Cultivar(Base):
     sativa: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     autoflower: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     
+    # Lineage and Cannabinoid fields
+    parent_1: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    parent_2: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    lineage_json: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
+    seedfinder_id: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    thc_content: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    cbd_content: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    flowering_type: Mapped[Optional[str]] = mapped_column(String(50), nullable=True) # photoperiod, autoflower, etc
+    
     # Details
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     short_description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     seed_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     cycle_time: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
     url: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    
+    __table_args__ = (
+        Index('ix_cultivar_seedfinder_id', 'seedfinder_id', unique=True),
+        Index('ix_cultivar_parent_1', 'parent_1'),
+        Index('ix_cultivar_parent_2', 'parent_2'),
+    )
     
     # Relationships
     breeder: Mapped[Optional["Breeder"]] = relationship("Breeder", back_populates="cultivars", lazy="selectin")
@@ -71,7 +93,12 @@ class Cultivar(Base):
         return self.breeder.name if self.breeder else None
     
     def __repr__(self) -> str:
-        return f"<Cultivar(id={self.id}, name='{self.name}')>"
+        parents_info = ""
+        if self.parent_1 and self.parent_2:
+            parents_info = f", parents='{self.parent_1} x {self.parent_2}'"
+        elif self.parent_1:
+            parents_info = f", parent_1='{self.parent_1}'"
+        return f"<Cultivar(id={self.id}, name='{self.name}'{parents_info})>"
 
 
 class Status(Base):

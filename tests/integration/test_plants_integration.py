@@ -67,7 +67,7 @@ class TestPlantsAPIIntegration:
             elif isinstance(data, dict):
                 # If it's a dict, check for expected structure
                 assert isinstance(data, dict)
-                # Common fields might include: id, name, strain, status, etc.
+                # Common fields might include: id, name, cultivar, status, etc.
                 # We don't require specific fields, just that it's valid JSON
     
     @pytest.mark.asyncio
@@ -227,14 +227,14 @@ class TestPlantsAPIPerformance:
     @pytest.mark.asyncio
     async def test_plants_api_filtering(self, client: httpx.AsyncClient):
         """Test plants API filtering capabilities"""
-        # Test common filter parameters
+        # Test common filter parameters (backward compatible with strain_id)
         filters = [
             "?status=active",
-            "?strain=test",
+            "?strain_id=test",  # Keep backward compatibility
             "?search=test",
-            "?strain=sativa",
-            "?strain=indica",
-            "?strain=hybrid"
+            "?strain_id=sativa",  # Keep backward compatibility
+            "?strain_id=indica",  # Keep backward compatibility
+            "?strain_id=hybrid"  # Keep backward compatibility
         ]
         
         for filter_param in filters:

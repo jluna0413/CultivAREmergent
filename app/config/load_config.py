@@ -4,7 +4,7 @@ Load configuration data from the database into the Config class.
 
 from app.config.config import Config
 from app.logger import logger
-from app.models.base_models import Activity, Breeder, Metric, Status, Strain, Zone
+from app.models.base_models import Activity, Breeder, Metric, Status, Cultivar, Zone
 
 
 def load_config_from_db():
@@ -29,24 +29,24 @@ def load_config_from_db():
         zones = Zone.query.all()
         Config.Zones = [{"id": z.id, "name": z.name} for z in zones]
 
-        # Load strains
-        strains = Strain.query.all()
-        Config.Strains = [
+        # Load cultivars
+        cultivars = Cultivar.query.all()
+        Config.Cultivars = [
             {
-                "id": s.id,
-                "name": s.name,
-                "breeder_id": s.breeder_id,
-                "breeder_name": s.breeder_name,
-                "indica": s.indica,
-                "sativa": s.sativa,
-                "autoflower": s.autoflower,
-                "description": s.description,
-                "seed_count": s.seed_count,
-                "cycle_time": s.cycle_time,
-                "url": s.url,
-                "short_description": s.short_description,
+                "id": c.id,
+                "name": c.name,
+                "breeder_id": c.breeder_id,
+                "breeder_name": c.breeder_name,
+                "indica": c.indica,
+                "sativa": c.sativa,
+                "autoflower": c.autoflower,
+                "description": c.description,
+                "seed_count": c.seed_count,
+                "cycle_time": c.cycle_time,
+                "url": c.url,
+                "short_description": c.short_description,
             }
-            for s in strains
+            for c in cultivars
         ]
 
         # Load breeders

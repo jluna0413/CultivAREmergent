@@ -1,0 +1,29 @@
+{
+    "id": "task-3-9-create-plant-request-update",
+    "title": "Task 3.9: Update Create Plant Request",
+    "description": "Update create plant request model to use cultivar terminology",
+    "status": "TODO",
+    "priority": "HIGH",
+    "type": "FEATURE",
+    "estimated_effort_hours": 1.0,
+    "actual_effort_hours": 0,
+    "parent_task_id": "phase-3-frontend-flutter",
+    "dependencies": ["task-3-8-plant-models-update"],
+    "blocking": [],
+    "subtasks": [],
+    "assignee": "@traycerai",
+    "tags": ["migration", "frontend", "flutter", "plant-request"],
+    "created_at": "2025-11-05T18:34:26Z",
+    "updated_at": "2025-11-05T18:34:26Z",
+    "started_at": null,
+    "completed_at": null,
+    "files_affected": ["flutter_app/lib/core/models/create_plant_request.dart"],
+    "acceptance_criteria": [
+        "Create plant request uses cultivar references",
+        "Field names updated from strain* to cultivar*",
+        "Import statements updated to use cultivar models",
+        "Model compiles without errors"
+    ],
+    "notes": "Complete the plant-related models update to use cultivar terminology",
+    "linear_issue_id": null
+}

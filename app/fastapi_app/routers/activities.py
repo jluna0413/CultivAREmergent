@@ -26,10 +26,10 @@ from app.models_async.activities import Activity, PlantActivity, ActivitySummary
 from app.models_async.grow import Plant
 
 # HTML routes for backward compatibility - Legacy template support
-router = APIRouter(prefix="/activities", tags=["activities"])
+router = APIRouter(tags=["activities"])
 
 # Clean JSON API routes under /api/v1/activities/*
-api_router = APIRouter(prefix="/activities", tags=["activities-api"])
+api_router = APIRouter(tags=["activities-api"])
 
 
 # ============================================================================
@@ -103,18 +103,25 @@ def get_activity_types() -> List[ActivityTypeResponse]:
             category="system",
             is_system=True
         ),
-        # Legacy strain types for backward compatibility
         ActivityTypeResponse(
-            type="strain_add",
-            display_name="Strain Added (Legacy)",
-            description="Legacy strain creation activities - use cultivar_add instead",
+            type="cultivar_deleted",
+            display_name="Cultivar Deleted",
+            description="Cultivar deletion activities",
+            category="system",
+            is_system=True
+        ),
+        # Legacy cultivar types for backward compatibility
+        ActivityTypeResponse(
+            type="cultivar_add",
+            display_name="Cultivar Added (Legacy)",
+            description="Legacy cultivar creation activities - use cultivar_add instead",
             category="system",
             is_system=True
         ),
         ActivityTypeResponse(
-            type="strain_edit",
-            display_name="Strain Updated (Legacy)",
-            description="Legacy strain update activities - use cultivar_edit instead",
+            type="cultivar_edit",
+            display_name="Cultivar Updated (Legacy)",
+            description="Legacy cultivar update activities - use cultivar_edit instead",
             category="system",
             is_system=True
         ),
@@ -243,7 +250,7 @@ async def api_activities_list(
     """Get paginated list of activities with filters - Clean JSON API."""
     try:
         # Build base query
-        query = select(Activity)
+        query = select(Activity).options(selectinload(Activity.user))
         
         # Apply filters
         if activity_type:
@@ -308,7 +315,7 @@ async def api_activities_list(
                 type=activity.type,
                 activity_type=activity.activity_type,
                 user_id=activity.user_id,
-                username=activity.username,
+                username=activity.user.username if activity.user else activity.username,
                 entity_type=activity.entity_type,
                 entity_id=activity.entity_id,
                 entity_name=activity.entity_name,
@@ -340,7 +347,7 @@ async def api_activity_get(
 ):
     """Get activity details - Clean JSON API."""
     try:
-        result = await db.execute(select(Activity).where(Activity.id == activity_id))
+        result = await db.execute(select(Activity).where(Activity.id == activity_id).options(selectinload(Activity.user)))
         activity = result.scalar_one_or_none()
         
         if not activity:
@@ -351,7 +358,7 @@ async def api_activity_get(
             type=activity.type,
             activity_type=activity.activity_type,
             user_id=activity.user_id,
-            username=activity.username,
+            username=activity.user.username if activity.user else activity.username,
             entity_type=activity.entity_type,
             entity_id=activity.entity_id,
             entity_name=activity.entity_name,

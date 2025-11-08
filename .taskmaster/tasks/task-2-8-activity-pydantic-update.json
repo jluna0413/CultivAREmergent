@@ -1,0 +1,29 @@
+{
+    "id": "task-2-8-activity-pydantic-update",
+    "title": "Update activity Pydantic models for cultivar terminology",
+    "description": "Update activity Pydantic models to include cultivar activity types and references",
+    "status": "DONE",
+    "priority": "MEDIUM",
+    "type": "FEATURE",
+    "estimated_effort_hours": 1,
+    "actual_effort_hours": 0.5,
+    "parent_task_id": "phase-2-api-layer",
+    "dependencies": ["task-2-1-pydantic-schemas-rename"],
+    "blocking": [],
+    "subtasks": [],
+    "assignee": "@traycerai",
+    "tags": ["migration", "backend", "api"],
+    "created_at": "2025-11-03T17:33:34.910Z",
+    "updated_at": "2025-11-05T17:05:40.779Z",
+    "started_at": "2025-11-03T17:33:34.910Z",
+    "completed_at": "2025-11-05T17:05:40.779Z",
+    "files_affected": ["app/fastapi_app/models/activities.py"],
+    "acceptance_criteria": [
+        "Activity type descriptions include cultivar activities",
+        "Entity type references include cultivar",
+        "Template models reference cultivar terminology",
+        "All activity model descriptions use consistent terminology"
+    ],
+    "notes": "Completed - Activity models already properly updated with cultivar terminology",
+    "linear_issue_id": null
+}

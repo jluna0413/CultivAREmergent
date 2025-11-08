@@ -234,7 +234,7 @@ void main() {
       });
 
       test('should create CreatePlantRequest with minimal required fields', () {
-        final createRequest = CreatePlantRequest(
+        const createRequest = CreatePlantRequest(
           name: 'White Widow',
         );
 

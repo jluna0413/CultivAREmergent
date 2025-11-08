@@ -67,8 +67,8 @@ This document defines detailed phase gate definitions with acceptance criteria f
   - Hover animations
   - Status color mapping
 
-- [ ] **StrainCard Widget**: Strain display cards
-  - Strain name header
+- [ ] **CultivarCard Widget**: Cultivar display cards
+  - Cultivar name header
   - Type badges (Indica/Sativa/Hybrid/Autoflower)
   - Genetics display
   - Description preview
@@ -107,7 +107,7 @@ This document defines detailed phase gate definitions with acceptance criteria f
 
 #### API Integration
 - [ ] **ApiClient Enhancement**: All FastAPI endpoints implemented
-  - Strains endpoints (CRUD, stats, pagination)
+  - Cultivars endpoints (CRUD, stats, pagination)
   - Sensors endpoints (CRUD, readings, stats)
   - Activities endpoints (CRUD, types, stats)
   - Users endpoints (profile, management, stats)

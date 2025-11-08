@@ -1,0 +1,29 @@
+{
+    "id": "task-3-2-consolidate-widgets",
+    "title": "Task 3.2: Consolidate Widgets (strain_card → cultivar_card)",
+    "description": "Fix import statement in strains_screen.dart to use existing cultivar_card.dart instead of non-existent strain_card.dart",
+    "status": "COMPLETED",
+    "priority": "HIGH",
+    "type": "FEATURE",
+    "estimated_effort_hours": 0.5,
+    "actual_effort_hours": 0.2,
+    "parent_task_id": "phase-3-frontend-flutter",
+    "dependencies": ["task-3-1-consolidate-providers"],
+    "blocking": [],
+    "subtasks": [],
+    "assignee": "@traycerai",
+    "tags": ["migration", "frontend", "flutter", "widgets"],
+    "created_at": "2025-11-05T18:18:00Z",
+    "updated_at": "2025-11-05T18:18:40Z",
+    "started_at": "2025-11-05T18:18:10Z",
+    "completed_at": "2025-11-05T18:18:40Z",
+    "files_affected": ["flutter_app/lib/screens/st"],
+    "acceptance_criteria": [
+        "Import statement updated from strain_card.dart to cultivar_card.dart",
+        "Code compiles without import errors",
+        "Backward compatibility aliases work correctly",
+        "No strain_card.dart references remain"
+    ],
+    "notes": "Simple import fix - cultivar_card.dart already contains all necessary backward compatibility aliases including StrainCard, StrainGenetics, and StrainEffects classes",
+    "linear_issue_id": null
+}

@@ -4,9 +4,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:dio/dio.dart';
 import 'package:cultivar_app/core/services/api_client.dart';
-import 'package:cultivar_app/core/models/auth_models.dart';
-import 'package:cultivar_app/core/models/plant_models.dart';
-import 'package:cultivar_app/core/models/cultivar_models.dart';
 
 void main() {
   group('API Integration Tests', () {

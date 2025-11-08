@@ -1,0 +1,30 @@
+{
+  "id": "task-2-6-activity-handlers-update",
+  "title": "Task 2.6: Update activity handlers",
+  "description": "Update activity recording in app/handlers/activity_handlers.py to use cultivar terminology",
+  "status": "DONE",
+  "priority": "HIGH",
+  "type": "FEATURE",
+  "estimated_effort_hours": 1,
+  "actual_effort_hours": null,
+  "parent_task_id": "phase-2-api-layer",
+  "dependencies": [],
+  "blocking": [],
+  "subtasks": [],
+  "assignee": "@traycerai",
+  "tags": ["migration", "backend", "activity"],
+  "created_at": "2025-11-05T16:51:00Z",
+  "updated_at": "2025-11-05T16:51:00Z",
+  "started_at": "2025-11-05T16:51:00Z",
+  "completed_at": "2025-11-05T16:51:00Z",
+  "files_affected": [
+    "app/handlers/activity_handlers.py"
+  ],
+  "acceptance_criteria": [
+    "Activity event types updated to use 'cultivar_add', 'cultivar_edit', 'cultivar_deleted'",
+    "All activity recording functions use cultivar terminology",
+    "Backward compatibility maintained"
+  ],
+  "notes": "Activity handlers updated as part of Phase 2 migration",
+  "linear_issue_id": null
+}

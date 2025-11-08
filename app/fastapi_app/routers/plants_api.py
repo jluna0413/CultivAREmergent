@@ -78,11 +78,15 @@ class PlantsStatsResponse(BaseModel):
     by_status: Dict[str, int]
 
 # Create router with /api/v1/plants prefix
-router = APIRouter(prefix="/api/v1/plants", tags=["plants"])
+router = APIRouter(tags=["plants"])
 
 async def get_current_user_dep(current_user: User = Depends(get_current_user)) -> User:
     """Get current authenticated user"""
     return current_user
+
+from sqlalchemy.orm import selectinload
+
+# ... (imports)
 
 @router.get("/", response_model=PlantListResponse)
 async def list_plants(
@@ -97,8 +101,12 @@ async def list_plants(
 ):
     """Get paginated list of user's plants"""
     try:
-        # Build query with filters
-        query = select(Plant).where(Plant.user_id == current_user.id)
+        # Build query with filters and eager loading
+        query = select(Plant).where(Plant.user_id == current_user.id).options(
+            selectinload(Plant.cultivar),
+            selectinload(Plant.status),
+            selectinload(Plant.zone)
+        )
         
         if status_id:
             query = query.where(Plant.status_id == status_id)
@@ -161,6 +169,10 @@ async def get_plant(
             select(Plant).where(
                 Plant.id == plant_id,
                 Plant.user_id == current_user.id
+            ).options(
+                selectinload(Plant.cultivar),
+                selectinload(Plant.status),
+                selectinload(Plant.zone)
             )
         )
         plant = result.scalar_one_or_none()

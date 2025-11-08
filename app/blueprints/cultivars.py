@@ -108,40 +108,27 @@ async def add_cultivar_page_legacy():
     )
 
 
-# Backward compatibility aliases
-strains_bp = cultivars_bp  # Alias for backward compatibility
-
-
-@strains_bp.route("/")
+# Backward compatibility routes
+@cultivars_bp.route("/strains")
 @login_required
-async def strains_page():
-    """Legacy alias for cultivars_page"""
+async def strains_page_collection_compat():
+    """Render the cultivars collection page (backward compatibility)."""
     return await cultivars_page()
 
 
-@strains_bp.route("/strains")
+@cultivars_bp.route("/strains/<int:strain_id>")
 @login_required
-async def strains_page_collection():
-    """Legacy alias for cultivars_page_collection"""
-    return await cultivars_page()
-
-
-@strains_bp.route("/<int:strain_id>")
-@login_required
-async def strain_detail(strain_id):
-    """Legacy alias for cultivar_detail"""
+async def strain_detail_compat(strain_id):
+    """Render individual cultivar detail page (backward compatibility)."""
     return await cultivar_detail(strain_id)
 
 
-@strains_bp.route("/add")
+@cultivars_bp.route("/strains/add")
 @login_required
-async def add_strain_page():
-    """Legacy alias for add_cultivar_page"""
+async def add_strain_page_compat():
+    """Render the add cultivar page (backward compatibility)."""
     return await add_cultivar_page()
 
 
-@strains_bp.route("/strains/add")
-@login_required
-async def add_strain_page_legacy():
-    """Legacy alias for add_cultivar_page_legacy"""
-    return await add_cultivar_page_legacy()
+# Backward compatibility alias for imports
+strains_bp = cultivars_bp

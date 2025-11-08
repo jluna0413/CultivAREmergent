@@ -1,0 +1,31 @@
+{
+  "id": "task-2-4-handler-sync-rename",
+  "title": "Task 2.4: Rename sync strain handlers",
+  "description": "Rename app/handlers/strain_handlers.py to cultivar_handlers.py and update all references",
+  "status": "DONE",
+  "priority": "HIGH",
+  "type": "FEATURE",
+  "estimated_effort_hours": 1,
+  "actual_effort_hours": null,
+  "parent_task_id": "phase-2-api-layer",
+  "dependencies": [],
+  "blocking": [],
+  "subtasks": [],
+  "assignee": "@traycerai",
+  "tags": ["migration", "backend", "handlers"],
+  "created_at": "2025-11-05T16:51:00Z",
+  "updated_at": "2025-11-05T16:51:00Z",
+  "started_at": "2025-11-05T16:51:00Z",
+  "completed_at": "2025-11-05T16:51:00Z",
+  "files_affected": [
+    "app/handlers/strain_handlers.py",
+    "app/handlers/cultivar_handlers.py"
+  ],
+  "acceptance_criteria": [
+    "strain_handlers.py renamed to cultivar_handlers.py",
+    "All internal references updated to use cultivar terminology",
+    "Backward compatibility maintained"
+  ],
+  "notes": "Handler module renamed as part of Phase 2 migration",
+  "linear_issue_id": null
+}

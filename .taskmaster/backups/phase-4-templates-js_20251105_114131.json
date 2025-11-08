@@ -1,0 +1,56 @@
+{
+  "id": "phase-4-templates-js",
+  "title": "Phase 4: Migrate Templates and JavaScript",
+  "description": "Rename HTML templates, update all user-facing text from 'Strains' to 'Cultivars', update JavaScript functions and AJAX endpoints",
+  "status": "TODO",
+  "priority": "HIGH",
+  "type": "FEATURE",
+  "estimated_effort_hours": 6,
+  "actual_effort_hours": null,
+  "parent_task_id": "cultivar-migration-master",
+  "dependencies": [
+    "phase-3-frontend-flutter"
+  ],
+  "blocking": [
+    "phase-5-tests"
+  ],
+  "subtasks": [
+    "task-4-1-strains-template-rename",
+    "task-4-2-strain-template-rename",
+    "task-4-3-add-strain-template-rename",
+    "task-4-4-add-breeder-template-update",
+    "task-4-5-plants-template-update",
+    "task-4-6-plant-template-update",
+    "task-4-7-dashboard-template-update",
+    "task-4-8-clone-create-template-update",
+    "task-4-9-clone-dashboard-template-update",
+    "task-4-10-clone-lineage-template-update",
+    "task-4-11-sidebar-template-update",
+    "task-4-12-admin-export-template-update",
+    "task-4-13-main-js-update",
+    "task-4-14-strains-diagnostics-rename",
+    "task-4-15-dashboard-widgets-update",
+    "task-4-16-diagnostics-js-update"
+  ],
+  "assignee": "@traycerai",
+  "tags": [
+    "migration",
+    "backend",
+    "terminology"
+  ],
+  "created_at": "2025-11-04T22:56:01.484117",
+  "updated_at": "2025-11-04T22:56:01.484117",
+  "started_at": null,
+  "completed_at": null,
+  "files_affected": [
+    "app/web/templates/views/strains.html",
+    "app/web/static/js/main.js"
+  ],
+  "acceptance_criteria": [
+    "All files in phase-4-templates-js updated with cultivar terminology",
+    "Backward compatibility maintained",
+    "All tests pass"
+  ],
+  "notes": "Phase task for phase-4-templates-js",
+  "linear_issue_id": null
+}

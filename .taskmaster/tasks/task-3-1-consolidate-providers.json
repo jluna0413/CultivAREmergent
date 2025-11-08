@@ -1,0 +1,36 @@
+{
+  "id": "task-3-1-consolidate-providers",
+  "title": "Consolidate duplicate providers",
+  "description": "Copy Cultivar implementation from cultivar_provider.dart to strains_provider.dart",
+  "status": "COMPLETED",
+  "priority": "HIGH",
+  "type": "FEATURE",
+  "estimated_effort_hours": 1,
+  "actual_effort_hours": 0.5,
+  "parent_task_id": "phase-3-frontend-flutter",
+  "dependencies": [],
+  "blocking": [],
+  "subtasks": [],
+  "assignee": "@traycerai",
+  "tags": [
+    "migration",
+    "frontend",
+    "providers",
+    "consolidation"
+  ],
+  "created_at": "2025-11-05T18:12:44.036Z",
+  "updated_at": "2025-11-05T18:15:57.506Z",
+  "started_at": "2025-11-05T18:12:44.036Z",
+  "completed_at": "2025-11-05T18:15:57.506Z",
+  "files_affected": [
+    "flutter_app/lib/core/state/strains_provider.dart",
+    "flutter_app/lib/core/providers/cultivar_provider.dart"
+  ],
+  "acceptance_criteria": [
+    "Cultivar implementation available in strains_provider.dart",
+    "All cultivar-related classes and providers available",
+    "Backward compatibility maintained"
+  ],
+  "notes": "Task for consolidating cultivar providers - COMPLETED: strains_provider.dart already contains complete Cultivar implementation with all required classes and providers",
+  "linear_issue_id": null
+}

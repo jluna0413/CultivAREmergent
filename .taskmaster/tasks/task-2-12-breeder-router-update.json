@@ -1,0 +1,29 @@
+{
+    "id": "task-2-12-breeder-router-update",
+    "title": "Update breeder router for cultivar references",
+    "description": "Update FastAPI router to use 'cultivar' terminology in breeder-cultivar relationships and statistics",
+    "status": "DONE",
+    "priority": "MEDIUM",
+    "type": "FEATURE",
+    "estimated_effort_hours": 1,
+    "actual_effort_hours": 0.5,
+    "parent_task_id": "phase-2-api-layer",
+    "dependencies": ["task-2-1-pydantic-schemas-rename"],
+    "blocking": [],
+    "subtasks": [],
+    "assignee": "@traycerai",
+    "tags": ["migration", "backend", "api"],
+    "created_at": "2025-11-03T17:33:34.910Z",
+    "updated_at": "2025-11-05T17:04:01.998Z",
+    "started_at": "2025-11-03T17:33:34.910Z",
+    "completed_at": "2025-11-05T17:04:01.998Z",
+    "files_affected": ["app/fastapi_app/routers/breeders.py"],
+    "acceptance_criteria": [
+        "All breeder-cultivar relationships use 'cultivar' terminology",
+        "Statistics calculations use cultivar counts",
+        "Error messages reference cultivar associations",
+        "Comments updated to use cultivar terminology"
+    ],
+    "notes": "Completed - Router already properly updated with cultivar terminology in relationships and statistics",
+    "linear_issue_id": null
+}

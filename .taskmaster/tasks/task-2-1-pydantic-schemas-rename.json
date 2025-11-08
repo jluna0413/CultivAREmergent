@@ -1,0 +1,32 @@
+{
+  "id": "task-2-1-pydantic-schemas-rename",
+  "title": "Rename strains.py to cultivars.py and update Pydantic models",
+  "description": "Rename app/fastapi_app/models/strains.py to cultivars.py, update all class names and field descriptions",
+  "status": "TODO",
+  "priority": "HIGH",
+  "type": "REFACTOR",
+  "estimated_effort_hours": 3,
+  "parent_task_id": "phase-2-api-layer",
+  "dependencies": [],
+  "blocking": [],
+  "files_affected": [
+    "app/fastapi_app/models/strains.py"
+  ],
+  "acceptance_criteria": [
+    "File renamed from strains.py to cultivars.py",
+    "All class names updated (StrainBase\u2192CultivarBase, etc.)",
+    "Field descriptions updated to use 'cultivar'"
+  ],
+  "actual_effort_hours": null,
+  "assignee": "@traycerai",
+  "tags": [
+    "migration",
+    "atomic"
+  ],
+  "created_at": "2025-11-05T14:18:09.655689Z",
+  "updated_at": "2025-11-05T14:18:09.655689Z",
+  "started_at": null,
+  "completed_at": null,
+  "notes": "Atomic task for specific file modification",
+  "linear_issue_id": null
+}

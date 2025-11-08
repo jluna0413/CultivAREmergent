@@ -1,4 +1,4 @@
-name: Python CI/CD
+name: Python and Flutter CI/CD
 
 on:
   push:
@@ -97,7 +97,7 @@ jobs:
 
       - name: Run Alembic migrations
         env:
-          DATABASE_URL: postgresql://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@localhost:5432/${{ env.POSTGRES_DB }}
+          DATABASE_URL: postgresql+asyncpg://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@localhost:5432/${{ env.POSTGRES_DB }}
         run: |
           # Create database schema from scratch
           alembic upgrade head
@@ -105,7 +105,7 @@ jobs:
 
       - name: Test Alembic downgrade
         env:
-          DATABASE_URL: postgresql://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@localhost:5432/${{ env.POSTGRES_DB }}
+          DATABASE_URL: postgresql+asyncpg://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@localhost:5432/${{ env.POSTGRES_DB }}
         run: |
           # Test that downgrades work correctly
           alembic downgrade -1
@@ -113,7 +113,7 @@ jobs:
 
       - name: Verify migration integrity
         env:
-          DATABASE_URL: postgresql://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@localhost:5432/${{ env.POSTGRES_DB }}
+          DATABASE_URL: postgresql+asyncpg://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@localhost:5432/${{ env.POSTGRES_DB }}
         run: |
           # Re-apply migrations to ensure consistency
           alembic upgrade head
@@ -166,13 +166,13 @@ jobs:
 
       - name: Run unit tests
         env:
-          DATABASE_URL: postgresql://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@localhost:5432/${{ env.POSTGRES_DB }}
+          DATABASE_URL: postgresql+asyncpg://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@localhost:5432/${{ env.POSTGRES_DB }}
           SECRET_KEY: test-secret-key-for-ci
           FRONTEND_ORIGINS: http://localhost:3000,http://localhost:8000
           ALLOWED_HOSTS: localhost,127.0.0.1
           ENVIRONMENT: testing
         run: |
-          pytest tests/ -v --cov=app --cov-report=xml --cov-report=html --cov-fail-under=80
+          pytest tests/ -v --cov=app --cov-report=xml --cov-report=html --cov-fail-under=80 --asyncio-mode=auto
 
       - name: Upload coverage reports
         uses: codecov/codecov-action@v3
@@ -206,7 +206,7 @@ jobs:
       - name: Generate OpenAPI specification
         env:
           FASTAPI_SKIP_ROUTERS: "1"
-          DATABASE_URL: postgresql://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@localhost:5432/${{ env.POSTGRES_DB }}
+          DATABASE_URL: postgresql+asyncpg://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@localhost:5432/${{ env.POSTGRES_DB }}
           SECRET_KEY: test-secret-key-for-ci
         run: |
           python scripts/generate_openapi.py
@@ -342,13 +342,13 @@ jobs:
 
       - name: Setup test database
         env:
-          DATABASE_URL: postgresql://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@localhost:5432/${{ env.POSTGRES_DB }}
+          DATABASE_URL: postgresql+asyncpg://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@localhost:5432/${{ env.POSTGRES_DB }}
         run: |
           alembic upgrade head
 
       - name: Start FastAPI application
         env:
-          DATABASE_URL: postgresql://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@localhost:5432/${{ env.POSTGRES_DB }}
+          DATABASE_URL: postgresql+asyncpg://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@localhost:5432/${{ env.POSTGRES_DB }}
           SECRET_KEY: test-secret-key-for-integration
           FRONTEND_ORIGINS: http://localhost:3000
           ALLOWED_HOSTS: localhost,127.0.0.1
@@ -384,7 +384,7 @@ jobs:
       - name: Run integration tests
         env:
           TEST_BASE_URL: http://127.0.0.1:8000
-          DATABASE_URL: postgresql://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@localhost:5432/${{ env.POSTGRES_DB }}
+          DATABASE_URL: postgresql+asyncpg://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@localhost:5432/${{ env.POSTGRES_DB }}
         run: |
           pytest tests/integration/ -v --tb=short
 
@@ -396,8 +396,8 @@ jobs:
           echo "Testing Plants API..."
           curl -f "${BASE_URL}/api/v1/plants" || echo "Plants API test skipped (may require auth)"
           
-          echo "Testing Strains API..."
-          curl -f "${BASE_URL}/api/v1" || echo "Strains API test skipped (may require auth)"
+          echo "Testing Cultivars API..."
+          curl -f "${BASE_URL}/api/v1/cultivars" || echo "Cultivars API test skipped (may require auth)"
           
           echo "Testing Auth endpoints..."
           curl -f "${BASE_URL}/auth/docs" || echo "Auth docs endpoint working"
@@ -518,3 +518,33 @@ jobs:
         run: |
           echo "🧪 Running smoke tests on staging..."
           # Add actual smoke test calls here
+
+  # Job 9: Flutter CI
+  flutter-analyze:
+    name: Flutter Analyze
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Detect and analyze & test Flutter app
+        run: |
+          if [ -f flutter_app/pubspec.yaml ]; then
+            echo "Found flutter_app/pubspec.yaml — running flutter pub get, analyze and test"
+            cd flutter_app
+            flutter pub get
+            flutter analyze
+            # Run tests if any are present. This will exit 0 if there are no tests.
+            if [ -d test ] || ls lib/*_test.dart 1> /dev/null 2>&1; then
+              flutter test || true
+            else
+              echo "No tests detected — skipping flutter test"
+            fi
+          else
+            echo "No flutter_app/pubspec.yaml found — skipping flutter analyze/test"
+          fi

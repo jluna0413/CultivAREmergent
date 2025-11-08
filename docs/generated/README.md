@@ -15,7 +15,7 @@
         *   [app/blueprints/dashboard.py](#appblueprintsdashboardpy)
         *   [app/blueprints/diagnostics.py](#appblueprintsdiagnosticspy)
         *   [app/blueprints/market.py](#appblueprintsmarketpy)
-        *   [app/blueprints/strains.py](#appblueprintsstrainspy)
+        *   [app/blueprints/cultivars.py](#appblueprintscultivarspy)
     *   [Configuration](#configuration)
         *   [app/config/config.py](#appconfigconfigpy)
     *   [Handlers](#handlers)
@@ -26,7 +26,7 @@
         *   [app/handlers/plant_handlers.py](#apphandlersplant_handlerspy)
         *   [app/handlers/sensor_handlers.py](#apphandlerssensor_handlerspy)
         *   [app/handlers/settings_handlers.py](#apphandlerssettings_handlerspy)
-        *   [app/handlers/strain_handlers.py](#apphandlersstrain_handlerspy)
+        *   [app/handlers/cultivar_handlers.py](#apphandlerscultivar_handlerspy)
         *   [app/handlers/user_handlers.py](#apphandlersuser_handlerspy)
     *   [Logger](#logger)
         *   [app/logger/logger.py](#apploggerloggerpy)
@@ -122,7 +122,7 @@ if __name__ == '__main__':
 
 #### app/blueprints/admin.py
 
-This blueprint handles administrative functions, including user management (create, edit, delete, toggle admin status, force password reset) and data export (plants, strains, activities, users, sensors, complete backup). It includes both HTML rendering routes and API endpoints for AJAX requests.
+This blueprint handles administrative functions, including user management (create, edit, delete, toggle admin status, force password reset) and data export (plants, cultivars, activities, users, sensors, complete backup). It includes both HTML rendering routes and API endpoints for AJAX requests.
 
 **Routes:**
 
@@ -232,7 +232,7 @@ This blueprint defines routes for the main user dashboard and plant management p
 {% for plant in plants %}
     <div>
         <h3>{{ plant.name }}</h3>
-        <p>Strain: {{ plant.strain_name }}</p>
+        <p>Cultivar: {{ plant.cultivar_name }}</p>
         <a href="{{ url_for('dashboard.plant', plant_id=plant.id) }}">View Details</a>
     </div>
 {% endfor %}
@@ -276,19 +276,19 @@ This blueprint handles routes related to the application's market features, incl
 -   `/market/extensions` (GET): Renders the extensions market page.
 -   `/market/gear` (GET): Renders the gear market page.
 
-#### app/blueprints/strains.py
+#### app/blueprints/cultivars.py
 
-This blueprint manages routes for displaying and adding plant strains. It provides pages to view a collection of strains and their details, as well as a page to add new strains.
+This blueprint manages routes for displaying and adding plant cultivars. It provides pages to view a collection of cultivars and their details, as well as a page to add new cultivars.
 
 **Routes:**
 
--   `/` (GET): Renders the strains collection page.
+-   `/` (GET): Renders the cultivars collection page.
 -   `/cultivars` (GET): Alternative route for the cultivars collection page.
 -   `/<int:cultivar_id>` (GET): Renders the detail page for a specific cultivar.
 -   `/add` (GET): Renders the page to add a new cultivar.
 -   `/cultivars/add` (GET): Legacy route for the add cultivar page.
 
-**Example Usage (Strain Detail):**
+**Example Usage (Cultivar Detail):**
 
 ```html
 <!-- In app/web/templates/views/cultivar.html -->
@@ -416,7 +416,7 @@ This module provides functions for managing breeder information in the CultivAR 
 -   `delete_breeder(breeder_id)`:
     -   Deletes a breeder from the database.
     -   `breeder_id` (int): The ID of the breeder to delete.
-    -   Returns `{"success": True}` on success, `{"success": False, "error": str}` on failure (e.g., breeder not found, or if there are strains associated with this breeder).
+    -   Returns `{"success": True}` on success, `{"success": False, "error": str}` on failure (e.g., breeder not found, or if there are cultivars associated with this breeder).
 
 **Example Usage:**
 
@@ -436,7 +436,7 @@ print(f"Add Breeder Result: {add_result}")
 update_result = update_breeder(1, {"name": "Updated Seed Co."})
 print(f"Update Breeder Result: {update_result}")
 
-# Delete a breeder (assuming ID 2 exists and has no associated strains)
+# Delete a breeder (assuming ID 2 exists and has no associated cultivars)
 delete_result = delete_breeder(2)
 print(f"Delete Breeder Result: {delete_result}")
 ```
@@ -495,7 +495,7 @@ print(f"Clone Lineage: {lineage_result}")
 ```
 #### app/handlers/export_handlers.py
 
-This module provides functions for exporting data from the CultivAR application in various formats (CSV, JSON, ZIP). It includes functions for exporting data related to plants, strains, activities, users, and sensors, as well as creating complete system backups.
+This module provides functions for exporting data from the CultivAR application in various formats (CSV, JSON, ZIP). It includes functions for exporting data related to plants, cultivars, activities, users, and sensors, as well as creating complete system backups.
 
 **Functions:**
 
@@ -514,11 +514,11 @@ This module provides functions for exporting data from the CultivAR application 
 -   `export_sensors_csv()`:
     -   Exports sensor data to CSV format.
     -   Returns a `str` containing the CSV data.
--   `export_strains_csv()`:
-    -   Exports strain data to CSV format.
+-   `export_cultivars_csv()`:
+    -   Exports cultivar data to CSV format.
     -   Returns a `str` containing the CSV data.
--   `export_strains_json()`:
-    -   Exports strain data to JSON format.
+-   `export_cultivars_json()`:
+    -   Exports cultivar data to JSON format.
     -   Returns a `str` containing the JSON data.
 -   `export_users_csv()`:
     -   Exports user data to CSV format.
@@ -605,7 +605,7 @@ plant_data = get_plant(1)
 print(f"Plant Data: {plant_data}")
 
 # Add a new plant
-new_plant_data = {"name": "Test Plant", "strain_id": 1, "zone_id": 1}
+new_plant_data = {"name": "Test Plant", "cultivar_id": 1, "zone_id": 1}
 add_result = add_plant(new_plant_data)
 print(f"Add Plant Result: {add_result}")
 
@@ -719,13 +719,13 @@ update_result = update_setting("polling_interval", "600")
 print(f"Update Setting Result: {update_result}")
 ```
 
-#### app/handlers/strain_handlers.py
+#### app/handlers/cultivar_handlers.py
 
 This module provides functions for managing plant cultivars within the CultivAR application. It includes functionalities for retrieving cultivar information, adding new cultivars, and handling cultivar-related data.
 
 **Functions:**
 
--   `get_strains()`:
+-   `get_cultivars()`:
     -   Retrieves all plant cultivars from the database.
         -   Returns a `list` of dictionaries, each containing information about a cultivar (ID, name, breeder, indica/sativa percentages, etc.).
     -   `add_cultivar(data)`:
@@ -736,11 +736,11 @@ This module provides functions for managing plant cultivars within the CultivAR 
 **Example Usage:**
 
 ```python
-from app.handlers.strain_handlers import get_strains
+from app/handlers.cultivar_handlers import get_cultivars
 
-# Get all strains
-all_strains = get_strains()
-print(f"All Strains: {all_strains}")
+# Get all cultivars
+all_cultivars = get_cultivars()
+print(f"All Cultivars: {all_cultivars}")
 ```
 
 #### app/handlers/user_handlers.py
@@ -829,7 +829,7 @@ This file initializes the database and imports the various model definitions for
 **Functions:**
 
 -   `init_db()`:
-    -   Initializes the database with default data (activities, metrics, statuses, zones, strains, breeders).
+    -   Initializes the database with default data (activities, metrics, statuses, zones, cultivars, breeders).
     -   This function is called during application startup to ensure the database is properly seeded.
 -   `migrate_db()`:
     -   Applies database migrations using Flask-Migrate.
@@ -885,7 +885,7 @@ token = ACInfinityToken.query.order_by(ACInfinityToken.created_at.desc()).first(
 
 #### app/models/base_models.py
 
-This module defines the core SQLAlchemy models for the CultivAR application. These models represent the fundamental entities in the application's domain, such as users, plants, strains, zones, activities, and sensor data.
+This module defines the core SQLAlchemy models for the CultivAR application. These models represent the fundamental entities in the application's domain, such as users, plants, cultivars, zones, activities, and sensor data.
 
 **Classes:**
 
@@ -911,7 +911,7 @@ This module defines the core SQLAlchemy models for the CultivAR application. The
         -   `name` (str): Plant name.
         -   `description` (str): Plant description.
         -   `status_id` (int): Foreign key to `Status`.
-        -   `strain_id` (int): Foreign key to `Strain`.
+        -   `cultivar_id` (int): Foreign key to `Cultivar`.
         -   `zone_id` (int): Foreign key to `Zone`.
         -   `is_clone` (bool): Flag indicating if the plant is a clone.
         -   `start_dt` (datetime): Start date.
@@ -933,10 +933,10 @@ This module defines the core SQLAlchemy models for the CultivAR application. The
         -   `breeder_id` (int): Foreign key to `Breeder`.
         -   `indica` (int): Indica percentage.
         -   `sativa` (int): Sativa percentage.
-        -   `autoflower` (bool): Flag indicating if the strain is an autoflower.
+        -   `autoflower` (bool): Flag indicating if the cultivar is an autoflower.
         -   `cycle_time` (int): Typical cycle time in days.
         -   `seed_count` (int): Number of seeds.
-        -   `url` (str): URL for strain information.
+        -   `url` (str): URL for cultivar information.
         -        `description` (str): Cultivar description.
 -   `Zone`:
     -   Represents a growing zone.
@@ -990,7 +990,7 @@ This module defines the core SQLAlchemy models for the CultivAR application. The
 **Example Usage:**
 
 ```python
-from app.models.base_models import User, Plant, Strain
+from app.models.base_models import User, Plant, Cultivar
 
 # Create a new user
 new_user = User(username="testuser", password="password123", email="test@example.com")
@@ -998,7 +998,7 @@ db.session.add(new_user)
 db.session.commit()
 
 # Create a new plant
-new_plant = Plant(name="Test Plant", strain_id=1, zone_id=1)
+new_plant = Plant(name="Test Plant", cultivar_id=1, zone_id=1)
 db.session.add(new_plant)
 db.session.commit()
 ```

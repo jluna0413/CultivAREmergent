@@ -8,7 +8,7 @@ from fastapi.responses import JSONResponse, RedirectResponse
 from urllib.parse import quote
 import logging
 
-router = APIRouter(prefix="/social", tags=["social"])
+router = APIRouter(tags=["social"])
 logger = logging.getLogger(__name__)
 
 

@@ -23,7 +23,7 @@ class Activity(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     
     # Activity Details
-    type: Mapped[str] = mapped_column(String(50), nullable=False, index=True)  # login, plant_add, strain_edit, etc.
+    type: Mapped[str] = mapped_column(String(50), nullable=False, index=True)  # login, plant_add, cultivar_edit, etc.
     activity_type: Mapped[str] = mapped_column(String(50), nullable=False, index=True)  # system, user, plant
     
     # User Information
@@ -31,7 +31,7 @@ class Activity(Base):
     username: Mapped[Optional[str]] = mapped_column(String(80), nullable=True)
     
     # Entity Information
-    entity_type: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)  # plant, strain, breeder, clone, etc.
+    entity_type: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)  # plant, cultivar, breeder, clone, etc.
     entity_id: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
     entity_name: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     
@@ -129,7 +129,7 @@ class PlantActivity(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
     
     # Relationships
-    plant: Mapped["Plant"] = relationship("Plant", backref="activities")
+    plant: Mapped["Plant"] = relationship("Plant", back_populates="activities")
     user: Mapped[Optional["User"]] = relationship("User", backref="plant_activities")
     
     # Indexes

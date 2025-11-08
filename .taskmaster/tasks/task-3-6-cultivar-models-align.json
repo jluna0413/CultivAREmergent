@@ -1,0 +1,30 @@
+{
+    "id": "task-3-6-cultivar-models-align",
+    "title": "Align Flutter Cultivar Models with Backend Schema",
+    "description": "RESOLVE DATA MODEL MISMATCH: Backend uses agriculture/cultivation schema (indica/sativa%, seed_count, cycle_time) while Flutter uses science/laboratory schema (thcContent, cbdContent, effects, flavor). These are fundamentally different data models requiring architectural decision.",
+    "status": "BLOCKED",
+    "priority": "CRITICAL",
+    "type": "BUG",
+    "estimated_effort_hours": 2,
+    "actual_effort_hours": 1,
+    "parent_task_id": "phase-3-frontend-flutter",
+    "dependencies": ["task-3-5-cultivars-service-verify"],
+    "blocking": ["task-3-7-cultivar-model-verify", "task-3-8-plant-models-update", "task-3-9-create-plant-request-update"],
+    "subtasks": [],
+    "assignee": "@traycerai",
+    "tags": ["flutter", "backend-alignment", "critical-issue", "data-model"],
+    "created_at": "2025-11-05T19:00:00Z",
+    "updated_at": "2025-11-05T19:07:37Z",
+    "started_at": "2025-11-05T19:07:37Z",
+    "completed_at": null,
+    "files_affected": ["flutter_app/lib/core/models/cultivar_models.dart"],
+    "acceptance_criteria": [
+        "CRITICAL: Resolve data model mismatch between backend agriculture schema and Flutter science schema",
+        "Backend schema confirmed: indica/sativa percentages, seed_count, cycle_time, cultivation metrics",
+        "Flutter schema identified: thcContent, cbdContent, effects, flavor - laboratory data model", 
+        "Architecture decision required: Option A (redesign Flutter), Option B (hybrid backend), Option C (separate apps)",
+        "Document the mismatch for architectural review before proceeding"
+    ],
+    "notes": "CRITICAL DISCOVERY: Flutter models use cannabis science data (thc/cbd content, effects, flavor) while backend uses agriculture data (indica/sativa %, cultivation metrics). This is a fundamental architectural mismatch, not just terminology. Requires decision from architecture team.",
+    "linear_issue_id": null
+}

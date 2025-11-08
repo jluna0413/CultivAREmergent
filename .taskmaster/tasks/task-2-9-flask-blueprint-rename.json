@@ -1,0 +1,46 @@
+{
+  "id": "task-2-9-flask-blueprint-rename",
+  "title": "Rename Flask Blueprint (strains.py → cultivars.py)",
+  "description": "Rename app/blueprints/strains.py to app/blueprints/cultivars.py and update all internal references to use 'cultivar' terminology",
+  "status": "DONE",
+  "priority": "HIGH",
+  "type": "REFACTOR",
+  "estimated_effort_hours": 1,
+  "actual_effort_hours": 0.5,
+  "parent_task_id": "phase-2-api-layer",
+  "dependencies": [
+    "task-2-1-pydantic-schemas-rename",
+    "task-2-2-fastapi-router-rename"
+  ],
+  "blocking": [
+    "task-2-10-blueprint-init-update"
+  ],
+  "subtasks": [],
+  "assignee": "@traycerai",
+  "tags": [
+    "migration",
+    "backend",
+    "flask",
+    "blueprint"
+  ],
+  "created_at": "2025-11-03T17:30:00Z",
+  "updated_at": "2025-11-05T17:00:00Z",
+  "started_at": "2025-11-05T16:55:00Z",
+  "completed_at": "2025-11-05T17:00:00Z",
+  "files_affected": [
+    "app/blueprints/strains.py",
+    "app/blueprints/cultivars.py",
+    "app/blueprints/__init__.py"
+  ],
+  "acceptance_criteria": [
+    "Old strains.py file deleted",
+    "New cultivars.py file created with updated terminology",
+    "All route handlers use 'cultivar' terminology",
+    "Backward compatibility routes added for legacy URLs",
+    "strains_bp alias created for imports compatibility",
+    "Blueprint exports updated in __init__.py",
+    "No breaking changes to existing code"
+  ],
+  "notes": "Successfully renamed Flask blueprint with backward compatibility. Created cultivars.py with dual mounting for both /cultivars and /strains routes. Added strains_bp alias for import compatibility.",
+  "linear_issue_id": null
+}

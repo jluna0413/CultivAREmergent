@@ -6,8 +6,8 @@ Pure async models without Flask dependencies.
 from app.models_async.base import Base, async_engine, AsyncSessionLocal, get_async_session
 from app.models_async.auth import User
 from app.models_async.grow import Plant, Cultivar, Breeder, Status, Grow, Metric, Zone
-from app.models_async.activities import PlantActivity
-from app.models_async.sensors import SensorData, Stream
+from app.models_async.activities import Activity, ActivitySummary, PlantActivity
+from app.models_async.sensors import Sensor, SensorData, Stream
 from app.models_async.marketing import (
     Waitlist,
     NewsletterSubscriber,
@@ -34,7 +34,11 @@ __all__ = [
     "Grow",
     "Metric",
     "Zone",
+    "Activity",
+    "ActivitySummary",
     "PlantActivity",
+    "SystemActivity",
+    "Sensor",
     "SensorData",
     "Stream",
     "Waitlist",

@@ -1,66 +1,42 @@
 {
-    "id": "phase-4-templates-js",
-    "title": "Phase 4: Migrate Templates and JavaScript",
-    "description": "Rename HTML templates, update all user-facing text from 'Strains' to 'Cultivars', update JavaScript functions and AJAX endpoints",
-    "status": "IN_PROGRESS",
-    "priority": "HIGH",
-    "type": "FEATURE",
-    "estimated_effort_hours": 6,
-    "actual_effort_hours": null,
-    "parent_task_id": "cultivar-migration-master",
-    "dependencies": ["phase-3-frontend-flutter"],
-    "blocking": ["phase-5-tests"],
-    "subtasks": [
-        "task-4-1-strains-template-rename",
-        "task-4-2-strain-template-rename", 
-        "task-4-3-add-strain-template-rename",
-        "task-4-4-add-breeder-template-update",
-        "task-4-5-plants-template-update",
-        "task-4-6-plant-template-update",
-        "task-4-7-dashboard-template-update",
-        "task-4-8-clone-create-template-update",
-        "task-4-9-clone-dashboard-template-update",
-        "task-4-10-clone-lineage-template-update",
-        "task-4-11-sidebar-template-update",
-        "task-4-12-admin-export-template-update",
-        "task-4-13-main-js-update",
-        "task-4-14-strains-diagnostics-rename",
-        "task-4-15-dashboard-widgets-update",
-        "task-4-16-diagnostics-js-update"
-    ],
-    "assignee": "@traycerai",
-    "tags": ["migration", "frontend", "templates", "javascript"],
-    "created_at": "2025-11-04T03:08:00Z",
-    "updated_at": "2025-11-04T03:08:57Z",
-    "started_at": "2025-11-04T03:08:57Z",
-    "completed_at": null,
-    "files_affected": [
-        "app/web/templates/views/strains.html",
-        "app/web/templates/views/strain.html", 
-        "app/web/templates/views/add_strain.html",
-        "app/web/templates/views/plants.html",
-        "app/web/templates/views/plant.html",
-        "app/web/templates/views/dashboard.html",
-        "app/web/templates/clones/create.html",
-        "app/web/templates/clones/dashboard.html",
-        "app/web/templates/clones/lineage.html",
-        "app/web/templates/common/sidebar.html",
-        "app/web/templates/admin/export.html",
-        "app/web/static/js/main.js",
-        "app/web/static/js/strains-diagnostics.js",
-        "app/web/static/js/dashboard-widgets.js",
-        "app/web/static/js/diagnostics.js"
-    ],
-    "acceptance_criteria": [
-        "All templates use 'Cultivar' in user-facing text",
-        "All template file names use 'cultivar' not 'strain'",
-        "All JavaScript functions use 'cultivar' naming",
-        "All AJAX endpoints point to '/cultivars/*'",
-        "All CSS classes use 'cultivar' naming",
-        "All data attributes use 'data-cultivar-*'",
-        "Templates render correctly",
-        "JavaScript functionality works"
-    ],
-    "notes": "221 total 'strain' references found in codebase. Templates and JS files contain majority of references. Need systematic replacement while maintaining functionality.",
-    "linear_issue_id": null
+  "id": "phase-4-templates-js",
+  "title": "Phase 4: Migrate Templates and JavaScript",
+  "description": "Rename HTML templates, update all user-facing text from 'Strains' to 'Cultivars', update JavaScript functions and AJAX endpoints",
+  "status": "TODO",
+  "priority": "HIGH",
+  "type": "FEATURE",
+  "estimated_effort_hours": 6,
+  "actual_effort_hours": null,
+  "parent_task_id": "cultivar-migration-master",
+  "dependencies": [
+    "phase-3-frontend-flutter"
+  ],
+  "blocking": [
+    "phase-5-tests"
+  ],
+  "subtasks": [],
+  "assignee": "@traycerai",
+  "tags": [
+    "migration",
+    "phase",
+    "cultivar"
+  ],
+  "created_at": "2025-11-07T04:25:49.391954Z",
+  "updated_at": "2025-11-07T04:25:49.391954Z",
+  "started_at": null,
+  "completed_at": null,
+  "files_affected": [
+    "app/web/templates/views/strains.html",
+    "app/web/static/js/main.js",
+    "app/web/templates/views/strain.html",
+    "app/web/templates/views/add_strain.html"
+  ],
+  "acceptance_criteria": [
+    "All specified files updated with cultivar terminology",
+    "All tests pass",
+    "No breaking changes",
+    "Backward compatibility maintained"
+  ],
+  "notes": "Part of cultivar-migration-master epic migration",
+  "linear_issue_id": null
 }

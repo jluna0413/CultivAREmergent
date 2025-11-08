@@ -51,6 +51,7 @@ class User(Base):
     # Relationships (lazy loaded)
     grows: Mapped[List["Grow"]] = relationship("Grow", back_populates="user", lazy="selectin")
     plants: Mapped[List["Plant"]] = relationship("Plant", back_populates="user", lazy="selectin")
+    posts: Mapped[List["Post"]] = relationship("Post", back_populates="author", lazy="selectin")
     
     def __init__(
         self,

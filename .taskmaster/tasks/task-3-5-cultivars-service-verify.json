@@ -1,0 +1,29 @@
+{
+    "id": "task-3-5-cultivars-service-verify",
+    "title": "Task 3.5: Verify Cultivars API Service",
+    "description": "Verify that the cultivars API service uses correct endpoints and terminology",
+    "status": "DONE",
+    "priority": "HIGH",
+    "type": "FEATURE",
+    "estimated_effort_hours": 0.5,
+    "actual_effort_hours": 0,
+    "parent_task_id": "phase-3-frontend-flutter",
+    "dependencies": ["task-3-4-api-client-verify"],
+    "blocking": [],
+    "subtasks": [],
+    "assignee": "@traycerai",
+    "tags": ["migration", "frontend", "flutter", "api-service"],
+    "created_at": "2025-11-05T18:32:20Z",
+    "updated_at": "2025-11-05T18:32:20Z",
+    "started_at": null,
+    "completed_at": null,
+    "files_affected": ["flutter_app/lib/core/services/cultivars_api_service.dart"],
+    "acceptance_criteria": [
+        "Cultivars API service uses correct endpoints",
+        "No strain references in API service",
+        "All service methods use cultivar terminology",
+        "Service compiles without errors"
+    ],
+    "notes": "Verify that the API service already uses correct cultivar endpoints as mentioned in migration plan",
+    "linear_issue_id": null
+}

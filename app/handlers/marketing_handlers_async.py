@@ -38,7 +38,7 @@ async def create_waitlist_entry(email: str, priority_tier: str = 'general',
         existing = await session.execute(
             select(Waitlist).where(Waitlist.email == email)
         )
-        if existing.scalars().first()):
+        if existing.scalars().first():
             return {"success": False, "error": "Email already registered"}
         
         # Create new waitlist entry

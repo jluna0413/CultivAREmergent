@@ -1,3 +1,5 @@
+from sqlalchemy import select, and_, or_, func, desc
+
 """
 Diagnostic handlers for the CultivAR application - ASYNC VERSION.
 Comprehensive diagnostic and health monitoring functionality.
