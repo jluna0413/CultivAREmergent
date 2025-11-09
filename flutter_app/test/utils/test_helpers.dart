@@ -287,9 +287,7 @@ class TestDataFactory {
 class CultivaremantTestMatchers {
   static Matcher isValidPlant() {
     return predicate<Plant>(
-        (plant) =>
-            plant.name.isNotEmpty,
-        'is a valid Plant');
+        (plant) => plant.name.isNotEmpty, 'is a valid Plant');
   }
 
   static Matcher isValidCultivar() {
@@ -304,17 +302,13 @@ class CultivaremantTestMatchers {
 
   static Matcher isValidSensor() {
     return predicate<Sensor>(
-        (sensor) =>
-            sensor.name.isNotEmpty &&
-            sensor.type.isNotEmpty,
+        (sensor) => sensor.name.isNotEmpty && sensor.type.isNotEmpty,
         'is a valid Sensor');
   }
 
   static Matcher isValidUser() {
     return predicate<user_models.User>(
-        (user) =>
-            user.username.isNotEmpty &&
-            user.email.isNotEmpty,
+        (user) => user.username.isNotEmpty && user.email.isNotEmpty,
         'is a valid User');
   }
 
@@ -609,16 +603,16 @@ class EdgeCaseGenerators {
 
       // Extreme values
       TestDataFactory.createTestSensor(
-        minValue: -50.0,
-        maxValue: 100.0,
-        lastValue: -25.0,
+        minThreshold: -50.0,
+        maxThreshold: 100.0,
+        value: -25.0,
       ),
 
       // Boundary values
       TestDataFactory.createTestSensor(
-        minValue: 0.0,
-        maxValue: 0.0,
-        lastValue: 0.0,
+        minThreshold: 0.0,
+        maxThreshold: 0.0,
+        value: 0.0,
       ),
 
       // Future reading time

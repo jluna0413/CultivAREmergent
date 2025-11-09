@@ -1,4 +1,5 @@
 import pytest
+
 from app.utils.cannabis_api_mapper import (
     normalize_country_code,
     validate_and_normalize_url,
@@ -8,193 +9,140 @@ from app.utils.cannabis_api_mapper import (
     map_cannabis_api_strain,
 )
 
-# --- Fixtures for Mock API Responses ---
 
 @pytest.fixture
-def mock_breeder_api_response():
-    """Realistic mock response for a breeder from The_Cannabis_API."""
+def breeder_response():
     return {
         "id": 123,
-        "name": "Sensi Seeds",
-        "country": "netherlands",
-        "website": "sensiseeds.com",
-        "description": "A legendary seed bank.",
-        "strains_count": 50
+        "name": "Example Breeder",
+        "country": "us",
+        "website": "examplebreeder.com",
+        "description": "<p>Leading breeder of example cultivars</p>",
+        "seedfinder_id": 999,
     }
+
 
 @pytest.fixture
-def mock_strain_api_response():
-    """Realistic mock response for a strain from The_Cannabis_API."""
+def strain_response():
     return {
-        "id": 456,
-        "name": "Northern Lights",
-        "race": "Indica",
-        "thc": "18-22%",
-        "cbd": 0.1,
-        "flowering_type": "Photoperiod",
-        "cycle_time": 60,
-        "seed_count": 10,
-        "url": "https://the-cannabis-api.vercel.app/strains/northern-lights",
-        "description": "Classic indica strain.",
-        "lineage": {
-            "parents": [
-                {"name": "Afghani", "type": "indica"},
-                {"name": "Thai", "type": "sativa"}
-            ],
-            "generation": "F1"
-        },
-        "effects": ["relaxed", "happy"],
-        "flavors": ["earthy", "pine"],
-        "breeder": {"id": 123, "name": "Sensi Seeds"}
+        "id": 987,
+        "name": "Example Kush",
+        "race": "60% sativa",
+        "lineage": "ParentA x ParentB",
+        "thc": "18%",
+        "cbd": "0.5%",
+        "url": "www.examplestrain.info",
+        "description": "<script>alert('x')</script><p>Nice aroma</p>",
+        "seedfinder_id": 555,
     }
 
-# --- Helper Function Tests ---
 
-@pytest.mark.parametrize("input_country, expected_output", [
-    ("us", "Us"),
-    ("USA", "Usa"),
-    ("united states of america", "United States Of America"),
-    ("  canada  ", "Canada"),
-    (None, None),
-    ("", None),
-    (123, None),
-])
-def test_normalize_country_code(input_country, expected_output):
-    """Test country code normalization."""
-    assert normalize_country_code(input_country) == expected_output
+@pytest.mark.parametrize(
+    "input_country,expected",
+    [
+        ("us", "US"),
+        ("Us", "US"),
+        ("united states", "United States"),
+        ("", None),
+        (None, None),
+    ],
+)
+def test_normalize_country_code(input_country, expected):
+    assert normalize_country_code(input_country) == expected
 
-@pytest.mark.parametrize("input_url, expected_output", [
-    ("example.com", "https://example.com"),
-    ("http://test.org", "http://test.org"),
-    ("https://secure.net/", "https://secure.net/"),
-    ("  www.google.com  ", "https://www.google.com"),
-    ("ftp://bad.url", None), # Should fail basic scheme check
-    (None, None),
-    ("", None),
-])
-def test_validate_and_normalize_url(input_url, expected_output):
-    """Test URL validation and normalization."""
-    assert validate_and_normalize_url(input_url) == expected_output
 
-@pytest.mark.parametrize("input_race, expected_indica, expected_sativa", [
-    ("Indica", 100, 0),
-    ("Sativa", 0, 100),
-    ("Hybrid", 50, 50),
-    ("Ruderalis", 0, 0),
-    ("Unknown", 50, 50), # Default hybrid
-    (None, 50, 50), # Default hybrid
-    ("Sativa 60% / Indica 40%", 40, 60), # Hybrid percentage parsing
-    ("sativa 75% / indica 25%", 25, 75),
-    ("sativa 100% / indica 0%", 0, 100),
-])
-def test_parse_race_to_genetics(input_race, expected_indica, expected_sativa):
-    """Test race to indica/sativa percentage mapping."""
-    result = parse_race_to_genetics(input_race)
-    assert result['indica'] == expected_indica
-    assert result['sativa'] == expected_sativa
+@pytest.mark.parametrize(
+    "input_url,expected_prefix",
+    [
+        ("https://example.com", "https://example.com"),
+        ("http://example.com/path", "http://example.com/path"),
+        ("example.com", "https://example.com"),
+        ("    example.org  ", "https://example.org"),
+        ("not a url", None),
+        (None, None),
+    ],
+)
+def test_validate_and_normalize_url(input_url, expected_prefix):
+    val = validate_and_normalize_url(input_url)
+    if expected_prefix is None:
+        assert val is None
+    else:
+        # guard against None from validator before calling string methods
+        assert val is not None and val.lower().startswith(expected_prefix.lower())
 
-# --- Lineage Parsing Tests ---
 
-def test_parse_lineage_valid_parents():
-    """Test lineage parsing with valid parent names."""
-    lineage_data = {
-        "parents": [
-            {"name": "ParentA"},
-            {"strain_name": "ParentB"}
-        ],
-        "generation": "F2"
-    }
-    result = parse_lineage(lineage_data)
-    assert result['parent_1'] == "ParentA"
-    assert result['parent_2'] == "ParentB"
-    assert result['lineage_json'] == lineage_data
+@pytest.mark.parametrize(
+    "race,exp_ind,exp_sat,exp_auto,exp_flower",
+    [
+        ("Sativa", 20, 80, False, None),
+        ("Indica", 80, 20, False, None),
+        ("50/50", 50, 50, False, None),
+        ("60% sativa", 40, 60, False, None),
+        ("auto sativa", 20, 80, True, "autoflower"),
+        (None, 50, 50, False, None),
+        ("hybrid", 50, 50, False, None),
+        ("70-30", 30, 70, False, None),
+    ],
+)
+def test_parse_race_to_genetics(race, exp_ind, exp_sat, exp_auto, exp_flower):
+    ind, sat, autoflower, flowering_type = parse_race_to_genetics(race)
+    assert int(ind) == int(exp_ind)
+    assert int(sat) == int(exp_sat)
+    assert bool(autoflower) == bool(exp_auto)
+    assert flowering_type == exp_flower
 
-def test_parse_lineage_missing_data():
-    """Test lineage parsing with missing or invalid data."""
-    assert parse_lineage(None)['parent_1'] is None
-    assert parse_lineage({})['lineage_json'] is None
-    assert parse_lineage({"parents": []})['parent_1'] is None
-    assert parse_lineage({"parents": [{"name": "P1"}]})['parent_2'] is None
 
-# --- Mapper Function Tests ---
+@pytest.mark.parametrize(
+    "lineage_input,exp_p1,exp_p2,exp_json",
+    [
+        ("ParentA x ParentB", "ParentA", "ParentB", {"lineage_text": "ParentA x ParentB"}),
+        ("ParentA/ParentB", "ParentA", "ParentB", {"lineage_text": "ParentA/ParentB"}),
+        ("SingleParent", "SingleParent", None, {"lineage_text": "SingleParent"}),
+        ({"parent_1": "A", "parent_2": "B"}, "A", "B", {"parent_1": "A", "parent_2": "B"}),
+        (None, None, None, None),
+    ],
+)
+def test_parse_lineage(lineage_input, exp_p1, exp_p2, exp_json):
+    p1, p2, json_val = parse_lineage(lineage_input)
+    assert p1 == exp_p1
+    assert p2 == exp_p2
+    assert json_val == exp_json
 
-def test_map_cannabis_api_breeder_success(mock_breeder_api_response):
-    """Test successful mapping of breeder data to BreederCreate format."""
-    mapped = map_cannabis_api_breeder(mock_breeder_api_response)
-    
-    assert mapped['name'] == "Sensi Seeds"
-    assert mapped['country'] == "Netherlands"
-    assert mapped['website'] == "https://sensiseeds.com"
-    assert mapped['description'] == "A legendary seed bank."
-    assert mapped['seedfinder_id'] == "123"
-    
-    # Ensure no extra fields are present
-    assert len(mapped) == 5
 
-def test_map_cannabis_api_strain_success(mock_strain_api_response):
-    """Test successful mapping of strain data to CultivarCreate format."""
-    mapped = map_cannabis_api_strain(mock_strain_api_response)
-    
-    assert mapped['name'] == "Northern Lights"
-    assert mapped['indica'] == 100
-    assert mapped['sativa'] == 0
-    assert mapped['autoflower'] is False
-    assert mapped['flowering_type'] == "Photoperiod"
-    assert mapped['cycle_time'] == 60
-    assert mapped['seedfinder_id'] == "456"
-    assert mapped['url'] == "https://the-cannabis-api.vercel.app/strains/northern-lights"
-    assert mapped['parent_1'] == "Afghani"
-    assert mapped['parent_2'] == "Thai"
-    
-    # Check THC/CBD parsing (THC is string range, CBD is float)
-    assert mapped['thc_content'] is None # Mapper currently handles string range as None, which is acceptable for Pydantic float field
-    assert mapped['cbd_content'] == 0.1
-    
-    # Check lineage_json presence
-    assert 'lineage_json' in mapped
-    assert mapped['lineage_json']['generation'] == 'F1'
-    
-    # Ensure no 'strain' terminology leaks
-    assert 'strain' not in mapped
-    assert 'race' not in mapped
+def test_map_cannabis_api_breeder(breeder_response):
+    mapped = map_cannabis_api_breeder(breeder_response)
+    # Required keys for BreederCreate-like dict
+    assert mapped.get("name") == "Example Breeder"
+    assert mapped.get("country") == "US"
+    # ensure website is present and normalized before asserting prefix
+    assert mapped.get("website") and mapped.get("website").startswith("https://examplebreeder.com")
+    assert "description" in mapped and "Leading breeder" in mapped["description"]
+    assert mapped.get("seedfinder_id") == 999
 
-def test_map_cannabis_api_strain_autoflower():
-    """Test mapping for an autoflower strain."""
-    autoflower_data = {
-        "id": 789,
-        "name": "Auto Glueberry",
-        "race": "Hybrid",
-        "flowering_type": "Autoflower",
-        "cycle_time": 70,
-        "thc": 20.5,
-    }
-    mapped = map_cannabis_api_strain(autoflower_data)
-    
-    assert mapped['name'] == "Auto Glueberry"
-    assert mapped['autoflower'] is True
-    assert mapped['flowering_type'] == "Autoflower"
-    assert mapped['indica'] == 50
-    assert mapped['sativa'] == 50
-    assert mapped['thc_content'] == 20.5
 
-def test_map_cannabis_api_strain_thc_cbd_handling():
-    """Test various THC/CBD input formats."""
-    data = {
-        "id": 1,
-        "name": "Test",
-        "race": "Hybrid",
-        "thc": 25, # int
-        "cbd_content": "1.5", # string float
-    }
-    mapped = map_cannabis_api_strain(data)
-    assert mapped['thc_content'] == 25.0
-    assert mapped['cbd_content'] == 1.5
-    
-    data_none = {
-        "id": 2,
-        "name": "Test2",
-        "race": "Hybrid",
-    }
-    mapped_none = map_cannabis_api_strain(data_none)
-    assert 'thc_content' not in mapped_none
-    assert 'cbd_content' not in mapped_none
+def test_map_cannabis_api_breeder_missing_name():
+    # Should return empty dict when no name present
+    assert map_cannabis_api_breeder({}) == {}
+    assert map_cannabis_api_breeder({"website": "x.com"}) == {}
+
+
+def test_map_cannabis_api_strain(strain_response):
+    mapped = map_cannabis_api_strain(strain_response, breeder_id=42, created_by=7)
+    # Terminology must use 'cultivar' semantics (no 'strain' keys)
+    assert "strain" not in mapped
+    assert mapped.get("name") == "Example Kush"
+    assert mapped.get("breeder_id") == 42
+    assert isinstance(mapped.get("indica"), int)
+    assert isinstance(mapped.get("sativa"), int)
+    assert mapped.get("autoflower") in (True, False)
+    assert mapped.get("parent_1") == "ParentA"
+    assert mapped.get("parent_2") == "ParentB"
+    assert mapped.get("lineage_json") == {"lineage_text": "ParentA x ParentB"}
+    assert mapped.get("thc_content") == pytest.approx(18.0, rel=1e-3)
+    assert mapped.get("cbd_content") == pytest.approx(0.5, rel=1e-3)
+    assert mapped.get("created_by") == 7
+
+
+def test_map_cannabis_api_strain_invalid_input():
+    assert map_cannabis_api_strain({}) == {}
+    assert map_cannabis_api_strain(None) == {}

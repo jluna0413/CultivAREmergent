@@ -446,6 +446,20 @@ class ApiClient {
     }
   }
 
+  /// Get products (paginated) - compatibility shim returning raw items
+  Future<List<dynamic>> getProducts({int page = 1, int pageSize = 20}) async {
+    try {
+      final response = await _dio.get(
+        '$_baseUrl/api/v1/products',
+        queryParameters: {'page': page, 'page_size': pageSize},
+      );
+      final List<dynamic> items = response.data['data']['items'];
+      return items;
+    } on DioException catch (e) {
+      throw ApiException.fromDioError(e);
+    }
+  }
+
   // ==================== CART ENDPOINTS ====================
 
   /// Get cart items
@@ -533,6 +547,16 @@ class ApiClient {
     } catch (e) {
       return 'API connection failed: $e';
     }
+  }
+
+  /// Set auth token for manual token management (used by auth provider)
+  void setAuthToken(String token) {
+    _dio.options.headers['Authorization'] = 'Bearer $token';
+  }
+
+  /// Clear auth token from client headers
+  void clearAuthToken() {
+    _dio.options.headers.remove('Authorization');
   }
 
   /// Clean up resources
