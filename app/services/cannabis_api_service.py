@@ -11,6 +11,7 @@ import time
 from typing import Any, Dict, List, Optional
 
 import requests
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config.config import Config
 from app.fastapi_app.models.cultivars import CultivarCreate
@@ -147,7 +148,10 @@ class CannabisApiService:
             self.session.headers["Authorization"] = f"Bearer {self.api_key}"
 
     def _make_request(
-        self, endpoint: str, params: Optional[Dict[str, str]] = None, retries: int = 3
+        self,
+        endpoint: str,
+        params: Optional[Dict[str, str]] = None,
+        retries: int = 3,
     ) -> Optional[Dict[str, Any]]:
         # Handles HTTP with retry (3 attempts, exp backoff) for 5xx/timeout; no retry on 4xx. Logs errors.
         """
@@ -233,7 +237,9 @@ class CannabisApiService:
         return None
 
     def _map_api_data_to_cultivar(
-        self, api_data: Dict[str, Any], provider_id: str
+        self,
+        api_data: Dict[str, Any],
+        provider_id: str,
     ) -> Dict[str, Any]:
         # Applies mapper and adds external_id for traceability (cannabis_api:<id>).
         """
@@ -264,7 +270,7 @@ class CannabisApiService:
         params_str = "&".join(f"{k}={v}" for k, v in sorted_items if v is not None)
         return f"{method}:{params_str}"
 
-    def fetch_cultivar_by_name(self, name: str, session: Optional[Any] = None, user_id: Optional[int] = None) -> Optional[Dict[str, Any]]:
+    def fetch_cultivar_by_name(self, name: str, session: 'AsyncSession' = None, user_id: int = None) -> Optional[Dict[str, Any]]:
         # Fetches by name, maps to cultivar, caches result; returns None on failure/empty.
         """
         Fetch item by name from The_Cannabis_API and return as cultivar.
@@ -345,7 +351,7 @@ class CannabisApiService:
         breeder_name = item.get("breeder_name") or "Unknown Breeder"
         if breeder_name != "Unknown Breeder":
             breeder_data = {"name": breeder_name, "user_id": user_id or 1}
-            breeder_result = sync_create_breeder(breeder_data, session=session, user_id=user_id)
+            breeder_result = sync_create_breeder(breeder_data, session)
             if breeder_result["success"]:
                 cultivar["breeder_id"] = breeder_result["breeder_id"]
             else:

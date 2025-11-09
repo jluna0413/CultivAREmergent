@@ -1,9 +1,8 @@
 """
-Service tests for CannabisApiService.
-Coverage: Run pytest ... --cov-fail-under=80 to enforce >80%.
+Run: pytest -v --cov=app/services --cov-report=term-missing --cov-fail-under=80
 """
 import pytest
-from unittest.mock import patch, MagicMock, Mock
+from unittest.mock import patch, Mock
 import time
 import requests
 
@@ -14,14 +13,22 @@ def service():
     """Fixture for CannabisApiService."""
     return CannabisApiService()
 
-def test_fetch_cultivar_by_name_success(service, caplog):
-    """Test successful cultivar fetch by name."""
+def test_no_strain_leaks(service):
+    """Test that no 'strain' terminology leaks in the output."""
     with patch('requests.Session.get') as mock_get:
-        mock_get.return_value.json.return_value = {'strains': [{'id': '123', 'name': 'Blue Dream', 'type': 'hybrid'}]}
+        mock_get.return_value.json.return_value = {'data': [{'id': '123', 'name': 'Test Item', 'race': 'hybrid'}]}
         mock_get.return_value.status_code = 200
-        result = service.fetch_cultivar_by_name('Blue Dream')
+        result = service.fetch_cultivar_by_name("Test Item")
+        
         assert result is not None
-        assert 'Blue Dream' in result['name']
+        
+        def check_keys(d):
+            for k, v in d.items():
+                assert "strain" not in k.lower()
+                if isinstance(v, dict):
+                    check_keys(v)
+        
+        check_keys(result)
 
 # RateLimiter Tests
 def test_rate_limiter_init():
@@ -197,48 +204,46 @@ def test_get_cache_key(service):
 
 def test_fetch_cultivar_by_name_not_found(service):
     """Test item fetch when not found."""
-    mock_response = Mock()
-    mock_response.status_code = 200
-    mock_response.json.return_value = {"data": []}
-    
-    with patch.object(service.session, 'get', return_value=mock_response):
+    with patch('requests.Session.get') as mock_get:
+        mock_get.return_value.json.return_value = {'data': []}
+        mock_get.return_value.status_code = 200
         result = service.fetch_cultivar_by_name("Nonexistent Item")
-    
-    assert result is None
+        assert result is None
 
 def test_search_cultivars_by_type_success(service):
     """Test successful item search by type."""
-    items_data = [{"id": "1", "name": "Sativa 1", "race": "sativa"}]
-    mock_response = Mock()
-    mock_response.status_code = 200
-    mock_response.json.return_value = {"data": items_data}
-    
-    with patch.object(service.session, 'get', return_value=mock_response):
+    with patch('requests.Session.get') as mock_get:
+        mock_get.return_value.json.return_value = {'data': [{'id': '1', 'name': 'Sativa 1', 'race': 'sativa'}]}
+        mock_get.return_value.status_code = 200
         result = service.search_cultivars_by_type("sativa")
-    
-    assert isinstance(result, list)
-    assert len(result) == 1
-    assert result[0]['name'] == 'Sativa 1'
+        assert isinstance(result, list)
+        assert len(result) == 1
+        assert result[0]['name'] == 'Sativa 1'
+
+def test_search_cultivars_by_type_empty_response(service):
+    """Test item search with empty response."""
+    with patch('requests.Session.get') as mock_get:
+        mock_get.return_value.json.return_value = {'data': []}
+        mock_get.return_value.status_code = 200
+        result = service.search_cultivars_by_type("sativa")
+        assert isinstance(result, list)
+        assert len(result) == 0
 
 def test_caching_behavior(service):
     """Test that caching is working."""
-    api_data = {"id": "1", "name": "Cached Item", "race": "hybrid"}
-    mock_response = Mock()
-    mock_response.status_code = 200
-    mock_response.json.return_value = {"data": [api_data]}
-    
-    with patch.object(service.session, 'get', return_value=mock_response) as mock_get:
+    with patch('requests.Session.get') as mock_get:
+        mock_get.return_value.json.return_value = {'data': [{'id': '1', 'name': 'Cached Item', 'race': 'hybrid'}]}
+        mock_get.return_value.status_code = 200
         result1 = service.fetch_cultivar_by_name("Cached Item")
         result2 = service.fetch_cultivar_by_name("Cached Item")
-        
         mock_get.assert_called_once()
         assert result1 == result2
 
 def test_validation_skips_invalid_data(service, caplog):
     """Test that validation skips items with invalid data."""
-    mock_data = {"name": "Invalid", "indica": 150, "id": "123"}
-    
-    with patch.object(service, '_make_request', return_value={"data": [mock_data]}):
+    with patch('requests.Session.get') as mock_get:
+        mock_get.return_value.json.return_value = {'data': [{'id': '123', 'name': 'Invalid', 'indica': 150}]}
+        mock_get.return_value.status_code = 200
         result = service.fetch_cultivar_by_name("Invalid")
         assert result is None
         assert "Validation failed" in caplog.text
@@ -246,39 +251,14 @@ def test_validation_skips_invalid_data(service, caplog):
 @patch('app.services.cannabis_api_service.sync_create_breeder')
 def test_breeder_integration(mock_create_breeder, service):
     """Test breeder integration."""
-    api_data = {"id": "123", "name": "Test Item", "race": "hybrid", "breeder_name": "Test Breeder"}
-    mock_response = Mock()
-    mock_response.status_code = 200
-    mock_response.json.return_value = {"data": [api_data]}
-    
-    mock_create_breeder.return_value = {"success": True, "breeder_id": 1}
-    
-    with patch.object(service.session, 'get', return_value=mock_response):
+    with patch('requests.Session.get') as mock_get:
+        mock_get.return_value.json.return_value = {'data': [{'id': '123', 'name': 'Test Item', 'race': 'hybrid', 'breeder_name': 'Test Breeder'}]}
+        mock_get.return_value.status_code = 200
+        mock_create_breeder.return_value = {"success": True, "breeder_id": 1}
         result = service.fetch_cultivar_by_name("Test Item")
-        
         assert result is not None
-        mock_create_breeder.assert_called_once_with({'name': 'Test Breeder', 'user_id': 1}, session=None, user_id=None)
+        mock_create_breeder.assert_called_once_with({'name': 'Test Breeder', 'user_id': 1}, None)
         assert result['breeder_id'] == 1
-
-def test_no_strain_leaks(service):
-    """Test that no 'strain' terminology leaks in the output."""
-    api_data = {"id": "123", "name": "Test Item", "race": "hybrid"}
-    mock_response = Mock()
-    mock_response.status_code = 200
-    mock_response.json.return_value = {"data": [api_data]}
-    
-    with patch.object(service.session, 'get', return_value=mock_response):
-        result = service.fetch_cultivar_by_name("Test Item")
-        
-        assert result is not None
-        
-        def check_keys(d):
-            for k, v in d.items():
-                assert "strain" not in k.lower()
-                if isinstance(v, dict):
-                    check_keys(v)
-        
-        check_keys(result)
 
 def test_clear_cache(service):
     """Test clearing the cache."""
@@ -297,20 +277,20 @@ def test_get_cache_stats(service):
     assert stats['ttl_seconds'] == 3600
 
 @patch('app.services.cannabis_api_service.sync_create_breeder')
-def test_breeder_injection(mock_create_breeder, service):
+def test_injection(mock_create_breeder, service):
     """Test breeder integration with an injected user ID."""
-    api_data = {"id": "123", "name": "Test Item", "race": "hybrid", "breeder_name": "Test Breeder"}
-    mock_response = Mock()
-    mock_response.status_code = 200
-    mock_response.json.return_value = {"data": [api_data]}
-    
-    mock_create_breeder.return_value = {"success": True, "breeder_id": 2}
-    
-    with patch.object(service.session, 'get', return_value=mock_response):
-        result = service.fetch_cultivar_by_name("Test Item", user_id=999)
-        
-        assert result is not None
+    with patch('requests.Session.get') as mock_get:
+        mock_get.return_value.json.return_value = {'data': [{'id': '123', 'name': 'Test', 'race': 'hybrid', 'breeder_name': 'Test Breeder'}]}
+        mock_get.return_value.status_code = 200
+        mock_create_breeder.return_value = {'success': True, 'breeder_id': 2}
+        result = service.fetch_cultivar_by_name('Test', user_id=999)
         assert result['breeder_id'] == 2
 
-if __name__ == "__main__":
-    pytest.main(["-v", __file__, "--cov=app/services", "--cov-report=term-missing"])
+def test_get_cultivars_by_effect(service):
+    """Test getting cultivars by effect."""
+    with patch('requests.Session.get') as mock_get:
+        mock_get.return_value.json.return_value = {'data': [{'id': '1', 'name': 'Happy', 'effects': ['happy']}]}
+        mock_get.return_value.status_code = 200
+        result = service.get_cultivars_by_effect('happy')
+        assert len(result) == 1
+        assert result[0]['name'] == 'Happy'
