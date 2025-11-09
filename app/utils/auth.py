@@ -1,6 +1,7 @@
 """
 Authentication utilities for the CultivAR application.
 """
+
 import bcrypt
 
 from app.logger import logger

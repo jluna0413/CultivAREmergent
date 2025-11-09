@@ -2,7 +2,7 @@
 Unit tests for CannabisApiService.
 
 Tests cover HTTP client functionality, retry logic, rate limiting,
-TTL caching, strain-to-cultivar mapping, and public API methods.
+TTL caching, data-to-cultivar mapping, and public API methods.
 """
 
 import time
@@ -17,7 +17,7 @@ from app.services.cannabis_api_service import (
     RateLimiter, 
     TTLCache
 )
-from app.utils.cannabis_api_mapper import map_cannabis_api_strain
+from app.utils.cannabis_api_mapper import map_cannabis_api_strain as map_api_data_to_cultivar
 
 
 class TestRateLimiter(unittest.TestCase):
@@ -212,27 +212,27 @@ class TestCannabisApiService(unittest.TestCase):
         
         self.assertEqual(result, {"data": "success"})
     
-    def test_map_strain_to_cultivar(self):
-        """Test strain to cultivar mapping."""
-        strain_data = {
+    def test_map_api_data_to_cultivar(self):
+        """Test API data to cultivar mapping."""
+        api_data = {
             "id": "123",
-            "name": "Test Strain",
+            "name": "Test Item",
             "race": "sativa",
             "thc": 20.5,
             "cbd": 1.2,
             "description": "Test description"
         }
         
-        result = self.service._map_strain_to_cultivar(strain_data, "123")
+        result = self.service._map_api_data_to_cultivar(api_data, "123")
         
         # Check that external ID tracking is added
         self.assertEqual(result['external_id'], 'cannabis_api')
         self.assertEqual(result['external_id_value'], '123')
         
         # Check that mapper functionality is preserved
-        self.assertEqual(result['name'], 'Test Strain')
-        self.assertEqual(result['sativa'], 100)
-        self.assertEqual(result['indica'], 0)
+        self.assertEqual(result['name'], 'Test Item')
+        self.assertEqual(result['sativa'], 80)
+        self.assertEqual(result['indica'], 20)
         self.assertEqual(result['thc_content'], 20.5)
         self.assertEqual(result['cbd_content'], 1.2)
         self.assertEqual(result['description'], 'Test description')
@@ -249,59 +249,59 @@ class TestCannabisApiService(unittest.TestCase):
         # Different parameters should produce different keys
         self.assertNotEqual(key1, key3)
     
-    def test_fetch_strain_by_name_success(self):
-        """Test successful strain fetch by name."""
-        strain_data = {
+    def test_fetch_cultivar_by_name_success(self):
+        """Test successful item fetch by name."""
+        api_data = {
             "id": "123",
-            "name": "Test Strain",
+            "name": "Test Item",
             "race": "hybrid",
             "thc": 15.0
         }
         
         mock_response = Mock()
         mock_response.status_code = 200
-        mock_response.json.return_value = {"data": [strain_data]}
+        mock_response.json.return_value = {"data": [api_data]}
         
         with patch.object(self.service.session, 'get', return_value=mock_response):
-            result = self.service.fetch_strain_by_name("Test Strain")
+            result = self.service.fetch_cultivar_by_name("Test Item")
         
         self.assertIsNotNone(result)
-        self.assertEqual(result['name'], 'Test Strain')
+        self.assertEqual(result['name'], 'Test Item')
         self.assertEqual(result['external_id'], 'cannabis_api')
         self.assertEqual(result['external_id_value'], '123')
     
-    def test_fetch_strain_by_name_not_found(self):
-        """Test strain fetch when not found."""
+    def test_fetch_cultivar_by_name_not_found(self):
+        """Test item fetch when not found."""
         mock_response = Mock()
         mock_response.status_code = 200
         mock_response.json.return_value = {"data": []}
         
         with patch.object(self.service.session, 'get', return_value=mock_response):
-            result = self.service.fetch_strain_by_name("Nonexistent Strain")
+            result = self.service.fetch_cultivar_by_name("Nonexistent Item")
         
         self.assertIsNone(result)
     
-    def test_fetch_strain_by_name_empty_name(self):
-        """Test strain fetch with empty name."""
-        result = self.service.fetch_strain_by_name("")
+    def test_fetch_cultivar_by_name_empty_name(self):
+        """Test item fetch with empty name."""
+        result = self.service.fetch_cultivar_by_name("")
         self.assertIsNone(result)
         
-        result = self.service.fetch_strain_by_name("   ")
+        result = self.service.fetch_cultivar_by_name("   ")
         self.assertIsNone(result)
     
-    def test_search_strains_by_type_success(self):
-        """Test successful strain search by type."""
-        strains_data = [
+    def test_search_cultivars_by_type_success(self):
+        """Test successful item search by type."""
+        items_data = [
             {"id": "1", "name": "Sativa 1", "race": "sativa"},
             {"id": "2", "name": "Sativa 2", "race": "sativa"}
         ]
         
         mock_response = Mock()
         mock_response.status_code = 200
-        mock_response.json.return_value = {"data": strains_data}
+        mock_response.json.return_value = {"data": items_data}
         
         with patch.object(self.service.session, 'get', return_value=mock_response):
-            result = self.service.search_strains_by_type("sativa")
+            result = self.service.search_cultivars_by_type("sativa")
         
         self.assertIsInstance(result, list)
         self.assertEqual(len(result), 2)
@@ -311,63 +311,63 @@ class TestCannabisApiService(unittest.TestCase):
         self.assertEqual(result[0]['external_id'], 'cannabis_api')
         self.assertEqual(result[0]['external_id_value'], '1')
     
-    def test_search_strains_by_type_empty_response(self):
-        """Test strain search with empty response."""
+    def test_search_cultivars_by_type_empty_response(self):
+        """Test item search with empty response."""
         mock_response = Mock()
         mock_response.status_code = 200
         mock_response.json.return_value = {"data": []}
         
         with patch.object(self.service.session, 'get', return_value=mock_response):
-            result = self.service.search_strains_by_type("sativa")
+            result = self.service.search_cultivars_by_type("sativa")
         
         self.assertIsInstance(result, list)
         self.assertEqual(len(result), 0)
     
-    def test_get_strains_by_effect_success(self):
-        """Test successful strain search by effect."""
-        strains_data = [
-            {"id": "1", "name": "Happy Strain", "effects": ["happy", "euphoric"]},
-            {"id": "2", "name": "Relaxed Strain", "effects": ["relaxed", "happy"]}
+    def test_get_cultivars_by_effect_success(self):
+        """Test successful item search by effect."""
+        items_data = [
+            {"id": "1", "name": "Happy Item", "effects": ["happy", "euphoric"]},
+            {"id": "2", "name": "Relaxed Item", "effects": ["relaxed", "happy"]}
         ]
         
         mock_response = Mock()
         mock_response.status_code = 200
-        mock_response.json.return_value = {"data": strains_data}
+        mock_response.json.return_value = {"data": items_data}
         
         with patch.object(self.service.session, 'get', return_value=mock_response):
-            result = self.service.get_strains_by_effect("happy")
+            result = self.service.get_cultivars_by_effect("happy")
         
         self.assertIsInstance(result, list)
         self.assertEqual(len(result), 2)
-        self.assertEqual(result[0]['name'], 'Happy Strain')
-        self.assertEqual(result[1]['name'], 'Relaxed Strain')
+        self.assertEqual(result[0]['name'], 'Happy Item')
+        self.assertEqual(result[1]['name'], 'Relaxed Item')
     
-    def test_get_strains_by_effect_no_strains(self):
-        """Test effect search with no matching strains."""
+    def test_get_cultivars_by_effect_no_items(self):
+        """Test effect search with no matching items."""
         mock_response = Mock()
         mock_response.status_code = 200
         mock_response.json.return_value = {"data": []}
         
         with patch.object(self.service.session, 'get', return_value=mock_response):
-            result = self.service.get_strains_by_effect("nonexistent")
+            result = self.service.get_cultivars_by_effect("nonexistent")
         
         self.assertIsInstance(result, list)
         self.assertEqual(len(result), 0)
     
     def test_caching_behavior(self):
         """Test that caching is working."""
-        strain_data = {"id": "1", "name": "Cached Strain", "race": "hybrid"}
+        api_data = {"id": "1", "name": "Cached Item", "race": "hybrid"}
         
         mock_response = Mock()
         mock_response.status_code = 200
-        mock_response.json.return_value = {"data": [strain_data]}
+        mock_response.json.return_value = {"data": [api_data]}
         
         with patch.object(self.service.session, 'get', return_value=mock_response) as mock_get:
             # First call should hit the API
-            result1 = self.service.fetch_strain_by_name("Cached Strain")
+            result1 = self.service.fetch_cultivar_by_name("Cached Item")
             
             # Second call should use cache
-            result2 = self.service.fetch_strain_by_name("Cached Strain")
+            result2 = self.service.fetch_cultivar_by_name("Cached Item")
             
             # Should have called API only once
             self.assertEqual(mock_get.call_count, 1)
@@ -377,21 +377,21 @@ class TestCannabisApiService(unittest.TestCase):
     
     def test_cache_expiration(self):
         """Test that cache expires after TTL."""
-        strain_data = {"id": "1", "name": "Expiring Strain", "race": "indica"}
+        api_data = {"id": "1", "name": "Expiring Item", "race": "indica"}
         
         mock_response = Mock()
         mock_response.status_code = 200
-        mock_response.json.return_value = {"data": [strain_data]}
+        mock_response.json.return_value = {"data": [api_data]}
         
         with patch.object(self.service.session, 'get', return_value=mock_response) as mock_get:
             # First call
-            result1 = self.service.fetch_strain_by_name("Expiring Strain")
+            result1 = self.service.fetch_cultivar_by_name("Expiring Item")
             
             # Clear cache to force expiration
             self.service.cache.clear()
             
             # Second call should hit API again
-            result2 = self.service.fetch_strain_by_name("Expiring Strain")
+            result2 = self.service.fetch_cultivar_by_name("Expiring Item")
             
             # Should have called API twice
             self.assertEqual(mock_get.call_count, 2)
@@ -425,16 +425,85 @@ class TestCannabisApiService(unittest.TestCase):
         mock_response.text = "Internal Server Error"
         
         with patch.object(self.service.session, 'get', return_value=mock_response):
-            result = self.service.fetch_strain_by_name("Test")
+            result = self.service.fetch_cultivar_by_name("Test")
         
         self.assertIsNone(result)
     
     def test_network_error_handling(self):
         """Test network error handling."""
         with patch.object(self.service.session, 'get', side_effect=requests.exceptions.ConnectionError()):
-            result = self.service.fetch_strain_by_name("Test")
+            result = self.service.fetch_cultivar_by_name("Test")
         
         self.assertIsNone(result)
+
+    @patch('app.services.cannabis_api_service.logger.warning')
+    def test_validation_skips_invalid_data(self, mock_warning):
+        """Test that validation skips invalid data."""
+        # This data will fail validation because indica > 100
+        invalid_api_data = {
+            "id": "123",
+            "name": "Invalid Item",
+            "race": "indica",
+            "indica": 150
+        }
+        
+        mock_response = Mock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {"data": [invalid_api_data]}
+        
+        with patch.object(self.service.session, 'get', return_value=mock_response):
+            result = self.service.fetch_cultivar_by_name("Invalid Item")
+            self.assertIsNone(result)
+            mock_warning.assert_called_once()
+            self.assertIn("Validation failed for Invalid Item", mock_warning.call_args[0][0])
+
+    @patch('app.services.cannabis_api_service.sync_create_breeder')
+    def test_breeder_integration(self, mock_create_breeder):
+        """Test breeder integration."""
+        api_data = {
+            "id": "123",
+            "name": "Test Item",
+            "race": "hybrid",
+            "breeder_name": "Test Breeder"
+        }
+        
+        mock_response = Mock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {"data": [api_data]}
+        
+        mock_create_breeder.return_value = {"success": True, "breeder_id": 1}
+        
+        with patch.object(self.service.session, 'get', return_value=mock_response):
+            result = self.service.fetch_cultivar_by_name("Test Item")
+            
+            self.assertIsNotNone(result)
+            mock_create_breeder.assert_called_once_with({'name': 'Test Breeder', 'user_id': 1})
+            self.assertEqual(result['breeder_id'], 1)
+
+    def test_no_strain_leaks(self):
+        """Test that no 'strain' terminology leaks in the output."""
+        api_data = {
+            "id": "123",
+            "name": "Test Item",
+            "race": "hybrid"
+        }
+        
+        mock_response = Mock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {"data": [api_data]}
+        
+        with patch.object(self.service.session, 'get', return_value=mock_response):
+            result = self.service.fetch_cultivar_by_name("Test Item")
+            
+            self.assertIsNotNone(result)
+            
+            def check_keys(d):
+                for k, v in d.items():
+                    self.assertNotIn("strain", k.lower())
+                    if isinstance(v, dict):
+                        check_keys(v)
+            
+            check_keys(result)
 
 
 if __name__ == '__main__':

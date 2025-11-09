@@ -9,14 +9,34 @@ import bleach
 
 # Configuration for bleach sanitization
 ALLOWED_TAGS = [
-    'p', 'br', 'strong', 'b', 'em', 'i', 'u', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-    'ul', 'ol', 'li', 'blockquote', 'code', 'pre', 'a', 'img',
+    "p",
+    "br",
+    "strong",
+    "b",
+    "em",
+    "i",
+    "u",
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "h6",
+    "ul",
+    "ol",
+    "li",
+    "blockquote",
+    "code",
+    "pre",
+    "a",
+    "img",
 ]
 
 ALLOWED_ATTRIBUTES = {
-    'a': ['href', 'title'],
-    'img': ['src', 'alt', 'title'],
+    "a": ["href", "title"],
+    "img": ["src", "alt", "title"],
 }
+
 
 def sanitize_html(text: str) -> str:
     """
@@ -31,7 +51,9 @@ def sanitize_html(text: str) -> str:
     if not text:
         return ""
 
-    return bleach.clean(text, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRIBUTES, strip=True)
+    return bleach.clean(
+        text, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRIBUTES, strip=True
+    )
 
 
 def validate_email(email: str) -> Tuple[bool, str]:
@@ -56,7 +78,7 @@ def validate_email(email: str) -> Tuple[bool, str]:
         return False, "Email address is too long"
 
     # Basic email regex (RFC 5322 compliant-ish)
-    email_pattern = r'^[a-zA-Z0-9.!#$%&\'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$'
+    email_pattern = r"^[a-zA-Z0-9.!#$%&\'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"
 
     if not re.match(email_pattern, email):
         return False, "Invalid email format"
@@ -89,13 +111,26 @@ def validate_username(username: str) -> Tuple[bool, str]:
         return False, "Username must be less than 30 characters long"
 
     # Allow alphanumeric, hyphens, underscores, and spaces
-    username_pattern = r'^[a-zA-Z0-9_-]+$'
+    username_pattern = r"^[a-zA-Z0-9_-]+$"
 
     if not re.match(username_pattern, username):
-        return False, "Username can only contain letters, numbers, hyphens, and underscores"
+        return (
+            False,
+            "Username can only contain letters, numbers, hyphens, and underscores",
+        )
 
     # Check for common reserved usernames
-    reserved_usernames = {'admin', 'root', 'system', 'user', 'test', 'api', 'www', 'mail', 'ftp'}
+    reserved_usernames = {
+        "admin",
+        "root",
+        "system",
+        "user",
+        "test",
+        "api",
+        "www",
+        "mail",
+        "ftp",
+    }
     if username.lower() in reserved_usernames:
         return False, "This username is not allowed"
 
@@ -125,20 +160,23 @@ def validate_password(password: str) -> Tuple[bool, str]:
         return False, "Password must be less than 128 characters long"
 
     # Check for at least one lowercase letter
-    if not re.search(r'[a-z]', password):
+    if not re.search(r"[a-z]", password):
         return False, "Password must contain at least one lowercase letter"
 
     # Check for at least one uppercase letter
-    if not re.search(r'[A-Z]', password):
+    if not re.search(r"[A-Z]", password):
         return False, "Password must contain at least one uppercase letter"
 
     # Check for at least one digit
-    if not re.search(r'\d', password):
+    if not re.search(r"\d", password):
         return False, "Password must contain at least one number"
 
     # Check for at least one special character
     if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
-        return False, "Password must contain at least one special character (!@#$%^&*(),.?\":{}|<>)"
+        return (
+            False,
+            'Password must contain at least one special character (!@#$%^&*(),.?":{}|<>)',
+        )
 
     return True, ""
 
@@ -162,14 +200,14 @@ def validate_phone(phone: str) -> Tuple[bool, str]:
     phone = phone.strip()
 
     # Remove common formatting characters
-    phone_clean = re.sub(r'[\s\-\(\)\.+]', '', phone)
+    phone_clean = re.sub(r"[\s\-\(\)\.+]", "", phone)
 
     # Check if length is reasonable for a phone number
     if len(phone_clean) < 10 or len(phone_clean) > 15:
         return False, "Phone number must be between 10 and 15 digits"
 
     # Check if it's all digits
-    if not re.match(r'^\d+$', phone_clean):
+    if not re.match(r"^\d+$", phone_clean):
         return False, "Phone number can only contain digits"
 
     return True, ""
@@ -200,7 +238,10 @@ def sanitize_text_field(text: str, field_name: str = "text") -> Tuple[str, str]:
     # Check if content was overly maligned (e.g., lots of scripts removed)
     if len(sanitized) < (len(text) * 0.5) and len(text) > 100:
         # This might indicate script tags or other malicious content was removed
-        return sanitized, f"{field_name} contained potentially unsafe content that was removed"
+        return (
+            sanitized,
+            f"{field_name} contained potentially unsafe content that was removed",
+        )
 
     return sanitized, ""
 
@@ -221,33 +262,33 @@ def cleanse_user_data(data: dict) -> Tuple[dict, list]:
     cleaned_data = data.copy()
 
     # Validate and sanitize username
-    if 'username' in data:
-        is_valid, error = validate_username(data['username'])
+    if "username" in data:
+        is_valid, error = validate_username(data["username"])
         if not is_valid:
             errors.append(error)
         else:
-            cleaned_data['username'] = data['username'].strip()
+            cleaned_data["username"] = data["username"].strip()
 
     # Validate and sanitize email
-    if 'email' in data:
-        is_valid, error = validate_email(data['email'])
+    if "email" in data:
+        is_valid, error = validate_email(data["email"])
         if not is_valid:
             errors.append(error)
         else:
-            cleaned_data['email'] = data['email'].strip().lower()
+            cleaned_data["email"] = data["email"].strip().lower()
 
     # Validate password (but don't return it in cleaned data for security)
-    if 'password' in data:
-        is_valid, error = validate_password(data['password'])
+    if "password" in data:
+        is_valid, error = validate_password(data["password"])
         if not is_valid:
             errors.append(error)
 
     # Validate and sanitize phone
-    if 'phone' in data:
-        is_valid, error = validate_phone(data.get('phone', ''))
+    if "phone" in data:
+        is_valid, error = validate_phone(data.get("phone", ""))
         if not is_valid:
             errors.append(error)
         else:
-            cleaned_data['phone'] = data['phone'].strip() if data['phone'] else None
+            cleaned_data["phone"] = data["phone"].strip() if data["phone"] else None
 
     return cleaned_data, errors

@@ -10,24 +10,25 @@ Features:
 - Production-grade error handling
 """
 
-import os
 import logging
-from typing import Dict, Optional, Callable, Any
+import os
+import time
+from typing import Any, Callable, Dict, Optional
+
+from fastapi import HTTPException, Request, status
 from slowapi import Limiter, _rate_limit_exceeded_handler
-from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
-from fastapi import Request, HTTPException, status
+from slowapi.util import get_remote_address
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import Response
-import time
 
 # Configure logging
 logger = logging.getLogger(__name__)
 
 # Environment configuration
 DEFAULT_RATE_LIMIT = os.getenv("DEFAULT_RATE_LIMIT", "100/minute")
-AUTH_RATE_LIMIT = os.getenv("AUTH_RATE_LIMIT", "10/minute") 
+AUTH_RATE_LIMIT = os.getenv("AUTH_RATE_LIMIT", "10/minute")
 WRITE_RATE_LIMIT = os.getenv("WRITE_RATE_LIMIT", "20/minute")
 RATE_LIMIT_STORAGE_URL = os.getenv("RATE_LIMIT_STORAGE_URL")
 RATE_LIMIT_ENABLED = os.getenv("RATE_LIMIT_ENABLED", "true").lower() == "true"
@@ -37,11 +38,11 @@ class FastAPIRateLimiter:
     """
     Production-grade FastAPI rate limiter with Redis persistence
     """
-    
+
     def __init__(self):
         self.limiter = None
         self._initialize_limiter()
-    
+
     def _initialize_limiter(self):
         """Initialize the rate limiter with Redis backend or in-memory fallback"""
         try:
@@ -50,39 +51,44 @@ class FastAPIRateLimiter:
                 self.limiter = Limiter(
                     key_func=get_remote_address,
                     storage_uri=RATE_LIMIT_STORAGE_URL,
-                    default_limits=[DEFAULT_RATE_LIMIT]
+                    default_limits=[DEFAULT_RATE_LIMIT],
                 )
-                logger.info(f"Rate limiter initialized with Redis backend: {RATE_LIMIT_STORAGE_URL}")
+                logger.info(
+                    f"Rate limiter initialized with Redis backend: {RATE_LIMIT_STORAGE_URL}"
+                )
             else:
                 # In-memory fallback for development
                 self.limiter = Limiter(
-                    key_func=get_remote_address,
-                    default_limits=[DEFAULT_RATE_LIMIT]
+                    key_func=get_remote_address, default_limits=[DEFAULT_RATE_LIMIT]
                 )
-                logger.warning("Rate limiter initialized with in-memory backend (development mode)")
+                logger.warning(
+                    "Rate limiter initialized with in-memory backend (development mode)"
+                )
         except Exception as e:
             logger.error(f"Failed to initialize rate limiter: {e}")
             # Fallback to in-memory even if Redis fails
             self.limiter = Limiter(
-                key_func=get_remote_address,
-                default_limits=[DEFAULT_RATE_LIMIT]
+                key_func=get_remote_address, default_limits=[DEFAULT_RATE_LIMIT]
             )
             logger.warning("Rate limiter initialized with fallback in-memory backend")
-    
+
     def get_limiter(self) -> Limiter:
         """Get the initialized limiter instance"""
         if not RATE_LIMIT_ENABLED:
             # Return a mock limiter that doesn't enforce limits
             return self._get_mock_limiter()
         return self.limiter
-    
+
     def _get_mock_limiter(self) -> Limiter:
         """Return a mock limiter that doesn't enforce limits when disabled"""
+
         class MockLimiter:
             def limit(self, *args, **kwargs):
                 def decorator(func):
                     return func
+
                 return decorator
+
         return MockLimiter()
 
 
@@ -91,12 +97,13 @@ class UserKeyLimiter:
     Rate limiter that uses user identity instead of IP address
     Useful for authenticated endpoints where per-user limits are more appropriate
     """
-    
+
     def __init__(self, limiter: Limiter):
         self.limiter = limiter
-    
+
     def limit_by_user(self, limit: str):
         """Decorator to limit by user ID instead of IP"""
+
         def decorator(func):
             async def wrapper(*args, **kwargs):
                 # Get user from request context or arguments
@@ -105,20 +112,23 @@ class UserKeyLimiter:
                     if isinstance(arg, Request):
                         request = arg
                         break
-                
+
                 if not request:
                     return await func(*args, **kwargs)
-                
+
                 # Try to get user ID from request state or dependencies
-                user_id = getattr(request.state, 'user_id', None)
+                user_id = getattr(request.state, "user_id", None)
                 if not user_id:
                     # Fallback to IP if no user context
                     user_id = get_remote_address(request)
-                
+
                 # Apply rate limit based on user ID
-                return await self.limiter.limit(f"{user_id}:{limit}")(func)(*args, **kwargs)
-            
+                return await self.limiter.limit(f"{user_id}:{limit}")(func)(
+                    *args, **kwargs
+                )
+
             return wrapper
+
         return decorator
 
 
@@ -126,28 +136,28 @@ class RateLimitConfig:
     """
     Configuration class for different rate limiting strategies
     """
-    
+
     # Standard limits
     GENERAL_API = DEFAULT_RATE_LIMIT
-    AUTH_ENDPOINTS = AUTH_RATE_LIMIT  
+    AUTH_ENDPOINTS = AUTH_RATE_LIMIT
     WRITE_OPERATIONS = WRITE_RATE_LIMIT
     SENSITIVE_ENDPOINTS = "5/minute"
-    
+
     # Per-user limits (more restrictive)
     USER_API = "50/hour"
     USER_WRITE = "10/hour"
     ADMIN_ENDPOINTS = "1000/hour"
-    
+
     @classmethod
     def get_limit_for_endpoint(cls, endpoint_type: str) -> str:
         """Get appropriate rate limit for endpoint type"""
         limits = {
-            'auth': cls.AUTH_ENDPOINTS,
-            'write': cls.WRITE_OPERATIONS,
-            'admin': cls.ADMIN_ENDPOINTS,
-            'sensitive': cls.SENSITIVE_ENDPOINTS,
-            'user': cls.USER_API,
-            'general': cls.GENERAL_API
+            "auth": cls.AUTH_ENDPOINTS,
+            "write": cls.WRITE_OPERATIONS,
+            "admin": cls.ADMIN_ENDPOINTS,
+            "sensitive": cls.SENSITIVE_ENDPOINTS,
+            "user": cls.USER_API,
+            "general": cls.GENERAL_API,
         }
         return limits.get(endpoint_type, cls.GENERAL_API)
 
@@ -157,44 +167,49 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
     Custom middleware for additional rate limiting logic
     Handles edge cases and special requirements
     """
-    
+
     def __init__(self, app, limiter: Limiter):
         super().__init__(app)
         self.limiter = limiter
-    
+
     async def dispatch(self, request: Request, call_next: Callable) -> Response:
         # Skip rate limiting for certain paths
         if self._should_skip_rate_limit(request):
             return await call_next(request)
-        
+
         # Apply additional custom logic if needed
         try:
             response = await call_next(request)
             return response
         except RateLimitExceeded as e:
-            logger.warning(f"Rate limit exceeded for {get_remote_address(request)}: {e}")
+            logger.warning(
+                f"Rate limit exceeded for {get_remote_address(request)}: {e}"
+            )
             raise HTTPException(
                 status_code=status.HTTP_429_TOO_MANY_REQUESTS,
                 detail="Rate limit exceeded. Please slow down your requests.",
-                headers={"Retry-After": str(int(e.retry_after))} if e.retry_after else None
+                headers=(
+                    {"Retry-After": str(int(e.retry_after))} if e.retry_after else None
+                ),
             )
-    
+
     def _should_skip_rate_limit(self, request: Request) -> bool:
         """Check if rate limiting should be skipped for this request"""
         skip_paths = [
             "/health",
-            "/ping", 
+            "/ping",
             "/api/v1/system/info",
             "/docs",
             "/redoc",
-            "/openapi.json"
+            "/openapi.json",
         ]
-        
+
         return any(request.url.path.startswith(path) for path in skip_paths)
 
 
 # Global rate limiter instance
 rate_limiter = FastAPIRateLimiter()
+
 
 # Backward compatibility for Flask blueprints
 # Provide a safe, import-time friendly limiter for Flask blueprints used during
@@ -203,9 +218,12 @@ rate_limiter = FastAPIRateLimiter()
 class FlaskCompatibleLimiter:
     def limit(self, *args, **kwargs):
         """Return a no-op decorator to avoid import-time signature checks."""
+
         def noop_decorator(func):
             return func
+
         return noop_decorator
+
 
 # Export a safe limiter instance for Flask blueprints (no-op at import time).
 limiter = FlaskCompatibleLimiter()

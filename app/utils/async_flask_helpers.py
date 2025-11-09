@@ -6,14 +6,12 @@ with async SQLAlchemy database operations.
 """
 
 import asyncio
-from typing import AsyncGenerator, Any, Dict, Optional
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.ext.asyncio import create_async_engine
-from app.models_async.base import AsyncSessionLocal
+from typing import Any, AsyncGenerator, Dict, Optional
+
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 
 from app.logger import logger
-from app.models_async.base import async_engine
-
+from app.models_async.base import AsyncSessionLocal, async_engine
 
 # Global async session factory (matches models_async configuration)
 _async_session_factory = AsyncSessionLocal
@@ -22,10 +20,10 @@ _async_session_factory = AsyncSessionLocal
 async def get_flask_async_session() -> AsyncSession:
     """
     Create an async session for Flask route handlers.
-    
+
     This function creates a new async session that can be used in Flask route
     handlers. The caller is responsible for closing the session.
-    
+
     Usage in Flask routes:
     ```python
     session = await get_flask_async_session()
@@ -35,7 +33,7 @@ async def get_flask_async_session() -> AsyncSession:
     finally:
         await session.close()
     ```
-    
+
     Returns:
         AsyncSession: A new async database session
     """
@@ -44,28 +42,26 @@ async def get_flask_async_session() -> AsyncSession:
 
 
 async def execute_async_handler_with_session(
-    handler_func,
-    *handler_args,
-    **handler_kwargs
+    handler_func, *handler_args, **handler_kwargs
 ) -> Any:
     """
     Execute an async handler function with proper session management.
-    
+
     This function:
     1. Creates a new async session
     2. Passes it to the handler function
     3. Handles session lifecycle (close/rollback on error)
     4. Returns the result
     NO AUTO-COMMIT: Caller must explicitly commit
-    
+
     Args:
         handler_func: Async function to execute (receives session as first arg)
         *handler_args: Additional arguments to pass to handler
         **handler_kwargs: Additional keyword arguments to pass to handler
-    
+
     Returns:
         Any: Result from the handler function
-        
+
     Example:
     ```python
     result = await execute_async_handler_with_session(
@@ -83,7 +79,7 @@ async def execute_async_handler_with_session(
         else:
             # Add session as first argument
             result = await handler_func(session, **handler_kwargs)
-        
+
         # NO AUTO-COMMIT: Caller must explicitly commit
         return result
     except Exception as e:
@@ -95,24 +91,21 @@ async def execute_async_handler_with_session(
 
 
 async def execute_async_with_session_context(
-    handler_func,
-    session: AsyncSession,
-    *handler_args,
-    **handler_kwargs
+    handler_func, session: AsyncSession, *handler_args, **handler_kwargs
 ) -> Any:
     """
     Execute an async handler function with an existing session.
-    
+
     This function assumes the session is already created and managed
     externally (e.g., in async for loop). It just executes the handler
     and handles errors.
-    
+
     Args:
         handler_func: Async function to execute
         session: Existing AsyncSession to use
         *handler_args: Additional arguments to pass to handler
         **handler_kwargs: Additional keyword arguments to pass to handler
-    
+
     Returns:
         Any: Result from the handler function
     """
@@ -128,10 +121,10 @@ async def execute_async_with_session_context(
 class FlaskAsyncSessionManager:
     """
     Context manager for async sessions in Flask routes.
-    
+
     This provides a cleaner interface for Flask routes to use async
     database operations while maintaining proper session lifecycle.
-    
+
     Usage:
     ```python
     @app.route('/api/plants')
@@ -141,14 +134,14 @@ class FlaskAsyncSessionManager:
             return jsonify(plants)
     ```
     """
-    
+
     def __init__(self):
         self.session = None
-    
+
     async def __aenter__(self) -> AsyncSession:
         self.session = _async_session_factory()
         return self.session
-    
+
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         """
         NO AUTO-COMMIT: Close session without auto-committing.
@@ -157,7 +150,9 @@ class FlaskAsyncSessionManager:
         if exc_type is not None:
             # Exception occurred - rollback
             await self.session.rollback()
-            logger.warning("Session rolled back due to exception in FlaskAsyncSessionManager")
+            logger.warning(
+                "Session rolled back due to exception in FlaskAsyncSessionManager"
+            )
         # Always close session, but no auto-commit
         await self.session.close()
 
