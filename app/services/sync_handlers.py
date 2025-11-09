@@ -8,7 +8,7 @@ from typing import Dict, Any, Optional
 from app.handlers.breeder_handlers_async import create_breeder as async_create_breeder
 from app.models_async.base import get_async_session as get_session
 
-def sync_create_breeder(data: Dict[str, Any], session: Optional[Any] = None) -> Dict[str, Any]:
+def sync_create_breeder(data: Dict[str, Any], session: Optional[Any] = None, user_id: Optional[int] = None) -> Dict[str, Any]:
     """
     Synchronous wrapper for the async create_breeder handler.
     """
