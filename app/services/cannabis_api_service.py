@@ -264,13 +264,15 @@ class CannabisApiService:
         params_str = "&".join(f"{k}={v}" for k, v in sorted_items if v is not None)
         return f"{method}:{params_str}"
 
-    def fetch_cultivar_by_name(self, name: str) -> Optional[Dict[str, Any]]:
+    def fetch_cultivar_by_name(self, name: str, session: Optional[Any] = None, user_id: Optional[int] = None) -> Optional[Dict[str, Any]]:
         # Fetches by name, maps to cultivar, caches result; returns None on failure/empty.
         """
         Fetch item by name from The_Cannabis_API and return as cultivar.
 
         Args:
             name: Item name to search for
+            session: AsyncSession for database operations
+            user_id: User ID for breeder creation
 
         Returns:
             Single cultivar-formatted dictionary or None if not found
@@ -342,8 +344,8 @@ class CannabisApiService:
 
         breeder_name = item.get("breeder_name") or "Unknown Breeder"
         if breeder_name != "Unknown Breeder":
-            breeder_data = {"name": breeder_name, "user_id": 1}  # Default user
-            breeder_result = sync_create_breeder(breeder_data)
+            breeder_data = {"name": breeder_name, "user_id": user_id or 1}  # Use injected or default
+            breeder_result = sync_create_breeder(breeder_data, session=session)  # Pass session
             if breeder_result["success"]:
                 cultivar["breeder_id"] = breeder_result["breeder_id"]
             else:
