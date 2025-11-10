@@ -11,7 +11,9 @@ from werkzeug.security import (
     generate_password_hash,
 )
 
-from app.database import dbclass User(db.Model, UserMixin):
+from app.database import db
+
+class User(db.Model, UserMixin):
     """User model for authentication."""
 
     id = db.Column(db.Integer, primary_key=True)
