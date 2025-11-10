@@ -8,8 +8,7 @@ import requests
 
 from app.logger import logger
 
-# import requests #commented out
-from app.models import db
+from app.database import db
 from app.models.acinfinity_models import ACInfinityDevice, ACInfinityToken
 from app.models.base_models import Sensor, SensorData, Zone
 from app.models.ecowitt_models import EcowittDevice

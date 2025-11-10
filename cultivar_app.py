@@ -12,6 +12,37 @@ from flask_login import LoginManager
 from flask_talisman import Talisman
 from flask_limiter.errors import RateLimitExceeded
 from app.utils.rate_limiter import limiter
+from app.config.config import Config
+from app.database import db
+from app.models.base_models import User, Plant, Cultivar, Status, Zone, Breeder
+from app.models.acinfinity_models import ACInfinityDevice, ACInfinityToken
+from app.models.ecowitt_models import EcowittDevice
+from app.models.system_models import SystemActivity
+from werkzeug.security import generate_password_hash
+from app.routes import register_routes
+from app.blueprints.auth import auth_bp
+from app.blueprints.dashboard import dashboard_bp
+from app.blueprints.cultivars import cultivars_bp
+from app.blueprints.breeders import breeders_bp
+from app.blueprints.admin import admin_bp
+from app.blueprints.clones import clones_bp
+from app.blueprints.diagnostics import diagnostics_bp
+from app.blueprints.market import market_bp
+from app.blueprints.marketing import (
+    marketing_bp as marketing_blueprint, # Renamed to avoid conflict
+    marketing_home,
+    blog,
+    blog_post,
+    waitlist,
+    waitlist_success,
+    download_lead_magnet,
+    waitlist_stats,
+    search_blog,
+)
+from app.blueprints.newsletter import newsletter_bp
+from app.blueprints.social import social_bp
+from app.logger import logger
+from flask_wtf.csrf import CSRFProtect, generate_csrf
 
 # Add the app directory to the Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'app'))
@@ -29,7 +60,6 @@ def create_app():
                 static_folder='app/web/static')
     
     # Load configuration
-    from app.config.config import Config
     # Ensure SECRET_KEY is set. In development provide a safe fallback so
     # sessions, flashes and CSRF work during local testing. Do NOT use the
     # fallback in production.
@@ -52,7 +82,6 @@ def create_app():
     Config.ensure_upload_folder()
     
     # Initialize database
-    from app.models import db
     db.init_app(app)
     
     # Initialize Flask-Login
@@ -64,7 +93,6 @@ def create_app():
 
     @login_manager.user_loader
     def load_user(user_id):
-        from app.models.base_models import User
         # SQLAlchemy Session.get expects (Model, primary_key). Ensure we pass an int id.
         try:
             return db.session.get(User, int(user_id))
@@ -178,7 +206,6 @@ def create_app():
 
     # Enable CSRF protection for forms and POST endpoints
     try:
-        from flask_wtf.csrf import CSRFProtect, generate_csrf  # type: ignore
         if not app.config.get('DEBUG', False):
             CSRFProtect(app)
         app.config['WTF_CSRF_TIME_LIMIT'] = None
@@ -204,11 +231,6 @@ def create_app():
     with app.app_context():
         try:
             from app.models import migrate_db, init_db
-            from app.models.base_models import User
-            from app.models.acinfinity_models import ACInfinityDevice, ACInfinityToken
-            from app.models.ecowitt_models import EcowittDevice
-            from app.models.system_models import SystemActivity
-            from werkzeug.security import generate_password_hash
             
             # Create tables and migrate schema
             migrate_db()
@@ -217,7 +239,6 @@ def create_app():
             init_db()            
             
             # Create a test plant for clone demonstration if no plants exist
-            from app.models.base_models import Plant, Cultivar, Status, Zone, Breeder
             if Plant.query.count() == 0:
                 # Create a test breeder
                 test_breeder = Breeder.query.filter_by(name='CultivAR Seeds').first()
@@ -269,44 +290,24 @@ def create_app():
             print(f"Database initialization error: {e}")
     
     # Register routes
-    from app.routes import register_routes
     register_routes(app)
 
     # Register blueprints
-    from app.blueprints.auth import auth_bp
     app.register_blueprint(auth_bp)
-    from app.blueprints.dashboard import dashboard_bp
     app.register_blueprint(dashboard_bp)
     # Legacy import removed - strains blueprint now part of cultivars
     # from app.blueprints.strains import strains_bp
     # Blueprint registration removed - strains routes now part of cultivars
     # app.register_blueprint(strains_bp)
-    from app.blueprints.cultivars import cultivars_bp
     app.register_blueprint(cultivars_bp, url_prefix='/cultivars')
-    from app.blueprints.breeders import breeders_bp
     app.register_blueprint(breeders_bp)
-    from app.blueprints.admin import admin_bp
     app.register_blueprint(admin_bp)
-    from app.blueprints.clones import clones_bp
     app.register_blueprint(clones_bp)
-    from app.blueprints.diagnostics import diagnostics_bp
     app.register_blueprint(diagnostics_bp)
-    from app.blueprints.market import market_bp
     app.register_blueprint(market_bp)
 
     # Register marketing blueprints
-    from app.blueprints.marketing import (
-        marketing_bp,
-        marketing_home,
-        blog,
-        blog_post,
-        waitlist,
-        waitlist_success,
-        download_lead_magnet,
-        waitlist_stats,
-        search_blog,
-    )
-    app.register_blueprint(marketing_bp)
+    app.register_blueprint(marketing_blueprint)
 
     # Expose the marketing homepage at top-level paths for nicer URLs
     # e.g. /home/ or /site/ will render the same content as /marketing/
@@ -342,13 +343,10 @@ def create_app():
     except RuntimeError:
         # ignore if app isn't fully wired yet
         pass
-    from app.blueprints.newsletter import newsletter_bp
     app.register_blueprint(newsletter_bp)
-    from app.blueprints.social import social_bp
     app.register_blueprint(social_bp)
     
     # Initialize logger
-    from app.logger import logger
     logger.info("CultivAR application created successfully")
 
     # Template context processor: ensure csp_nonce is available in templates
@@ -394,6 +392,5 @@ if __name__ == '__main__':
     port = int(os.getenv('CULTIVAR_PORT', 5000))
 
     # For development testing, run on HTTP only to avoid SSL issues
-    from app.config.config import Config
     print("DEBUG: Running Flask app on HTTP only for development testing")
     app.run(host='0.0.0.0', port=port, debug=Config.DEBUG, use_reloader=True)

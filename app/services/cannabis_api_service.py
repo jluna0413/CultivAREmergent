@@ -351,7 +351,13 @@ class CannabisApiService:
         breeder_name = item.get("breeder_name") or "Unknown Breeder"
         if breeder_name != "Unknown Breeder":
             breeder_data = {"name": breeder_name, "user_id": user_id or 1}
-            breeder_result = sync_create_breeder(breeder_data, session)
+            # Call sync_create_breeder with or without explicit user_id to
+            # preserve backward-compatible call signatures in tests and
+            # allow optional injection when provided.
+            if user_id is None:
+                breeder_result = sync_create_breeder(breeder_data, session)
+            else:
+                breeder_result = sync_create_breeder(breeder_data, session, user_id)
             if breeder_result["success"]:
                 cultivar["breeder_id"] = breeder_result["breeder_id"]
             else:

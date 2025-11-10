@@ -1,0 +1,12 @@
+[run]
+omit =
+    tests/*
+
+[report]
+exclude_lines =
+    # Exclude logger-only lines (instrumentation/logging)
+    logger\..*
+    # Exclude explicit sleep/wait calls used for rate limiting tests
+    time\.sleep\(.*\)
+    # Standard pragma
+    pragma: no cover
