@@ -1,0 +1,29 @@
+name: PR Smoke Tests
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt || true; fi
+          pip install fastapi pytest httpx uvicorn
+
+      - name: Run smoke test
+        env:
+          FASTAPI_SKIP_ROUTERS: '1'
+        run: |
+          python -m pytest -q tests/test_fastapi_import.py::test_create_app_root
