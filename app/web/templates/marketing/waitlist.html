@@ -358,7 +358,7 @@
         });
 
         // Load dynamic waitlist stats
-    fetch('/site/api/waitlist/stats')
+    fetch('/api/v2/site/waitlist/stats')
             .then(response => response.json())
             .then(data => {
                 const waitlistCount = document.getElementById('waitlist-count');

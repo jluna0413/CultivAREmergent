@@ -62,15 +62,16 @@ export SSL_KEY_PATH=/etc/letsencrypt/live/yourdomain.com/privkey.pem
 
 ## Docker Deployment
 
-### docker-compose.yml Configuration
+### docker-compose.fastapi.yml Configuration
 ```yaml
 version: '3.8'
 services:
-  cultivar:
+  cultivar_fastapi:
     build: .
     ports:
-      - "443:5000"  # HTTPS port
+      - "443:8000"  # HTTPS port
     environment:
+      - APP_MODE=fastapi
       - SSL_ENABLED=true
       - SSL_CERT_PATH=/etc/ssl/certs/cultivar.crt
       - SSL_KEY_PATH=/etc/ssl/private/cultivar.key
@@ -97,7 +98,7 @@ server {
     ssl_certificate_key /etc/letsencrypt/live/yourdomain.com/privkey.pem;
 
     location / {
-        proxy_pass http://127.0.0.1:5000;
+        proxy_pass http://127.0.0.1:8000;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -105,6 +106,8 @@ server {
     }
 }
 ```
+
+Note: The same SSL setup works for both Flask (via docker-compose.dual.yml) and FastAPI, just with different ports.
 
 ## Production Deployment Options
 
@@ -189,7 +192,7 @@ openssl x509 -in $SSL_CERT_PATH -text -noout
 
 ```bash
 # Check SSL certificate
-openssl s_client -connect localhost:5000 -servername localhost
+openssl s_client -connect localhost:8000 -servername localhost
 
 # Check certificate validity
 openssl x509 -in server.crt -text -noout | grep -A 2 "Validity"

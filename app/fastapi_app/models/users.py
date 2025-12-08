@@ -1,7 +1,8 @@
 """Pydantic models for Users domain."""
 from datetime import datetime
 from typing import Optional, List
-from pydantic import BaseModel, Field, validator, EmailStr
+from pydantic import BaseModel, Field, validator, EmailStr, ConfigDict
+from app.utils.validators import validate_username, validate_password, validate_phone
 
 
 class UserBase(BaseModel):
@@ -13,11 +14,34 @@ class UserBase(BaseModel):
     tier: str = Field("free", description="User tier (free, premium, pro)")
     is_verified_breeder: bool = Field(False, description="Whether user is verified breeder")
 
+    @validator('username')
+    def username_validator(cls, v):
+        is_valid, error = validate_username(v)
+        if not is_valid:
+            raise ValueError(error)
+        return v
+
+    @validator('phone')
+    def phone_validator(cls, v):
+        if v is None:
+            return v
+        is_valid, error = validate_phone(v)
+        if not is_valid:
+            raise ValueError(error)
+        return v
+
 
 class UserCreate(UserBase):
     """Model for creating a new user."""
     password: str = Field(..., min_length=8, description="User password")
     is_admin: bool = Field(False, description="Admin privileges flag")
+
+    @validator('password')
+    def password_validator(cls, v):
+        is_valid, error = validate_password(v)
+        if not is_valid:
+            raise ValueError(error)
+        return v
 
 
 class UserUpdate(BaseModel):
@@ -46,8 +70,7 @@ class UserResponse(UserBase):
     plants_count: Optional[int] = Field(None, description="Number of plants")
     last_login: Optional[datetime] = Field(None, description="Last login timestamp")
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class UserListResponse(BaseModel):

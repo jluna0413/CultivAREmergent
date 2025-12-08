@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 from typing import Optional, List
 import math
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from app.fastapi_app.dependencies import require_login, inject_template_context, require_admin
 from app.models_async.base import get_async_session as get_async_db
@@ -19,7 +19,8 @@ from app.fastapi_app.models.users import (
 )
 from app.fastapi_app.models.common import ApiResponse
 from app.models_async.auth import User
-from app.models_async.grow import Grow, Plant
+from app.models_async.grow import Plant
+from app.fastapi_app.rate_limiter import rate_limit
 
 # HTML routes for backward compatibility - Legacy template support - DEPRECATED
 router = APIRouter(tags=["users LEGACY - DEPRECATED - Use /api/v1/users"], deprecated=True)
@@ -67,16 +68,16 @@ async def get_user_stats(db: AsyncSession) -> dict:
         premium_users = result.scalar() or 0
         
         # Active users today
-        today = datetime.utcnow().date()
+        today = datetime.now(timezone.utc).date()
         # Note: This is a placeholder - would need last_login field in User model
         active_users_today = 0
         
         # Active users this week
-        week_ago = datetime.utcnow() - timedelta(days=7)
+        week_ago = datetime.now(timezone.utc) - timedelta(days=7)
         active_users_week = 0  # Placeholder
         
         # Active users this month
-        month_ago = datetime.utcnow() - timedelta(days=30)
+        month_ago = datetime.now(timezone.utc) - timedelta(days=30)
         active_users_month = 0  # Placeholder
         
         # New users today
@@ -420,7 +421,7 @@ async def api_user_get(
         raise HTTPException(status_code=500, detail=f"Error fetching user: {str(e)}")
 
 
-@api_router.post("/", name="api_user_create")
+@api_router.post("/", name="api_user_create", dependencies=[Depends(rate_limit(limit=5, window=60))])
 async def api_user_create(
     user_data: UserCreate,
     db: AsyncSession = Depends(get_async_db),
@@ -624,7 +625,7 @@ async def api_update_own_profile(
         raise HTTPException(status_code=500, detail=f"Error updating profile: {str(e)}")
 
 
-@api_router.patch("/me/password", name="api_change_password")
+@api_router.patch("/me/password", name="api_change_password", dependencies=[Depends(rate_limit(limit=3, window=300))])
 async def api_change_password(
     password_data: UserPasswordChange,
     db: AsyncSession = Depends(get_async_db),

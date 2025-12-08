@@ -14,8 +14,26 @@ from app.models_async.base import (
     async_engine as engine,
     AsyncSessionLocal as async_session_factory,
     get_async_session as get_database,
+    get_async_session,  # Add alias for backward compatibility
     Base
 )
+
+# Create async context manager wrapper for get_async_session
+from contextlib import asynccontextmanager
+
+@asynccontextmanager
+async def get_async_session():
+    """
+    Async context manager wrapper for get_async_session
+    This function is deprecated. Use app.models_async.base.get_async_session directly
+    """
+    from app.models_async.base import get_async_session as original_get_async_session
+    async for session in original_get_async_session():
+        try:
+            yield session
+        finally:
+            await session.close()
+            break  # Exit the loop after first iteration
 
 logger = logging.getLogger(__name__)
 

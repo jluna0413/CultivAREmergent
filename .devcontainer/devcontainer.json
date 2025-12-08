@@ -1,7 +1,7 @@
 {
-  "name": "CultivAR (Docker)",
-  "dockerComposeFile": "../docker-compose.yml",
-  "service": "cultivare",
+  "name": "CultivAR FastAPI (Docker)",
+  "dockerComposeFile": "../docker-compose.fastapi.yml",
+  "service": "cultivar_fastapi",
   "workspaceFolder": "/app",
   "extensions": [
     "ms-python.python",
@@ -10,6 +10,6 @@
   "settings": {
     "python.defaultInterpreterPath": "/usr/local/bin/python"
   },
-  "forwardPorts": [5000],
+  "forwardPorts": [8000],
   "shutdownAction": "stopCompose"
 }

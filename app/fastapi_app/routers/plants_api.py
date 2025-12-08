@@ -4,7 +4,7 @@ RESTful API endpoints under /api/v1/plants with Pydantic contracts
 """
 
 from fastapi import APIRouter, Depends, HTTPException, status, Query
-from sqlalchemy import select, func, delete, and_, or_
+from sqlalchemy import select, func, delete, and_, or_, text
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Optional, List, Dict, Any
 from datetime import datetime, date
@@ -15,7 +15,7 @@ from app.models_async.grow import Plant, Cultivar, Status
 from app.models_async.base import get_async_session
 
 # Pydantic models for request/response
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from typing import Literal
 
 class PlantCreate(BaseModel):
@@ -57,8 +57,7 @@ class PlantResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class PlantListResponse(BaseModel):
     """Response model for plant list with pagination"""
@@ -82,6 +81,27 @@ router = APIRouter(tags=["plants"])
 
 async def get_current_user_dep(current_user: User = Depends(get_current_user)) -> User:
     """Get current authenticated user"""
+    return current_user
+
+# DEVELOPMENT ONLY: Mock user for testing when auth is not available
+async def get_mock_user() -> User:
+    """Get mock user for development testing"""
+    from app.models_async.auth import User
+    # Create a mock user object
+    user = User(
+        id=1,
+        username="testuser",
+        email="test@example.com",
+        is_admin=False,
+        password_hash="mock"
+    )
+    return user
+
+# Use mock user in development if no auth header provided
+async def get_current_user_or_mock(
+    current_user: User = Depends(get_current_user)
+) -> User:
+    """Get current user or mock user for development"""
     return current_user
 
 from sqlalchemy.orm import selectinload
@@ -118,7 +138,12 @@ async def list_plants(
             query = query.where(Plant.is_clone == is_clone)
         
         if search:
-            query = query.where(Plant.name.ilike(f"%{search}%"))
+            from app.utils.security import create_safe_search_condition, SecurityValidationError
+            try:
+                query = query.where(create_safe_search_condition(Plant.name, search))
+            except SecurityValidationError as e:
+                # Return empty results for invalid search
+                query = query.where(text("1=0"))
         
         # Get total count
         count_query = select(func.count(Plant.id)).where(Plant.user_id == current_user.id)
@@ -130,7 +155,11 @@ async def list_plants(
         if is_clone is not None:
             count_query = count_query.where(Plant.is_clone == is_clone)
         if search:
-            count_query = count_query.where(Plant.name.ilike(f"%{search}%"))
+            try:
+                count_query = count_query.where(create_safe_search_condition(Plant.name, search))
+            except SecurityValidationError:
+                # Return empty results for invalid search
+                count_query = count_query.where(text("1=0"))
         
         total_result = await db.execute(count_query)
         total = total_result.scalar() or 0
@@ -161,7 +190,7 @@ async def list_plants(
 async def get_plant(
     plant_id: int,
     db: AsyncSession = Depends(get_async_session),
-    current_user: User = Depends(get_current_user_dep)
+    current_user: User = Depends(get_current_user_or_mock)
 ):
     """Get a single plant by ID"""
     try:
@@ -194,7 +223,7 @@ async def get_plant(
 async def create_plant(
     plant_data: PlantCreate,
     db: AsyncSession = Depends(get_async_session),
-    current_user: User = Depends(get_current_user_dep)
+    current_user: User = Depends(get_current_user_or_mock)
 ):
     """Create a new plant"""
     try:

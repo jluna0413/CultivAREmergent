@@ -407,8 +407,8 @@
         // Show loading indicator
         activitiesTable.innerHTML = '<tr><td colspan="4" class="text-center">Loading activities...</td></tr>';
 
-        // Fetch activities from the API
-        fetch('/api/admin/activities')
+        // Fetch activities from the FastAPI backend
+        fetch('/api/v2/admin/activities')
             .then(response => response.json())
             .then(data => {
                 if (data.success && data.activities && data.activities.length > 0) {

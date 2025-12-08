@@ -4,12 +4,7 @@ Database models for the CultivAR application.
 
 import os
 
-from flask_sqlalchemy import SQLAlchemy
-
-from app.logger import logger
-
-# Initialize SQLAlchemy
-db = SQLAlchemy()
+from app.database import db
 
 
 def migrate_db():

@@ -5,7 +5,7 @@ Activity request/response models for the FastAPI application.
 
 from datetime import datetime
 from typing import Optional, List
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
 # Activity Models
@@ -51,8 +51,7 @@ class ActivityResponse(ActivityBase):
     updated_at: datetime = Field(..., description="Last update timestamp")
     is_recent: bool = Field(..., description="Whether activity is recent (within 24 hours)")
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ActivityListResponse(BaseModel):
@@ -97,8 +96,7 @@ class PlantActivityResponse(PlantActivityBase):
     created_at: datetime = Field(..., description="Creation timestamp")
     is_recent: bool = Field(..., description="Whether activity is recent (within 7 days)")
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class PlantActivityListResponse(BaseModel):
@@ -131,8 +129,7 @@ class ActivitySummaryResponse(BaseModel):
     entity_type: Optional[str] = Field(None, description="Entity type")
     entity_id: Optional[int] = Field(None, description="Entity ID")
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # Activity Filter Models

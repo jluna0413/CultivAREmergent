@@ -2,7 +2,10 @@ import os
 import importlib
 
 
-def test_create_app_root():
+import pytest
+
+@pytest.mark.asyncio
+async def test_create_app_root():
     """Smoke test: import the fastapi package and assert root endpoint responds.
 
     This test sets FASTAPI_SKIP_ROUTERS=1 so the test does not require all
@@ -13,11 +16,11 @@ def test_create_app_root():
     from app.fastapi_app import create_app
 
     app = create_app()
-    from fastapi.testclient import TestClient
-
-    client = TestClient(app, base_url="http://localhost")
-    r = client.get("/")
-    assert r.status_code == 200
-    data = r.json()
-    assert "message" in data
-    assert data["health"] == "/health"
+    
+    from httpx import ASGITransport, AsyncClient
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://localhost") as client:
+        r = await client.get("/")
+        assert r.status_code == 200
+        data = r.json()
+        assert "message" in data
+        assert data["health"] == "/health"

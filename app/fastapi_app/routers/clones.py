@@ -21,7 +21,7 @@ async def get_current_user_dep(current_user: User = Depends(get_current_user)) -
     return current_user
 
 from sqlalchemy.orm import selectinload
-from datetime import datetime
+from datetime import datetime, timezone
 
 # ... (imports)
 
@@ -75,7 +75,7 @@ async def list_clones(
             description=clone.description,
             user_id=clone.user_id,
             zone_name=clone.zone.name if clone.zone else None,
-            age_days=(datetime.utcnow() - clone.start_dt).days if clone.start_dt else 0,
+            age_days=(datetime.now(timezone.utc) - clone.start_dt).days if clone.start_dt else 0,
             created_at=clone.created_at,
             updated_at=clone.updated_at,
         ))
@@ -131,3 +131,7 @@ async def create_clone(
         created_at=new_clone.created_at,
         updated_at=new_clone.updated_at,
     )
+
+
+# Alias for backward compatibility with main.py
+api_router = router

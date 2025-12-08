@@ -59,31 +59,25 @@ You should see output indicating that the application is running on `http://loca
 
 ## Docker Installation
 
-This is the recommended method for production deployments.
+This is the recommended method for production deployments using FastAPI.
 
-### Option 1: Docker with SQLite
+### Docker with FastAPI
 
-This is the simplest way to get started with a Docker-based installation.
+This method runs the FastAPI version of CultivAR, which is the primary framework.
 
 1.  **Build and run the Docker container:**
     ```bash
-    docker-compose -f docker-compose.sqlite.yml up -d --build
+    docker compose -f docker-compose.fastapi.yml up -d --build
     ```
 
 2.  **Access the application:**
-    Open your web browser and navigate to `http://localhost:5000`.
+    Open your web browser and navigate to `http://localhost:8000`.
 
-### Option 2: Docker with PostgreSQL
+    API documentation is available at `http://localhost:8000/docs`.
 
-This method is recommended for more robust production deployments.
+**Note:** By default, this setup uses PostgreSQL. If you prefer SQLite, set `CULTIVAR_DB_DRIVER=sqlite` in your `.env` file and modify the compose file to comment out the `db` service and add a volume mount for `./data:/app/data`.
 
-1.  **Build and run the Docker containers:**
-    ```bash
-    docker-compose -f docker-compose.postgres.yml up -d --build
-    ```
-
-2.  **Access the application:**
-    Open your web browser and navigate to `http://localhost:5000`.
+**Troubleshooting:** If you need to run Flask for any reason (e.g., legacy testing), use `docker-compose.dual.yml` to run both frameworks simultaneously. Flask will be available on port 5000, and FastAPI on port 8000.
 
 ## Default Credentials
 

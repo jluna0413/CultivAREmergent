@@ -671,8 +671,8 @@ async def api_sensor_stats(
         sensors_by_source = dict(source_result.all())
         
         # Recent readings (last 24 hours)
-        from datetime import datetime, timedelta
-        yesterday = datetime.utcnow() - timedelta(days=1)
+        from datetime import datetime, timedelta, timezone
+        yesterday = datetime.now(timezone.utc) - timedelta(days=1)
         recent_result = await db.execute(
             select(func.count(SensorData.id))
             .where(SensorData.created_at >= yesterday)

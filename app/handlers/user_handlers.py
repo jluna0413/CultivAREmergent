@@ -11,7 +11,7 @@ from app.logger import logger
 from app.models import db
 from app.models.base_models import User
 from app.models.system_models import SystemActivity
-from app.utils.validators import cleanse_user_data
+from app.utils.validators import cleanse_user_data, validate_password
 
 
 def get_all_users():
@@ -240,6 +240,9 @@ def update_user(user_id, data):
         # Update password if provided
         new_password = data.get("password")
         if new_password:
+            is_valid, error = validate_password(new_password)
+            if not is_valid:
+                return {"success": False, "error": error}
             user.password_hash = generate_password_hash(new_password)
             user.force_password_change = data.get("force_password_change", False)
 

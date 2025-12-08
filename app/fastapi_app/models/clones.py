@@ -1,7 +1,7 @@
 """Pydantic models for Clones domain."""
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional, List
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 class CloneBase(BaseModel):
     """Base clone model with common fields."""
@@ -9,7 +9,7 @@ class CloneBase(BaseModel):
     parent_plant_id: int = Field(..., description="ID of the parent plant")
     zone_id: Optional[int] = Field(None, description="Zone ID")
     status: str = Field("cutting", description="Current status of the clone")
-    cloning_date: datetime = Field(default_factory=datetime.utcnow, description="Date the clone was taken")
+    cloning_date: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="Date the clone was taken")
     description: Optional[str] = Field(None, max_length=1000, description="Clone description")
 
 class CloneCreate(CloneBase):
@@ -33,8 +33,7 @@ class CloneResponse(CloneBase):
     created_at: datetime = Field(..., description="Creation timestamp")
     updated_at: datetime = Field(..., description="Last update timestamp")
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class CloneListResponse(BaseModel):
     """Model for paginated clone list response."""

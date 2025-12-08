@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 from typing import Optional, List
 import math
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pydantic import BaseModel
 
 from app.fastapi_app.dependencies import require_login, inject_template_context
@@ -22,8 +22,11 @@ from app.fastapi_app.models.activities import (
 )
 from app.fastapi_app.models.common import ApiResponse
 from app.models_async.auth import User
-from app.models_async.activities import Activity, PlantActivity, ActivitySummary
+from app.models_async.activities import ActivityLog, PlantActivity, ActivityType
 from app.models_async.grow import Plant
+
+# Alias for backward compatibility
+Activity = ActivityLog
 
 # HTML routes for backward compatibility - Legacy template support
 router = APIRouter(tags=["activities"])
@@ -180,9 +183,9 @@ async def activities_list_page(
                 'username': activity.username,
                 'entity_type': activity.entity_type,
                 'entity_name': activity.entity_name,
-                'timestamp': activity.timestamp.isoformat() if activity.timestamp else None,
+                'timestamp': activity.timestamp.isoformat() if activity.timestamp is not None else None,
                 'is_system_activity': activity.is_system_activity,
-                'is_recent': activity.is_recent
+                'is_recent': getattr(activity, 'is_recent', False)
             })
         
         context.update({
@@ -493,7 +496,7 @@ async def api_activities_stats(
 ):
     """Get activity statistics - Clean JSON API."""
     try:
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
         week_start = today_start - timedelta(days=7)
         month_start = today_start.replace(day=1)
@@ -600,7 +603,7 @@ async def api_record_login(
         activity.set_details({
             "success": login_data.success,
             "username": login_data.username,
-            "timestamp": datetime.utcnow().isoformat()
+            "timestamp": datetime.now(timezone.utc).isoformat()
         })
         
         db.add(activity)

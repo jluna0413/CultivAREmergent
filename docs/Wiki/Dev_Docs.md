@@ -162,15 +162,24 @@ The application can be tested using pytest:
    docker build -t cultivar .
    ```
 
-2. Run with SQLite:
+2. Run the application (PostgreSQL is default):
    ```
-   docker-compose -f docker-compose.sqlite.yml up -d
+   docker compose -f docker-compose.fastapi.yml up -d
    ```
 
-3. Run with PostgreSQL:
-   ```
-   docker-compose -f docker-compose.postgres.yml up -d
-   ```
+   Note: To use SQLite instead, set the environment variable `CULTIVAR_DB_DRIVER=sqlite` and add a volume mount for `./data:/app/data` in the compose file.
+
+   The application will be available at `http://localhost:8000`. FastAPI documentation is available at `http://localhost:8000/docs`.
+
+### Running Flask (Legacy)
+
+For side-by-side testing during migration, use the dual-stack compose file:
+
+```
+docker compose -f docker-compose.dual.yml up -d
+```
+
+This runs both Flask on port 5000 and FastAPI on port 8000 simultaneously.
 
 ### Manual Deployment
 

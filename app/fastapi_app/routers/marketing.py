@@ -56,3 +56,6 @@ async def list_lead_magnets(
     result = await db.execute(select(LeadMagnet))
     magnets = result.scalars().all()
     return [LeadMagnetResponse.from_orm(magnet) for magnet in magnets]
+
+# Alias for backward compatibility with main.py
+api_router = router

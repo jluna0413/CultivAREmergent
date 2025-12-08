@@ -1,7 +1,7 @@
 """Pydantic models for Newsletter domain."""
 from datetime import datetime
 from typing import Optional
-from pydantic import BaseModel, Field, EmailStr
+from pydantic import BaseModel, Field, EmailStr, ConfigDict
 
 class NewsletterSubscriberBase(BaseModel):
     """Base newsletter subscriber model."""
@@ -21,8 +21,7 @@ class NewsletterSubscriberResponse(NewsletterSubscriberBase):
     subscription_date: datetime
     unsubscribe_date: Optional[datetime] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class NewsletterStats(BaseModel):
     """Model for newsletter statistics."""

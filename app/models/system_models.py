@@ -2,9 +2,9 @@
 System-wide models for the CultivAR application.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 
-from app.models import db
+from app.database import db
 
 
 class SystemActivity(db.Model):
@@ -16,7 +16,7 @@ class SystemActivity(db.Model):
     )  # login, plant_add, strain_edit, etc.
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     details = db.Column(db.Text)  # JSON string with activity details
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    timestamp = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
     user = db.relationship("User", backref="system_activities")
 
@@ -24,7 +24,7 @@ class SystemActivity(db.Model):
         self.user_id = user_id
         self.type = type
         self.details = details
-        self.timestamp = timestamp or datetime.utcnow()
+        self.timestamp = timestamp or datetime.now(timezone.utc)
 
     def __repr__(self):
         return (

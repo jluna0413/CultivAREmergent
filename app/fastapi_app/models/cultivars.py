@@ -1,7 +1,7 @@
 """Pydantic models for Cultivars domain."""
 from datetime import datetime
 from typing import Optional, List, Dict, Any
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, validator, ConfigDict
 
 
 class CultivarBase(BaseModel):
@@ -25,6 +25,13 @@ class CultivarBase(BaseModel):
     seed_count: Optional[int] = Field(None, ge=1, description="Average seed count per plant")
     url: Optional[str] = Field(None, description="Cultivar information URL")
     description: Optional[str] = Field(None, max_length=1000, description="Cultivar description")
+
+    @validator('url')
+    @classmethod
+    def validate_url(cls, v):
+        if v and not v.startswith(('http://', 'https://')):
+            raise ValueError('URL must be a valid URL (e.g., http://example.com)')
+        return v
 
     @validator('sativa')
     def validate_sativa_percentage(cls, v, values):
@@ -90,15 +97,11 @@ class CultivarResponse(CultivarBase):
     # Computed fields
     type: str = Field(..., description="Cultivar type (indica/sativa/hybrid)")
     breeder_name: Optional[str] = Field(None, description="Breeder name")
-    has_lineage: bool = Field(False, description="Whether lineage data is available")
-
-    @validator('has_lineage', always=True)
-    def get_has_lineage(cls, v, values):
-        return bool(values.get('lineage_json'))
-
-    class Config:
-        from_attributes = True
-        use_enum_values = True
+    page: int = Field(..., description="Current page number")
+    page_size: int = Field(..., description="Items per page")
+    pages: int = Field(..., description="Total number of pages")
+    has_next: bool = Field(..., description="Whether there is a next page")
+    has_prev: bool = Field(..., description="Whether there is a previous page")
 
 
 class CultivarListResponse(BaseModel):
@@ -137,5 +140,4 @@ class CultivarStats(BaseModel):
     autoflower_count: int = Field(..., description="Number of autoflower cultivars")
     average_cycle_time: Optional[float] = Field(None, description="Average cycle time in days")
 
-    class Config:
-        use_enum_values = True
+    model_config = ConfigDict(use_enum_values=True)

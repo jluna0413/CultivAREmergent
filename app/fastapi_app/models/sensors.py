@@ -6,7 +6,7 @@ Sensor device management and sensor readings for IoT integration.
 from datetime import datetime
 from enum import Enum
 from typing import Optional, List, Union
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, validator, ConfigDict
 
 
 class SensorType(str, Enum):
@@ -77,9 +77,7 @@ class SensorResponse(SensorBase):
     updated_at: Optional[datetime] = Field(None, description="Last update timestamp")
     latest_reading: Optional["SensorReading"] = Field(None, description="Latest sensor reading")
     
-    class Config:
-        from_attributes = True
-        use_enum_values = True
+    model_config = ConfigDict(from_attributes=True, use_enum_values=True)
 
 
 class SensorListResponse(BaseModel):
@@ -111,9 +109,7 @@ class SensorReading(BaseModel):
     unit: Optional[str] = Field(None, description="Measurement unit")
     created_at: datetime = Field(..., description="Reading timestamp")
     
-    class Config:
-        from_attributes = True
-        use_enum_values = True
+    model_config = ConfigDict(from_attributes=True, use_enum_values=True)
 
 
 class SensorReadingCreate(BaseModel):

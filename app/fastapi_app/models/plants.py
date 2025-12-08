@@ -1,7 +1,7 @@
 """Pydantic models for Plants domain."""
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional, List
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 class PlantBase(BaseModel):
     """Base plant model with common fields."""
@@ -9,7 +9,7 @@ class PlantBase(BaseModel):
     cultivar_id: int = Field(..., description="Cultivar ID")
     zone_id: Optional[int] = Field(None, description="Zone ID")
     status: str = Field("seedling", description="Current growth status")
-    start_date: datetime = Field(default_factory=datetime.utcnow, description="Start date of the plant's life")
+    start_date: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="Start date of the plant's life")
     description: Optional[str] = Field(None, max_length=1000, description="Plant description")
 
 class PlantCreate(PlantBase):
@@ -35,8 +35,7 @@ class PlantResponse(PlantBase):
     created_at: datetime = Field(..., description="Creation timestamp")
     updated_at: datetime = Field(..., description="Last update timestamp")
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class PlantListResponse(BaseModel):
     """Model for paginated plant list response."""

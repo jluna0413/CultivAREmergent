@@ -1,17 +1,17 @@
 <nav class="nav-bar nav-glass">
   <div class="nav-container">
-    <a class="nav-logo" href="{{ url_for('site') }}">
-  <i class="fas fa-leaf" aria-hidden="true"></i>
+    <a class="nav-logo" href="/">
+      <i class="fas fa-leaf" aria-hidden="true"></i>
       <span>CultivAR</span>
     </a>
     <div class="nav-links">
-  <a href="{{ url_for('site_blog') }}" class="btn btn-ghost">Blog</a>
-  <a href="{{ url_for('site_waitlist') }}" class="btn btn-ghost">Waitlist</a>
-      <a href="{{ url_for('newsletter.subscribe') }}" class="btn btn-ghost">Newsletter</a>
-      <a href="{{ url_for('social.follow') }}" class="btn btn-ghost">Community</a>
-      <a href="{{ url_for('auth.login') }}" class="btn btn-primary">
+      <a href="/blog" class="btn btn-ghost">Blog</a>
+      <a href="/waitlist" class="btn btn-ghost">Waitlist</a>
+      <a href="/newsletter" class="btn btn-ghost">Newsletter</a>
+      <a href="/community" class="btn btn-ghost">Community</a>
+      <a href="/auth/login" class="btn btn-primary">
         <span>Get Started</span>
-  <i class="fas fa-arrow-right" aria-hidden="true"></i>
+        <i class="fas fa-arrow-right" aria-hidden="true"></i>
       </a>
     </div>
   </div>

@@ -1,7 +1,7 @@
 """Pydantic models for Breeders domain."""
 from datetime import datetime
 from typing import Optional, List
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator, ConfigDict
 
 
 class BreederBase(BaseModel):
@@ -12,7 +12,8 @@ class BreederBase(BaseModel):
     seedfinder_id: Optional[str] = Field(None, max_length=100, description="SeedFinder API identifier")
     description: Optional[str] = Field(None, max_length=2000, description="Detailed breeder information")
 
-    @validator('website')
+    @field_validator('website')
+    @classmethod
     def validate_website(cls, v):
         if v and not v.startswith(('http://', 'https://')):
             raise ValueError('Website must be a valid URL (e.g., http://example.com)')
@@ -32,7 +33,8 @@ class BreederUpdate(BaseModel):
     seedfinder_id: Optional[str] = Field(None, max_length=100, description="SeedFinder API identifier")
     description: Optional[str] = Field(None, max_length=2000, description="Detailed breeder information")
 
-    @validator('website')
+    @field_validator('website')
+    @classmethod
     def validate_website(cls, v):
         if v and not v.startswith(('http://', 'https://')):
             raise ValueError('Website must be a valid URL (e.g., http://example.com)')
@@ -46,9 +48,7 @@ class BreederResponse(BreederBase):
     # Computed fields
     cultivar_count: int = Field(0, description="Number of cultivars from this breeder")
     
-    class Config:
-        from_attributes = True
-        use_enum_values = True
+    model_config = ConfigDict(from_attributes=True, use_enum_values=True)
 
 
 class BreederListResponse(BaseModel):

@@ -1,7 +1,7 @@
 """Pydantic models for Marketing domain."""
 from datetime import datetime
 from typing import Optional, List
-from pydantic import BaseModel, Field, EmailStr
+from pydantic import BaseModel, Field, EmailStr, ConfigDict
 
 class WaitlistEntryBase(BaseModel):
     """Base waitlist entry model."""
@@ -18,8 +18,7 @@ class WaitlistEntryResponse(WaitlistEntryBase):
     id: int
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class WaitlistStats(BaseModel):
     """Model for waitlist statistics."""
@@ -42,5 +41,4 @@ class LeadMagnetResponse(LeadMagnetBase):
     id: int
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

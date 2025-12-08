@@ -3,7 +3,7 @@ Dashboard Router
 Main dashboard and plant management routes.
 """
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import List, Optional
 from fastapi import APIRouter, Request, Depends, HTTPException
 from sqlalchemy import func, select, and_, desc
@@ -128,7 +128,7 @@ async def get_dashboard_stats(
             request = DashboardStatsRequest()
         
         # Calculate date range for historical data
-        time_cutoff = datetime.utcnow() - timedelta(hours=request.time_range_hours)
+        time_cutoff = datetime.now(timezone.utc) - timedelta(hours=request.time_range_hours)
         
         # === PLANT COUNT STATISTICS ===
         
@@ -297,7 +297,7 @@ async def _get_average_sensor_reading(db: AsyncSession, sensor_type: str) -> Opt
         result = await db.execute(
             select(func.avg(SensorData.value)).where(
                 SensorData.sensor_type == sensor_type,
-                SensorData.timestamp >= datetime.utcnow() - timedelta(hours=24)
+                SensorData.timestamp >= datetime.now(timezone.utc) - timedelta(hours=24)
             )
         )
         return result.scalar()

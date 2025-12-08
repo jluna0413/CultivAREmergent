@@ -6,7 +6,7 @@ Administrative routes for user and system management.
 from fastapi import APIRouter, Request, Depends, HTTPException
 from sqlalchemy import func, select, delete
 from sqlalchemy.ext.asyncio import AsyncSession
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import List
 
 from app.fastapi_app.dependencies import require_admin, inject_template_context
@@ -55,7 +55,7 @@ async def admin_dashboard(
         total_cultivars = result.scalar() or 0
         
         # Activity in last 30 days
-        thirty_days_ago = datetime.now() - timedelta(days=30)
+        thirty_days_ago = datetime.now(timezone.utc) - timedelta(days=30)
         result = await db.execute(
             select(func.count(func.distinct(Plant.user_id))).where(
                 Plant.start_dt >= thirty_days_ago
@@ -220,13 +220,13 @@ async def get_system_info():
         memory_available="8 GB",
         disk_total="512 GB",
         disk_free="256 GB",
-        boot_time=str(datetime.utcnow() - timedelta(days=1))
+        boot_time=str(datetime.now(timezone.utc) - timedelta(days=1))
     )
 
 @api_router.get("/system/logs", response_model=List[LogEntry])
 async def get_system_logs():
     # This is placeholder data. A real implementation would read from a log file.
     return [
-        LogEntry(timestamp=str(datetime.utcnow()), level="INFO", message="System started"),
-        LogEntry(timestamp=str(datetime.utcnow() - timedelta(minutes=5)), level="WARNING", message="High CPU usage detected"),
+        LogEntry(timestamp=str(datetime.now(timezone.utc)), level="INFO", message="System started"),
+        LogEntry(timestamp=str(datetime.now(timezone.utc) - timedelta(minutes=5)), level="WARNING", message="High CPU usage detected"),
     ]

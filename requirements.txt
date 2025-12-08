@@ -16,3 +16,27 @@ gunicorn==22.0.0
 bcrypt==4.0.1
 bleach==6.1.0
 markdown==3.5.1
+# FastAPI dependencies
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic==2.5.0
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-multipart==0.0.6
+asyncpg==0.29.0
+aiosqlite==0.19.0
+slowapi==0.1.9
+itsdangerous==2.2.0
+starlette==0.27.0
+pytest
+httpx
+markupsafe>=2.1.0
+jinja2>=3.1.0
+# Dev dependencies
+pytest-asyncio
+playwright
+deepdiff
+email-validator
+aiofiles
+psutil
+redis==5.0.1

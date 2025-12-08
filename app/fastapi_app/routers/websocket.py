@@ -9,7 +9,7 @@ from typing import List, Dict, Any, Optional
 import json
 import asyncio
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 
 # Import dependencies
 from app.fastapi_app.jwt_utils import verify_jwt_token
@@ -77,7 +77,7 @@ class ConnectionManager:
         message = {
             "type": "sensor_data",
             "data": sensor_data,
-            "timestamp": datetime.utcnow().isoformat()
+            "timestamp": datetime.now(timezone.utc).isoformat()
         }
         await self.broadcast(message)
     
@@ -86,7 +86,7 @@ class ConnectionManager:
         message = {
             "type": "plant_update",
             "data": plant_data,
-            "timestamp": datetime.utcnow().isoformat()
+            "timestamp": datetime.now(timezone.utc).isoformat()
         }
         await self.broadcast(message)
 
@@ -131,7 +131,7 @@ async def websocket_endpoint(
             "type": "welcome",
             "message": "Connected to Cultivar real-time updates",
             "authenticated": user is not None,
-            "timestamp": datetime.utcnow().isoformat()
+            "timestamp": datetime.now(timezone.utc).isoformat()
         }
         await websocket.send_text(json.dumps(welcome_message))
         
@@ -144,7 +144,7 @@ async def websocket_endpoint(
             response = {
                 "type": "echo",
                 "data": message_data,
-                "timestamp": datetime.utcnow().isoformat()
+                "timestamp": datetime.now(timezone.utc).isoformat()
             }
             await websocket.send_text(json.dumps(response))
     
@@ -168,7 +168,7 @@ async def sensor_websocket_endpoint(
             "type": "sensor_stream_started",
             "sensor_id": sensor_id,
             "message": "Subscribed to sensor data stream",
-            "timestamp": datetime.utcnow().isoformat()
+            "timestamp": datetime.now(timezone.utc).isoformat()
         }
         await websocket.send_text(json.dumps(message))
         
@@ -181,7 +181,7 @@ async def sensor_websocket_endpoint(
                 "humidity": 65.0,
                 "ph": 6.2,
                 "ec": 1.8,
-                "timestamp": datetime.utcnow().isoformat()
+                "timestamp": datetime.now(timezone.utc).isoformat()
             }
             
             sensor_message = {

@@ -7,7 +7,7 @@ from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 import re
-from datetime import datetime
+from datetime import datetime, timezone
 
 from app.models_async.marketing import NewsletterSubscriber
 
@@ -111,7 +111,7 @@ async def api_subscribe(
 
         if existing:
             existing.is_active = True
-            existing.subscription_date = datetime.utcnow()
+            existing.subscription_date = datetime.now(timezone.utc)
             existing.unsubscribe_date = None
             existing.subscription_type = subscription_type
             status = 'reactivated'
@@ -192,7 +192,7 @@ async def api_unsubscribe(
 
         existing.is_active = False
         try:
-            existing.unsubscribe_date = datetime.utcnow()
+            existing.unsubscribe_date = datetime.now(timezone.utc)
         except Exception:
             existing.unsubscribe_date = None
 

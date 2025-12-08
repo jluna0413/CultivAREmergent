@@ -113,14 +113,14 @@ class HealthChecker:
                 status="healthy",
                 message="Database connection successful",
                 response_time=response_time,
-                last_check=datetime.datetime.utcnow().isoformat()
+                last_check=datetime.datetime.now(datetime.timezone.utc).isoformat()
             )
         except Exception as e:
             return HealthCheck(
                 name="database",
                 status="unhealthy",
                 message=f"Database connection failed: {str(e)}",
-                last_check=datetime.datetime.utcnow().isoformat()
+                last_check=datetime.datetime.now(datetime.timezone.utc).isoformat()
             )
     
     @staticmethod
@@ -150,14 +150,14 @@ class HealthChecker:
                 status=status,
                 message=message,
                 response_time=response_time,
-                last_check=datetime.datetime.utcnow().isoformat()
+                last_check=datetime.datetime.now(datetime.timezone.utc).isoformat()
             )
         except Exception as e:
             return HealthCheck(
                 name="disk_space",
                 status="unhealthy",
                 message=f"Disk check failed: {str(e)}",
-                last_check=datetime.datetime.utcnow().isoformat()
+                last_check=datetime.datetime.now(datetime.timezone.utc).isoformat()
             )
     
     @staticmethod
@@ -187,14 +187,14 @@ class HealthChecker:
                 status=status,
                 message=message,
                 response_time=response_time,
-                last_check=datetime.datetime.utcnow().isoformat()
+                last_check=datetime.datetime.now(datetime.timezone.utc).isoformat()
             )
         except Exception as e:
             return HealthCheck(
                 name="memory",
                 status="unhealthy",
                 message=f"Memory check failed: {str(e)}",
-                last_check=datetime.datetime.utcnow().isoformat()
+                last_check=datetime.datetime.now(datetime.timezone.utc).isoformat()
             )
     
     @staticmethod
@@ -221,14 +221,14 @@ class HealthChecker:
                 status=status,
                 message=message,
                 response_time=response_time,
-                last_check=datetime.datetime.utcnow().isoformat()
+                last_check=datetime.datetime.now(datetime.timezone.utc).isoformat()
             )
         except Exception as e:
             return HealthCheck(
                 name="cpu",
                 status="unhealthy",
                 message=f"CPU check failed: {str(e)}",
-                last_check=datetime.datetime.utcnow().isoformat()
+                last_check=datetime.datetime.now(datetime.timezone.utc).isoformat()
             )
     
     @staticmethod
@@ -260,14 +260,14 @@ class HealthChecker:
                 status=status,
                 message=message,
                 response_time=response_time,
-                last_check=datetime.datetime.utcnow().isoformat()
+                last_check=datetime.datetime.now(datetime.timezone.utc).isoformat()
             )
         except Exception as e:
             return HealthCheck(
                 name="environment",
                 status="unhealthy",
                 message=f"Environment check failed: {str(e)}",
-                last_check=datetime.datetime.utcnow().isoformat()
+                last_check=datetime.datetime.now(datetime.timezone.utc).isoformat()
             )
     
     @staticmethod
@@ -299,14 +299,14 @@ class HealthChecker:
                 status=status,
                 message=message,
                 response_time=response_time,
-                last_check=datetime.datetime.utcnow().isoformat()
+                last_check=datetime.datetime.now(datetime.timezone.utc).isoformat()
             )
         except Exception as e:
             return HealthCheck(
                 name="application",
                 status="unhealthy",
                 message=f"Application health check failed: {str(e)}",
-                last_check=datetime.datetime.utcnow().isoformat()
+                last_check=datetime.datetime.now(datetime.timezone.utc).isoformat()
             )
 
 health_checker = HealthChecker()
@@ -376,7 +376,7 @@ async def health_check():
         
         response_data = {
             "status": overall_status,
-            "timestamp": datetime.datetime.utcnow().isoformat(),
+            "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
             "service": "Cultivar Collection Management API",
             "version": "2.0.0",
             "uptime_seconds": time.time() - metrics.start_time,
@@ -395,7 +395,7 @@ async def health_check():
         return JSONResponse(
             content={
                 "status": "unhealthy",
-                "timestamp": datetime.datetime.utcnow().isoformat(),
+                "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
                 "error": "Health check execution failed",
                 "message": str(e)
             },
@@ -415,7 +415,7 @@ async def liveness_check():
         return JSONResponse(
             content={
                 "status": "alive",
-                "timestamp": datetime.datetime.utcnow().isoformat(),
+                "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
                 "uptime_seconds": time.time() - metrics.start_time
             },
             status_code=200
@@ -425,7 +425,7 @@ async def liveness_check():
         return JSONResponse(
             content={
                 "status": "dead",
-                "timestamp": datetime.datetime.utcnow().isoformat(),
+                "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
                 "error": str(e)
             },
             status_code=503
@@ -447,7 +447,7 @@ async def readiness_check():
             return JSONResponse(
                 content={
                     "status": "ready",
-                    "timestamp": datetime.datetime.utcnow().isoformat(),
+                    "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
                     "dependencies": {
                         "database": db_check.status
                     }
@@ -458,7 +458,7 @@ async def readiness_check():
             return JSONResponse(
                 content={
                     "status": "not_ready",
-                    "timestamp": datetime.datetime.utcnow().isoformat(),
+                    "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
                     "dependencies": {
                         "database": db_check.status,
                         "reason": db_check.message
@@ -471,7 +471,7 @@ async def readiness_check():
         return JSONResponse(
             content={
                 "status": "not_ready",
-                "timestamp": datetime.datetime.utcnow().isoformat(),
+                "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
                 "error": str(e)
             },
             status_code=503
@@ -496,7 +496,7 @@ async def get_metrics():
         }
         
         response_data = {
-            "timestamp": datetime.datetime.utcnow().isoformat(),
+            "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
             "application_metrics": summary,
             "system_metrics": system_metrics
         }
@@ -524,7 +524,7 @@ async def system_status():
         summary = metrics.get_metrics_summary()
         
         response_data = {
-            "timestamp": datetime.datetime.utcnow().isoformat(),
+            "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
             "service": {
                 "name": "Cultivar Collection Management API",
                 "version": "2.0.0",
@@ -586,7 +586,7 @@ async def dependency_health():
                 dependencies[f"error_{len(dependencies)}"] = {
                     "status": "error",
                     "message": str(check),
-                    "last_check": datetime.datetime.utcnow().isoformat()
+                    "last_check": datetime.datetime.now(datetime.timezone.utc).isoformat()
                 }
         
         # Determine overall dependency status
@@ -595,7 +595,7 @@ async def dependency_health():
         status_code = 503 if unhealthy_deps else 200
         
         response_data = {
-            "timestamp": datetime.datetime.utcnow().isoformat(),
+            "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
             "overall_status": overall_status,
             "dependencies": dependencies,
             "total_dependencies": len(dependencies),
@@ -631,7 +631,7 @@ async def reset_metrics():
         return JSONResponse(
             content={
                 "message": "Metrics reset successfully",
-                "timestamp": datetime.datetime.utcnow().isoformat()
+                "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat()
             },
             status_code=200
         )
@@ -664,7 +664,7 @@ async def get_alert_configuration():
             "cpu_usage_critical": 90.0,  # percentage
             "disk_space_warning_gb": 5.0,  # GB
             "disk_space_critical_gb": 1.0,  # GB
-            "timestamp": datetime.datetime.utcnow().isoformat()
+            "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat()
         }
         
         return JSONResponse(content=alert_config, status_code=200)

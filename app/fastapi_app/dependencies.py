@@ -48,30 +48,50 @@ async def get_current_user(
     
     try:
         # Use the unified verify_token function from auth.py
-        payload = verify_token(credentials.credentials, "access")
+        payload = await verify_token(credentials.credentials, "access")
         if payload is None:
             raise credentials_exception
         
-        user_id = payload.get("user_id")
-        if user_id is None:
-            raise credentials_exception
+        # Keycloak claims
+        email = payload.get("email")
+        username = payload.get("preferred_username")
         
-        # Check if token is revoked
-        if credentials.credentials in revoked_tokens:
+        if not email and not username:
             raise credentials_exception
-        
+            
     except Exception:
         raise credentials_exception
     
     # Get user from database using async patterns
     from sqlalchemy import select
-    result = await db.execute(select(User).where(User.id == user_id))
+    
+    # Try to find user by email or username
+    query = select(User).where(
+        (User.email == email) if email else (User.username == username)
+    )
+    result = await db.execute(query)
     user = result.scalar_one_or_none()
+    
     if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found"
-        )
+        # JIT Provisioning
+        try:
+            new_user = User(
+                username=username or email.split('@')[0],
+                email=email,
+                is_admin=False, # Default to false, can map from Keycloak roles if needed
+                force_password_change=False
+            )
+            # Set a dummy password since auth is handled by Keycloak
+            new_user.set_password(os.urandom(16).hex())
+            
+            db.add(new_user)
+            await db.commit()
+            await db.refresh(new_user)
+            user = new_user
+            print(f"JIT provisioned user: {user.username}")
+        except Exception as e:
+            print(f"JIT provisioning failed: {e}")
+            raise credentials_exception
     
     return user
 
@@ -136,7 +156,7 @@ def get_cors_origins():
     """
     Enhanced CORS origin parsing with environment-driven configuration
     """
-    origins_env = os.getenv("FRONTEND_ORIGINS", "http://localhost:3000,http://localhost:8000")
+    origins_env = os.getenv("ALLOWED_ORIGINS", os.getenv("FRONTEND_ORIGINS", "http://localhost:3000,http://localhost:8000"))
     
     # Parse comma-separated origins and filter empty items
     origins = []
@@ -147,7 +167,15 @@ def get_cors_origins():
     
     # Add development defaults if no env var set
     if not origins_env.strip():
-        origins = ["http://localhost:3000", "http://localhost:8000"]
+        origins = [
+            "http://localhost:3000",
+            "http://localhost:8000",
+            "http://localhost:5000",
+            "http://localhost:5055",
+            "http://127.0.0.1:5055",
+            "http://localhost:5056",
+            "http://127.0.0.1:5056"
+        ]
     
     return origins
 

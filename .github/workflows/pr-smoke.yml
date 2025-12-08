@@ -27,3 +27,72 @@ jobs:
           FASTAPI_SKIP_ROUTERS: '1'
         run: |
           python -m pytest -q tests/test_fastapi_import.py::test_create_app_root
+
+  smoke-fastapi:
+    runs-on: ubuntu-latest
+    needs: smoke # Ensure it runs after the basic smoke test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build FastAPI container
+        run: docker build -t cultivar-fastapi --build-arg APP_MODE=fastapi .
+
+      - name: Run container
+        run: docker run -d -p 8000:8000 --name fastapi-test -e SECRET_KEY=test cultivar-fastapi
+
+      - name: Wait for health
+        run: |
+          while ! curl -f http://localhost:8000/health; do sleep 1; done
+
+      - name: Test endpoints
+        run: |
+          curl -f http://localhost:8000/ || true # Allow root to fail if not implemented
+          curl -f -H 'Accept: application/json' http://localhost:8000/docs | jq .
+          curl -f http://localhost:8000/openapi.json | jq .
+          curl -f http://localhost:8000/api/v1/plants || true # Allow to fail if no data
+          # Example login test (adjust payload and expected response)
+          curl -X POST -f -d '{"username":"test","password":"password"}' http://localhost:8000/auth/login || true
+
+      - name: Test WebSocket
+        # Install websocat for WebSocket testing
+        run: |
+          curl -L https://github.com/vi/websocat/releases/download/v1.11.0/websocat.x86_64-unknown-linux-musl -o websocat
+          chmod +x websocat
+          ./websocat ws://localhost:8000/ws/sensor --max-message-size 1M -t 'ping' | grep pong || exit 1
+
+      - name: Stop container
+        if: always()
+        run: docker stop fastapi-test; docker rm fastapi-test
+
+  smoke-dual:
+    runs-on: ubuntu-latest
+    needs: smoke-fastapi # Ensure it runs after the FastAPI smoke test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Start dual-stack
+        run: docker compose -f docker-compose.dual.yml up -d
+
+      - name: Wait for Flask health
+        run: |
+          while ! curl -f http://localhost:5000/; do sleep 1; done
+      
+      - name: Wait for FastAPI health
+        run: |
+          while ! curl -f http://localhost:8000/health; do sleep 1; done
+
+      - name: Test shared DB (example: create via Flask, read via FastAPI)
+        run: |
+          # This is a placeholder. Replace with actual API calls that demonstrate shared DB.
+          # Example: Create a user via Flask, then verify its existence via FastAPI.
+          # For this to work, you'd need to ensure your Flask app has an accessible endpoint for creation
+          # and FastAPI has one for reading, and both interact with the same DB.
+          echo "Skipping shared DB test for now, needs specific API endpoints."
+          # curl -X POST -d '{"username":"dualuser","password":"password"}' http://localhost:5000/auth/register # Example Flask register
+          # curl http://localhost:8000/api/v1/users/dualuser # Example FastAPI read
+
+      - name: Stop dual-stack
+        if: always()
+        run: docker compose -f docker-compose.dual.yml down

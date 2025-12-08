@@ -3,7 +3,7 @@ from fastapi import APIRouter, Request, Depends, HTTPException
 from app.fastapi_app.dependencies import require_login, inject_template_context
 from app.models_async.auth import User
 from app.fastapi_app.models.diagnostics import ComprehensiveDiagnostics, SystemHealth, DatabaseHealth, UserActivitySummary, PlantHealthDiagnostics, SensorDiagnostics, AppPerformanceMetrics, ErrorLogAnalysis
-from datetime import datetime
+from datetime import datetime, timezone
 
 router = APIRouter(tags=["diagnostics"])
 
@@ -47,7 +47,7 @@ async def api_errors():
 
 @router.get("/api/comprehensive", response_model=ComprehensiveDiagnostics)
 async def api_comprehensive():
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     return ComprehensiveDiagnostics(
         system_health=SystemHealth(status="ok", database="ok", cache="ok", disk_space="ok"),
         db_health=DatabaseHealth(status="ok", connection_time=0.123),
@@ -65,7 +65,7 @@ async def status():
 
 @router.get("/api/realtime")
 async def api_realtime():
-    return {"timestamp": datetime.utcnow(), "cpu_usage": 0.5, "memory_usage": 0.6}
+    return {"timestamp": datetime.now(timezone.utc), "cpu_usage": 0.5, "memory_usage": 0.6}
 
 @router.get("/health")
 async def health():

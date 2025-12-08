@@ -23,7 +23,7 @@ async function generateShareURL(el) {
     const platform = el.getAttribute('data-platform');
     const url = root.getAttribute('data-url') || window.location.href;
     const title = root.getAttribute('data-title') || document.title;
-    const resp = await fetch(`/social/api/generate-share-url?platform=${encodeURIComponent(platform)}&url=${encodeURIComponent(url)}&title=${encodeURIComponent(title)}`);
+    const resp = await fetch(`/api/v2/social/generate-share-url?platform=${encodeURIComponent(platform)}&url=${encodeURIComponent(url)}&title=${encodeURIComponent(title)}`);
     const data = await resp.json();
     if (data.share_url) {
       window.open(data.share_url, '_blank', 'noopener');

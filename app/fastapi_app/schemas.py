@@ -3,7 +3,7 @@ Plant Schemas for FastAPI
 Pydantic models for plant-related API requests and responses
 """
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from typing import Optional
 from datetime import datetime
 from enum import Enum
@@ -61,8 +61,7 @@ class PlantResponse(BaseModel):
     created_at: datetime
     updated_at: Optional[datetime]
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class PlantListResponse(BaseModel):
     """Schema for paginated plant list response"""

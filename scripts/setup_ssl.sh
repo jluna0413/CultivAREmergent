@@ -134,5 +134,5 @@ esac
 
 echo ""
 echo "🔄 Remember to set SSL environment variables in your production configuration!"
-echo "   For Docker: Set them in your docker-compose.yml"
+echo "   For Docker: Add these to the environment section of your service in docker-compose.fastapi.yml or docker-compose.dual.yml"
 echo "   For direct deployment: Set them in your environment before starting the app"

@@ -9,6 +9,7 @@ from pathlib import Path
 
 from alembic import context
 from sqlalchemy import engine_from_config, pool
+from sqlalchemy.engine import url as sa_url
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
@@ -59,7 +60,16 @@ def run_migrations_offline() -> None:
 def run_migrations_online() -> None:
     """Run migrations in 'online' mode."""
     configuration = config.get_section(config.config_ini_section, {})
-    configuration["sqlalchemy.url"] = _get_database_url()
+    database_url = _get_database_url()
+
+    # Convert async URL to sync for Alembic if detected
+    parsed_url = sa_url.make_url(database_url)
+    if parsed_url.drivername.startswith("sqlite+aiosqlite"):
+        database_url = str(parsed_url.set(drivername="sqlite"))
+    elif parsed_url.drivername.startswith("postgresql+asyncpg"):
+        database_url = str(parsed_url.set(drivername="postgresql"))
+
+    configuration["sqlalchemy.url"] = database_url
 
     connectable = engine_from_config(
         configuration,
