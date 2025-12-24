@@ -1,0 +1,62 @@
+version: "3.8"
+
+# Docker Compose configuration for running the FastAPI version of CultivAR with database support.
+# This is the primary compose file for FastAPI development and production.
+# For PostgreSQL, the db service is included; for SQLite, comment out the db service and adjust environment variables accordingly.
+
+services:
+  # PostgreSQL database service
+  db:
+    image: postgres:13-alpine
+    container_name: cultivar-db
+    restart: unless-stopped
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=cultivar
+      - POSTGRES_PASSWORD=cultivar
+      - POSTGRES_DB=cultivardb
+
+  # FastAPI service (primary application)
+  cultivar_fastapi:
+    build:
+      context: .
+    image: cultivare:dev
+    container_name: cultivare_fastapi_app
+    environment:
+      - APP_MODE=fastapi
+      - SECRET_KEY=dev-secret-change-me
+      - PYTHONUNBUFFERED=1
+      - CULTIVAR_DB_DRIVER=postgres  # Change to 'sqlite' if not using db service
+      - CULTIVAR_DB_HOST=db
+      - CULTIVAR_DB_PORT=5432
+      - CULTIVAR_DB_USER=cultivar
+      - CULTIVAR_DB_PASSWORD=cultivar
+      - CULTIVAR_DB_NAME=cultivardb
+      - SESSION_SECRET_KEY=dev-session-secret
+      - CSRF_SECRET_KEY=dev-csrf-secret
+      - FLASH_SECRET_KEY=dev-flash-secret
+      - FRONTEND_ORIGINS=http://localhost:3000,http://localhost:8000
+    volumes:
+      - ./:/app:cached
+      - /app/__pycache__
+      - ./uploads:/app/uploads
+      - ./logs:/app/logs
+    ports:
+      - "8001:8000"
+    command: ['./docker-entrypoint.sh']
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://127.0.0.1:8000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    depends_on:
+      - db
+    # This Docker Compose file is specifically for running the FastAPI version of CultivAR in development mode.
+    # It runs on port 8000 with PostgreSQL database support.
+    # To use SQLite instead: comment out the 'db' service above, change CULTIVAR_DB_DRIVER to 'sqlite',
+    # and add the following volume mount: - ./data:/app/data
+
+volumes:
+  postgres_data:

@@ -1,0 +1,90 @@
+version: "3.8"
+
+# Docker Compose configuration for running both Flask and FastAPI simultaneously (dual-stack).
+# This enables side-by-side comparison and gradual traffic migration during the Flask-to-FastAPI migration.
+# For PostgreSQL, the db service is included; for SQLite, comment out the db service and adjust environment variables accordingly.
+
+services:
+  # Shared database service (PostgreSQL) - comment out if using SQLite
+  db:
+    image: postgres:13-alpine
+    container_name: cultivar-db
+    restart: unless-stopped
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=cultivar
+      - POSTGRES_PASSWORD=cultivar
+      - POSTGRES_DB=cultivardb
+
+  # Flask service (production fallback)
+  cultivar_flask:
+    build:
+      context: .
+    image: cultivare:dev
+    container_name: cultivare_flask
+    environment:
+      - FLASK_APP=cultivar_app.py
+      - FLASK_ENV=development
+      - FLASK_DEBUG=1
+      - PYTHONUNBUFFERED=1
+      - SECRET_KEY=dev-secret-change-me
+      - CULTIVAR_DB_DRIVER=postgres  # Change to 'sqlite' if not using db service
+      - CULTIVAR_DB_HOST=db
+      - CULTIVAR_DB_PORT=5432
+      - CULTIVAR_DB_USER=cultivar
+      - CULTIVAR_DB_PASSWORD=cultivar
+      - CULTIVAR_DB_NAME=cultivardb
+    volumes:
+      - ./:/app:cached
+      - /app/__pycache__
+    ports:
+      - "5000:5000"
+    command: ['./app/docker-entrypoint.sh']
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://127.0.0.1:5000/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    depends_on:
+      - db  # Comment out if using SQLite
+
+  # FastAPI service (migration target)
+  cultivar_fastapi:
+    build:
+      context: .
+    image: cultivare:dev
+    container_name: cultivare_fastapi
+    environment:
+      - APP_MODE=fastapi
+      - FASTAPI_PORT=8000
+      - PYTHONUNBUFFERED=1
+      - SECRET_KEY=dev-secret-change-me
+      - CULTIVAR_DB_DRIVER=postgres  # Change to 'sqlite' if not using db service
+      - CULTIVAR_DB_HOST=db
+      - CULTIVAR_DB_PORT=5432
+      - CULTIVAR_DB_USER=cultivar
+      - CULTIVAR_DB_PASSWORD=cultivar
+      - CULTIVAR_DB_NAME=cultivardb
+      - SESSION_SECRET_KEY=dev-session-secret
+      - CSRF_SECRET_KEY=dev-csrf-secret
+      - FLASH_SECRET_KEY=dev-flash-secret
+      - FRONTEND_ORIGINS=http://localhost:3000,http://localhost:8000
+    volumes:
+      - ./:/app:cached
+      - /app/__pycache__
+    ports:
+      - "8000:8000"
+    command: ['./app/docker-entrypoint.sh']
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://127.0.0.1:8000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    depends_on:
+      - db  # Comment out if using SQLite
+
+volumes:
+  postgres_data:

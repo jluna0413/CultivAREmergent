@@ -1,0 +1,181 @@
+version: "3.8"
+
+# Production-ready FastAPI Docker Compose Configuration
+# This configuration is optimized for production deployment of the CultivAR FastAPI backend
+
+services:
+  # Production PostgreSQL database
+  db:
+    image: postgres:15-alpine
+    container_name: cultivar-prod-db
+    restart: unless-stopped
+    volumes:
+      - postgres_prod_data:/var/lib/postgresql/data
+      - ./backups:/backups
+    environment:
+      - POSTGRES_USER=cultivar
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-prod-secret-change-me}
+      - POSTGRES_DB=cultivardb
+      - POSTGRES_INITDB_ARGS=--encoding=UTF8 --lc-collate=C --lc-ctype=C
+    networks:
+      - cultivar-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cultivar"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # FastAPI Application - Production Configuration
+  cultivar-fastapi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    image: cultivare:prod-fastapi
+    container_name: cultivar-prod-api
+    restart: unless-stopped
+    environment:
+      # Application Environment
+      - ENVIRONMENT=production
+      - APP_MODE=fastapi
+      - FASTAPI_PORT=8000
+      - PYTHONUNBUFFERED=1
+      
+      # Security & Secrets (Set via environment or Docker secrets in production)
+      - SECRET_KEY=${SECRET_KEY:-prod-app-secret-change-me}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-prod-jwt-secret-change-me}
+      - JWT_ALGORITHM=HS256
+      - JWT_EXPIRE_MINUTES=30
+      - SESSION_SECRET_KEY=${SESSION_SECRET_KEY:-prod-session-secret}
+      - CSRF_SECRET_KEY=${CSRF_SECRET_KEY:-prod-csrf-secret}
+      - FLASH_SECRET_KEY=${FLASH_SECRET_KEY:-prod-flash-secret}
+      
+      # Database Configuration
+      - CULTIVAR_DB_DRIVER=postgres
+      - CULTIVAR_DB_HOST=db
+      - CULTIVAR_DB_PORT=5432
+      - CULTIVAR_DB_USER=cultivar
+      - CULTIVAR_DB_PASSWORD=${POSTGRES_PASSWORD:-prod-secret-change-me}
+      - CULTIVAR_DB_NAME=cultivardb
+      - DB_POOL_SIZE=10
+      - DB_MAX_OVERFLOW=20
+      
+      # Rate Limiting & Security
+      - RATE_LIMIT=1000
+      - RATE_WINDOW=60
+      - TRUSTED_HOSTS=cultivar-app.com,api.cultivar-app.com,www.cultivar-app.com
+      - CORS_ORIGINS=https://cultivar-app.com,https://www.cultivar-app.com,https://admin.cultivar-app.com
+      
+      # Frontend Origins
+      - FRONTEND_ORIGINS=https://cultivar-app.com,https://www.cultivar-app.com,https://app.cultivar.com
+      
+      # Logging
+      - LOG_LEVEL=INFO
+      - LOG_FORMAT=json
+      
+      # Health & Monitoring
+      - HEALTH_CHECK_INTERVAL=30
+      - HEALTH_CHECK_TIMEOUT=10
+      
+    volumes:
+      - app_logs:/app/logs
+      - app_uploads:/app/uploads
+      - app_backups:/app/backups
+      # For development, uncomment next line:
+      # - ./:/app:cached
+    
+    ports:
+      - "8000:8000"
+    
+    command: >
+      sh -c "
+        echo '🚀 Starting CultivAR FastAPI Production Server...' &&
+        alembic upgrade head &&
+        python -m uvicorn app.fastapi_app.main:app --host 0.0.0.0 --port 8000 --workers 4 --access-log
+      "
+    
+    networks:
+      - cultivar-network
+    
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    
+    depends_on:
+      db:
+        condition: service_healthy
+    
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "5"
+    
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
+
+  # Optional: Nginx Reverse Proxy (uncomment if needed)
+  # nginx:
+  #   image: nginx:alpine
+  #   container_name: cultivar-prod-nginx
+  #   restart: unless-stopped
+  #   volumes:
+  #     - ./nginx/prod.conf:/etc/nginx/nginx.conf:ro
+  #     - ./nginx/ssl:/etc/nginx/ssl:ro
+  #     - app_static:/var/www/static:ro
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   depends_on:
+  #     - cultivar-fastapi
+  #   networks:
+  #     - cultivar-network
+
+  # Optional: Redis for caching/sessions (uncomment if needed)
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: cultivar-prod-redis
+  #   restart: unless-stopped
+  #   command: redis-server --appendonly yes
+  #   volumes:
+  #     - redis_data:/data
+  #   networks:
+  #     - cultivar-network
+  #   logging:
+  #     driver: "json-file"
+  #     options:
+  #       max-size: "10m"
+  #       max-file: "3"
+
+networks:
+  cultivar-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+volumes:
+  postgres_prod_data:
+    driver: local
+  app_logs:
+    driver: local
+  app_uploads:
+    driver: local
+  app_backups:
+    driver: local
+  # redis_data:
+  #   driver: local

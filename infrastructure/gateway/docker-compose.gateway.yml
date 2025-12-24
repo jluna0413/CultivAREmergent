@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  algorand-mcp:
+    image: python:3.11-slim
+    container_name: algorand-mcp
+    command: >
+      bash -c "pip install fastmcp algosdk fastapi uvicorn &&
+      fastmcp run --transport sse --port 8000 --host 0.0.0.0 app/mcp/algorand_server.py"
+    volumes:
+      - ../../app:/app/app
+    working_dir: /app
+    environment:
+      - ALGORAND_NODE_URL=${ALGORAND_NODE_URL:-http://host.docker.internal:4001}
+      - ALGORAND_NODE_TOKEN=${ALGORAND_NODE_TOKEN:-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
+      - ALGORAND_APP_ID=${ALGORAND_APP_ID:-12345}
+      - ALGORAND_SIGNER_PRIVATE_KEY=${ALGORAND_SIGNER_PRIVATE_KEY}
+    ports:
+      - "8000:8000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  librechat:
+    image: ghcr.io/danny-avila/librechat-dev:latest
+    container_name: librechat
+    ports:
+      - "3080:3080"
+    volumes:
+      - ./librechat.yaml:/app/librechat.yaml
+      - librechat_images:/app/client/public/images
+    environment:
+      - HOST=0.0.0.0
+      - MONGO_URI=mongodb://mongo:27017/LibreChat
+    depends_on:
+      - mongo
+      - algorand-mcp
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  mongo:
+    image: mongo:latest
+    container_name: chat-mongo
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  librechat_images:
+  mongo_data:

@@ -1,0 +1,19 @@
+version: 1.0.0
+
+cache: true
+
+endpoints:
+  custom:
+    - name: "Ollama"
+      apiKey: "ollama"
+      baseURL: "http://host.docker.internal:11434/v1"
+      models:
+        default: ["llama3.2", "mistral"]
+        fetch: true
+      titleConvo: true
+      titleModel: "current_model"
+
+mcpServers:
+  algorand-plants:
+    url: "http://algorand-mcp:8000/sse"
+    transport: "sse"

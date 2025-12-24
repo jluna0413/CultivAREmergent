@@ -1,0 +1,137 @@
+version: "3.8"
+
+# CultivAR MVP Docker Compose Stack
+# This orchestrates: FastAPI backend, PostgreSQL database, and Emerald Plant Tracker integration
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:13-alpine
+    container_name: cultivar-db
+    restart: unless-stopped
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=cultivar
+      - POSTGRES_PASSWORD=cultivar
+      - POSTGRES_DB=cultivardb
+    ports:
+      - "5432:5432"
+    networks:
+      - cultivar-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cultivar"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # CultivAR FastAPI Backend
+  cultivar_fastapi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: cultivar:dev
+    container_name: cultivar_fastapi_app
+    environment:
+      - APP_MODE=fastapi
+      - SECRET_KEY=${SECRET_KEY:-dev-secret-change-me}
+      - PYTHONUNBUFFERED=1
+      - CULTIVAR_DB_DRIVER=postgres
+      - CULTIVAR_DB_HOST=db
+      - CULTIVAR_DB_PORT=5432
+      - CULTIVAR_DB_USER=cultivar
+      - CULTIVAR_DB_PASSWORD=cultivar
+      - CULTIVAR_DB_NAME=cultivardb
+      - SESSION_SECRET_KEY=${SESSION_SECRET_KEY:-dev-session-secret}
+      - CSRF_SECRET_KEY=${CSRF_SECRET_KEY:-dev-csrf-secret}
+      - FLASH_SECRET_KEY=${FLASH_SECRET_KEY:-dev-flash-secret}
+      - FRONTEND_ORIGINS=http://localhost:3000,http://localhost:8000,http://localhost:4242
+      - EMERALD_API_URL=http://emerald:420
+    volumes:
+      - ./:/app:cached
+      - /app/__pycache__
+      - cultivar_uploads:/app/uploads
+      - cultivar_logs:/app/logs
+    ports:
+      - "4200:8000"
+    command: ['./docker-entrypoint.sh']
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      emerald:
+        condition: service_started
+    networks:
+      - cultivar-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://127.0.0.1:8000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Emerald Plant Tracker (Nutrient Management Integration)
+  emerald:
+    image: dmans218/emerald-plant-tracker:latest
+    container_name: emerald-plant-tracker
+    restart: unless-stopped
+    ports:
+      - "420:420"
+    volumes:
+      - emerald_data:/app/backend/data
+      - emerald_uploads:/app/backend/uploads
+    environment:
+      - NODE_ENV=production
+    networks:
+      - cultivar-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:420 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Hypergraph Knowledge Base Service
+  hypergraph-service:
+    image: dmans218/hypergraph-service:latest
+    container_name: hypergraph-service
+    restart: unless-stopped
+    ports:
+      - "8001:8001"
+    environment:
+      - NODE_ENV=production
+    networks:
+      - cultivar-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8001/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # IPFS Node (Self-Hosted)
+  ipfs:
+    image: ipfs/kubo:latest
+    container_name: cultivar-ipfs
+    restart: unless-stopped
+    ports:
+      - "4001:4001" # Swarm TCP
+      - "5001:5001" # API
+      - "8080:8080" # Gateway
+    volumes:
+      - ipfs_data:/data/ipfs
+      - ipfs_staging:/export
+    environment:
+      - IPFS_PROFILE=server
+    networks:
+      - cultivar-network
+
+volumes:
+  postgres_data:
+  cultivar_uploads:
+  cultivar_logs:
+  emerald_data:
+  emerald_uploads:
+  ipfs_data:
+  ipfs_staging:
+
+networks:
+  cultivar-network:
+    driver: bridge
