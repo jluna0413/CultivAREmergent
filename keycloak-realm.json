@@ -1,0 +1,99 @@
+{
+    "realm": "cultivar",
+    "enabled": true,
+    "users": [
+        {
+            "username": "user",
+            "enabled": true,
+            "email": "user@cultivar.app",
+            "firstName": "Regular",
+            "lastName": "User",
+            "credentials": [
+                {
+                    "type": "password",
+                    "value": "password",
+                    "temporary": false
+                }
+            ],
+            "realmRoles": [
+                "user"
+            ],
+            "clientRoles": {
+                "cultivar-web": [
+                    "user"
+                ]
+            }
+        },
+        {
+            "username": "admin",
+            "enabled": true,
+            "email": "admin@cultivar.app",
+            "firstName": "Admin",
+            "lastName": "User",
+            "credentials": [
+                {
+                    "type": "password",
+                    "value": "admin",
+                    "temporary": false
+                }
+            ],
+            "realmRoles": [
+                "admin",
+                "user"
+            ],
+            "clientRoles": {
+                "cultivar-web": [
+                    "admin"
+                ]
+            }
+        }
+    ],
+    "roles": {
+        "realm": [
+            {
+                "name": "user",
+                "description": "User role"
+            },
+            {
+                "name": "admin",
+                "description": "Admin role"
+            }
+        ]
+    },
+    "clients": [
+        {
+            "clientId": "cultivar-web",
+            "enabled": true,
+            "publicClient": true,
+            "directAccessGrantsEnabled": true,
+            "standardFlowEnabled": true,
+            "implicitFlowEnabled": false,
+            "redirectUris": [
+                "com.cultivar.app://login-callback",
+                "http://localhost:4242/*",
+                "http://localhost:3000/*"
+            ],
+            "webOrigins": [
+                "*"
+            ],
+            "defaultClientScopes": [
+                "web-origins",
+                "acr",
+                "profile",
+                "roles",
+                "email"
+            ]
+        },
+        {
+            "clientId": "cultivar-backend",
+            "enabled": true,
+            "publicClient": false,
+            "secret": "backend-client-secret",
+            "directAccessGrantsEnabled": false,
+            "standardFlowEnabled": false,
+            "serviceAccountsEnabled": true,
+            "authorizationServicesEnabled": true
+        }
+    ],
+    "sslRequired": "external"
+}
