@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 1262 1130" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+    <g id="Vivosun" transform="matrix(1,0,0,1,1465.9514,0)">
+        <rect x="-1465.951" y="0" width="1261.18" height="1129.709" style="fill:none;"/>
+        <g transform="matrix(1,0,0,1,-1465.9514,0)">
+            <path d="M448.133,777.6L564.855,982.023L972.395,278.768L732.761,279.746L448.133,777.6Z" style="fill:rgb(24,166,74);"/>
+        </g>
+        <g transform="matrix(1,0,0,1,-1465.9514,0)">
+            <path d="M155.681,278.768C155.681,278.768 252.019,458.806 302.397,527.206C345.597,585.861 437.272,632.798 540.468,549.724C576.347,520.84 650.627,336.448 458.893,278.768C456.243,277.971 155.681,278.768 155.681,278.768Z" style="fill:rgb(24,166,74);"/>
+        </g>
+    </g>
+</svg>

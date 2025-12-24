@@ -1,0 +1,293 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../models/dashboard_stats.dart';
+
+/// Dashboard provider state
+class DashboardProviderState {
+  const DashboardProviderState({
+    this.stats,
+    this.isLoading,
+    this.error,
+    this.lastUpdated,
+  });
+
+  final DashboardStats? stats;
+  final bool? isLoading;
+  final String? error;
+  final DateTime? lastUpdated;
+
+  bool get hasError => error != null;
+  bool get isStale =>
+      lastUpdated == null ||
+      DateTime.now().difference(lastUpdated!) > const Duration(minutes: 5);
+
+  DashboardProviderState copyWith({
+    DashboardStats? stats,
+    bool? isLoading,
+    String? error,
+    DateTime? lastUpdated,
+  }) {
+    return DashboardProviderState(
+      stats: stats ?? this.stats,
+      isLoading: isLoading ?? this.isLoading,
+      error: error ?? this.error,
+      lastUpdated: lastUpdated ?? this.lastUpdated,
+    );
+  }
+}
+
+/// Dashboard notifier
+class DashboardNotifier extends StateNotifier<DashboardProviderState> {
+  DashboardNotifier() : super(const DashboardProviderState()) {
+    _loadStats();
+  }
+
+  Future<void> _loadStats() async {
+    try {
+      state = state.copyWith(isLoading: true, error: null);
+
+      final stats = await _fetchStats();
+
+      state = state.copyWith(
+        stats: stats,
+        isLoading: false,
+        lastUpdated: DateTime.now(),
+      );
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        error: e.toString(),
+      );
+    }
+  }
+
+  Future<DashboardStats> _fetchStats() async {
+    // TODO: Replace with actual API call
+    await Future.delayed(const Duration(milliseconds: 800));
+    return _generateMockStats();
+  }
+
+  Future<void> refresh() async {
+    await _loadStats();
+  }
+
+  void clearError() {
+    if (state.hasError) {
+      state = state.copyWith(error: null);
+    }
+  }
+
+  Future<void> setDateRange(DateTime start, DateTime end) async {
+    try {
+      state = state.copyWith(isLoading: true, error: null);
+
+      final stats = await _fetchStatsForDateRange(start, end);
+
+      state = state.copyWith(
+        stats: stats,
+        isLoading: false,
+        lastUpdated: DateTime.now(),
+      );
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        error: e.toString(),
+      );
+    }
+  }
+
+  Future<DashboardStats> _fetchStatsForDateRange(
+      DateTime start, DateTime end) async {
+    // TODO: Replace with actual API call with date range
+    await Future.delayed(const Duration(milliseconds: 600));
+    return _generateMockStats();
+  }
+
+  // Mock data generator
+  DashboardStats _generateMockStats() {
+    return DashboardStats(
+      counts: const CountStats(
+        total: 24,
+        active: 18,
+        harvested: 4,
+        seedlings: 2,
+        vegetative: 6,
+        flowering: 8,
+      ),
+      cultivars: const CultivarStats(
+        totalCultivars: 15,
+        userCultivars: 12,
+      ),
+      environment: const EnvironmentalStats(
+        avgTemperature: 24.5,
+        avgHumidity: 65.2,
+        avgPh: 6.2,
+        avgEc: 1.8,
+      ),
+      sensors: const SensorStats(
+        totalSensors: 12,
+        activeSensors: 11,
+        lastReadingTime: null,
+      ),
+      dataSlices: const EnvironmentalSlice(),
+      growthPhases: const [
+        GrowthPhaseSlice(phase: 'Seedling', count: 2, percentage: 8.3),
+        GrowthPhaseSlice(phase: 'Vegetative', count: 6, percentage: 25.0),
+        GrowthPhaseSlice(phase: 'Flowering', count: 8, percentage: 33.3),
+        GrowthPhaseSlice(phase: 'Curing', count: 2, percentage: 8.3),
+      ],
+      recentReadings: const [
+        RecentReading(
+          timestamp: null,
+          sensorType: 'temperature',
+          value: 24.5,
+          unit: '°C',
+        ),
+      ],
+      recentActivities: const [
+        RecentActivity(
+          timestamp: null,
+          activityType: 'watering',
+          description: 'Watered Northern Lights #1',
+          severity: 'info',
+        ),
+        RecentActivity(
+          timestamp: null,
+          activityType: 'harvest',
+          description: 'Harvested White Widow #1',
+          severity: 'success',
+        ),
+      ],
+      generatedAt: null,
+      userId: 1,
+    );
+  }
+}
+
+/// Auto-dispose provider for dashboard
+final dashboardProvider =
+    StateNotifierProvider<DashboardNotifier, DashboardProviderState>((ref) {
+  return DashboardNotifier();
+});
+
+/// Convenience providers
+final dashboardStatsProvider = Provider<DashboardStats?>((ref) {
+  final dashboardState = ref.watch(dashboardProvider);
+  return dashboardState.stats;
+});
+
+final dashboardLoadingProvider = Provider<bool>((ref) {
+  final dashboardState = ref.watch(dashboardProvider);
+  return dashboardState.isLoading ?? false;
+});
+
+final dashboardErrorProvider = Provider<String?>((ref) {
+  final dashboardState = ref.watch(dashboardProvider);
+  return dashboardState.error;
+});
+
+final dashboardIsStaleProvider = Provider<bool>((ref) {
+  final dashboardState = ref.watch(dashboardProvider);
+  return dashboardState.isStale;
+});
+
+final dashboardLastUpdatedProvider = Provider<DateTime?>((ref) {
+  final dashboardState = ref.watch(dashboardProvider);
+  return dashboardState.lastUpdated;
+});
+
+/// Specific metric providers
+final totalPlantsProvider = Provider<int>((ref) {
+  final stats = ref.watch(dashboardStatsProvider);
+  return stats?.counts.total ?? 0;
+});
+
+final dashboardActivePlantsProvider = Provider<int>((ref) {
+  final stats = ref.watch(dashboardStatsProvider);
+  return stats?.counts.active ?? 0;
+});
+
+final healthScoreProvider = Provider<double>((ref) {
+  final stats = ref.watch(dashboardStatsProvider);
+  if (stats == null) return 0.0;
+  
+  final activeRatio = stats.counts.active / stats.counts.total;
+  final envScore = (stats.environment.avgTemperature - 20).abs() < 5 ? 1.0 : 0.7;
+  const sensorScore = 0.9;
+  
+  return (activeRatio + envScore + sensorScore) / 3;
+});
+
+final totalYieldProvider = Provider<double>((ref) {
+  final stats = ref.watch(dashboardStatsProvider);
+  // Estimate yield based on active plants
+  return (stats?.counts.active ?? 0) * 125.0;
+});
+
+final alertsCountProvider = Provider<int>((ref) {
+  final stats = ref.watch(dashboardStatsProvider);
+  // Count alerts based on various factors
+  int alerts = 0;
+  if (stats != null) {
+    if (stats.environment.avgTemperature < 20 || stats.environment.avgTemperature > 28) {
+      alerts++;
+    }
+    if (stats.environment.avgHumidity < 50 || stats.environment.avgHumidity > 70) {
+      alerts++;
+    }
+    if (stats.sensors.totalSensors - stats.sensors.activeSensors > 0) {
+      alerts++;
+    }
+  }
+  return alerts;
+});
+
+final recentActivitiesProvider = Provider<List<RecentActivity>>((ref) {
+  final stats = ref.watch(dashboardStatsProvider);
+  return stats?.recentActivities ?? [];
+});
+
+final weeklyGoalsProvider = Provider<List<String>>((ref) {
+  final stats = ref.watch(dashboardStatsProvider);
+  if (stats == null) return [];
+  
+  return [
+    'Complete flowering transition for ${(stats.counts.total * 0.3).toInt()} plants',
+    'Harvest ${stats.counts.harvested} plants',
+    'Adjust lighting schedule',
+    'Perform preventive maintenance',
+  ];
+});
+
+final topPerformingStrainsProvider = Provider<List<String>>((ref) {
+  final stats = ref.watch(dashboardStatsProvider);
+  // Mock top performing strains based on growth phases
+  return stats?.growthPhases
+      .where((phase) => phase.count > 5)
+      .map((phase) => '${phase.phase} strains')
+      .toList() ?? [];
+});
+
+final environmentMetricsProvider = Provider<Map<String, double>>((ref) {
+  final stats = ref.watch(dashboardStatsProvider);
+  if (stats == null) return {};
+
+  return {
+    'temperature': stats.environment.avgTemperature,
+    'humidity': stats.environment.avgHumidity,
+    'ph': stats.environment.avgPh ?? 0.0,
+    'ec': stats.environment.avgEc ?? 0.0,
+  };
+});
+
+final plantStageDistributionProvider = Provider<Map<String, int>>((ref) {
+  final stats = ref.watch(dashboardStatsProvider);
+  if (stats == null) return {};
+
+  return {
+    'seedling': stats.counts.seedlings,
+    'vegetative': stats.counts.vegetative,
+    'flowering': stats.counts.flowering,
+    'harvested': stats.counts.harvested,
+  };
+});
