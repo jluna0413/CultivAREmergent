@@ -1,0 +1,6 @@
+{
+  "useMCP": true,
+  "mcpPath": ".roo/mcp.json",
+  "mcpKey": "mcpServers",
+  "description": "Roo Code local settings — points Roo to a strict JSON MCP config to avoid JSONC parsing errors in other files."
+}
