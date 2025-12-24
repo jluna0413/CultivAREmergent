@@ -1,0 +1,107 @@
+{
+  "model": "gemma3:4b-it-q4_K_M",
+  "available": true,
+  "tests": [
+    {
+      "id": "echo_test",
+      "prompt": "Please reply with the single word: alive",
+      "max_tokens": 16,
+      "success": true,
+      "elapsed_ms": 22534,
+      "response_text": "alive\n",
+      "finish_reason": "stop",
+      "raw": "{\r\n  \"id\": \"cmpl-387\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764125402,\r\n  \"model\": \"gemma3:4b-it-q4_K_M\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"alive\\n\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"stop\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 17,\r\n    \"completion_tokens\": 3,\r\n    \"total_tokens\": 20\r\n  }\r\n}",
+      "error": null,
+      "attempts": [
+        {
+          "body": "{\"id\":\"cmpl-387\",\"object\":\"text_completion\",\"created\":1764125402,\"model\":\"gemma3:4b-it-q4_K_M\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"alive\\n\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":17,\"completion_tokens\":3,\"total_tokens\":20}}\n",
+          "format": "prompt,max_tokens,model",
+          "status": 200
+        }
+      ],
+      "attempt_format": "prompt,max_tokens,model",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-387\",\"object\":\"text_completion\",\"created\":1764125402,\"model\":\"gemma3:4b-it-q4_K_M\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"alive\\n\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":17,\"completion_tokens\":3,\"total_tokens\":20}}\n",
+      "score": null,
+      "metric_details": null
+    },
+    {
+      "id": "math_test",
+      "prompt": "What is 17 + 5?",
+      "max_tokens": 64,
+      "success": true,
+      "elapsed_ms": 3466,
+      "response_text": "17 + 5 = 22\n",
+      "finish_reason": "stop",
+      "raw": "{\r\n  \"id\": \"cmpl-583\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764125405,\r\n  \"model\": \"gemma3:4b-it-q4_K_M\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"17 + 5 = 22\\n\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"stop\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 18,\r\n    \"completion_tokens\": 11,\r\n    \"total_tokens\": 29\r\n  }\r\n}",
+      "error": null,
+      "attempts": [
+        {
+          "body": "{\"id\":\"cmpl-583\",\"object\":\"text_completion\",\"created\":1764125405,\"model\":\"gemma3:4b-it-q4_K_M\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"17 + 5 = 22\\n\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":18,\"completion_tokens\":11,\"total_tokens\":29}}\n",
+          "format": "prompt,max_tokens,model",
+          "status": 200
+        }
+      ],
+      "attempt_format": "prompt,max_tokens,model",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-583\",\"object\":\"text_completion\",\"created\":1764125405,\"model\":\"gemma3:4b-it-q4_K_M\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"17 + 5 = 22\\n\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":18,\"completion_tokens\":11,\"total_tokens\":29}}\n",
+      "score": 1,
+      "metric_details": {
+        "expected": "22",
+        "detected": "22"
+      }
+    },
+    {
+      "id": "translate_test",
+      "prompt": "Translate to Spanish: 'Good morning'",
+      "max_tokens": 128,
+      "success": true,
+      "elapsed_ms": 12230,
+      "response_text": "The most common and widely used translation of \"Good morning\" in Spanish is:\n\n**Buenos días** \n\nIt's pronounced:  Bway-nohs dee-ahs\n\nHere are a few other options, though \"Buenos días\" is the standard:\n\n*   **Que tengas un buen día** (May you have a good day) - This is a more polite and complete wish.",
+      "finish_reason": "stop",
+      "raw": "{\r\n  \"id\": \"cmpl-711\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764125420,\r\n  \"model\": \"gemma3:4b-it-q4_K_M\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"The most common and widely used translation of \\\"Good morning\\\" in Spanish is:\\n\\n**Buenos días** \\n\\nIt's pronounced:  Bway-nohs dee-ahs\\n\\nHere are a few other options, though \\\"Buenos días\\\" is the standard:\\n\\n*   **Que tengas un buen día** (May you have a good day) - This is a more polite and complete wish.\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"stop\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 17,\r\n    \"completion_tokens\": 83,\r\n    \"total_tokens\": 100\r\n  }\r\n}",
+      "error": null,
+      "attempts": [
+        {
+          "body": "{\"id\":\"cmpl-711\",\"object\":\"text_completion\",\"created\":1764125420,\"model\":\"gemma3:4b-it-q4_K_M\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"The most common and widely used translation of \\\"Good morning\\\" in Spanish is:\\n\\n**Buenos días** \\n\\nIt's pronounced:  Bway-nohs dee-ahs\\n\\nHere are a few other options, though \\\"Buenos días\\\" is the standard:\\n\\n*   **Que tengas un buen día** (May you have a good day) - This is a more polite and complete wish.\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":17,\"completion_tokens\":83,\"total_tokens\":100}}\n",
+          "format": "prompt,max_tokens,model",
+          "status": 200
+        }
+      ],
+      "attempt_format": "prompt,max_tokens,model",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-711\",\"object\":\"text_completion\",\"created\":1764125420,\"model\":\"gemma3:4b-it-q4_K_M\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"The most common and widely used translation of \\\"Good morning\\\" in Spanish is:\\n\\n**Buenos días** \\n\\nIt's pronounced:  Bway-nohs dee-ahs\\n\\nHere are a few other options, though \\\"Buenos días\\\" is the standard:\\n\\n*   **Que tengas un buen día** (May you have a good day) - This is a more polite and complete wish.\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":17,\"completion_tokens\":83,\"total_tokens\":100}}\n",
+      "score": 1.0,
+      "metric_details": {
+        "f1": 0.0727,
+        "bleu_1": 0.0377,
+        "exact_normalized_match": true,
+        "rec": 1.0,
+        "prec": 0.0377
+      }
+    },
+    {
+      "id": "summarize_test",
+      "prompt": "Summarize in one short sentence: 'Artificial intelligence helps people by automating tasks and providing insights from data.'",
+      "max_tokens": 64,
+      "success": true,
+      "elapsed_ms": 4119,
+      "response_text": "Artificial intelligence enhances human capabilities by automating processes and generating data-driven insights.",
+      "finish_reason": "stop",
+      "raw": "{\r\n  \"id\": \"cmpl-100\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764125424,\r\n  \"model\": \"gemma3:4b-it-q4_K_M\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"Artificial intelligence enhances human capabilities by automating processes and generating data-driven insights.\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"stop\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 30,\r\n    \"completion_tokens\": 16,\r\n    \"total_tokens\": 46\r\n  }\r\n}",
+      "error": null,
+      "attempts": [
+        {
+          "body": "{\"id\":\"cmpl-100\",\"object\":\"text_completion\",\"created\":1764125424,\"model\":\"gemma3:4b-it-q4_K_M\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"Artificial intelligence enhances human capabilities by automating processes and generating data-driven insights.\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":30,\"completion_tokens\":16,\"total_tokens\":46}}\n",
+          "format": "prompt,max_tokens,model",
+          "status": 200
+        }
+      ],
+      "attempt_format": "prompt,max_tokens,model",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-100\",\"object\":\"text_completion\",\"created\":1764125424,\"model\":\"gemma3:4b-it-q4_K_M\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"Artificial intelligence enhances human capabilities by automating processes and generating data-driven insights.\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":30,\"completion_tokens\":16,\"total_tokens\":46}}\n",
+      "score": null,
+      "metric_details": null
+    }
+  ]
+}

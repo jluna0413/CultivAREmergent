@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "task-master-ai-gemma1b": {
+      "command": "npx",
+      "args": ["-y", "task-master-ai"],
+      "env": {
+        "OPENAI_API_KEY": "ollama",
+        "OPENAI_BASE_URL": "http://127.0.0.1:11436/v1",
+        "MODEL": "gemma3:1b"
+      }
+    }
+  }
+}

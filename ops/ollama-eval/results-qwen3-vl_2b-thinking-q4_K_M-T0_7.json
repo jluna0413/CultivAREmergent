@@ -1,0 +1,101 @@
+{
+  "model": "qwen3-vl:2b-thinking-q4_K_M",
+  "available": true,
+  "tests": [
+    {
+      "id": "echo_test",
+      "prompt": "Please reply with the single word: alive",
+      "max_tokens": 16,
+      "success": false,
+      "elapsed_ms": 16375,
+      "response_text": null,
+      "finish_reason": "length",
+      "raw": "{\r\n  \"id\": \"cmpl-803\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764126259,\r\n  \"model\": \"qwen3-vl:2b-thinking-q4_K_M\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"length\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 18,\r\n    \"completion_tokens\": 16,\r\n    \"total_tokens\": 34\r\n  }\r\n}",
+      "error": "empty_response",
+      "attempts": [
+        {
+          "status": 200,
+          "body": "{\"id\":\"cmpl-803\",\"object\":\"text_completion\",\"created\":1764126259,\"model\":\"qwen3-vl:2b-thinking-q4_K_M\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"\",\"index\":0,\"finish_reason\":\"length\"}],\"usage\":{\"prompt_tokens\":18,\"completion_tokens\":16,\"total_tokens\":34}}\n",
+          "format": "max_tokens,temperature,model,prompt"
+        }
+      ],
+      "attempt_format": "max_tokens,temperature,model,prompt",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-803\",\"object\":\"text_completion\",\"created\":1764126259,\"model\":\"qwen3-vl:2b-thinking-q4_K_M\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"\",\"index\":0,\"finish_reason\":\"length\"}],\"usage\":{\"prompt_tokens\":18,\"completion_tokens\":16,\"total_tokens\":34}}\n",
+      "score": null,
+      "metric_details": null
+    },
+    {
+      "id": "math_test",
+      "prompt": "What is 17 + 5?",
+      "max_tokens": 64,
+      "success": false,
+      "elapsed_ms": 5081,
+      "response_text": null,
+      "finish_reason": "length",
+      "raw": "{\r\n  \"id\": \"cmpl-353\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764126267,\r\n  \"model\": \"qwen3-vl:2b-thinking-q4_K_M\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"length\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 19,\r\n    \"completion_tokens\": 64,\r\n    \"total_tokens\": 83\r\n  }\r\n}",
+      "error": "empty_response",
+      "attempts": [
+        {
+          "status": 200,
+          "body": "{\"id\":\"cmpl-353\",\"object\":\"text_completion\",\"created\":1764126267,\"model\":\"qwen3-vl:2b-thinking-q4_K_M\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"\",\"index\":0,\"finish_reason\":\"length\"}],\"usage\":{\"prompt_tokens\":19,\"completion_tokens\":64,\"total_tokens\":83}}\n",
+          "format": "max_tokens,temperature,model,prompt"
+        }
+      ],
+      "attempt_format": "max_tokens,temperature,model,prompt",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-353\",\"object\":\"text_completion\",\"created\":1764126267,\"model\":\"qwen3-vl:2b-thinking-q4_K_M\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"\",\"index\":0,\"finish_reason\":\"length\"}],\"usage\":{\"prompt_tokens\":19,\"completion_tokens\":64,\"total_tokens\":83}}\n",
+      "score": 0,
+      "metric_details": {
+        "expected": "22",
+        "detected": ""
+      }
+    },
+    {
+      "id": "translate_test",
+      "prompt": "Translate to Spanish: 'Good morning'",
+      "max_tokens": 128,
+      "success": false,
+      "elapsed_ms": 8827,
+      "response_text": null,
+      "finish_reason": "length",
+      "raw": "{\r\n  \"id\": \"cmpl-590\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764126276,\r\n  \"model\": \"qwen3-vl:2b-thinking-q4_K_M\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"length\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 18,\r\n    \"completion_tokens\": 128,\r\n    \"total_tokens\": 146\r\n  }\r\n}",
+      "error": "empty_response",
+      "attempts": [
+        {
+          "status": 200,
+          "body": "{\"id\":\"cmpl-590\",\"object\":\"text_completion\",\"created\":1764126276,\"model\":\"qwen3-vl:2b-thinking-q4_K_M\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"\",\"index\":0,\"finish_reason\":\"length\"}],\"usage\":{\"prompt_tokens\":18,\"completion_tokens\":128,\"total_tokens\":146}}\n",
+          "format": "max_tokens,temperature,model,prompt"
+        }
+      ],
+      "attempt_format": "max_tokens,temperature,model,prompt",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-590\",\"object\":\"text_completion\",\"created\":1764126276,\"model\":\"qwen3-vl:2b-thinking-q4_K_M\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"\",\"index\":0,\"finish_reason\":\"length\"}],\"usage\":{\"prompt_tokens\":18,\"completion_tokens\":128,\"total_tokens\":146}}\n",
+      "score": null,
+      "metric_details": null
+    },
+    {
+      "id": "summarize_test",
+      "prompt": "Summarize in one short sentence: 'Artificial intelligence helps people by automating tasks and providing insights from data.'",
+      "max_tokens": 64,
+      "success": false,
+      "elapsed_ms": 5058,
+      "response_text": null,
+      "finish_reason": "length",
+      "raw": "{\r\n  \"id\": \"cmpl-90\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764126281,\r\n  \"model\": \"qwen3-vl:2b-thinking-q4_K_M\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"length\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 34,\r\n    \"completion_tokens\": 64,\r\n    \"total_tokens\": 98\r\n  }\r\n}",
+      "error": "empty_response",
+      "attempts": [
+        {
+          "status": 200,
+          "body": "{\"id\":\"cmpl-90\",\"object\":\"text_completion\",\"created\":1764126281,\"model\":\"qwen3-vl:2b-thinking-q4_K_M\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"\",\"index\":0,\"finish_reason\":\"length\"}],\"usage\":{\"prompt_tokens\":34,\"completion_tokens\":64,\"total_tokens\":98}}\n",
+          "format": "max_tokens,temperature,model,prompt"
+        }
+      ],
+      "attempt_format": "max_tokens,temperature,model,prompt",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-90\",\"object\":\"text_completion\",\"created\":1764126281,\"model\":\"qwen3-vl:2b-thinking-q4_K_M\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"\",\"index\":0,\"finish_reason\":\"length\"}],\"usage\":{\"prompt_tokens\":34,\"completion_tokens\":64,\"total_tokens\":98}}\n",
+      "score": null,
+      "metric_details": null
+    }
+  ]
+}

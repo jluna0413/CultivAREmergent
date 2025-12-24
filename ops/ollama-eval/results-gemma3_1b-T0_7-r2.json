@@ -1,0 +1,107 @@
+{
+  "model": "gemma3:1b",
+  "available": true,
+  "tests": [
+    {
+      "id": "echo_test",
+      "prompt": "Please reply with the single word: alive",
+      "max_tokens": 16,
+      "success": true,
+      "elapsed_ms": 1699,
+      "response_text": "Alive",
+      "finish_reason": "stop",
+      "raw": "{\r\n  \"id\": \"cmpl-149\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764267284,\r\n  \"model\": \"gemma3:1b\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"Alive\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"stop\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 17,\r\n    \"completion_tokens\": 2,\r\n    \"total_tokens\": 19\r\n  }\r\n}",
+      "error": null,
+      "attempts": [
+        {
+          "status": 200,
+          "format": "model,max_tokens,prompt,temperature",
+          "body": "{\"id\":\"cmpl-149\",\"object\":\"text_completion\",\"created\":1764267284,\"model\":\"gemma3:1b\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"Alive\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":17,\"completion_tokens\":2,\"total_tokens\":19}}\n"
+        }
+      ],
+      "attempt_format": "model,max_tokens,prompt,temperature",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-149\",\"object\":\"text_completion\",\"created\":1764267284,\"model\":\"gemma3:1b\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"Alive\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":17,\"completion_tokens\":2,\"total_tokens\":19}}\n",
+      "score": null,
+      "metric_details": null
+    },
+    {
+      "id": "math_test",
+      "prompt": "What is 17 + 5?",
+      "max_tokens": 64,
+      "success": true,
+      "elapsed_ms": 2748,
+      "response_text": "17 + 5 = 22\n\nSo the answer is 22.",
+      "finish_reason": "stop",
+      "raw": "{\r\n  \"id\": \"cmpl-409\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764267287,\r\n  \"model\": \"gemma3:1b\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"17 + 5 = 22\\n\\nSo the answer is 22.\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"stop\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 18,\r\n    \"completion_tokens\": 19,\r\n    \"total_tokens\": 37\r\n  }\r\n}",
+      "error": null,
+      "attempts": [
+        {
+          "status": 200,
+          "format": "model,max_tokens,prompt,temperature",
+          "body": "{\"id\":\"cmpl-409\",\"object\":\"text_completion\",\"created\":1764267287,\"model\":\"gemma3:1b\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"17 + 5 = 22\\n\\nSo the answer is 22.\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":18,\"completion_tokens\":19,\"total_tokens\":37}}\n"
+        }
+      ],
+      "attempt_format": "model,max_tokens,prompt,temperature",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-409\",\"object\":\"text_completion\",\"created\":1764267287,\"model\":\"gemma3:1b\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"17 + 5 = 22\\n\\nSo the answer is 22.\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":18,\"completion_tokens\":19,\"total_tokens\":37}}\n",
+      "score": 1,
+      "metric_details": {
+        "detected": "22",
+        "expected": "22"
+      }
+    },
+    {
+      "id": "translate_test",
+      "prompt": "Translate to Spanish: 'Good morning'",
+      "max_tokens": 128,
+      "success": true,
+      "elapsed_ms": 5056,
+      "response_text": "The most common and natural way to say \"Good morning\" in Spanish is:\n\n**¡Buenos días!** \n\nYou can also say:\n\n*   **¡Qué día tan lindo!** (This translates to \"What a lovely day!\") - This is a slightly more enthusiastic way to greet the morning.\n\nSo, **¡Buenos días!** is the best option.",
+      "finish_reason": "stop",
+      "raw": "{\r\n  \"id\": \"cmpl-189\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764267292,\r\n  \"model\": \"gemma3:1b\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"The most common and natural way to say \\\"Good morning\\\" in Spanish is:\\n\\n**¡Buenos días!** \\n\\nYou can also say:\\n\\n*   **¡Qué día tan lindo!** (This translates to \\\"What a lovely day!\\\") - This is a slightly more enthusiastic way to greet the morning.\\n\\nSo, **¡Buenos días!** is the best option.\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"stop\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 17,\r\n    \"completion_tokens\": 79,\r\n    \"total_tokens\": 96\r\n  }\r\n}",
+      "error": null,
+      "attempts": [
+        {
+          "status": 200,
+          "format": "model,max_tokens,prompt,temperature",
+          "body": "{\"id\":\"cmpl-189\",\"object\":\"text_completion\",\"created\":1764267292,\"model\":\"gemma3:1b\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"The most common and natural way to say \\\"Good morning\\\" in Spanish is:\\n\\n**¡Buenos días!** \\n\\nYou can also say:\\n\\n*   **¡Qué día tan lindo!** (This translates to \\\"What a lovely day!\\\") - This is a slightly more enthusiastic way to greet the morning.\\n\\nSo, **¡Buenos días!** is the best option.\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":17,\"completion_tokens\":79,\"total_tokens\":96}}\n"
+        }
+      ],
+      "attempt_format": "model,max_tokens,prompt,temperature",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-189\",\"object\":\"text_completion\",\"created\":1764267292,\"model\":\"gemma3:1b\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"The most common and natural way to say \\\"Good morning\\\" in Spanish is:\\n\\n**¡Buenos días!** \\n\\nYou can also say:\\n\\n*   **¡Qué día tan lindo!** (This translates to \\\"What a lovely day!\\\") - This is a slightly more enthusiastic way to greet the morning.\\n\\nSo, **¡Buenos días!** is the best option.\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":17,\"completion_tokens\":79,\"total_tokens\":96}}\n",
+      "score": 1.0,
+      "metric_details": {
+        "bleu_1": 0.0417,
+        "prec": 0.0417,
+        "exact_normalized_match": true,
+        "f1": 0.08,
+        "rec": 1.0
+      }
+    },
+    {
+      "id": "summarize_test",
+      "prompt": "Summarize in one short sentence: 'Artificial intelligence helps people by automating tasks and providing insights from data.'",
+      "max_tokens": 64,
+      "success": true,
+      "elapsed_ms": 2581,
+      "response_text": "Artificial intelligence automates tasks and analyzes data to improve decision-making and efficiency.",
+      "finish_reason": "stop",
+      "raw": "{\r\n  \"id\": \"cmpl-287\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764267295,\r\n  \"model\": \"gemma3:1b\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"Artificial intelligence automates tasks and analyzes data to improve decision-making and efficiency.\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"stop\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 30,\r\n    \"completion_tokens\": 17,\r\n    \"total_tokens\": 47\r\n  }\r\n}",
+      "error": null,
+      "attempts": [
+        {
+          "status": 200,
+          "format": "model,max_tokens,prompt,temperature",
+          "body": "{\"id\":\"cmpl-287\",\"object\":\"text_completion\",\"created\":1764267295,\"model\":\"gemma3:1b\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"Artificial intelligence automates tasks and analyzes data to improve decision-making and efficiency.\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":30,\"completion_tokens\":17,\"total_tokens\":47}}\n"
+        }
+      ],
+      "attempt_format": "model,max_tokens,prompt,temperature",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-287\",\"object\":\"text_completion\",\"created\":1764267295,\"model\":\"gemma3:1b\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"Artificial intelligence automates tasks and analyzes data to improve decision-making and efficiency.\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":30,\"completion_tokens\":17,\"total_tokens\":47}}\n",
+      "score": null,
+      "metric_details": null
+    }
+  ]
+}

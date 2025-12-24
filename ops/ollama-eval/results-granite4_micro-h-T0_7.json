@@ -1,0 +1,107 @@
+{
+  "model": "granite4:micro-h",
+  "available": true,
+  "tests": [
+    {
+      "id": "echo_test",
+      "prompt": "Please reply with the single word: alive",
+      "max_tokens": 16,
+      "success": true,
+      "elapsed_ms": 22746,
+      "response_text": "alive",
+      "finish_reason": "stop",
+      "raw": "{\r\n  \"id\": \"cmpl-650\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764126118,\r\n  \"model\": \"granite4:micro-h\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"alive\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"stop\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 16,\r\n    \"completion_tokens\": 2,\r\n    \"total_tokens\": 18\r\n  }\r\n}",
+      "error": null,
+      "attempts": [
+        {
+          "status": 200,
+          "body": "{\"id\":\"cmpl-650\",\"object\":\"text_completion\",\"created\":1764126118,\"model\":\"granite4:micro-h\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"alive\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":16,\"completion_tokens\":2,\"total_tokens\":18}}\n",
+          "format": "max_tokens,temperature,model,prompt"
+        }
+      ],
+      "attempt_format": "max_tokens,temperature,model,prompt",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-650\",\"object\":\"text_completion\",\"created\":1764126118,\"model\":\"granite4:micro-h\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"alive\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":16,\"completion_tokens\":2,\"total_tokens\":18}}\n",
+      "score": null,
+      "metric_details": null
+    },
+    {
+      "id": "math_test",
+      "prompt": "What is 17 + 5?",
+      "max_tokens": 64,
+      "success": true,
+      "elapsed_ms": 10183,
+      "response_text": "The answer to the question \"What is 17 + 5?\" is 22. \n\nWhen you add the numbers 17 and 5 together, you get:\n\n17 (which represents seventeen) \n+ 5 (which represents five)\n= 22 (the sum or total of these two numbers)\n\nIn mathematical",
+      "finish_reason": "length",
+      "raw": "{\r\n  \"id\": \"cmpl-827\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764126127,\r\n  \"model\": \"granite4:micro-h\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"The answer to the question \\\"What is 17 + 5?\\\" is 22. \\n\\nWhen you add the numbers 17 and 5 together, you get:\\n\\n17 (which represents seventeen) \\n+ 5 (which represents five)\\n= 22 (the sum or total of these two numbers)\\n\\nIn mathematical\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"length\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 16,\r\n    \"completion_tokens\": 64,\r\n    \"total_tokens\": 80\r\n  }\r\n}",
+      "error": null,
+      "attempts": [
+        {
+          "status": 200,
+          "body": "{\"id\":\"cmpl-827\",\"object\":\"text_completion\",\"created\":1764126127,\"model\":\"granite4:micro-h\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"The answer to the question \\\"What is 17 + 5?\\\" is 22. \\n\\nWhen you add the numbers 17 and 5 together, you get:\\n\\n17 (which represents seventeen) \\n+ 5 (which represents five)\\n= 22 (the sum or total of these two numbers)\\n\\nIn mathematical\",\"index\":0,\"finish_reason\":\"length\"}],\"usage\":{\"prompt_tokens\":16,\"completion_tokens\":64,\"total_tokens\":80}}\n",
+          "format": "max_tokens,temperature,model,prompt"
+        }
+      ],
+      "attempt_format": "max_tokens,temperature,model,prompt",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-827\",\"object\":\"text_completion\",\"created\":1764126127,\"model\":\"granite4:micro-h\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"The answer to the question \\\"What is 17 + 5?\\\" is 22. \\n\\nWhen you add the numbers 17 and 5 together, you get:\\n\\n17 (which represents seventeen) \\n+ 5 (which represents five)\\n= 22 (the sum or total of these two numbers)\\n\\nIn mathematical\",\"index\":0,\"finish_reason\":\"length\"}],\"usage\":{\"prompt_tokens\":16,\"completion_tokens\":64,\"total_tokens\":80}}\n",
+      "score": 0,
+      "metric_details": {
+        "expected": "22",
+        "detected": "17"
+      }
+    },
+    {
+      "id": "translate_test",
+      "prompt": "Translate to Spanish: 'Good morning'",
+      "max_tokens": 128,
+      "success": true,
+      "elapsed_ms": 2637,
+      "response_text": "\"Buenos días\"",
+      "finish_reason": "stop",
+      "raw": "{\r\n  \"id\": \"cmpl-15\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764126133,\r\n  \"model\": \"granite4:micro-h\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"\\\"Buenos días\\\"\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"stop\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 16,\r\n    \"completion_tokens\": 6,\r\n    \"total_tokens\": 22\r\n  }\r\n}",
+      "error": null,
+      "attempts": [
+        {
+          "status": 200,
+          "body": "{\"id\":\"cmpl-15\",\"object\":\"text_completion\",\"created\":1764126133,\"model\":\"granite4:micro-h\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"\\\"Buenos días\\\"\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":16,\"completion_tokens\":6,\"total_tokens\":22}}\n",
+          "format": "max_tokens,temperature,model,prompt"
+        }
+      ],
+      "attempt_format": "max_tokens,temperature,model,prompt",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-15\",\"object\":\"text_completion\",\"created\":1764126133,\"model\":\"granite4:micro-h\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"\\\"Buenos días\\\"\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":16,\"completion_tokens\":6,\"total_tokens\":22}}\n",
+      "score": 1.0,
+      "metric_details": {
+        "bleu_1": 1.0,
+        "rec": 1.0,
+        "prec": 1.0,
+        "f1": 1.0,
+        "exact_normalized_match": true
+      }
+    },
+    {
+      "id": "summarize_test",
+      "prompt": "Summarize in one short sentence: 'Artificial intelligence helps people by automating tasks and providing insights from data.'",
+      "max_tokens": 64,
+      "success": true,
+      "elapsed_ms": 3544,
+      "response_text": "AI streamlines processes and enhances decision-making through automation and data analysis.",
+      "finish_reason": "stop",
+      "raw": "{\r\n  \"id\": \"cmpl-736\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764126137,\r\n  \"model\": \"granite4:micro-h\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"AI streamlines processes and enhances decision-making through automation and data analysis.\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"stop\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 32,\r\n    \"completion_tokens\": 15,\r\n    \"total_tokens\": 47\r\n  }\r\n}",
+      "error": null,
+      "attempts": [
+        {
+          "status": 200,
+          "body": "{\"id\":\"cmpl-736\",\"object\":\"text_completion\",\"created\":1764126137,\"model\":\"granite4:micro-h\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"AI streamlines processes and enhances decision-making through automation and data analysis.\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":32,\"completion_tokens\":15,\"total_tokens\":47}}\n",
+          "format": "max_tokens,temperature,model,prompt"
+        }
+      ],
+      "attempt_format": "max_tokens,temperature,model,prompt",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-736\",\"object\":\"text_completion\",\"created\":1764126137,\"model\":\"granite4:micro-h\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"AI streamlines processes and enhances decision-making through automation and data analysis.\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":32,\"completion_tokens\":15,\"total_tokens\":47}}\n",
+      "score": null,
+      "metric_details": null
+    }
+  ]
+}

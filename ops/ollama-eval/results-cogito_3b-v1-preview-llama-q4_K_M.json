@@ -1,0 +1,107 @@
+{
+  "model": "cogito:3b-v1-preview-llama-q4_K_M",
+  "available": true,
+  "tests": [
+    {
+      "id": "echo_test",
+      "prompt": "Please reply with the single word: alive",
+      "max_tokens": 16,
+      "success": true,
+      "elapsed_ms": 27410,
+      "response_text": "alive",
+      "finish_reason": "stop",
+      "raw": "{\r\n  \"id\": \"cmpl-503\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764125532,\r\n  \"model\": \"cogito:3b-v1-preview-llama-q4_K_M\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"alive\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"stop\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 18,\r\n    \"completion_tokens\": 2,\r\n    \"total_tokens\": 20\r\n  }\r\n}",
+      "error": null,
+      "attempts": [
+        {
+          "body": "{\"id\":\"cmpl-503\",\"object\":\"text_completion\",\"created\":1764125532,\"model\":\"cogito:3b-v1-preview-llama-q4_K_M\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"alive\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":18,\"completion_tokens\":2,\"total_tokens\":20}}\n",
+          "format": "prompt,max_tokens,model",
+          "status": 200
+        }
+      ],
+      "attempt_format": "prompt,max_tokens,model",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-503\",\"object\":\"text_completion\",\"created\":1764125532,\"model\":\"cogito:3b-v1-preview-llama-q4_K_M\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"alive\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":18,\"completion_tokens\":2,\"total_tokens\":20}}\n",
+      "score": null,
+      "metric_details": null
+    },
+    {
+      "id": "math_test",
+      "prompt": "What is 17 + 5?",
+      "max_tokens": 64,
+      "success": true,
+      "elapsed_ms": 3024,
+      "response_text": "7 + 0 = 7 (the remainder part of the division)",
+      "finish_reason": "stop",
+      "raw": "{\r\n  \"id\": \"cmpl-214\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764125535,\r\n  \"model\": \"cogito:3b-v1-preview-llama-q4_K_M\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"7 + 0 = 7 (the remainder part of the division)\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"stop\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 18,\r\n    \"completion_tokens\": 16,\r\n    \"total_tokens\": 34\r\n  }\r\n}",
+      "error": null,
+      "attempts": [
+        {
+          "body": "{\"id\":\"cmpl-214\",\"object\":\"text_completion\",\"created\":1764125535,\"model\":\"cogito:3b-v1-preview-llama-q4_K_M\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"7 + 0 = 7 (the remainder part of the division)\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":18,\"completion_tokens\":16,\"total_tokens\":34}}\n",
+          "format": "prompt,max_tokens,model",
+          "status": 200
+        }
+      ],
+      "attempt_format": "prompt,max_tokens,model",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-214\",\"object\":\"text_completion\",\"created\":1764125535,\"model\":\"cogito:3b-v1-preview-llama-q4_K_M\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"7 + 0 = 7 (the remainder part of the division)\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":18,\"completion_tokens\":16,\"total_tokens\":34}}\n",
+      "score": 0,
+      "metric_details": {
+        "expected": "22",
+        "detected": "7"
+      }
+    },
+    {
+      "id": "translate_test",
+      "prompt": "Translate to Spanish: 'Good morning'",
+      "max_tokens": 128,
+      "success": true,
+      "elapsed_ms": 11481,
+      "response_text": "'Morning greeting' ... in Spanish, this is typically translated as:\n\n- Buenos días (for any time of day)\n- Buenos días buena mañana (specifically for \"good morning\")\n\nBoth are commonly used and acceptable translations. \"Buenos días\" is the more general term that can be used for any morning greeting regardless of the time of year.\n\nI was confused by your response to my Spanish translation of 'Good morning'. Were you not sure how to directly translate 'Good morning'? Would you like me to explain further? I'm happy to help clarify anything, even the basics of translating between languages.",
+      "finish_reason": "stop",
+      "raw": "{\r\n  \"id\": \"cmpl-537\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764125549,\r\n  \"model\": \"cogito:3b-v1-preview-llama-q4_K_M\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"'Morning greeting' ... in Spanish, this is typically translated as:\\n\\n- Buenos días (for any time of day)\\n- Buenos días buena mañana (specifically for \\\"good morning\\\")\\n\\nBoth are commonly used and acceptable translations. \\\"Buenos días\\\" is the more general term that can be used for any morning greeting regardless of the time of year.\\n\\nI was confused by your response to my Spanish translation of 'Good morning'. Were you not sure how to directly translate 'Good morning'? Would you like me to explain further? I'm happy to help clarify anything, even the basics of translating between languages.\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"stop\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 18,\r\n    \"completion_tokens\": 124,\r\n    \"total_tokens\": 142\r\n  }\r\n}",
+      "error": null,
+      "attempts": [
+        {
+          "body": "{\"id\":\"cmpl-537\",\"object\":\"text_completion\",\"created\":1764125549,\"model\":\"cogito:3b-v1-preview-llama-q4_K_M\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"'Morning greeting' ... in Spanish, this is typically translated as:\\n\\n- Buenos días (for any time of day)\\n- Buenos días buena mañana (specifically for \\\"good morning\\\")\\n\\nBoth are commonly used and acceptable translations. \\\"Buenos días\\\" is the more general term that can be used for any morning greeting regardless of the time of year.\\n\\nI was confused by your response to my Spanish translation of 'Good morning'. Were you not sure how to directly translate 'Good morning'? Would you like me to explain further? I'm happy to help clarify anything, even the basics of translating between languages.\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":18,\"completion_tokens\":124,\"total_tokens\":142}}\n",
+          "format": "prompt,max_tokens,model",
+          "status": 200
+        }
+      ],
+      "attempt_format": "prompt,max_tokens,model",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-537\",\"object\":\"text_completion\",\"created\":1764125549,\"model\":\"cogito:3b-v1-preview-llama-q4_K_M\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"'Morning greeting' ... in Spanish, this is typically translated as:\\n\\n- Buenos días (for any time of day)\\n- Buenos días buena mañana (specifically for \\\"good morning\\\")\\n\\nBoth are commonly used and acceptable translations. \\\"Buenos días\\\" is the more general term that can be used for any morning greeting regardless of the time of year.\\n\\nI was confused by your response to my Spanish translation of 'Good morning'. Were you not sure how to directly translate 'Good morning'? Would you like me to explain further? I'm happy to help clarify anything, even the basics of translating between languages.\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":18,\"completion_tokens\":124,\"total_tokens\":142}}\n",
+      "score": 1.0,
+      "metric_details": {
+        "f1": 0.0408,
+        "bleu_1": 0.0208,
+        "exact_normalized_match": true,
+        "rec": 1.0,
+        "prec": 0.0208
+      }
+    },
+    {
+      "id": "summarize_test",
+      "prompt": "Summarize in one short sentence: 'Artificial intelligence helps people by automating tasks and providing insights from data.'",
+      "max_tokens": 64,
+      "success": true,
+      "elapsed_ms": 3639,
+      "response_text": "AI assists humans by performing routine tasks and analyzing data to enhance decision-making.",
+      "finish_reason": "stop",
+      "raw": "{\r\n  \"id\": \"cmpl-32\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764125553,\r\n  \"model\": \"cogito:3b-v1-preview-llama-q4_K_M\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"AI assists humans by performing routine tasks and analyzing data to enhance decision-making.\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"stop\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 34,\r\n    \"completion_tokens\": 16,\r\n    \"total_tokens\": 50\r\n  }\r\n}",
+      "error": null,
+      "attempts": [
+        {
+          "body": "{\"id\":\"cmpl-32\",\"object\":\"text_completion\",\"created\":1764125553,\"model\":\"cogito:3b-v1-preview-llama-q4_K_M\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"AI assists humans by performing routine tasks and analyzing data to enhance decision-making.\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":34,\"completion_tokens\":16,\"total_tokens\":50}}\n",
+          "format": "prompt,max_tokens,model",
+          "status": 200
+        }
+      ],
+      "attempt_format": "prompt,max_tokens,model",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-32\",\"object\":\"text_completion\",\"created\":1764125553,\"model\":\"cogito:3b-v1-preview-llama-q4_K_M\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"AI assists humans by performing routine tasks and analyzing data to enhance decision-making.\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":34,\"completion_tokens\":16,\"total_tokens\":50}}\n",
+      "score": null,
+      "metric_details": null
+    }
+  ]
+}

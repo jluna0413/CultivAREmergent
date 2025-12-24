@@ -1,0 +1,33 @@
+{
+  "Endpoint": "http://127.0.0.1:11436/v1",
+  "Models": [
+    "granite4:micro-h",
+    "gemma3:270m",
+    "gemma3:1b"
+  ],
+  "Tests": [
+    {
+      "id": "echo_test",
+      "prompt": "Please reply with the single word: alive",
+      "max_tokens": 16
+    },
+    {
+      "id": "math_test",
+      "prompt": "What is 17 + 5?",
+      "max_tokens": 64,
+      "expected": "22"
+    },
+    {
+      "id": "translate_test",
+      "prompt": "Translate to Spanish: 'Good morning'",
+      "max_tokens": 128,
+      "expected": "Buenos d\u00edas"
+    },
+    {
+      "id": "summarize_test",
+      "prompt": "Summarize in one short sentence: 'Artificial intelligence helps people by automating tasks and providing insights from data.'",
+      "max_tokens": 64
+    }
+  ],
+  "TimeoutSec": 300
+}

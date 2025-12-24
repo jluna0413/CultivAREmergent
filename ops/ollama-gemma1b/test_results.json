@@ -1,0 +1,102 @@
+[
+  {
+    "model": "gemma3:270m",
+    "timestamp": "2025-11-25T20:12:07.9856716-05:00",
+    "response": {
+      "id": "cmpl-806",
+      "object": "text_completion",
+      "created": 1764119529,
+      "model": "gemma3:270m",
+      "system_fingerprint": "fp_ollama",
+      "choices": [
+        {
+          "text": "Yes, gemma3:270m is alive.\n",
+          "index": 0,
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 26,
+        "completion_tokens": 15,
+        "total_tokens": 41
+      }
+    },
+    "name": "270m_prompt_smoke",
+    "elapsed_ms": 890
+  },
+  {
+    "model": "gemma3:270m",
+    "timestamp": "2025-11-25T20:12:08.6925145-05:00",
+    "response": {
+      "id": "cmpl-987",
+      "object": "text_completion",
+      "created": 1764119530,
+      "model": "gemma3:270m",
+      "system_fingerprint": "fp_ollama",
+      "choices": [
+        {
+          "text": "2 + 2 = 4\n",
+          "index": 0,
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 19,
+        "completion_tokens": 9,
+        "total_tokens": 28
+      }
+    },
+    "name": "270m_prompt_question",
+    "elapsed_ms": 696
+  },
+  {
+    "model": "gemma3:1b",
+    "timestamp": "2025-11-25T20:12:20.0497991-05:00",
+    "response": {
+      "id": "cmpl-902",
+      "object": "text_completion",
+      "created": 1764119540,
+      "model": "gemma3:1b",
+      "system_fingerprint": "fp_ollama",
+      "choices": [
+        {
+          "text": "Please provide the paragraph you would like me to summarize! I need the text of the paragraph to fulfill your request. 😊",
+          "index": 0,
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 26,
+        "completion_tokens": 25,
+        "total_tokens": 51
+      }
+    },
+    "name": "1b_summary_long",
+    "elapsed_ms": 11354
+  },
+  {
+    "model": "gemma3:1b",
+    "timestamp": "2025-11-25T20:12:27.1641226-05:00",
+    "response": {
+      "id": "cmpl-639",
+      "object": "text_completion",
+      "created": 1764119550,
+      "model": "gemma3:1b",
+      "system_fingerprint": "fp_ollama",
+      "choices": [
+        {
+          "text": "```python\ndef reverse_words(sentence):\n  \"\"\"Reverses the order of words in a sentence.\n\n  Args:\n    sentence: The input sentence (string).\n\n  Returns:\n    The sentence with words reversed.\n  \"\"\"\n  words = sentence.split()  # Split the sentence into a list of words\n  reversed_words = words[::-1]  # Reverse the list of words\n  return \" \".join(reversed_words)  # Join the reversed words back into a sentence\n\n# Example usage\nsentence = \"This is a",
+          "index": 0,
+          "finish_reason": "length"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 21,
+        "completion_tokens": 120,
+        "total_tokens": 141
+      }
+    },
+    "name": "1b_coding_prompt",
+    "elapsed_ms": 7112
+  }
+]

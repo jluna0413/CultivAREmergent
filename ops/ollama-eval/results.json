@@ -1,0 +1,115 @@
+{
+  "model": "granite4:micro-h",
+  "available": true,
+  "tests": [
+    {
+      "id": "echo_test",
+      "prompt": "Please reply with the single word: alive",
+      "max_tokens": 8,
+      "success": true,
+      "elapsed_ms": 30686,
+      "response_text": "alive",
+      "finish_reason": "stop",
+      "raw": "{\r\n  \"id\": \"cmpl-967\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764121453,\r\n  \"model\": \"granite4:micro-h\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"alive\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"stop\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 38,\r\n    \"completion_tokens\": 2,\r\n    \"total_tokens\": 40\r\n  }\r\n}",
+      "error": null,
+      "attempts": [
+        {
+          "body": "{\"id\":\"cmpl-967\",\"object\":\"text_completion\",\"created\":1764121453,\"model\":\"granite4:micro-h\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"alive\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":38,\"completion_tokens\":2,\"total_tokens\":40}}\n",
+          "status": 200,
+          "format": "model,max_tokens,prompt"
+        }
+      ],
+      "attempt_format": "model,max_tokens,prompt",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-967\",\"object\":\"text_completion\",\"created\":1764121453,\"model\":\"granite4:micro-h\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"alive\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":38,\"completion_tokens\":2,\"total_tokens\":40}}\n",
+      "score": null,
+      "metric_details": null
+    },
+    {
+      "id": "math_test",
+      "prompt": "What is 17 + 5?",
+      "max_tokens": 8,
+      "success": true,
+      "elapsed_ms": 4273,
+      "response_text": "The answer to the addition of 17",
+      "finish_reason": "length",
+      "raw": "{\r\n  \"id\": \"cmpl-5\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764121457,\r\n  \"model\": \"granite4:micro-h\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"The answer to the addition of 17\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"length\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 38,\r\n    \"completion_tokens\": 8,\r\n    \"total_tokens\": 46\r\n  }\r\n}",
+      "error": null,
+      "attempts": [
+        {
+          "body": "{\"id\":\"cmpl-5\",\"object\":\"text_completion\",\"created\":1764121457,\"model\":\"granite4:micro-h\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"The answer to the addition of 17\",\"index\":0,\"finish_reason\":\"length\"}],\"usage\":{\"prompt_tokens\":38,\"completion_tokens\":8,\"total_tokens\":46}}\n",
+          "status": 200,
+          "format": "model,max_tokens,prompt"
+        }
+      ],
+      "attempt_format": "model,max_tokens,prompt",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-5\",\"object\":\"text_completion\",\"created\":1764121457,\"model\":\"granite4:micro-h\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"The answer to the addition of 17\",\"index\":0,\"finish_reason\":\"length\"}],\"usage\":{\"prompt_tokens\":38,\"completion_tokens\":8,\"total_tokens\":46}}\n",
+      "score": 0,
+      "metric_details": {
+        "expected": "22",
+        "detected": "17"
+      }
+    },
+    {
+      "id": "translate_test",
+      "prompt": "Translate to Spanish: 'Good morning'",
+      "max_tokens": 32,
+      "success": false,
+      "elapsed_ms": 3706,
+      "response_text": null,
+      "finish_reason": null,
+      "raw": "null",
+      "error": "empty_response",
+      "attempts": [
+        {
+          "error": "An error occurred while sending the request.",
+          "body": "",
+          "format": "model,max_tokens,prompt"
+        },
+        {
+          "error": "An error occurred while sending the request.",
+          "body": "",
+          "format": "model,max_tokens,messages"
+        },
+        {
+          "error": "No connection could be made because the target machine actively refused it. (127.0.0.1:11436)",
+          "body": "",
+          "format": "model,input,max_tokens"
+        }
+      ],
+      "score": null,
+      "metric_details": null
+    },
+    {
+      "id": "summarize_test",
+      "prompt": "Summarize in one short sentence: 'Artificial intelligence helps people by automating tasks and providing insights from data.'",
+      "max_tokens": 32,
+      "success": false,
+      "elapsed_ms": 6094,
+      "response_text": null,
+      "finish_reason": null,
+      "raw": "null",
+      "error": "empty_response",
+      "attempts": [
+        {
+          "error": "No connection could be made because the target machine actively refused it. (127.0.0.1:11436)",
+          "body": "",
+          "format": "model,max_tokens,prompt"
+        },
+        {
+          "error": "No connection could be made because the target machine actively refused it. (127.0.0.1:11436)",
+          "body": "",
+          "format": "model,max_tokens,messages"
+        },
+        {
+          "error": "No connection could be made because the target machine actively refused it. (127.0.0.1:11436)",
+          "body": "",
+          "format": "model,input,max_tokens"
+        }
+      ],
+      "score": null,
+      "metric_details": null
+    }
+  ]
+}

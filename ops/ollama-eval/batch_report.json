@@ -1,0 +1,102 @@
+{
+  "run_time": "2025-11-25T21:49:02.1320465-05:00",
+  "endpoint": "http://127.0.0.1:11436/v1",
+  "models": [
+    {
+      "model": "gemma3:270m",
+      "math": 0.0,
+      "translate": 0.0,
+      "summarize": 0.0,
+      "echo": 0.0,
+      "availability": 0.0,
+      "latency_ms": null,
+      "latency_score": 0,
+      "overall": 0.0,
+      "run_id": null
+    },
+    {
+      "model": "gemma3:1b",
+      "math": 0.0,
+      "translate": 0.0,
+      "summarize": 0.0,
+      "echo": 0.0,
+      "availability": 0.0,
+      "latency_ms": null,
+      "latency_score": 0,
+      "overall": 0.0,
+      "run_id": null
+    },
+    {
+      "model": "gemma3:4b-it-q4_K_M",
+      "math": 0.0,
+      "translate": 0.0,
+      "summarize": 0.0,
+      "echo": 0.0,
+      "availability": 0.0,
+      "latency_ms": null,
+      "latency_score": 0,
+      "overall": 0.0,
+      "run_id": null
+    },
+    {
+      "model": "qwen3:0.6b",
+      "math": 0.0,
+      "translate": 0.0,
+      "summarize": 0.0,
+      "echo": 0.0,
+      "availability": 0.0,
+      "latency_ms": null,
+      "latency_score": 0,
+      "overall": 0.0,
+      "run_id": null
+    },
+    {
+      "model": "qwen3-vl:2b-thinking-q4_K_M",
+      "math": 0.0,
+      "translate": 0.0,
+      "summarize": 0.0,
+      "echo": 0.0,
+      "availability": 0.0,
+      "latency_ms": null,
+      "latency_score": 0,
+      "overall": 0.0,
+      "run_id": null
+    },
+    {
+      "model": "qwen3-vl:2b-instruct-q4_K_M",
+      "math": 0.0,
+      "translate": 0.0,
+      "summarize": 0.0,
+      "echo": 0.0,
+      "availability": 0.0,
+      "latency_ms": null,
+      "latency_score": 0,
+      "overall": 0.0,
+      "run_id": null
+    },
+    {
+      "model": "cogito:3b-v1-preview-llama-q4_K_M",
+      "math": 0.0,
+      "translate": 0.0,
+      "summarize": 0.0,
+      "echo": 0.0,
+      "availability": 0.0,
+      "latency_ms": null,
+      "latency_score": 0,
+      "overall": 0.0,
+      "run_id": null
+    },
+    {
+      "model": "granite4:micro-h",
+      "math": 0.0,
+      "translate": 0.0,
+      "summarize": 0.0,
+      "echo": 0.0,
+      "availability": 0.0,
+      "latency_ms": null,
+      "latency_score": 0,
+      "overall": 0.0,
+      "run_id": null
+    }
+  ]
+}

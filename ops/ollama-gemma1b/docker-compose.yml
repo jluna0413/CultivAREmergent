@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  ollama-gemma1b:
+    image: ollama/ollama:latest
+    container_name: ollama-gemma1b
+    # Expose host port 11436 -> container 11434 (Ollama listens on 11434)
+    ports:
+      - "11436:11434"
+    # Use host models directory to avoid storing large models inside image/container.
+    # Mounted read-only to keep host data safe; change to :rw if you want the container to pull models into it.
+    volumes:
+      # Mount only the host models directory into the container's models path (read-only)
+      - "A:\\models\\ollama_models:/root/.ollama/models:ro"
+      # Keep the container's top-level Ollama directory writable for runtime files (keys, caches)
+      - ./data:/root/.ollama:rw
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sS http://127.0.0.1:11434/v1/models || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3

@@ -1,0 +1,107 @@
+{
+  "model": "gemma3:4b-it-q4_K_M",
+  "available": true,
+  "tests": [
+    {
+      "id": "echo_test",
+      "prompt": "Please reply with the single word: alive",
+      "max_tokens": 16,
+      "success": true,
+      "elapsed_ms": 25672,
+      "response_text": "alive\n",
+      "finish_reason": "stop",
+      "raw": "{\r\n  \"id\": \"cmpl-581\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764126200,\r\n  \"model\": \"gemma3:4b-it-q4_K_M\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"alive\\n\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"stop\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 17,\r\n    \"completion_tokens\": 3,\r\n    \"total_tokens\": 20\r\n  }\r\n}",
+      "error": null,
+      "attempts": [
+        {
+          "status": 200,
+          "body": "{\"id\":\"cmpl-581\",\"object\":\"text_completion\",\"created\":1764126200,\"model\":\"gemma3:4b-it-q4_K_M\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"alive\\n\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":17,\"completion_tokens\":3,\"total_tokens\":20}}\n",
+          "format": "max_tokens,temperature,model,prompt"
+        }
+      ],
+      "attempt_format": "max_tokens,temperature,model,prompt",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-581\",\"object\":\"text_completion\",\"created\":1764126200,\"model\":\"gemma3:4b-it-q4_K_M\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"alive\\n\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":17,\"completion_tokens\":3,\"total_tokens\":20}}\n",
+      "score": null,
+      "metric_details": null
+    },
+    {
+      "id": "math_test",
+      "prompt": "What is 17 + 5?",
+      "max_tokens": 64,
+      "success": true,
+      "elapsed_ms": 4325,
+      "response_text": "17 + 5 = 22\n",
+      "finish_reason": "stop",
+      "raw": "{\r\n  \"id\": \"cmpl-51\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764126204,\r\n  \"model\": \"gemma3:4b-it-q4_K_M\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"17 + 5 = 22\\n\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"stop\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 18,\r\n    \"completion_tokens\": 11,\r\n    \"total_tokens\": 29\r\n  }\r\n}",
+      "error": null,
+      "attempts": [
+        {
+          "status": 200,
+          "body": "{\"id\":\"cmpl-51\",\"object\":\"text_completion\",\"created\":1764126204,\"model\":\"gemma3:4b-it-q4_K_M\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"17 + 5 = 22\\n\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":18,\"completion_tokens\":11,\"total_tokens\":29}}\n",
+          "format": "max_tokens,temperature,model,prompt"
+        }
+      ],
+      "attempt_format": "max_tokens,temperature,model,prompt",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-51\",\"object\":\"text_completion\",\"created\":1764126204,\"model\":\"gemma3:4b-it-q4_K_M\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"17 + 5 = 22\\n\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":18,\"completion_tokens\":11,\"total_tokens\":29}}\n",
+      "score": 1,
+      "metric_details": {
+        "expected": "22",
+        "detected": "22"
+      }
+    },
+    {
+      "id": "translate_test",
+      "prompt": "Translate to Spanish: 'Good morning'",
+      "max_tokens": 128,
+      "success": true,
+      "elapsed_ms": 9750,
+      "response_text": "The most common and natural translation of \"Good morning\" in Spanish is:\n\n**Buenos días** \n\nYou can also say:\n\n*   **Buen día** (This is slightly less formal)\n\nWould you like to know more about how to say \"Good morning\" in different Spanish-speaking countries?",
+      "finish_reason": "stop",
+      "raw": "{\r\n  \"id\": \"cmpl-310\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764126214,\r\n  \"model\": \"gemma3:4b-it-q4_K_M\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"The most common and natural translation of \\\"Good morning\\\" in Spanish is:\\n\\n**Buenos días** \\n\\nYou can also say:\\n\\n*   **Buen día** (This is slightly less formal)\\n\\nWould you like to know more about how to say \\\"Good morning\\\" in different Spanish-speaking countries?\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"stop\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 17,\r\n    \"completion_tokens\": 64,\r\n    \"total_tokens\": 81\r\n  }\r\n}",
+      "error": null,
+      "attempts": [
+        {
+          "status": 200,
+          "body": "{\"id\":\"cmpl-310\",\"object\":\"text_completion\",\"created\":1764126214,\"model\":\"gemma3:4b-it-q4_K_M\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"The most common and natural translation of \\\"Good morning\\\" in Spanish is:\\n\\n**Buenos días** \\n\\nYou can also say:\\n\\n*   **Buen día** (This is slightly less formal)\\n\\nWould you like to know more about how to say \\\"Good morning\\\" in different Spanish-speaking countries?\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":17,\"completion_tokens\":64,\"total_tokens\":81}}\n",
+          "format": "max_tokens,temperature,model,prompt"
+        }
+      ],
+      "attempt_format": "max_tokens,temperature,model,prompt",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-310\",\"object\":\"text_completion\",\"created\":1764126214,\"model\":\"gemma3:4b-it-q4_K_M\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"The most common and natural translation of \\\"Good morning\\\" in Spanish is:\\n\\n**Buenos días** \\n\\nYou can also say:\\n\\n*   **Buen día** (This is slightly less formal)\\n\\nWould you like to know more about how to say \\\"Good morning\\\" in different Spanish-speaking countries?\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":17,\"completion_tokens\":64,\"total_tokens\":81}}\n",
+      "score": 1.0,
+      "metric_details": {
+        "bleu_1": 0.0476,
+        "rec": 1.0,
+        "prec": 0.0476,
+        "f1": 0.0909,
+        "exact_normalized_match": true
+      }
+    },
+    {
+      "id": "summarize_test",
+      "prompt": "Summarize in one short sentence: 'Artificial intelligence helps people by automating tasks and providing insights from data.'",
+      "max_tokens": 64,
+      "success": true,
+      "elapsed_ms": 4860,
+      "response_text": "Artificial intelligence streamlines processes and offers data-driven understanding to assist individuals.",
+      "finish_reason": "stop",
+      "raw": "{\r\n  \"id\": \"cmpl-979\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764126219,\r\n  \"model\": \"gemma3:4b-it-q4_K_M\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"Artificial intelligence streamlines processes and offers data-driven understanding to assist individuals.\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"stop\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 30,\r\n    \"completion_tokens\": 15,\r\n    \"total_tokens\": 45\r\n  }\r\n}",
+      "error": null,
+      "attempts": [
+        {
+          "status": 200,
+          "body": "{\"id\":\"cmpl-979\",\"object\":\"text_completion\",\"created\":1764126219,\"model\":\"gemma3:4b-it-q4_K_M\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"Artificial intelligence streamlines processes and offers data-driven understanding to assist individuals.\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":30,\"completion_tokens\":15,\"total_tokens\":45}}\n",
+          "format": "max_tokens,temperature,model,prompt"
+        }
+      ],
+      "attempt_format": "max_tokens,temperature,model,prompt",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-979\",\"object\":\"text_completion\",\"created\":1764126219,\"model\":\"gemma3:4b-it-q4_K_M\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"Artificial intelligence streamlines processes and offers data-driven understanding to assist individuals.\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":30,\"completion_tokens\":15,\"total_tokens\":45}}\n",
+      "score": null,
+      "metric_details": null
+    }
+  ]
+}

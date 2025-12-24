@@ -1,0 +1,38 @@
+[
+  {
+    "model": "gemma3:1b",
+    "temp": "0.7",
+    "runs": 3,
+    "mean_overall": 77.0,
+    "std_overall": 1.41,
+    "mean_math": 100.0,
+    "mean_translate": 100.0,
+    "mean_summarize": 0.0,
+    "mean_echo": 100.0,
+    "mean_latency_ms": 3639.0
+  },
+  {
+    "model": "cogito:3b-v1-preview-llama-q4_K_M",
+    "temp": "0",
+    "runs": 3,
+    "mean_overall": 76.0,
+    "std_overall": 2.83,
+    "mean_math": 100.0,
+    "mean_translate": 100.0,
+    "mean_summarize": 0.0,
+    "mean_echo": 100.0,
+    "mean_latency_ms": 4926.0
+  },
+  {
+    "model": "gemma3:270m",
+    "temp": "0",
+    "runs": 3,
+    "mean_overall": 69.33,
+    "std_overall": 0.94,
+    "mean_math": 100.0,
+    "mean_translate": 100.0,
+    "mean_summarize": 0.0,
+    "mean_echo": 0.0,
+    "mean_latency_ms": 1792.0
+  }
+]

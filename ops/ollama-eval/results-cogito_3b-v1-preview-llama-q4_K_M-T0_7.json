@@ -1,0 +1,107 @@
+{
+  "model": "cogito:3b-v1-preview-llama-q4_K_M",
+  "available": true,
+  "tests": [
+    {
+      "id": "echo_test",
+      "prompt": "Please reply with the single word: alive",
+      "max_tokens": 16,
+      "success": true,
+      "elapsed_ms": 38691,
+      "response_text": "alive",
+      "finish_reason": "stop",
+      "raw": "{\r\n  \"id\": \"cmpl-793\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764126346,\r\n  \"model\": \"cogito:3b-v1-preview-llama-q4_K_M\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"alive\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"stop\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 18,\r\n    \"completion_tokens\": 2,\r\n    \"total_tokens\": 20\r\n  }\r\n}",
+      "error": null,
+      "attempts": [
+        {
+          "status": 200,
+          "body": "{\"id\":\"cmpl-793\",\"object\":\"text_completion\",\"created\":1764126346,\"model\":\"cogito:3b-v1-preview-llama-q4_K_M\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"alive\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":18,\"completion_tokens\":2,\"total_tokens\":20}}\n",
+          "format": "max_tokens,temperature,model,prompt"
+        }
+      ],
+      "attempt_format": "max_tokens,temperature,model,prompt",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-793\",\"object\":\"text_completion\",\"created\":1764126346,\"model\":\"cogito:3b-v1-preview-llama-q4_K_M\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"alive\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":18,\"completion_tokens\":2,\"total_tokens\":20}}\n",
+      "score": null,
+      "metric_details": null
+    },
+    {
+      "id": "math_test",
+      "prompt": "What is 17 + 5?",
+      "max_tokens": 64,
+      "success": true,
+      "elapsed_ms": 2343,
+      "response_text": "17 + 5 = 22",
+      "finish_reason": "stop",
+      "raw": "{\r\n  \"id\": \"cmpl-445\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764126349,\r\n  \"model\": \"cogito:3b-v1-preview-llama-q4_K_M\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"17 + 5 = 22\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"stop\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 18,\r\n    \"completion_tokens\": 8,\r\n    \"total_tokens\": 26\r\n  }\r\n}",
+      "error": null,
+      "attempts": [
+        {
+          "status": 200,
+          "body": "{\"id\":\"cmpl-445\",\"object\":\"text_completion\",\"created\":1764126349,\"model\":\"cogito:3b-v1-preview-llama-q4_K_M\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"17 + 5 = 22\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":18,\"completion_tokens\":8,\"total_tokens\":26}}\n",
+          "format": "max_tokens,temperature,model,prompt"
+        }
+      ],
+      "attempt_format": "max_tokens,temperature,model,prompt",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-445\",\"object\":\"text_completion\",\"created\":1764126349,\"model\":\"cogito:3b-v1-preview-llama-q4_K_M\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"17 + 5 = 22\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":18,\"completion_tokens\":8,\"total_tokens\":26}}\n",
+      "score": 1,
+      "metric_details": {
+        "expected": "22",
+        "detected": "22"
+      }
+    },
+    {
+      "id": "translate_test",
+      "prompt": "Translate to Spanish: 'Good morning'",
+      "max_tokens": 128,
+      "success": true,
+      "elapsed_ms": 5918,
+      "response_text": "'Buenos días'\n\nNote: In some Spanish-speaking countries or regions, \"Buenos días\" might be more commonly used than \"Buenos días\". The translation remains the same regardless of regional preference.",
+      "finish_reason": "stop",
+      "raw": "{\r\n  \"id\": \"cmpl-402\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764126355,\r\n  \"model\": \"cogito:3b-v1-preview-llama-q4_K_M\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"'Buenos días'\\n\\nNote: In some Spanish-speaking countries or regions, \\\"Buenos días\\\" might be more commonly used than \\\"Buenos días\\\". The translation remains the same regardless of regional preference.\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"stop\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 18,\r\n    \"completion_tokens\": 44,\r\n    \"total_tokens\": 62\r\n  }\r\n}",
+      "error": null,
+      "attempts": [
+        {
+          "status": 200,
+          "body": "{\"id\":\"cmpl-402\",\"object\":\"text_completion\",\"created\":1764126355,\"model\":\"cogito:3b-v1-preview-llama-q4_K_M\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"'Buenos días'\\n\\nNote: In some Spanish-speaking countries or regions, \\\"Buenos días\\\" might be more commonly used than \\\"Buenos días\\\". The translation remains the same regardless of regional preference.\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":18,\"completion_tokens\":44,\"total_tokens\":62}}\n",
+          "format": "max_tokens,temperature,model,prompt"
+        }
+      ],
+      "attempt_format": "max_tokens,temperature,model,prompt",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-402\",\"object\":\"text_completion\",\"created\":1764126355,\"model\":\"cogito:3b-v1-preview-llama-q4_K_M\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"'Buenos días'\\n\\nNote: In some Spanish-speaking countries or regions, \\\"Buenos días\\\" might be more commonly used than \\\"Buenos días\\\". The translation remains the same regardless of regional preference.\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":18,\"completion_tokens\":44,\"total_tokens\":62}}\n",
+      "score": 1.0,
+      "metric_details": {
+        "bleu_1": 0.069,
+        "rec": 1.0,
+        "prec": 0.069,
+        "f1": 0.129,
+        "exact_normalized_match": true
+      }
+    },
+    {
+      "id": "summarize_test",
+      "prompt": "Summarize in one short sentence: 'Artificial intelligence helps people by automating tasks and providing insights from data.'",
+      "max_tokens": 64,
+      "success": true,
+      "elapsed_ms": 4062,
+      "response_text": "AI enhances human capabilities by automating tasks and analyzing data to improve productivity and decision-making.",
+      "finish_reason": "stop",
+      "raw": "{\r\n  \"id\": \"cmpl-146\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764126362,\r\n  \"model\": \"cogito:3b-v1-preview-llama-q4_K_M\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"AI enhances human capabilities by automating tasks and analyzing data to improve productivity and decision-making.\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"stop\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 34,\r\n    \"completion_tokens\": 19,\r\n    \"total_tokens\": 53\r\n  }\r\n}",
+      "error": null,
+      "attempts": [
+        {
+          "status": 200,
+          "body": "{\"id\":\"cmpl-146\",\"object\":\"text_completion\",\"created\":1764126362,\"model\":\"cogito:3b-v1-preview-llama-q4_K_M\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"AI enhances human capabilities by automating tasks and analyzing data to improve productivity and decision-making.\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":34,\"completion_tokens\":19,\"total_tokens\":53}}\n",
+          "format": "max_tokens,temperature,model,prompt"
+        }
+      ],
+      "attempt_format": "max_tokens,temperature,model,prompt",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-146\",\"object\":\"text_completion\",\"created\":1764126362,\"model\":\"cogito:3b-v1-preview-llama-q4_K_M\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"AI enhances human capabilities by automating tasks and analyzing data to improve productivity and decision-making.\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":34,\"completion_tokens\":19,\"total_tokens\":53}}\n",
+      "score": null,
+      "metric_details": null
+    }
+  ]
+}

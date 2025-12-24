@@ -1,0 +1,106 @@
+{
+  "model": "granite4:micro-h",
+  "available": true,
+  "tests": [
+    {
+      "id": "echo_test",
+      "prompt": "Please reply with the single word: alive",
+      "max_tokens": 16,
+      "success": true,
+      "elapsed_ms": 1854,
+      "response_text": "alive",
+      "finish_reason": "stop",
+      "raw": "{\r\n  \"id\": \"cmpl-986\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764122572,\r\n  \"model\": \"granite4:micro-h\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"alive\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"stop\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 16,\r\n    \"completion_tokens\": 2,\r\n    \"total_tokens\": 18\r\n  }\r\n}",
+      "error": null,
+      "attempts": [
+        {
+          "body": "{\"id\":\"cmpl-986\",\"object\":\"text_completion\",\"created\":1764122572,\"model\":\"granite4:micro-h\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"alive\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":16,\"completion_tokens\":2,\"total_tokens\":18}}\n",
+          "status": 200,
+          "format": "model,max_tokens,prompt"
+        }
+      ],
+      "attempt_format": "model,max_tokens,prompt",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-986\",\"object\":\"text_completion\",\"created\":1764122572,\"model\":\"granite4:micro-h\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"alive\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":16,\"completion_tokens\":2,\"total_tokens\":18}}\n",
+      "score": null,
+      "metric_details": null
+    },
+    {
+      "id": "math_test",
+      "prompt": "What is 17 + 5?",
+      "max_tokens": 64,
+      "success": true,
+      "elapsed_ms": 3738,
+      "response_text": "The answer to the question \"What is 17 + 5?\" is 22.",
+      "finish_reason": "stop",
+      "raw": "{\r\n  \"id\": \"cmpl-828\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764122576,\r\n  \"model\": \"granite4:micro-h\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"The answer to the question \\\"What is 17 + 5?\\\" is 22.\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"stop\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 16,\r\n    \"completion_tokens\": 19,\r\n    \"total_tokens\": 35\r\n  }\r\n}",
+      "error": null,
+      "attempts": [
+        {
+          "body": "{\"id\":\"cmpl-828\",\"object\":\"text_completion\",\"created\":1764122576,\"model\":\"granite4:micro-h\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"The answer to the question \\\"What is 17 + 5?\\\" is 22.\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":16,\"completion_tokens\":19,\"total_tokens\":35}}\n",
+          "status": 200,
+          "format": "model,max_tokens,prompt"
+        }
+      ],
+      "attempt_format": "model,max_tokens,prompt",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-828\",\"object\":\"text_completion\",\"created\":1764122576,\"model\":\"granite4:micro-h\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"The answer to the question \\\"What is 17 + 5?\\\" is 22.\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":16,\"completion_tokens\":19,\"total_tokens\":35}}\n",
+      "score": 0,
+      "metric_details": {
+        "expected": "22",
+        "detected": "17"
+      }
+    },
+    {
+      "id": "translate_test",
+      "prompt": "Translate to Spanish: 'Good morning'",
+      "max_tokens": 128,
+      "success": true,
+      "elapsed_ms": 11969,
+      "response_text": "Here is how you would say \"Good morning\" in Spanish:\n\n\"Buenos días\"\n\nThis translates directly as follows:\n\n- \"Bueno\" means \"good\"\n- \"s\" at the end refers to multiple days (días = days)\n- Putting it together with an accent on the final 's' and an initial capital letter gives us \"Buenos días\", meaning \"Good morning\".",
+      "finish_reason": "stop",
+      "raw": "{\r\n  \"id\": \"cmpl-52\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764122587,\r\n  \"model\": \"granite4:micro-h\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"Here is how you would say \\\"Good morning\\\" in Spanish:\\n\\n\\\"Buenos días\\\"\\n\\nThis translates directly as follows:\\n\\n- \\\"Bueno\\\" means \\\"good\\\"\\n- \\\"s\\\" at the end refers to multiple days (días = days)\\n- Putting it together with an accent on the final 's' and an initial capital letter gives us \\\"Buenos días\\\", meaning \\\"Good morning\\\".\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"stop\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 16,\r\n    \"completion_tokens\": 83,\r\n    \"total_tokens\": 99\r\n  }\r\n}",
+      "error": null,
+      "attempts": [
+        {
+          "body": "{\"id\":\"cmpl-52\",\"object\":\"text_completion\",\"created\":1764122587,\"model\":\"granite4:micro-h\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"Here is how you would say \\\"Good morning\\\" in Spanish:\\n\\n\\\"Buenos días\\\"\\n\\nThis translates directly as follows:\\n\\n- \\\"Bueno\\\" means \\\"good\\\"\\n- \\\"s\\\" at the end refers to multiple days (días = days)\\n- Putting it together with an accent on the final 's' and an initial capital letter gives us \\\"Buenos días\\\", meaning \\\"Good morning\\\".\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":16,\"completion_tokens\":83,\"total_tokens\":99}}\n",
+          "status": 200,
+          "format": "model,max_tokens,prompt"
+        }
+      ],
+      "attempt_format": "model,max_tokens,prompt",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-52\",\"object\":\"text_completion\",\"created\":1764122587,\"model\":\"granite4:micro-h\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"Here is how you would say \\\"Good morning\\\" in Spanish:\\n\\n\\\"Buenos días\\\"\\n\\nThis translates directly as follows:\\n\\n- \\\"Bueno\\\" means \\\"good\\\"\\n- \\\"s\\\" at the end refers to multiple days (días = days)\\n- Putting it together with an accent on the final 's' and an initial capital letter gives us \\\"Buenos días\\\", meaning \\\"Good morning\\\".\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":16,\"completion_tokens\":83,\"total_tokens\":99}}\n",
+      "score": 0.0741,
+      "metric_details": {
+        "rec": 1.0,
+        "bleu_1": 0.0385,
+        "prec": 0.0385,
+        "f1": 0.0741
+      }
+    },
+    {
+      "id": "summarize_test",
+      "prompt": "Summarize in one short sentence: 'Artificial intelligence helps people by automating tasks and providing insights from data.'",
+      "max_tokens": 64,
+      "success": true,
+      "elapsed_ms": 3752,
+      "response_text": "AI enhances human capabilities through task automation and data-driven insights.",
+      "finish_reason": "stop",
+      "raw": "{\r\n  \"id\": \"cmpl-745\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764122591,\r\n  \"model\": \"granite4:micro-h\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"AI enhances human capabilities through task automation and data-driven insights.\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"stop\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 32,\r\n    \"completion_tokens\": 13,\r\n    \"total_tokens\": 45\r\n  }\r\n}",
+      "error": null,
+      "attempts": [
+        {
+          "body": "{\"id\":\"cmpl-745\",\"object\":\"text_completion\",\"created\":1764122591,\"model\":\"granite4:micro-h\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"AI enhances human capabilities through task automation and data-driven insights.\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":32,\"completion_tokens\":13,\"total_tokens\":45}}\n",
+          "status": 200,
+          "format": "model,max_tokens,prompt"
+        }
+      ],
+      "attempt_format": "model,max_tokens,prompt",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-745\",\"object\":\"text_completion\",\"created\":1764122591,\"model\":\"granite4:micro-h\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"AI enhances human capabilities through task automation and data-driven insights.\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":32,\"completion_tokens\":13,\"total_tokens\":45}}\n",
+      "score": null,
+      "metric_details": null
+    }
+  ]
+}

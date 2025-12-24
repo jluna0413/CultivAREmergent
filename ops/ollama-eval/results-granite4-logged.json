@@ -1,0 +1,107 @@
+{
+  "model": "granite4:micro-h",
+  "available": true,
+  "tests": [
+    {
+      "id": "echo_test",
+      "prompt": "Please reply with the single word: alive",
+      "max_tokens": 16,
+      "success": true,
+      "elapsed_ms": 1911,
+      "response_text": "alive",
+      "finish_reason": "stop",
+      "raw": "{\r\n  \"id\": \"cmpl-334\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764123179,\r\n  \"model\": \"granite4:micro-h\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"alive\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"stop\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 16,\r\n    \"completion_tokens\": 2,\r\n    \"total_tokens\": 18\r\n  }\r\n}",
+      "error": null,
+      "attempts": [
+        {
+          "body": "{\"id\":\"cmpl-334\",\"object\":\"text_completion\",\"created\":1764123179,\"model\":\"granite4:micro-h\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"alive\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":16,\"completion_tokens\":2,\"total_tokens\":18}}\n",
+          "status": 200,
+          "format": "model,max_tokens,prompt"
+        }
+      ],
+      "attempt_format": "model,max_tokens,prompt",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-334\",\"object\":\"text_completion\",\"created\":1764123179,\"model\":\"granite4:micro-h\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"alive\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":16,\"completion_tokens\":2,\"total_tokens\":18}}\n",
+      "score": null,
+      "metric_details": null
+    },
+    {
+      "id": "math_test",
+      "prompt": "What is 17 + 5?",
+      "max_tokens": 64,
+      "success": true,
+      "elapsed_ms": 3609,
+      "response_text": "The answer to the problem 17 + 5 is 22.",
+      "finish_reason": "stop",
+      "raw": "{\r\n  \"id\": \"cmpl-157\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764123182,\r\n  \"model\": \"granite4:micro-h\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"The answer to the problem 17 + 5 is 22.\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"stop\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 16,\r\n    \"completion_tokens\": 15,\r\n    \"total_tokens\": 31\r\n  }\r\n}",
+      "error": null,
+      "attempts": [
+        {
+          "body": "{\"id\":\"cmpl-157\",\"object\":\"text_completion\",\"created\":1764123182,\"model\":\"granite4:micro-h\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"The answer to the problem 17 + 5 is 22.\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":16,\"completion_tokens\":15,\"total_tokens\":31}}\n",
+          "status": 200,
+          "format": "model,max_tokens,prompt"
+        }
+      ],
+      "attempt_format": "model,max_tokens,prompt",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-157\",\"object\":\"text_completion\",\"created\":1764123182,\"model\":\"granite4:micro-h\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"The answer to the problem 17 + 5 is 22.\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":16,\"completion_tokens\":15,\"total_tokens\":31}}\n",
+      "score": 1,
+      "metric_details": {
+        "expected": "22",
+        "detected": "22"
+      }
+    },
+    {
+      "id": "translate_test",
+      "prompt": "Translate to Spanish: 'Good morning'",
+      "max_tokens": 128,
+      "success": true,
+      "elapsed_ms": 11524,
+      "response_text": "In Spanish, \"Good morning\" can be translated as:\n\n\"Buenos días\"\n\nHere's the breakdown:\n- \"Bueno\" means \"good\"\n- \"s\" is added to indicate plural form for addressing someone formally (usted) or a group of people.\n\nSo, \"Buenos días\" literally translates to \"Good days,\" and it is commonly used to greet someone in the morning.",
+      "finish_reason": "stop",
+      "raw": "{\r\n  \"id\": \"cmpl-368\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764123196,\r\n  \"model\": \"granite4:micro-h\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"In Spanish, \\\"Good morning\\\" can be translated as:\\n\\n\\\"Buenos días\\\"\\n\\nHere's the breakdown:\\n- \\\"Bueno\\\" means \\\"good\\\"\\n- \\\"s\\\" is added to indicate plural form for addressing someone formally (usted) or a group of people.\\n\\nSo, \\\"Buenos días\\\" literally translates to \\\"Good days,\\\" and it is commonly used to greet someone in the morning.\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"stop\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 16,\r\n    \"completion_tokens\": 83,\r\n    \"total_tokens\": 99\r\n  }\r\n}",
+      "error": null,
+      "attempts": [
+        {
+          "body": "{\"id\":\"cmpl-368\",\"object\":\"text_completion\",\"created\":1764123196,\"model\":\"granite4:micro-h\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"In Spanish, \\\"Good morning\\\" can be translated as:\\n\\n\\\"Buenos días\\\"\\n\\nHere's the breakdown:\\n- \\\"Bueno\\\" means \\\"good\\\"\\n- \\\"s\\\" is added to indicate plural form for addressing someone formally (usted) or a group of people.\\n\\nSo, \\\"Buenos días\\\" literally translates to \\\"Good days,\\\" and it is commonly used to greet someone in the morning.\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":16,\"completion_tokens\":83,\"total_tokens\":99}}\n",
+          "status": 200,
+          "format": "model,max_tokens,prompt"
+        }
+      ],
+      "attempt_format": "model,max_tokens,prompt",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-368\",\"object\":\"text_completion\",\"created\":1764123196,\"model\":\"granite4:micro-h\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"In Spanish, \\\"Good morning\\\" can be translated as:\\n\\n\\\"Buenos días\\\"\\n\\nHere's the breakdown:\\n- \\\"Bueno\\\" means \\\"good\\\"\\n- \\\"s\\\" is added to indicate plural form for addressing someone formally (usted) or a group of people.\\n\\nSo, \\\"Buenos días\\\" literally translates to \\\"Good days,\\\" and it is commonly used to greet someone in the morning.\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":16,\"completion_tokens\":83,\"total_tokens\":99}}\n",
+      "score": 1.0,
+      "metric_details": {
+        "rec": 1.0,
+        "bleu_1": 0.0377,
+        "exact_normalized_match": true,
+        "prec": 0.0377,
+        "f1": 0.0727
+      }
+    },
+    {
+      "id": "summarize_test",
+      "prompt": "Summarize in one short sentence: 'Artificial intelligence helps people by automating tasks and providing insights from data.'",
+      "max_tokens": 64,
+      "success": true,
+      "elapsed_ms": 5062,
+      "response_text": "AI streamlines processes through automation and extracts valuable information from data.",
+      "finish_reason": "stop",
+      "raw": "{\r\n  \"id\": \"cmpl-420\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764123201,\r\n  \"model\": \"granite4:micro-h\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"AI streamlines processes through automation and extracts valuable information from data.\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"stop\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 32,\r\n    \"completion_tokens\": 14,\r\n    \"total_tokens\": 46\r\n  }\r\n}",
+      "error": null,
+      "attempts": [
+        {
+          "body": "{\"id\":\"cmpl-420\",\"object\":\"text_completion\",\"created\":1764123201,\"model\":\"granite4:micro-h\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"AI streamlines processes through automation and extracts valuable information from data.\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":32,\"completion_tokens\":14,\"total_tokens\":46}}\n",
+          "status": 200,
+          "format": "model,max_tokens,prompt"
+        }
+      ],
+      "attempt_format": "model,max_tokens,prompt",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-420\",\"object\":\"text_completion\",\"created\":1764123201,\"model\":\"granite4:micro-h\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"AI streamlines processes through automation and extracts valuable information from data.\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":32,\"completion_tokens\":14,\"total_tokens\":46}}\n",
+      "score": null,
+      "metric_details": null
+    }
+  ]
+}

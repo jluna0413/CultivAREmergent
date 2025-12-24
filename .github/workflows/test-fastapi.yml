@@ -1,0 +1,117 @@
+name: FastAPI Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  test-fastapi:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    - name: Set up environment variables
+      run: |
+        echo "DATABASE_URL=sqlite:///test.db" >> $GITHUB_ENV
+        echo "SECRET_KEY=test-secret-key-for-testing" >> $GITHUB_ENV
+        echo "DEBUG=true" >> $GITHUB_ENV
+        echo "TEST_MODE=1" >> $GITHUB_ENV
+    - name: Run FastAPI tests
+      run: pytest tests/test_fastapi_*.py -v --cov=app/fastapi_app --cov-report=xml --asyncio-mode=auto
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        flags: fastapi
+        name: FastAPI Coverage
+
+  test-async-db:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        db: [ sqlite, postgres ]
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: testdb
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    - name: Set up environment variables
+      run: |
+        if [ "${{ matrix.db }}" == "sqlite" ]; then
+          echo "DATABASE_URL=sqlite+aiosqlite:///test.db" >> $GITHUB_ENV
+        else
+          echo "DATABASE_URL=postgresql+asyncpg://postgres:postgres@localhost:5432/testdb" >> $GITHUB_ENV
+        fi
+        echo "SECRET_KEY=test-secret-key-for-testing" >> $GITHUB_ENV
+        echo "DEBUG=true" >> $GITHUB_ENV
+        echo "TEST_MODE=1" >> $GITHUB_ENV
+    - name: Run async database tests
+      run: pytest tests/test_async_database.py -v --asyncio-mode=auto
+
+  test-parity:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    - name: Set up environment variables
+      run: |
+        echo "DATABASE_URL=sqlite:///test.db" >> $GITHUB_ENV
+        echo "SECRET_KEY=test-secret-key-for-testing" >> $GITHUB_ENV
+        echo "DEBUG=true" >> $GITHUB_ENV
+        echo "TEST_MODE=1" >> $GITHUB_ENV
+        echo "APP_MODE=fastapi" >> $GITHUB_ENV
+    - name: Run migration parity tests
+      run: pytest tests/test_migration_parity.py -v --cov=tests --asyncio-mode=auto
+
+  lint-fastapi:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pylint mypy
+    - name: Run pylint on FastAPI code
+      run: pylint app/fastapi_app/ app/fastapi_main/ app/models_async/ app/handlers_async/ --disable=C0114,C0115,C0116,W0613
+    - name: Run mypy on FastAPI code
+      run: mypy app/fastapi_app/ --ignore-missing-imports

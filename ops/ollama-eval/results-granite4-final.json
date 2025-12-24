@@ -1,0 +1,107 @@
+{
+  "model": "granite4:micro-h",
+  "available": true,
+  "tests": [
+    {
+      "id": "echo_test",
+      "prompt": "Please reply with the single word: alive",
+      "max_tokens": 16,
+      "success": true,
+      "elapsed_ms": 1921,
+      "response_text": "alive",
+      "finish_reason": "stop",
+      "raw": "{\r\n  \"id\": \"cmpl-83\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764122788,\r\n  \"model\": \"granite4:micro-h\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"alive\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"stop\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 16,\r\n    \"completion_tokens\": 2,\r\n    \"total_tokens\": 18\r\n  }\r\n}",
+      "error": null,
+      "attempts": [
+        {
+          "body": "{\"id\":\"cmpl-83\",\"object\":\"text_completion\",\"created\":1764122788,\"model\":\"granite4:micro-h\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"alive\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":16,\"completion_tokens\":2,\"total_tokens\":18}}\n",
+          "status": 200,
+          "format": "model,max_tokens,prompt"
+        }
+      ],
+      "attempt_format": "model,max_tokens,prompt",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-83\",\"object\":\"text_completion\",\"created\":1764122788,\"model\":\"granite4:micro-h\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"alive\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":16,\"completion_tokens\":2,\"total_tokens\":18}}\n",
+      "score": null,
+      "metric_details": null
+    },
+    {
+      "id": "math_test",
+      "prompt": "What is 17 + 5?",
+      "max_tokens": 64,
+      "success": true,
+      "elapsed_ms": 8681,
+      "response_text": "The answer to the question \"What is 17 + 5?\" is 22. \n\nHere's a simple explanation:\n\nWhen you add two numbers, you combine their values. In this case:\n- The first number is 17, which can be broken down into 10 (one ten) and 7 (",
+      "finish_reason": "length",
+      "raw": "{\r\n  \"id\": \"cmpl-661\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764122799,\r\n  \"model\": \"granite4:micro-h\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"The answer to the question \\\"What is 17 + 5?\\\" is 22. \\n\\nHere's a simple explanation:\\n\\nWhen you add two numbers, you combine their values. In this case:\\n- The first number is 17, which can be broken down into 10 (one ten) and 7 (\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"length\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 16,\r\n    \"completion_tokens\": 64,\r\n    \"total_tokens\": 80\r\n  }\r\n}",
+      "error": null,
+      "attempts": [
+        {
+          "body": "{\"id\":\"cmpl-661\",\"object\":\"text_completion\",\"created\":1764122799,\"model\":\"granite4:micro-h\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"The answer to the question \\\"What is 17 + 5?\\\" is 22. \\n\\nHere's a simple explanation:\\n\\nWhen you add two numbers, you combine their values. In this case:\\n- The first number is 17, which can be broken down into 10 (one ten) and 7 (\",\"index\":0,\"finish_reason\":\"length\"}],\"usage\":{\"prompt_tokens\":16,\"completion_tokens\":64,\"total_tokens\":80}}\n",
+          "status": 200,
+          "format": "model,max_tokens,prompt"
+        }
+      ],
+      "attempt_format": "model,max_tokens,prompt",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-661\",\"object\":\"text_completion\",\"created\":1764122799,\"model\":\"granite4:micro-h\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"The answer to the question \\\"What is 17 + 5?\\\" is 22. \\n\\nHere's a simple explanation:\\n\\nWhen you add two numbers, you combine their values. In this case:\\n- The first number is 17, which can be broken down into 10 (one ten) and 7 (\",\"index\":0,\"finish_reason\":\"length\"}],\"usage\":{\"prompt_tokens\":16,\"completion_tokens\":64,\"total_tokens\":80}}\n",
+      "score": 0,
+      "metric_details": {
+        "expected": "22",
+        "detected": "17"
+      }
+    },
+    {
+      "id": "translate_test",
+      "prompt": "Translate to Spanish: 'Good morning'",
+      "max_tokens": 128,
+      "success": true,
+      "elapsed_ms": 2706,
+      "response_text": "\"Buenos días\"",
+      "finish_reason": "stop",
+      "raw": "{\r\n  \"id\": \"cmpl-601\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764122802,\r\n  \"model\": \"granite4:micro-h\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"\\\"Buenos días\\\"\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"stop\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 16,\r\n    \"completion_tokens\": 6,\r\n    \"total_tokens\": 22\r\n  }\r\n}",
+      "error": null,
+      "attempts": [
+        {
+          "body": "{\"id\":\"cmpl-601\",\"object\":\"text_completion\",\"created\":1764122802,\"model\":\"granite4:micro-h\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"\\\"Buenos días\\\"\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":16,\"completion_tokens\":6,\"total_tokens\":22}}\n",
+          "status": 200,
+          "format": "model,max_tokens,prompt"
+        }
+      ],
+      "attempt_format": "model,max_tokens,prompt",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-601\",\"object\":\"text_completion\",\"created\":1764122802,\"model\":\"granite4:micro-h\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"\\\"Buenos días\\\"\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":16,\"completion_tokens\":6,\"total_tokens\":22}}\n",
+      "score": 1.0,
+      "metric_details": {
+        "rec": 1.0,
+        "bleu_1": 1.0,
+        "exact_normalized_match": true,
+        "prec": 1.0,
+        "f1": 1.0
+      }
+    },
+    {
+      "id": "summarize_test",
+      "prompt": "Summarize in one short sentence: 'Artificial intelligence helps people by automating tasks and providing insights from data.'",
+      "max_tokens": 64,
+      "success": true,
+      "elapsed_ms": 4228,
+      "response_text": "AI enhances human efficiency and decision-making through automation and data analysis.",
+      "finish_reason": "stop",
+      "raw": "{\r\n  \"id\": \"cmpl-683\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764122806,\r\n  \"model\": \"granite4:micro-h\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"AI enhances human efficiency and decision-making through automation and data analysis.\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"stop\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 32,\r\n    \"completion_tokens\": 14,\r\n    \"total_tokens\": 46\r\n  }\r\n}",
+      "error": null,
+      "attempts": [
+        {
+          "body": "{\"id\":\"cmpl-683\",\"object\":\"text_completion\",\"created\":1764122806,\"model\":\"granite4:micro-h\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"AI enhances human efficiency and decision-making through automation and data analysis.\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":32,\"completion_tokens\":14,\"total_tokens\":46}}\n",
+          "status": 200,
+          "format": "model,max_tokens,prompt"
+        }
+      ],
+      "attempt_format": "model,max_tokens,prompt",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-683\",\"object\":\"text_completion\",\"created\":1764122806,\"model\":\"granite4:micro-h\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"AI enhances human efficiency and decision-making through automation and data analysis.\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":32,\"completion_tokens\":14,\"total_tokens\":46}}\n",
+      "score": null,
+      "metric_details": null
+    }
+  ]
+}

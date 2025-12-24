@@ -1,0 +1,107 @@
+{
+  "model": "gemma3:1b",
+  "available": true,
+  "tests": [
+    {
+      "id": "echo_test",
+      "prompt": "Please reply with the single word: alive",
+      "max_tokens": 16,
+      "success": true,
+      "elapsed_ms": 11497,
+      "response_text": "Alive",
+      "finish_reason": "stop",
+      "raw": "{\r\n  \"id\": \"cmpl-771\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764267269,\r\n  \"model\": \"gemma3:1b\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"Alive\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"stop\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 17,\r\n    \"completion_tokens\": 2,\r\n    \"total_tokens\": 19\r\n  }\r\n}",
+      "error": null,
+      "attempts": [
+        {
+          "status": 200,
+          "format": "model,max_tokens,prompt,temperature",
+          "body": "{\"id\":\"cmpl-771\",\"object\":\"text_completion\",\"created\":1764267269,\"model\":\"gemma3:1b\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"Alive\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":17,\"completion_tokens\":2,\"total_tokens\":19}}\n"
+        }
+      ],
+      "attempt_format": "model,max_tokens,prompt,temperature",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-771\",\"object\":\"text_completion\",\"created\":1764267269,\"model\":\"gemma3:1b\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"Alive\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":17,\"completion_tokens\":2,\"total_tokens\":19}}\n",
+      "score": null,
+      "metric_details": null
+    },
+    {
+      "id": "math_test",
+      "prompt": "What is 17 + 5?",
+      "max_tokens": 64,
+      "success": true,
+      "elapsed_ms": 2453,
+      "response_text": "17 + 5 = 22\n\nSo the answer is **22**.\n",
+      "finish_reason": "stop",
+      "raw": "{\r\n  \"id\": \"cmpl-745\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764267273,\r\n  \"model\": \"gemma3:1b\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"17 + 5 = 22\\n\\nSo the answer is **22**.\\n\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"stop\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 18,\r\n    \"completion_tokens\": 20,\r\n    \"total_tokens\": 38\r\n  }\r\n}",
+      "error": null,
+      "attempts": [
+        {
+          "status": 200,
+          "format": "model,max_tokens,prompt,temperature",
+          "body": "{\"id\":\"cmpl-745\",\"object\":\"text_completion\",\"created\":1764267273,\"model\":\"gemma3:1b\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"17 + 5 = 22\\n\\nSo the answer is **22**.\\n\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":18,\"completion_tokens\":20,\"total_tokens\":38}}\n"
+        }
+      ],
+      "attempt_format": "model,max_tokens,prompt,temperature",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-745\",\"object\":\"text_completion\",\"created\":1764267273,\"model\":\"gemma3:1b\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"17 + 5 = 22\\n\\nSo the answer is **22**.\\n\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":18,\"completion_tokens\":20,\"total_tokens\":38}}\n",
+      "score": 1,
+      "metric_details": {
+        "detected": "22",
+        "expected": "22"
+      }
+    },
+    {
+      "id": "translate_test",
+      "prompt": "Translate to Spanish: 'Good morning'",
+      "max_tokens": 128,
+      "success": true,
+      "elapsed_ms": 3954,
+      "response_text": "The most common and straightforward translation of \"Good morning\" in Spanish is:\n\n**Buenos días** \n\nYou can also say:\n\n* **¡Buenos días!** (This is a more emphatic and informal greeting)\n\nSo, **Buenos días** is the best option.",
+      "finish_reason": "stop",
+      "raw": "{\r\n  \"id\": \"cmpl-585\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764267278,\r\n  \"model\": \"gemma3:1b\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"The most common and straightforward translation of \\\"Good morning\\\" in Spanish is:\\n\\n**Buenos días** \\n\\nYou can also say:\\n\\n* **¡Buenos días!** (This is a more emphatic and informal greeting)\\n\\nSo, **Buenos días** is the best option.\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"stop\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 17,\r\n    \"completion_tokens\": 58,\r\n    \"total_tokens\": 75\r\n  }\r\n}",
+      "error": null,
+      "attempts": [
+        {
+          "status": 200,
+          "format": "model,max_tokens,prompt,temperature",
+          "body": "{\"id\":\"cmpl-585\",\"object\":\"text_completion\",\"created\":1764267278,\"model\":\"gemma3:1b\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"The most common and straightforward translation of \\\"Good morning\\\" in Spanish is:\\n\\n**Buenos días** \\n\\nYou can also say:\\n\\n* **¡Buenos días!** (This is a more emphatic and informal greeting)\\n\\nSo, **Buenos días** is the best option.\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":17,\"completion_tokens\":58,\"total_tokens\":75}}\n"
+        }
+      ],
+      "attempt_format": "model,max_tokens,prompt,temperature",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-585\",\"object\":\"text_completion\",\"created\":1764267278,\"model\":\"gemma3:1b\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"The most common and straightforward translation of \\\"Good morning\\\" in Spanish is:\\n\\n**Buenos días** \\n\\nYou can also say:\\n\\n* **¡Buenos días!** (This is a more emphatic and informal greeting)\\n\\nSo, **Buenos días** is the best option.\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":17,\"completion_tokens\":58,\"total_tokens\":75}}\n",
+      "score": 1.0,
+      "metric_details": {
+        "bleu_1": 0.0571,
+        "prec": 0.0571,
+        "exact_normalized_match": true,
+        "f1": 0.1081,
+        "rec": 1.0
+      }
+    },
+    {
+      "id": "summarize_test",
+      "prompt": "Summarize in one short sentence: 'Artificial intelligence helps people by automating tasks and providing insights from data.'",
+      "max_tokens": 64,
+      "success": true,
+      "elapsed_ms": 2460,
+      "response_text": "Artificial intelligence automates tasks and analyzes data to improve decision-making and efficiency.",
+      "finish_reason": "stop",
+      "raw": "{\r\n  \"id\": \"cmpl-3\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764267280,\r\n  \"model\": \"gemma3:1b\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"Artificial intelligence automates tasks and analyzes data to improve decision-making and efficiency.\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"stop\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 30,\r\n    \"completion_tokens\": 17,\r\n    \"total_tokens\": 47\r\n  }\r\n}",
+      "error": null,
+      "attempts": [
+        {
+          "status": 200,
+          "format": "model,max_tokens,prompt,temperature",
+          "body": "{\"id\":\"cmpl-3\",\"object\":\"text_completion\",\"created\":1764267280,\"model\":\"gemma3:1b\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"Artificial intelligence automates tasks and analyzes data to improve decision-making and efficiency.\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":30,\"completion_tokens\":17,\"total_tokens\":47}}\n"
+        }
+      ],
+      "attempt_format": "model,max_tokens,prompt,temperature",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-3\",\"object\":\"text_completion\",\"created\":1764267280,\"model\":\"gemma3:1b\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"Artificial intelligence automates tasks and analyzes data to improve decision-making and efficiency.\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":30,\"completion_tokens\":17,\"total_tokens\":47}}\n",
+      "score": null,
+      "metric_details": null
+    }
+  ]
+}

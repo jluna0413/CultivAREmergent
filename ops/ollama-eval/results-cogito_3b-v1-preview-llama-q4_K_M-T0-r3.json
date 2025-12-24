@@ -1,0 +1,107 @@
+{
+  "model": "cogito:3b-v1-preview-llama-q4_K_M",
+  "available": true,
+  "tests": [
+    {
+      "id": "echo_test",
+      "prompt": "Please reply with the single word: alive",
+      "max_tokens": 16,
+      "success": true,
+      "elapsed_ms": 1659,
+      "response_text": "alive",
+      "finish_reason": "stop",
+      "raw": "{\r\n  \"id\": \"cmpl-114\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764267402,\r\n  \"model\": \"cogito:3b-v1-preview-llama-q4_K_M\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"alive\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"stop\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 18,\r\n    \"completion_tokens\": 2,\r\n    \"total_tokens\": 20\r\n  }\r\n}",
+      "error": null,
+      "attempts": [
+        {
+          "status": 200,
+          "format": "model,max_tokens,prompt,temperature",
+          "body": "{\"id\":\"cmpl-114\",\"object\":\"text_completion\",\"created\":1764267402,\"model\":\"cogito:3b-v1-preview-llama-q4_K_M\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"alive\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":18,\"completion_tokens\":2,\"total_tokens\":20}}\n"
+        }
+      ],
+      "attempt_format": "model,max_tokens,prompt,temperature",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-114\",\"object\":\"text_completion\",\"created\":1764267402,\"model\":\"cogito:3b-v1-preview-llama-q4_K_M\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"alive\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":18,\"completion_tokens\":2,\"total_tokens\":20}}\n",
+      "score": null,
+      "metric_details": null
+    },
+    {
+      "id": "math_test",
+      "prompt": "What is 17 + 5?",
+      "max_tokens": 64,
+      "success": true,
+      "elapsed_ms": 2069,
+      "response_text": "17 + 5 = 22",
+      "finish_reason": "stop",
+      "raw": "{\r\n  \"id\": \"cmpl-360\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764267404,\r\n  \"model\": \"cogito:3b-v1-preview-llama-q4_K_M\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"17 + 5 = 22\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"stop\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 18,\r\n    \"completion_tokens\": 8,\r\n    \"total_tokens\": 26\r\n  }\r\n}",
+      "error": null,
+      "attempts": [
+        {
+          "status": 200,
+          "format": "model,max_tokens,prompt,temperature",
+          "body": "{\"id\":\"cmpl-360\",\"object\":\"text_completion\",\"created\":1764267404,\"model\":\"cogito:3b-v1-preview-llama-q4_K_M\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"17 + 5 = 22\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":18,\"completion_tokens\":8,\"total_tokens\":26}}\n"
+        }
+      ],
+      "attempt_format": "model,max_tokens,prompt,temperature",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-360\",\"object\":\"text_completion\",\"created\":1764267404,\"model\":\"cogito:3b-v1-preview-llama-q4_K_M\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"17 + 5 = 22\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":18,\"completion_tokens\":8,\"total_tokens\":26}}\n",
+      "score": 1,
+      "metric_details": {
+        "detected": "22",
+        "expected": "22"
+      }
+    },
+    {
+      "id": "translate_test",
+      "prompt": "Translate to Spanish: 'Good morning'",
+      "max_tokens": 128,
+      "success": true,
+      "elapsed_ms": 1877,
+      "response_text": "\"Buenos días\"",
+      "finish_reason": "stop",
+      "raw": "{\r\n  \"id\": \"cmpl-510\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764267407,\r\n  \"model\": \"cogito:3b-v1-preview-llama-q4_K_M\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"\\\"Buenos días\\\"\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"stop\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 18,\r\n    \"completion_tokens\": 6,\r\n    \"total_tokens\": 24\r\n  }\r\n}",
+      "error": null,
+      "attempts": [
+        {
+          "status": 200,
+          "format": "model,max_tokens,prompt,temperature",
+          "body": "{\"id\":\"cmpl-510\",\"object\":\"text_completion\",\"created\":1764267407,\"model\":\"cogito:3b-v1-preview-llama-q4_K_M\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"\\\"Buenos días\\\"\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":18,\"completion_tokens\":6,\"total_tokens\":24}}\n"
+        }
+      ],
+      "attempt_format": "model,max_tokens,prompt,temperature",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-510\",\"object\":\"text_completion\",\"created\":1764267407,\"model\":\"cogito:3b-v1-preview-llama-q4_K_M\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"\\\"Buenos días\\\"\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":18,\"completion_tokens\":6,\"total_tokens\":24}}\n",
+      "score": 1.0,
+      "metric_details": {
+        "bleu_1": 1.0,
+        "prec": 1.0,
+        "exact_normalized_match": true,
+        "f1": 1.0,
+        "rec": 1.0
+      }
+    },
+    {
+      "id": "summarize_test",
+      "prompt": "Summarize in one short sentence: 'Artificial intelligence helps people by automating tasks and providing insights from data.'",
+      "max_tokens": 64,
+      "success": true,
+      "elapsed_ms": 2788,
+      "response_text": "AI enhances human capabilities through automation and data-driven insights.",
+      "finish_reason": "stop",
+      "raw": "{\r\n  \"id\": \"cmpl-118\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764267410,\r\n  \"model\": \"cogito:3b-v1-preview-llama-q4_K_M\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"AI enhances human capabilities through automation and data-driven insights.\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"stop\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 34,\r\n    \"completion_tokens\": 12,\r\n    \"total_tokens\": 46\r\n  }\r\n}",
+      "error": null,
+      "attempts": [
+        {
+          "status": 200,
+          "format": "model,max_tokens,prompt,temperature",
+          "body": "{\"id\":\"cmpl-118\",\"object\":\"text_completion\",\"created\":1764267410,\"model\":\"cogito:3b-v1-preview-llama-q4_K_M\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"AI enhances human capabilities through automation and data-driven insights.\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":34,\"completion_tokens\":12,\"total_tokens\":46}}\n"
+        }
+      ],
+      "attempt_format": "model,max_tokens,prompt,temperature",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-118\",\"object\":\"text_completion\",\"created\":1764267410,\"model\":\"cogito:3b-v1-preview-llama-q4_K_M\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"AI enhances human capabilities through automation and data-driven insights.\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":34,\"completion_tokens\":12,\"total_tokens\":46}}\n",
+      "score": null,
+      "metric_details": null
+    }
+  ]
+}

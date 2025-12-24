@@ -1,0 +1,107 @@
+{
+  "model": "gemma3:270m",
+  "available": true,
+  "tests": [
+    {
+      "id": "echo_test",
+      "prompt": "Please reply with the single word: alive",
+      "max_tokens": 16,
+      "success": false,
+      "elapsed_ms": 5311,
+      "response_text": null,
+      "finish_reason": "stop",
+      "raw": "{\r\n  \"id\": \"cmpl-639\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764126143,\r\n  \"model\": \"gemma3:270m\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"stop\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 17,\r\n    \"completion_tokens\": 1,\r\n    \"total_tokens\": 18\r\n  }\r\n}",
+      "error": "empty_response",
+      "attempts": [
+        {
+          "status": 200,
+          "body": "{\"id\":\"cmpl-639\",\"object\":\"text_completion\",\"created\":1764126143,\"model\":\"gemma3:270m\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":17,\"completion_tokens\":1,\"total_tokens\":18}}\n",
+          "format": "max_tokens,temperature,model,prompt"
+        }
+      ],
+      "attempt_format": "max_tokens,temperature,model,prompt",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-639\",\"object\":\"text_completion\",\"created\":1764126143,\"model\":\"gemma3:270m\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":17,\"completion_tokens\":1,\"total_tokens\":18}}\n",
+      "score": null,
+      "metric_details": null
+    },
+    {
+      "id": "math_test",
+      "prompt": "What is 17 + 5?",
+      "max_tokens": 64,
+      "success": true,
+      "elapsed_ms": 1535,
+      "response_text": "17 + 5 = 22\n",
+      "finish_reason": "stop",
+      "raw": "{\r\n  \"id\": \"cmpl-650\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764126145,\r\n  \"model\": \"gemma3:270m\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"17 + 5 = 22\\n\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"stop\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 18,\r\n    \"completion_tokens\": 11,\r\n    \"total_tokens\": 29\r\n  }\r\n}",
+      "error": null,
+      "attempts": [
+        {
+          "status": 200,
+          "body": "{\"id\":\"cmpl-650\",\"object\":\"text_completion\",\"created\":1764126145,\"model\":\"gemma3:270m\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"17 + 5 = 22\\n\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":18,\"completion_tokens\":11,\"total_tokens\":29}}\n",
+          "format": "max_tokens,temperature,model,prompt"
+        }
+      ],
+      "attempt_format": "max_tokens,temperature,model,prompt",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-650\",\"object\":\"text_completion\",\"created\":1764126145,\"model\":\"gemma3:270m\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"17 + 5 = 22\\n\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":18,\"completion_tokens\":11,\"total_tokens\":29}}\n",
+      "score": 1,
+      "metric_details": {
+        "expected": "22",
+        "detected": "22"
+      }
+    },
+    {
+      "id": "translate_test",
+      "prompt": "Translate to Spanish: 'Good morning'",
+      "max_tokens": 128,
+      "success": true,
+      "elapsed_ms": 1767,
+      "response_text": "The most common and natural translation of \"Good morning\" is:\n\n* **Buenos días**\n",
+      "finish_reason": "stop",
+      "raw": "{\r\n  \"id\": \"cmpl-995\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764126147,\r\n  \"model\": \"gemma3:270m\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"The most common and natural translation of \\\"Good morning\\\" is:\\n\\n* **Buenos días**\\n\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"stop\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 17,\r\n    \"completion_tokens\": 21,\r\n    \"total_tokens\": 38\r\n  }\r\n}",
+      "error": null,
+      "attempts": [
+        {
+          "status": 200,
+          "body": "{\"id\":\"cmpl-995\",\"object\":\"text_completion\",\"created\":1764126147,\"model\":\"gemma3:270m\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"The most common and natural translation of \\\"Good morning\\\" is:\\n\\n* **Buenos días**\\n\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":17,\"completion_tokens\":21,\"total_tokens\":38}}\n",
+          "format": "max_tokens,temperature,model,prompt"
+        }
+      ],
+      "attempt_format": "max_tokens,temperature,model,prompt",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-995\",\"object\":\"text_completion\",\"created\":1764126147,\"model\":\"gemma3:270m\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"The most common and natural translation of \\\"Good morning\\\" is:\\n\\n* **Buenos días**\\n\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":17,\"completion_tokens\":21,\"total_tokens\":38}}\n",
+      "score": 1.0,
+      "metric_details": {
+        "bleu_1": 0.1667,
+        "rec": 1.0,
+        "prec": 0.1667,
+        "f1": 0.2857,
+        "exact_normalized_match": true
+      }
+    },
+    {
+      "id": "summarize_test",
+      "prompt": "Summarize in one short sentence: 'Artificial intelligence helps people by automating tasks and providing insights from data.'",
+      "max_tokens": 64,
+      "success": true,
+      "elapsed_ms": 1826,
+      "response_text": "Artificial intelligence is enabling automation and data analysis to improve efficiency and provide valuable insights.\n",
+      "finish_reason": "stop",
+      "raw": "{\r\n  \"id\": \"cmpl-280\",\r\n  \"object\": \"text_completion\",\r\n  \"created\": 1764126149,\r\n  \"model\": \"gemma3:270m\",\r\n  \"system_fingerprint\": \"fp_ollama\",\r\n  \"choices\": [\r\n    {\r\n      \"text\": \"Artificial intelligence is enabling automation and data analysis to improve efficiency and provide valuable insights.\\n\",\r\n      \"index\": 0,\r\n      \"finish_reason\": \"stop\"\r\n    }\r\n  ],\r\n  \"usage\": {\r\n    \"prompt_tokens\": 30,\r\n    \"completion_tokens\": 18,\r\n    \"total_tokens\": 48\r\n  }\r\n}",
+      "error": null,
+      "attempts": [
+        {
+          "status": 200,
+          "body": "{\"id\":\"cmpl-280\",\"object\":\"text_completion\",\"created\":1764126149,\"model\":\"gemma3:270m\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"Artificial intelligence is enabling automation and data analysis to improve efficiency and provide valuable insights.\\n\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":30,\"completion_tokens\":18,\"total_tokens\":48}}\n",
+          "format": "max_tokens,temperature,model,prompt"
+        }
+      ],
+      "attempt_format": "max_tokens,temperature,model,prompt",
+      "raw_http_status": 200,
+      "raw_http_body": "{\"id\":\"cmpl-280\",\"object\":\"text_completion\",\"created\":1764126149,\"model\":\"gemma3:270m\",\"system_fingerprint\":\"fp_ollama\",\"choices\":[{\"text\":\"Artificial intelligence is enabling automation and data analysis to improve efficiency and provide valuable insights.\\n\",\"index\":0,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":30,\"completion_tokens\":18,\"total_tokens\":48}}\n",
+      "score": null,
+      "metric_details": null
+    }
+  ]
+}
