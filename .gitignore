@@ -212,3 +212,15 @@ router_inspect.dart
 main_inspect.dart
 all_tests.txt
 script_start_line.txt
+
+# Remaining temp/debug files (auto-added)
+.aider-desk/
+.aider.chat.history.md
+.aider.input.history
+.aider.tags.cache.v4/
+.taskmaster/
+debug_results.md
+fastapi_security_audit.py
+flutter_critical_fixes*.py
+owasp_zap_fixes*.py
+temp_logic.dart
