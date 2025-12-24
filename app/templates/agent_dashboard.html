@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CultivAR Agent Dashboard</title>
+    <style>
+        :root {
+            --bg-primary: #0a0f1a;
+            --bg-secondary: #111827;
+            --bg-card: #1f2937;
+            --accent-green: #10b981;
+            --accent-purple: #8b5cf6;
+            --accent-blue: #3b82f6;
+            --accent-orange: #f59e0b;
+            --accent-red: #ef4444;
+            --text-primary: #f9fafb;
+            --text-secondary: #9ca3af;
+            --border: #374151;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, var(--accent-green), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .action-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-green), #059669);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent-purple);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .agents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .agent-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            transition: all 0.2s ease;
+        }
+
+        .agent-card:hover {
+            border-color: var(--accent-purple);
+            transform: translateY(-2px);
+        }
+
+        .agent-card.success {
+            border-color: var(--accent-green);
+        }
+
+        .agent-card.failed {
+            border-color: var(--accent-red);
+        }
+
+        .agent-card.running {
+            border-color: var(--accent-blue);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+            }
+
+            50% {
+                box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+            }
+        }
+
+        .agent-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.75rem;
+        }
+
+        .agent-name {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .agent-role {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .role-discovery {
+            background: rgba(139, 92, 246, 0.2);
+            color: var(--accent-purple);
+        }
+
+        .role-growing {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--accent-green);
+        }
+
+        .role-community {
+            background: rgba(59, 130, 246, 0.2);
+            color: var(--accent-blue);
+        }
+
+        .agent-desc {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .agent-tools {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .tool-tag {
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+            background: var(--bg-secondary);
+            border-radius: 4px;
+            color: var(--text-secondary);
+        }
+
+        .agent-result {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 0.75rem;
+            font-size: 0.8rem;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .agent-result pre {
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .agent-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 0.75rem;
+            font-size: 0.8rem;
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .status-success {
+            background: var(--accent-green);
+        }
+
+        .status-failed {
+            background: var(--accent-red);
+        }
+
+        .status-pending {
+            background: var(--text-secondary);
+        }
+
+        .status-running {
+            background: var(--accent-blue);
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        .execution-time {
+            color: var(--text-secondary);
+        }
+
+        .results-summary {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .summary-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .summary-stats {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .summary-stat {
+            text-align: center;
+        }
+
+        .summary-stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .summary-stat-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(10, 15, 26, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid var(--border);
+            border-top-color: var(--accent-green);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="loading" class="loading-overlay hidden">
+        <div class="loading-spinner"></div>
+    </div>
+    <div class="container">
+        <header>
+            <h1>🌿 CultivAR Agent Dashboard</h1>
+            <p class="subtitle">Swarm-powered parallel agent testing & validation</p>
+        </header>
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div class="stat-value" id="totalAgents">0</div>
+                <div class="stat-label">Total Agents</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" style="color: var(--accent-green)" id="passedCount">0</div>
+                <div class="stat-label">Passed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" style="color: var(--accent-red)" id="failedCount">0</div>
+                <div class="stat-label">Failed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" style="color: var(--accent-blue)" id="totalTime">0ms</div>
+                <div class="stat-label">Total Time</div>
+            </div>
+        </div>
+        <div class="action-bar">
+            <button class="btn btn-primary" onclick="testAllAgents()"> 🚀 Test All Agents (Swarm) </button>
+            <button class="btn btn-secondary" onclick="testCategory('discovery')"> 🔍 Discovery </button>
+            <button class="btn btn-secondary" onclick="testCategory('growing')"> 🌱 Growing </button>
+            <button class="btn btn-secondary" onclick="testCategory('community')"> 👥 Community </button>
+            <button class="btn btn-secondary" onclick="loadAgents()"> 🔄 Refresh </button>
+        </div>
+        <div id="resultsSummary" class="results-summary hidden">
+            <div class="summary-header">
+                <h3>📊 Test Results</h3>
+                <div class="summary-stats">
+                    <div class="summary-stat">
+                        <div class="summary-stat-value" id="summaryTotal">0</div>
+                        <div class="summary-stat-label">Total</div>
+                    </div>
+                    <div class="summary-stat">
+                        <div class="summary-stat-value" style="color: var(--accent-green)" id="summaryPassed">0</div>
+                        <div class="summary-stat-label">Passed</div>
+                    </div>
+                    <div class="summary-stat">
+                        <div class="summary-stat-value" style="color: var(--accent-red)" id="summaryFailed">0</div>
+                        <div class="summary-stat-label">Failed</div>
+                    </div>
+                    <div class="summary-stat">
+                        <div class="summary-stat-value" style="color: var(--accent-blue)" id="summaryTime">0ms</div>
+                        <div class="summary-stat-label">Duration</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="agents-grid" id="agentsGrid">
+            <!-- Agent cards will be populated here -->
+        </div>
+    </div>
+    <script>
+        const API_BASE = '/api/v1/agents';
+        let agents = [];
+
+        async function loadAgents() {
+            showLoading(true);
+            try {
+                const response = await fetch(`${API_BASE}/list`);
+                const data = await response.json();
+                agents = data.agents;
+                document.getElementById('totalAgents').textContent = agents.length;
+                renderAgents();
+            } catch (error) {
+                console.error('Failed to load agents:', error);
+            }
+            showLoading(false);
+        }
+
+        function renderAgents() {
+            const grid = document.getElementById('agentsGrid');
+            grid.innerHTML = agents.map(agent => `
+                <div class="agent-card" id="card-${agent.id}">
+                    <div class="agent-header">
+                        <div class="agent-name">${getAgentEmoji(agent.role)} ${agent.name}</div>
+                        <span class="agent-role role-${agent.role}">${agent.role}</span>
+                    </div>
+                    <div class="agent-desc">${agent.description}</div>
+                    <div class="agent-tools">
+                        ${agent.tools.slice(0, 4).map(t => `<span class="tool-tag">${t}</span>`).join('')}
+                        ${agent.tools.length > 4 ? `<span class="tool-tag">+${agent.tools.length - 4} more</span>` : ''}
+                    </div>
+                    <div class="agent-result" id="result-${agent.id}">
+                        <pre>Ready to test...</pre>
+                    </div>
+                    <div class="agent-status">
+                        <span class="status-badge">
+                            <span class="status-dot status-pending" id="status-${agent.id}"></span>
+                            <span id="status-text-${agent.id}">Pending</span>
+                        </span>
+                        <span class="execution-time" id="time-${agent.id}">-</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getAgentEmoji(role) {
+            const emojis = {
+                'discovery': '🔍',
+                'growing': '🌱',
+                'community': '👥',
+                'harvest': '✂️',
+                'marketing': '📢'
+            };
+            return emojis[role] || '🤖';
+        }
+
+        async function testAllAgents() {
+            showLoading(true);
+            setAllCardsRunning();
+
+            try {
+                const response = await fetch(`${API_BASE}/test-all`, { method: 'POST' });
+                const data = await response.json();
+                displayResults(data);
+            } catch (error) {
+                console.error('Swarm test failed:', error);
+            }
+
+            showLoading(false);
+        }
+
+        async function testCategory(category) {
+            showLoading(true);
+
+            try {
+                const response = await fetch(`${API_BASE}/test/${category}`);
+                const data = await response.json();
+                displayResults(data);
+            } catch (error) {
+                console.error(`${category} test failed:`, error);
+            }
+
+            showLoading(false);
+        }
+
+        function setAllCardsRunning() {
+            agents.forEach(agent => {
+                const card = document.getElementById(`card-${agent.id}`);
+                const status = document.getElementById(`status-${agent.id}`);
+                const statusText = document.getElementById(`status-text-${agent.id}`);
+                const result = document.getElementById(`result-${agent.id}`);
+
+                if (card) {
+                    card.className = 'agent-card running';
+                    status.className = 'status-dot status-running';
+                    statusText.textContent = 'Running...';
+                    result.innerHTML = '<pre>Executing...</pre>';
+                }
+            });
+        }
+
+        function displayResults(data) {
+            // Update summary
+            document.getElementById('resultsSummary').classList.remove('hidden');
+            document.getElementById('summaryTotal').textContent = data.total_agents;
+            document.getElementById('summaryPassed').textContent = data.successful;
+            document.getElementById('summaryFailed').textContent = data.failed;
+            document.getElementById('summaryTime').textContent = `${Math.round(data.total_time_ms)}ms`;
+
+            // Update stats bar
+            document.getElementById('passedCount').textContent = data.successful;
+            document.getElementById('failedCount').textContent = data.failed;
+            document.getElementById('totalTime').textContent = `${Math.round(data.total_time_ms)}ms`;
+
+            // Update individual cards
+            data.results.forEach(result => {
+                const card = document.getElementById(`card-${result.agent_id}`);
+                const status = document.getElementById(`status-${result.agent_id}`);
+                const statusText = document.getElementById(`status-text-${result.agent_id}`);
+                const resultDiv = document.getElementById(`result-${result.agent_id}`);
+                const timeDiv = document.getElementById(`time-${result.agent_id}`);
+
+                if (card) {
+                    if (result.success) {
+                        card.className = 'agent-card success';
+                        status.className = 'status-dot status-success';
+                        statusText.textContent = 'Passed';
+                    } else {
+                        card.className = 'agent-card failed';
+                        status.className = 'status-dot status-failed';
+                        statusText.textContent = 'Failed';
+                    }
+
+                    timeDiv.textContent = `${Math.round(result.execution_time_ms)}ms`;
+
+                    if (result.error) {
+                        resultDiv.innerHTML = `<pre style="color: var(--accent-red)">Error: ${result.error}</pre>`;
+                    } else {
+                        const output = typeof result.output === 'object'
+                            ? JSON.stringify(result.output, null, 2)
+                            : result.output;
+                        resultDiv.innerHTML = `<pre>${truncate(output, 500)}</pre>`;
+                    }
+                }
+            });
+        }
+
+        function truncate(str, max) {
+            if (!str) return 'null';
+            if (str.length <= max) return str;
+            return str.substring(0, max) + '...';
+        }
+
+        function showLoading(show) {
+            document.getElementById('loading').classList.toggle('hidden', !show);
+        }
+
+        // Load agents on page load
+        document.addEventListener('DOMContentLoaded', loadAgents);
+    </script>
+</body>
+
+</html>
