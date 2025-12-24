@@ -1,0 +1,30 @@
+# Environment files - NEVER commit these!
+.env
+.env.local
+.env.development
+.env.production
+.env.*.local
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Generated secrets
+secrets/
+.keys/
+
+# SSL certificates
+*.pem
+*.key
+*.crt
+
+# Docker environment files
+docker-compose.override.yml
+docker-env.sh
+
+# IDE files (add to your existing .gitignore)
+.vscode/
+.idea/
+*.swp
+*.swo

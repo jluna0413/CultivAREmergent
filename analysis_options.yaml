@@ -1,0 +1,5 @@
+# Root-level analyzer options to avoid analyzing flutter_app package from repo root
+# Exclude the repository-level `test/` to prevent the Dart analyzer from trying to resolve Flutter imports
+analyzer:
+  exclude:
+    - test/**

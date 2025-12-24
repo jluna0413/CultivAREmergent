@@ -1,0 +1,20 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Dynamic Gradient -->
+  <defs>
+    <linearGradient id="acGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#000000;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#444444;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Stylized Infinity Symbol (Abstract Representation) -->
+  <!-- M 60,100 C 60,80 80,60 100,80 C 120,100 140,120 140,100 C 140,80 120,60 100,80 C 80,100 60,120 60,100 Z -->
+  <!-- Using a thicker stroke for the "Cloudline" feel -->
+  <path d="M70,100 C70,70 100,70 100,100 C100,130 130,130 130,100 C130,70 100,70 100,100 C100,130 70,130 70,100 Z" 
+        fill="none" stroke="url(#acGradient)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- Text Logo -->
+  <text x="100" y="160" font-family="Arial, sans-serif" font-weight="bold" font-size="16" letter-spacing="2" text-anchor="middle" fill="#000000">
+    AC INFINITY
+  </text>
+</svg>
