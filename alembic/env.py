@@ -16,21 +16,26 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 # Import application config and models after adjusting sys.path
+# Import application config and models after adjusting sys.path
 from app.config.config import Config  # noqa: E402  pylint: disable=wrong-import-position
-from app.models import db  # noqa: E402  pylint: disable=wrong-import-position
+# from app.models import db  # noqa: E402  pylint: disable=wrong-import-position
 
 # Ensure all models are imported so metadata includes every table
-import app.models.base_models  # noqa: E402,F401  pylint: disable=wrong-import-position
-import app.models.acinfinity_models  # noqa: E402,F401  pylint: disable=wrong-import-position
-import app.models.ecowitt_models  # noqa: E402,F401  pylint: disable=wrong-import-position
-import app.models.system_models  # noqa: E402,F401  pylint: disable=wrong-import-position
+# import app.models.base_models  # noqa: E402,F401  pylint: disable=wrong-import-position
+# import app.models.acinfinity_models  # noqa: E402,F401  pylint: disable=wrong-import-position
+# import app.models.ecowitt_models  # noqa: E402,F401  pylint: disable=wrong-import-position
+# import app.models.system_models  # noqa: E402,F401  pylint: disable=wrong-import-position
+
+from app.models_async import Base
+# Importing the package should load __init__.py which imports all models
+import app.models_async
 
 config = context.config
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name, disable_existing_loggers=False)
 
-target_metadata = db.metadata
+target_metadata = Base.metadata
 
 
 def _get_database_url() -> str:
@@ -51,6 +56,7 @@ def run_migrations_offline() -> None:
         dialect_opts={"paramstyle": "named"},
         compare_type=True,
         compare_server_default=True,
+        render_as_batch=True,
     )
 
     with context.begin_transaction():
@@ -69,6 +75,7 @@ def run_migrations_online() -> None:
     elif parsed_url.drivername.startswith("postgresql+asyncpg"):
         database_url = str(parsed_url.set(drivername="postgresql"))
 
+    print(f"DEBUG: Alembic using database_url: {database_url}")
     configuration["sqlalchemy.url"] = database_url
 
     connectable = engine_from_config(
@@ -83,6 +90,7 @@ def run_migrations_online() -> None:
             target_metadata=target_metadata,
             compare_type=True,
             compare_server_default=True,
+            render_as_batch=True,
         )
 
         with context.begin_transaction():

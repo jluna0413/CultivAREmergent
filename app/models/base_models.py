@@ -77,6 +77,10 @@ class Breeder(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
+    country = db.Column(db.String(100))
+    website = db.Column(db.String(255))
+    seedfinder_id = db.Column(db.String(100))
+    description = db.Column(db.Text)
 
     def __init__(self, name=None, **kwargs):
         super().__init__(**kwargs)
@@ -302,6 +306,18 @@ class Strain(db.Model):
     cycle_time = db.Column(db.Integer)
     url = db.Column(db.String(255))
     short_description = db.Column(db.Text)
+    
+    # SeedFinder and lineage fields
+    parent_1 = db.Column(db.String(100))
+    parent_2 = db.Column(db.String(100))
+    parent_1_id = db.Column(db.Integer, db.ForeignKey("strain.id"))
+    parent_2_id = db.Column(db.Integer, db.ForeignKey("strain.id"))
+    lineage_json = db.Column(db.JSON)
+    seedfinder_id = db.Column(db.String(100))
+    thc_content = db.Column(db.Float)
+    cbd_content = db.Column(db.Float)
+    flowering_type = db.Column(db.String(50))
+    image_urls = db.Column(db.JSON)
 
     # Relationships
     breeder = db.relationship("Breeder", backref="strains")

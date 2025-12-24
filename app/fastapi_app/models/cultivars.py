@@ -6,6 +6,8 @@ from pydantic import BaseModel, Field, validator, ConfigDict
 
 class CultivarBase(BaseModel):
     """Base cultivar model with common fields."""
+    model_config = ConfigDict(from_attributes=True)
+    
     name: str = Field(..., min_length=1, max_length=100, description="Cultivar name")
     breeder_id: Optional[int] = Field(None, description="Breeder ID")
     indica: int = Field(0, ge=0, le=100, description="Indica percentage (0-100)")
@@ -20,6 +22,9 @@ class CultivarBase(BaseModel):
     thc_content: Optional[float] = Field(None, ge=0, le=100, description="THC percentage (0-100)")
     cbd_content: Optional[float] = Field(None, ge=0, le=100, description="CBD percentage (0-100)")
     flowering_type: Optional[str] = Field(None, max_length=50, description="Flowering type (photoperiod, autoflower, etc)")
+    image_urls: List[str] = Field(default_factory=list, description="List of image URLs")
+    parent_1_id: Optional[int] = Field(None, description="Internal ID of parent 1")
+    parent_2_id: Optional[int] = Field(None, description="Internal ID of parent 2")
 
     cycle_time: Optional[int] = Field(None, ge=1, le=365, description="Flowering cycle time in days")
     seed_count: Optional[int] = Field(None, ge=1, description="Average seed count per plant")

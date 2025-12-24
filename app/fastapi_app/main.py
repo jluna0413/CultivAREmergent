@@ -11,6 +11,7 @@ import logging
 from contextlib import asynccontextmanager
 from typing import List
 from fastapi import FastAPI, HTTPException, Request, status
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import JSONResponse
@@ -24,10 +25,11 @@ from app.fastapi_app.middleware.security import SecurityHeadersMiddleware, RateL
 # Import routers
 from app.fastapi_app.routers import (
     auth, users, dashboard, health, plants, plants_api, 
-    strains, breeders, clones, activities, sensors, 
+    strains, strains_api, breeders, clones, activities, sensors, 
     market, marketing, newsletter, blog, social,
     files, diagnostics, admin, websocket, zones,
-    site
+    site, integrations, acinfinity, nutrients, lineage, genetics, marketplace_breeders,
+    marketplace_listings, sales, checkout, cart_api
 )
 
 # Import dependencies
@@ -67,6 +69,8 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+# Mount static files
+app.mount("/static", StaticFiles(directory="app/web/static"), name="static")
 # Environment configuration
 is_production = os.getenv("ENVIRONMENT", "development") == "production"
 is_staging = os.getenv("ENVIRONMENT", "development") == "staging"
@@ -87,13 +91,16 @@ elif is_staging:
         "https://staging-admin.cultivar-app.com"
     ]
 else:
-    # Development origins
+        # Development origins
     allowed_origins = [
-        "http://localhost:3000",  # React dev server
-        "http://localhost:8080",  # Alternative dev server
-        "http://localhost:19006",  # Expo dev server
-        "http://localhost:3001",  # Another dev server
-        "http://localhost:5055",  # Flutter web server
+        "http://localhost:3000",
+        "http://localhost:8080",
+        "http://localhost:19006",
+        "http://localhost:3001",
+        "http://localhost:5055",
+        "http://localhost:4242",
+        "http://127.0.0.1:4242",
+        "http://localhost:4200"
     ]
 
 # Add CORS middleware
@@ -130,7 +137,9 @@ if is_production or is_staging:
     )
 
 # Security headers middleware
-app.add_middleware(SecurityHeadersMiddleware, is_production=is_production)
+# Security headers middleware
+if is_production or is_staging:
+    app.add_middleware(SecurityHeadersMiddleware, is_production=is_production)
 
 # Rate limiting middleware
 rate_limit = int(os.getenv("RATE_LIMIT", "100"))
@@ -202,6 +211,14 @@ app.include_router(
     tags=["Authentication"]
 )
 
+# AI Agents Router (imported from app.routers.agents)
+from app.routers import agents
+app.include_router(
+    agents.router,
+    # Prefix is already defined in the router as /api/v2/agents
+    tags=["AI Agents"]
+)
+
 # All other authenticated routes
 # Add global auth dependency for protected routes
 from fastapi import Depends
@@ -219,11 +236,18 @@ protected_routers = [
     (plants.router, "/api/v2/plants", "Plant Management"),
     (plants_api.router, "/api/v2/plants-api", "Plant API"),
     (strains.router, "/api/v2/strains", "Strain Management"),
+    (strains_api.router, "", "Strains Database API"),
     (breeders.router, "/api/v2/breeders", "Breeder Management"),
+    (genetics.router, "", "Genetics Management"),
     (clones.router, "/api/v2/clones", "Clone Management"),
     (activities.router, "/api/v2/activities", "Activity Tracking"),
     (sensors.router, "/api/v2/sensors", "Sensor Management"),
+    (acinfinity.router, "", "AC Infinity Devices"),
+    (integrations.router, "", "Third-Party Integrations"),
+    (nutrients.router, "", "Nutrient Management"),
     (market.router, "/api/v2/market", "Marketplace"),
+    (marketplace_breeders.router, "", "Marketplace Breeders"),
+    (lineage.router, "", "Lineage & Hypergraph"),
     (marketing.router, "/api/v2/marketing", "Marketing"),
     (newsletter.router, "/api/v2/newsletter", "Newsletter"),
     (blog.router, "/api/v2/blog", "Blog Management"),
@@ -234,6 +258,10 @@ protected_routers = [
     (websocket.router, "/api/v2/websocket", "WebSocket"),
     (zones.router, "/api/v2/zones", "Zone Management"),
     (site.router, "/api/v2/site", "Site Management"),
+    (marketplace_listings.router, "/api/v2", "Marketplace Listings"),
+    (sales.router, "/api/v2/analytics", "Sales Analytics"),
+    (checkout.router, "/api/v2", "Checkout"),
+    (cart_api.router, "/api/v2", "Cart API"),
 ]
 
 for router, prefix, tag in protected_routers:

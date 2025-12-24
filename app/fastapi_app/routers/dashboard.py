@@ -229,10 +229,10 @@ async def get_dashboard_stats(
         # === GROWTH PHASE DISTRIBUTION ===
         
         growth_phases = [
-            GrowthPhaseSlice(phase="Seedling", count=seedling_count, percentage=(seedling_count / total_plants * 100) if total_plants > 0 else 0),
-            GrowthPhaseSlice(phase="Vegetative", count=vegetative_count, percentage=(vegetative_count / total_plants * 100) if total_plants > 0 else 0),
-            GrowthPhaseSlice(phase="Flowering", count=flowering_count, percentage=(flowering_count / total_plants * 100) if total_plants > 0 else 0),
-            GrowthPhaseSlice(phase="Harvested", count=harvested_plants, percentage=(harvested_plants / total_plants * 100) if total_plants > 0 else 0),
+            GrowthPhaseSlice(name="Seedling", count=seedling_count, percentage=(seedling_count / total_plants * 100) if total_plants > 0 else 0),
+            GrowthPhaseSlice(name="Vegetative", count=vegetative_count, percentage=(vegetative_count / total_plants * 100) if total_plants > 0 else 0),
+            GrowthPhaseSlice(name="Flowering", count=flowering_count, percentage=(flowering_count / total_plants * 100) if total_plants > 0 else 0),
+            GrowthPhaseSlice(name="Harvested", count=harvested_plants, percentage=(harvested_plants / total_plants * 100) if total_plants > 0 else 0),
         ]
         
         # === RECENT READINGS ===

@@ -41,22 +41,20 @@ logger = logging.getLogger(__name__)
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite+aiosqlite:///./cultivar.db")
 async_session = None
 
-@asynccontextmanager
 async def get_async_db():
     """
     DEPRECATED: Use app.models_async.base.get_async_session instead
     NO AUTO-COMMIT: Manual commit/rollback required by caller
     """
     logger.warning("get_async_db is deprecated. Use app.models_async.base.get_async_session")
-    async with get_database() as session:
+    async for session in get_database():
         try:
             yield session
             # NO AUTO-COMMIT: Caller must explicitly commit
         except Exception:
             await session.rollback()
             raise
-        finally:
-            await session.close()
+        # Session close is handled by get_database implementation
 
 @asynccontextmanager
 async def get_db_session():

@@ -27,16 +27,6 @@ class Config:
     DB_PASSWORD = os.getenv("CULTIVAR_DB_PASSWORD")
     DB_NAME = os.getenv("CULTIVAR_DB_NAME", "cultivardb")
 
-    # SQLite database path (shared)
-    SQLITE_DB_PATH = os.getenv(
-        "SQLITE_DB_PATH",
-        os.path.join(
-            os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
-            "data",
-            "cultivar.db",
-        ),
-    )
-
     # Upload settings (shared)
     UPLOAD_FOLDER = os.getenv("UPLOAD_FOLDER", "uploads")
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16 MB
@@ -75,10 +65,24 @@ class Config:
         "backup_time": "02:00",
         "backup_retention": 7,
         "backup_location": "./backups",
+        "backup_location": "./backups",
     }
 
     # FastAPI-specific settings
     FASTAPI_PORT = int(os.getenv('FASTAPI_PORT', 8000))
+
+    # Blockchain Settings (Algorand Testnet)
+    ALGORAND_ALGOD_ADDRESS = os.getenv("ALGORAND_ALGOD_ADDRESS", "https://testnet-api.algonode.cloud")
+    ALGORAND_ALGOD_TOKEN = os.getenv("ALGORAND_ALGOD_TOKEN", "")
+    ALGORAND_INDEXER_ADDRESS = os.getenv("ALGORAND_INDEXER_ADDRESS", "https://testnet-idx.algonode.cloud")
+    ALGORAND_INDEXER_TOKEN = os.getenv("ALGORAND_INDEXER_TOKEN", "")
+    
+    # Platform Wallet (Testnet)
+    ALGORAND_MNEMONIC = os.getenv("ALGORAND_MNEMONIC")
+
+    # IPFS (Self-Hosted)
+    IPFS_API_URL = os.getenv("IPFS_API_URL", "http://ipfs:5001/api/v0")
+    IPFS_GATEWAY_URL = os.getenv("IPFS_GATEWAY_URL", "http://ipfs:8080/ipfs")
     
     # Critical security settings - NO FALLBACKS ALLOWED for production
     @classmethod
@@ -129,28 +133,54 @@ class Config:
         JWT_PUBLIC_KEY = f.read()
     JWT_EXPIRATION_MINUTES = int(os.getenv('JWT_EXPIRATION_MINUTES', 1440))  # 24 hours
 
+    # Keycloak Configuration
+    KEYCLOAK_URL = os.getenv("KEYCLOAK_URL", "http://keycloak:8080")
+    KEYCLOAK_REALM = os.getenv("KEYCLOAK_REALM", "cultivar")
+    KEYCLOAK_CLIENT_ID = os.getenv("KEYCLOAK_CLIENT_ID", "cultivar-backend")
+    # Derived JWKS URL
+    KEYCLOAK_JWKS_URL = f"{KEYCLOAK_URL}/realms/{KEYCLOAK_REALM}/protocol/openid-connect/certs"
+
+    SQLITE_DB_PATH = os.getenv("SQLITE_DB_PATH", "instance/cultivar.db")
+    
+    # Lineage & HyperGraph
+    HYPERGRAPH_URL = os.getenv("HYPERGRAPH_URL", "http://localhost:4100/graphql")
+
     @classmethod
     def get_database_uri(cls):
         """
-        Get the database URI based on the configured driver.
-
-        Returns:
-            str: The database URI.
+        Get the sync database URI.
+        Respects DATABASE_URL env var if set, converting async drivers to sync if needed.
         """
+        url = os.getenv("DATABASE_URL")
+        if url:
+             # Convert async drivers to sync
+             if "sqlite+aiosqlite" in url:
+                 return url.replace("sqlite+aiosqlite", "sqlite")
+             if "postgresql+asyncpg" in url:
+                 return url.replace("postgresql+asyncpg", "postgresql")
+             return url
+
         if cls.DB_DRIVER == "sqlite":
-            return f"sqlite:///{cls.SQLITE_DB_PATH}"
-        else:  # postgres
-            return f"postgresql://{cls.DB_USER}:{cls.DB_PASSWORD}@{cls.DB_HOST}:{cls.DB_PORT}/{cls.DB_NAME}"
+             return f"sqlite:///{cls.SQLITE_DB_PATH}"
+        return f"postgresql://{cls.DB_USER}:{cls.DB_PASSWORD}@{cls.DB_HOST}:{cls.DB_PORT}/{cls.DB_NAME}"
 
     @classmethod
     def get_async_database_uri(cls):
         """
-        Get the async database URI based on the configured driver.
-        Used by FastAPI for async database operations.
-
-        Returns:
-            str: The async database URI.
+        Get the async database URI.
+        Respects DATABASE_URL env var if set, converting sync drivers to async if needed.
         """
+        url = os.getenv("DATABASE_URL")
+        if url:
+            # Convert sync drivers to async
+            if "sqlite://" in url and "aiosqlite" not in url:
+                return url.replace("sqlite://", "sqlite+aiosqlite://")
+            if "postgresql://" in url and "asyncpg" not in url:
+                return url.replace("postgresql://", "postgresql+asyncpg://")
+            if url.startswith("postgres://"):
+                 return url.replace("postgres://", "postgresql+asyncpg://")
+            return url
+
         if cls.DB_DRIVER == "sqlite":
             return f"sqlite+aiosqlite:///{cls.SQLITE_DB_PATH}"
         else:  # postgres

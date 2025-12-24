@@ -36,6 +36,7 @@ from app.handlers import (
     settings_handlers,
     strain_handlers,
 )
+from .sensor_routes import sensor_bp
 from app.logger import logger  # Corrected import path for logger as well
 from app.models.base_models import Plant, Sensor, Strain, Stream, User, db
 

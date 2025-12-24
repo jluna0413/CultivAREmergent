@@ -20,7 +20,7 @@ markdown==3.5.1
 fastapi==0.104.1
 uvicorn[standard]==0.24.0
 pydantic==2.5.0
-python-jose[cryptography]==3.3.0
+PyJWT[crypto]==2.8.0
 passlib[bcrypt]==1.7.4
 python-multipart==0.0.6
 asyncpg==0.29.0
@@ -40,3 +40,12 @@ email-validator
 aiofiles
 psutil
 redis==5.0.1
+# Hypergraph Integration
+gql[aiohttp]==3.4.1
+graphene==3.3.0
+# Algorand & IPFS
+py-algorand-sdk==2.4.0
+pyteal==0.24.0
+alembic==1.13.0
+# Genetics Data Agent (Scraper)
+crawl4ai==0.3.73

@@ -1,44 +1,36 @@
 """
 JWT utility functions for FastAPI application
-Simplified for development/testing - bypasses Keycloak for now.
+Validates tokens using Keycloak's JWKS endpoint.
 """
 
-from jose import jwt, JWTError
+import jwt
+from jwt import PyJWKClient, PyJWKClientError
 from typing import Optional
-import os
-from datetime import datetime, timedelta, timezone
-
 from app.config.config import Config
 
-ALGORITHMS = [Config.JWT_ALGORITHM]
+# JWKS Client with caching
+jwks_client = PyJWKClient(Config.KEYCLOAK_JWKS_URL, cache_keys=True)
 
-def generate_jwt_token(payload: dict, expires_delta: timedelta = timedelta(minutes=15)):
+async def verify_jwt_token(token: str) -> Optional[dict]:
     """
-    Generate a JWT token.
-    """
-    to_encode = payload.copy()
-    expire = datetime.now(timezone.utc) + expires_delta
-    to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, Config.JWT_PRIVATE_KEY, algorithm=Config.JWT_ALGORITHM)
-    return encoded_jwt
-
-async def verify_jwt_token(token: str, token_type: str = "access") -> Optional[dict]:
-    """
-    Simplified JWT verification for development.
-    In production, this should use Keycloak JWKS.
+    Verify JWT token using Keycloak JWKS.
     """
     try:
+        signing_key = jwks_client.get_signing_key_from_jwt(token)
+        
+        # Verify signature and expiration
+        # We assume RS256 as per Keycloak default
         payload = jwt.decode(
             token,
-            Config.JWT_PUBLIC_KEY,
-            algorithms=ALGORITHMS,
+            signing_key.key,
+            algorithms=["RS256"],
             options={
-                "verify_exp": True,
-                "verify_signature": True
+                "verify_aud": False, # Relax audience check for initial cleanup
+                "verify_exp": True
             }
         )
         return payload
-    except JWTError as e:
+    except (jwt.PyJWTError, PyJWKClientError) as e:
         print(f"Token verification failed: {e}")
         return None
     except Exception as e:
@@ -47,15 +39,16 @@ async def verify_jwt_token(token: str, token_type: str = "access") -> Optional[d
 
 # Backward compatibility wrapper
 async def verify_token(token: str, token_type: str = "access") -> Optional[dict]:
-    return await verify_jwt_token(token, token_type)
+    return await verify_jwt_token(token)
 
-# Password utilities (Legacy - Keycloak handles this now, but keeping for safety if used elsewhere)
-def verify_password(plain_password: str, hashed_password: str) -> bool:
-    from passlib.context import CryptContext
-    pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-    return pwd_context.verify(plain_password, hashed_password)
-
+# Legacy password utils - kept only if strictly needed by other parts of the app during migration
+# Keycloak handles auth, so these shouldn't be used for active logic
 def get_password_hash(password: str) -> str:
     from passlib.context import CryptContext
     pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
     return pwd_context.hash(password)
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    from passlib.context import CryptContext
+    pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+    return pwd_context.verify(plain_password, hashed_password)

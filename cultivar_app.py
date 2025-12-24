@@ -281,6 +281,10 @@ def create_app(test_config=None):
     app.register_blueprint(diagnostics_bp)
     from app.blueprints.market import market_bp
     app.register_blueprint(market_bp)
+    
+    # Register Context API
+    from app.routes.context_routes import context_bp
+    app.register_blueprint(context_bp)
 
     # Register marketing blueprints
     from app.blueprints.marketing import (

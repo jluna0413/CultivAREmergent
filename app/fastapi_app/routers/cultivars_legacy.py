@@ -17,7 +17,7 @@ from app.fastapi_app.models.cultivars import (
     CultivarFilters,
     CultivarStats
 )
-from app.models.base_models import Cultivar
+from app.models.base_models import Strain as Cultivar
 from app.fastapi_app.routers import cultivars
 
 logger = logging.getLogger(__name__)

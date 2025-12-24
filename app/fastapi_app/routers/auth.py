@@ -1,9 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 from typing import Optional
 
-from app.fastapi_app.dependencies import get_current_user, get_db
+from app.fastapi_app.dependencies import get_current_user
+from app.fastapi_app.database import get_async_db as get_db
 from app.models_async.auth import User
 from app.fastapi_app.jwt_utils import verify_token
 
@@ -41,5 +43,9 @@ async def verify_token_endpoint(
         )
     return {"valid": True, "payload": payload}
 
-# Legacy endpoints - Removed or Deprecated
-# /login, /register, /refresh are now handled by Keycloak
+
+# Dev/Native Login Endpoint (Deprecated/Removed for Keycloak)
+# Use Keycloak UI to login and obtain token.
+# Local login logic removed to enforce OIDC flow.
+
+

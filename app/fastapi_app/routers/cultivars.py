@@ -21,8 +21,7 @@ from app.fastapi_app.models.cultivars import (
     CultivarFilters,
     CultivarStats
 )
-from app.models.base_models import Cultivar
-from app.models_async.grow import Cultivar as AsyncCultivar
+from app.models_async.grow import Cultivar as Cultivar
 
 logger = logging.getLogger(__name__)
 router = APIRouter(tags=["cultivars"])
@@ -61,7 +60,7 @@ async def get_cultivar(cultivar_id: int, db: AsyncSession = Depends(get_db)):
         cultivar = result.scalars().first()
         if not cultivar:
             raise HTTPException(status_code=404, detail="Cultivar not found")
-        return CultivarResponse.from_orm(cultivar)
+        return CultivarResponse.model_validate(cultivar)
     except HTTPException:
         raise
     except Exception as e:
@@ -128,7 +127,7 @@ async def update_cultivar(cultivar_id: int, update_data: CultivarUpdate, db: Asy
         await db.commit()
         await db.refresh(cultivar)
         
-        return CultivarResponse.from_orm(cultivar)
+        return CultivarResponse.model_validate(cultivar)
     except HTTPException:
         raise
     except Exception as e:
@@ -205,7 +204,7 @@ async def search_cultivars(query: str, db: AsyncSession = Depends(get_db)):
         ))
         cultivars = result.scalars().all()
         
-        return [CultivarResponse.from_orm(cultivar) for cultivar in cultivars]
+        return [CultivarResponse.model_validate(cultivar) for cultivar in cultivars]
     except Exception as e:
         logger.error(f"Error searching cultivars: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
@@ -255,7 +254,7 @@ async def filter_cultivars(
         
         result = await db.execute(query)
         cultivars = result.scalars().all()
-        return [CultivarResponse.from_orm(cultivar) for cultivar in cultivars]
+        return [CultivarResponse.model_validate(cultivar) for cultivar in cultivars]
     except Exception as e:
         logger.error(f"Error filtering cultivars: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")

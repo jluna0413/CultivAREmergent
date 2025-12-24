@@ -64,9 +64,12 @@ def get_sensors():
         return []
 
 
+from app.utils.calculations import calculate_vpd
+
 def get_grouped_sensors_with_latest_reading():
     """
     Get sensors grouped by zone with their latest readings.
+    Includes calculated VPD if Temperature and Humidity are available.
 
     Returns:
         dict: The grouped sensors.
@@ -82,6 +85,11 @@ def get_grouped_sensors_with_latest_reading():
             sensors = Sensor.query.filter_by(zone_id=zone.id, show=True).all()
 
             sensor_list = []
+            
+            # Variables to store temp/humidity for VPD calc
+            air_temp_f = None
+            air_humidity = None
+
             for sensor in sensors:
                 # Get the latest reading for this sensor
                 latest_reading = (
@@ -100,6 +108,26 @@ def get_grouped_sensors_with_latest_reading():
                     }
 
                     sensor_list.append(sensor_data)
+
+                    # Capture Temp/Humid for VPD (Prioritize 'temperature' type over soil/others)
+                    # Note: strict check for 'temperature' type from AC Infinity or generic
+                    if sensor.type == 'temperature' or sensor.type == 'temp_humid': # AC Infinity sometimes uses combined? check scan
+                        air_temp_f = latest_reading.value
+                    elif sensor.type == 'humidity':
+                        air_humidity = latest_reading.value
+
+            # Calculate VPD if we have both
+            if air_temp_f is not None and air_humidity is not None:
+                vpd_value = calculate_vpd(air_temp_f, air_humidity)
+                # Create a synthetic sensor object for VPD
+                vpd_sensor = {
+                    "id": -1, # Synthetic ID
+                    "name": "VPD (Calculated)",
+                    "unit": "kPa",
+                    "value": vpd_value,
+                    "date": datetime.now() # Current calculation
+                }
+                sensor_list.append(vpd_sensor)
 
             if sensor_list:
                 grouped_sensors[zone.name] = sensor_list

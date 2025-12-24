@@ -56,7 +56,7 @@ class EnvironmentalSlice(BaseModel):
 
 class GrowthPhaseSlice(BaseModel):
     """Growth phase distribution data."""
-    phase: str
+    name: str
     count: int
     percentage: float
 

@@ -9,8 +9,9 @@ from sqlalchemy import select, func, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Optional
 
-from app.fastapi_app.dependencies import require_login, inject_template_context
-from app.models_async.base import get_async_session  # Unified DB session provider
+from app.repositories.interfaces import PlantRepository, PlantCreateDTO, PlantUpdateDTO
+from app.fastapi_app.dependencies import require_login, inject_template_context, get_plant_repository
+from app.models_async.base import get_async_session  # Unified DB session provider (legacy support)
 from app.fastapi_app.schemas import (
     PlantCreate, PlantUpdate, PlantResponse, PlantListResponse
 )
@@ -152,10 +153,10 @@ async def plant_edit_page(
 # API Endpoints - CRUD Operations (FLUTTER PREFERRED)
 # ==============================================================================
 
-@router.post("/api/create", name="api_plant_create", deprecated=True)
+@router.post("/api/create", name="api_plant_create")
 async def api_plant_create(
     request: Request,
-    db: AsyncSession = Depends(get_async_session),
+    repo: PlantRepository = Depends(get_plant_repository),
     current_user: User = Depends(require_login),
     name: str = Form(...),
     description: str = Form(None),
@@ -164,42 +165,25 @@ async def api_plant_create(
     is_clone: bool = Form(False),
     autoflower: bool = Form(False),
 ):
-    """Create a new plant."""
+    """Create a new plant using Repository Pattern."""
     try:
-        # Validate status exists
-        result = await db.execute(select(Status).where(Status.id == status_id))
-        status_obj = result.scalar_one_or_none()
-        if not status_obj:
-            raise HTTPException(status_code=400, detail="Invalid status")
-        
-        # Validate cultivar if provided
-        if cultivar_id:
-            result = await db.execute(select(Cultivar).where(Cultivar.id == cultivar_id))
-            cultivar = result.scalar_one_or_none()
-            if not cultivar:
-                raise HTTPException(status_code=400, detail="Invalid cultivar")
-        
-        # Create plant
-        plant = Plant(
+        dto = PlantCreateDTO(
+            user_id=current_user.id,
             name=name,
-            description=description,
             status_id=status_id,
             cultivar_id=cultivar_id,
             is_clone=is_clone,
-            autoflower=autoflower,
-            user_id=current_user.id,
+            zone_id=None # Default
         )
         
-        db.add(plant)
-        await db.commit()
-        await db.refresh(plant)
+        plant = await repo.create(dto)
         
+        # Backward compatibility for redirect
         return RedirectResponse(
-            url=request.url_for("plant_detail", plant_id=plant.id),
+            url=request.url_for("api_plant_get", plant_id=plant.id),
             status_code=status.HTTP_303_SEE_OTHER
         )
     except Exception as e:
-        await db.rollback()
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -207,76 +191,61 @@ async def api_plant_create(
 async def api_plant_update(
     request: Request,
     plant_id: int,
-    db: AsyncSession = Depends(get_async_session),
+    repo: PlantRepository = Depends(get_plant_repository),
     current_user: User = Depends(require_login),
     plant_data: Optional[PlantUpdate] = None,
 ):
-    """Update a plant."""
+    """Update a plant using Repository Pattern."""
     try:
-        result = await db.execute(
-            select(Plant).where(
-                Plant.id == plant_id,
-                Plant.user_id == current_user.id
-            )
-        )
-        plant = result.scalar_one_or_none()
-        
-        if not plant:
+        # Verify ownership
+        existing = await repo.get_by_id(plant_id)
+        if not existing or existing.user_id != current_user.id:
             raise HTTPException(status_code=404, detail="Plant not found")
         
-        # Update fields from request
         if plant_data:
-            update_data = plant_data.dict(exclude_unset=True)
-            for key, value in update_data.items():
-                setattr(plant, key, value)
-        
-        await db.commit()
-        
-        return {"message": "Plant updated successfully", "plant_id": plant.id}
+            update_dto = PlantUpdateDTO(
+                name=plant_data.name,
+                status_id=plant_data.status_id,
+                # Mapping other fields as needed from schema
+            )
+            updated = await repo.update(plant_id, update_dto)
+            return {"message": "Plant updated successfully", "plant_id": updated.id}
+            
+        return {"message": "No data provided"} 
+    except HTTPException:
+        raise
     except Exception as e:
-        await db.rollback()
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.delete("/api/{plant_id}", name="api_plant_delete")
 async def api_plant_delete(
     plant_id: int,
-    db: AsyncSession = Depends(get_async_session),
+    repo: PlantRepository = Depends(get_plant_repository),
     current_user: User = Depends(require_login),
 ):
-    """Delete a plant."""
+    """Delete a plant using Repository Pattern."""
     try:
-        result = await db.execute(
-            select(Plant).where(
-                Plant.id == plant_id,
-                Plant.user_id == current_user.id
-            )
-        )
-        plant = result.scalar_one_or_none()
-        
-        if not plant:
+        existing = await repo.get_by_id(plant_id)
+        if not existing or existing.user_id != current_user.id:
             raise HTTPException(status_code=404, detail="Plant not found")
-        
-        await db.delete(plant)
-        await db.commit()
-        
+            
+        await repo.delete(plant_id)
         return {"message": "Plant deleted successfully"}
+    except HTTPException:
+        raise
     except Exception as e:
-        await db.rollback()
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get("/api/list", name="api_plants_list")
 async def api_plants_list(
-    db: AsyncSession = Depends(get_async_session),
+    repo: PlantRepository = Depends(get_plant_repository),
     current_user: User = Depends(require_login),
 ):
     """Get list of user's plants (JSON API)."""
     try:
-        result = await db.execute(
-            select(Plant).where(Plant.user_id == current_user.id)
-        )
-        plants = result.scalars().all()
+        plants = await repo.get_by_user(current_user.id)
         
         plant_list = [
             {
@@ -286,6 +255,9 @@ async def api_plants_list(
                 "cultivar_id": p.cultivar_id,
                 "is_clone": p.is_clone,
                 "start_dt": p.start_dt.isoformat() if p.start_dt else None,
+                # DTO properties
+                "status_name": p.status_name,
+                "strain_name": p.strain_name
             }
             for p in plants
         ]
@@ -302,38 +274,25 @@ async def api_plants_list(
 @router.get("/api/{plant_id}", name="api_plant_get")
 async def api_plant_get(
     plant_id: int,
-    db: AsyncSession = Depends(get_async_session),
+    repo: PlantRepository = Depends(get_plant_repository),
     current_user: User = Depends(require_login),
 ):
     """Get plant details (JSON API)."""
     try:
-        result = await db.execute(
-            select(Plant).where(
-                Plant.id == plant_id,
-                Plant.user_id == current_user.id
-            )
-        )
-        plant = result.scalar_one_or_none()
+        plant = await repo.get_by_id(plant_id)
         
         if not plant:
-            raise HTTPException(status_code=404, detail="Plant not found")
+             raise HTTPException(status_code=404, detail="Plant not found")
+             
+        if plant.user_id != current_user.id:
+             raise HTTPException(status_code=403, detail="Not authorized")
         
         return {
             "status": "success",
-            "data": {
-                "id": plant.id,
-                "name": plant.name,
-                "description": plant.description,
-                "status_id": plant.status_id,
-                "cultivar_id": plant.cultivar_id,
-                "is_clone": plant.is_clone,
-                "autoflower": plant.autoflower,
-                "start_dt": plant.start_dt.isoformat() if plant.start_dt else None,
-                "last_water_date": plant.last_water_date.isoformat() if plant.last_water_date else None,
-                "last_feed_date": plant.last_feed_date.isoformat() if plant.last_feed_date else None,
-                "harvest_date": plant.harvest_date.isoformat() if plant.harvest_date else None,
-            }
+            "data": plant.model_dump() # DTO to generic dictionary
         }
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -347,7 +306,10 @@ async def api_plants_stats(
     db: AsyncSession = Depends(get_async_session),
     current_user: User = Depends(require_login),
 ):
-    """Get plant statistics for dashboard."""
+    """Get plant statistics for dashboard. 
+    NOTE: Keeping as direct DB for now as Repos are for Entity CRUD, 
+    Aggregation is usually a separate repo method or service.
+    """
     try:
         # Get total plants
         result = await db.execute(

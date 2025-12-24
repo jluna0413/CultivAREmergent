@@ -148,6 +148,64 @@ async def revoke_all_user_tokens(user_id: int) -> None:
     # In production, store user_id in revoked token metadata
     pass
 
+# --- Repository Dependencies ---
+
+async def get_plant_repository(
+    session: AsyncSession = Depends(get_db)
+) -> "PlantRepository":
+    """
+    Dependency to get the appropriate PlantRepository implementation.
+    
+    This abstracts away the storage backend (SQL vs Blockchain).
+    Currently defaults to SQL implementation.
+    """
+    # Ideally importing at top, but avoiding circular deps if interfaces import deps 
+    # (though interfaces shouldn't). Keeping local for safety in this existing file.
+    from app.repositories.interfaces import PlantRepository
+    from app.repositories.sql.plant_repository import SQLPlantRepository
+    import os
+    
+    # Initialize implementation based on environment
+    migration_mode = os.getenv("BLOCKCHAIN_MIGRATION_MODE", "sql_only")
+    
+    # Setup SQL Repo (Always needed for SQL or Hybrid)
+    sql_repo = SQLPlantRepository(session)
+    
+    if migration_mode == "sql_only":
+        return sql_repo
+        
+    # For Hybrid or Blockchain modes, we need Algorand repo
+    try:
+        from app.repositories.algorand.plant_repository import AlgorandPlantRepository
+        from app.repositories.hybrid.plant_repository import HybridPlantRepository
+        from algosdk.v2client import algod
+        
+        # Algorand Config
+        algo_addr = os.getenv("ALGORAND_NODE_URL", "http://localhost:4001")
+        algo_token = os.getenv("ALGORAND_NODE_TOKEN", "a" * 64)
+        app_id = int(os.getenv("ALGORAND_APP_ID", "0"))
+        # Using a dummy signer for now if not set, as we might be in mock mode
+        signer_sk = os.getenv("ALGORAND_SIGNER_PRIVATE_KEY", "")
+        
+        if not signer_sk and migration_mode != "sql_only":
+            # Fallback for safety/testing if no key provided
+            # In production this should raise specific error
+            print("WARNING: No ALGORAND_SIGNER_PRIVATE_KEY found. Dual-write may fail.")
+            
+        algod_client = algod.AlgodClient(algo_token, algo_addr)
+        
+        algo_repo = AlgorandPlantRepository(algod_client, app_id, signer_sk)
+        
+        if migration_mode == "blockchain_only":
+            return algo_repo
+            
+        return HybridPlantRepository(sql_repo, algo_repo, migration_mode)
+        
+    except Exception as e:
+        print(f"Failed to initialize Algorand Repository: {e}")
+        # Fallback to SQL to prevent crash
+        return sql_repo
+
 # ---------------------------------------------------------------------------
 # CORS and Security Configuration
 # ---------------------------------------------------------------------------
@@ -156,7 +214,7 @@ def get_cors_origins():
     """
     Enhanced CORS origin parsing with environment-driven configuration
     """
-    origins_env = os.getenv("ALLOWED_ORIGINS", os.getenv("FRONTEND_ORIGINS", "http://localhost:3000,http://localhost:8000"))
+    origins_env = os.getenv("ALLOWED_ORIGINS", os.getenv("FRONTEND_ORIGINS", "http://localhost:3000,http://localhost:8000,http://localhost:4242,http://localhost:8080"))
     
     # Parse comma-separated origins and filter empty items
     origins = []
@@ -174,8 +232,11 @@ def get_cors_origins():
             "http://localhost:5055",
             "http://127.0.0.1:5055",
             "http://localhost:5056",
-            "http://127.0.0.1:5056"
+            "http://127.0.0.1:5056",
+            "http://localhost:4242",
+            "http://localhost:8080",
         ]
+
     
     return origins
 

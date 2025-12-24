@@ -18,8 +18,9 @@ _LOGGER = logging.getLogger("fastapi_app")
 
 
 def get_cors_origins() -> List[str]:
-    origins = os.getenv("FRONTEND_ORIGINS", "http://localhost:3000,http://localhost:8000")
+    origins = os.getenv("FRONTEND_ORIGINS", "http://localhost:3000,http://localhost:8000,http://localhost:4242,http://localhost:8080")
     return [o.strip() for o in origins.split(",") if o.strip()]
+
 
 
 def create_app() -> FastAPI:
@@ -84,7 +85,9 @@ def create_app() -> FastAPI:
                 activities,
                 blog,
                 social,
+                nutrients,
             )
+
 
             app.include_router(health.router, prefix="/health", tags=["Health"])
             app.include_router(plants_api.router, prefix="/api/v1/plants", tags=["Plants"])
@@ -102,6 +105,7 @@ def create_app() -> FastAPI:
             app.include_router(activities.api_router, prefix="/api/v1/activities", tags=["Activities"])
             app.include_router(blog.router, prefix="/api/v1/blog", tags=["Blog"])
             app.include_router(social.router, prefix="/api/v1/social", tags=["Social"])
+            app.include_router(nutrients.router, prefix="/api/v2/nutrients", tags=["Nutrients"])
 
             # Legacy HTML routes (imported last to avoid circulars)
             from app.fastapi_app.routers import plants as plants_legacy

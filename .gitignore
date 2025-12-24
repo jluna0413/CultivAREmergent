@@ -89,3 +89,126 @@ node_modules/
 # tasks/
 private_key.pem
 public_key.pem
+
+# ============================================
+# AUTO-GENERATED: Smart Git Commit Guardrails
+# ============================================
+
+# Temporary debug/test output files
+*.txt
+!requirements*.txt
+!README*.txt
+debug_*.py
+read_*.py
+copy_*.py
+inspect_*.py
+find_*.py
+fix_*.py
+scan_*.py
+check_*.py
+*_dump.txt
+test_output*.txt
+test_output*.md
+startup_*.txt
+headers*.txt
+refresh_test*.txt
+inspection_results.txt
+layout_debug_output.txt
+test_failure_check.txt
+
+# Temporary HTML files
+temp_*.html
+temp_*.txt
+temp_*.css
+tmp_*.html
+tmp_*.txt
+tmp_*.css
+*_source.html
+
+# One-off scripts (root level)
+/add_*.py
+/anonymous_*.py
+/apply_*.py
+/bypass_*.py
+/clean_*.py
+/collect_*.py
+/create_*.py
+/dashboard.py
+/debug_*.py
+/diagnose.py
+/extract_*.py
+/get_*.py
+/hello.py
+/init_*.py
+/maestro.py
+/no_login_app.py
+/overwrite_*.py
+/performance_*.py
+/populate_*.py
+/production_*.py
+/quicksort_*.py
+/remove_*.py
+/repro_*.py
+/run_*.py
+/scaffold_*.py
+/seed_*.py
+/security_*.py
+/setup_*.ps1
+/simulate_*.py
+/ssl_*.py
+/template_*.py
+/update_*.py
+/ultimate_*.py
+/validate_*.py
+/verify_*.py
+
+# JSON output files
+report.json
+final_report.json
+login_test.json
+swarm_output.json
+cultivar_security_documentation.json
+flutter_fix_report*.json
+zaproxy_images.json
+
+# Backup directories
+*_backup/
+
+# Coverage reports
+htmlcov/
+
+# IDE agent files (optional - may want to keep these)
+# .agent/
+# .aider*
+# .bmad-core/
+# .claude/
+# .cursor/
+# .gemini/
+# .iflow/
+# .kilocode/
+# .maestro/
+# .qwen/
+# .roo/
+# .taskmaster/
+# .trae/
+
+# Large binary files
+toolbox
+
+# Database files (already in gitignore but ensuring)
+*.db
+
+# SSL certificates
+ssl/
+
+# Virtual environments
+.venv/
+
+# Activities tracking
+activities.json
+
+# Misc debugging artifacts
+router_inspect.dart
+main_inspect.dart
+all_tests.txt
+script_start_line.txt
