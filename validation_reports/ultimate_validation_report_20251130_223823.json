@@ -1,0 +1,163 @@
+{
+  "timestamp": "2025-11-30T22:38:23.139857",
+  "summary": {
+    "total_validations": 8,
+    "passed": 0,
+    "failed": 6,
+    "warnings": 0,
+    "errors": 2,
+    "skipped": 0,
+    "success_rate": 0.0,
+    "total_duration": 0.2328507900238037,
+    "overall_status": "ERROR",
+    "deployment_ready": false
+  },
+  "detailed_results": [
+    {
+      "name": "security_validation",
+      "category": "security",
+      "status": "FAIL",
+      "duration_seconds": 0.021000385284423828,
+      "details": "Security tests failed: /usr/bin/python3: No module named pytest\n",
+      "issues": [
+        "Security validation failed"
+      ],
+      "recommendations": [
+        "Review security test output and fix identified issues"
+      ],
+      "timestamp": "2025-11-30T22:38:22.928676",
+      "evidence": {
+        "command": "/usr/bin/python3 -m pytest tests/security/cultivar_security_validator.py::main --url http://localhost:8001 -v",
+        "output": "",
+        "error": "/usr/bin/python3: No module named pytest\n"
+      }
+    },
+    {
+      "name": "iot_validation",
+      "category": "iot",
+      "status": "FAIL",
+      "duration_seconds": 0.019717693328857422,
+      "details": "IoT integration tests failed",
+      "issues": [
+        "IoT integration validation failed"
+      ],
+      "recommendations": [
+        "Verify AC Infinity and Ecowitt device connectivity"
+      ],
+      "timestamp": "2025-11-30T22:38:22.948453",
+      "evidence": {
+        "command": "/usr/bin/python3 -m pytest tests/iot/cultivar_iot_validator.py::main --url http://localhost:8001 -v",
+        "output": ""
+      }
+    },
+    {
+      "name": "e2e_validation",
+      "category": "e2e",
+      "status": "FAIL",
+      "duration_seconds": 0.020583629608154297,
+      "details": "Some E2E workflows failed",
+      "issues": [
+        "E2E validation failed"
+      ],
+      "recommendations": [
+        "Review failed workflows and fix user journey issues"
+      ],
+      "timestamp": "2025-11-30T22:38:22.969086",
+      "evidence": {
+        "command": "/usr/bin/python3 -m pytest tests/e2e/cultivar_e2e_validator.py::main --url http://localhost:8001 -v",
+        "output": ""
+      }
+    },
+    {
+      "name": "flutter_validation",
+      "category": "flutter",
+      "status": "ERROR",
+      "duration_seconds": 0.0025818347930908203,
+      "details": "Flutter validation error: [Errno 2] No such file or directory: 'flutter'",
+      "issues": [
+        "[Errno 2] No such file or directory: 'flutter'"
+      ],
+      "recommendations": [
+        "Check Flutter installation and project configuration"
+      ],
+      "timestamp": "2025-11-30T22:38:22.971731",
+      "evidence": null
+    },
+    {
+      "name": "performance_validation",
+      "category": "performance",
+      "status": "ERROR",
+      "duration_seconds": 0.031575679779052734,
+      "details": "No performance data collected",
+      "issues": [],
+      "recommendations": [],
+      "timestamp": "2025-11-30T22:38:23.003375",
+      "evidence": {
+        "response_times": {}
+      }
+    },
+    {
+      "name": "database_validation",
+      "category": "database",
+      "status": "FAIL",
+      "duration_seconds": 0.12299633026123047,
+      "details": "Database validation failed",
+      "issues": [
+        "Database connection failed"
+      ],
+      "recommendations": [
+        "Check database configuration and connection"
+      ],
+      "timestamp": "2025-11-30T22:38:23.126438",
+      "evidence": {
+        "db_test_output": "",
+        "db_test_error": "Traceback (most recent call last):\n  File \"<string>\", line 5, in <module>\n  File \"/a/dev/CultivAREmergant/init_async_db.py\", line 8, in <module>\n    from app.models_async.base import async_engine\n  File \"/a/dev/CultivAREmergant/app/models_async/__init__.py\", line 1, in <module>\n    from .base import Base\n  File \"/a/dev/CultivAREmergant/app/models_async/base.py\", line 3, in <module>\n    from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession\nModuleNotFoundError: No module named 'sqlalchemy'\n"
+      }
+    },
+    {
+      "name": "code_quality_validation",
+      "category": "code_quality",
+      "status": "FAIL",
+      "duration_seconds": 0.0016398429870605469,
+      "details": "Code quality issues detected (0/2)",
+      "issues": [],
+      "recommendations": [
+        "Install pylint for Python code quality checking"
+      ],
+      "timestamp": "2025-11-30T22:38:23.128129",
+      "evidence": {
+        "quality_results": {
+          "pylint": "SKIPPED",
+          "security_headers": "SKIPPED"
+        }
+      }
+    },
+    {
+      "name": "infrastructure_validation",
+      "category": "infrastructure",
+      "status": "FAIL",
+      "duration_seconds": 0.011134147644042969,
+      "details": "Infrastructure issues detected (1 failed checks)",
+      "issues": [
+        "Application health check failed"
+      ],
+      "recommendations": [
+        "Check if application is running and healthy"
+      ],
+      "timestamp": "2025-11-30T22:38:23.139307",
+      "evidence": {
+        "infra_results": {
+          "app_connectivity": "FAIL",
+          "environment_config": "SKIPPED",
+          "docker_config": "PASS"
+        }
+      }
+    }
+  ],
+  "configuration": {
+    "base_url": "http://localhost:8001",
+    "flutter_app_path": "flutter_app",
+    "output_dir": "validation_reports",
+    "verbose": false
+  }
+}

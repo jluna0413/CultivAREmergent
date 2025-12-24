@@ -1,0 +1,42 @@
+{
+  "timestamp": "2025-11-24T17:14:55.363189",
+  "summary": {
+    "total_validations": 1,
+    "passed": 0,
+    "failed": 1,
+    "warnings": 0,
+    "errors": 0,
+    "skipped": 0,
+    "success_rate": 0.0,
+    "total_duration": 2.6316394805908203,
+    "overall_status": "FAIL",
+    "deployment_ready": false
+  },
+  "detailed_results": [
+    {
+      "name": "security_validation",
+      "category": "security",
+      "status": "FAIL",
+      "duration_seconds": 2.6219334602355957,
+      "details": "Security tests failed: ERROR: usage: __main__.py [options] [file_or_dir] [file_or_dir] [...]\n__main__.py: error: unrecognized arguments: --url http://localhost:8000\n  inifile: A:\\dev\\CultivAREmergant\\pytest.ini\n  rootdir: A:\\dev\\CultivAREmergant\n\n",
+      "issues": [
+        "Security validation failed"
+      ],
+      "recommendations": [
+        "Review security test output and fix identified issues"
+      ],
+      "timestamp": "2025-11-24T17:14:55.362657",
+      "evidence": {
+        "command": "A:\\python\\python.exe -m pytest tests/security/cultivar_security_validator.py::main --url http://localhost:8000 -v",
+        "output": "",
+        "error": "ERROR: usage: __main__.py [options] [file_or_dir] [file_or_dir] [...]\n__main__.py: error: unrecognized arguments: --url http://localhost:8000\n  inifile: A:\\dev\\CultivAREmergant\\pytest.ini\n  rootdir: A:\\dev\\CultivAREmergant\n\n"
+      }
+    }
+  ],
+  "configuration": {
+    "base_url": "http://localhost:8000",
+    "flutter_app_path": "flutter_app",
+    "output_dir": "validation_reports",
+    "verbose": false
+  }
+}

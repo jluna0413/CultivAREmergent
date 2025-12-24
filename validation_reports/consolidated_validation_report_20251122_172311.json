@@ -1,0 +1,220 @@
+{
+  "timestamp": "2025-11-22T17:23:11.251705",
+  "application_url": "http://localhost:8000",
+  "overall_status": "failed",
+  "deployment_readiness": {
+    "security": "CAUTION - Address security warnings before production",
+    "iot": "OPTIONAL - IoT features may not work properly",
+    "e2e": "NOT READY - Core user workflows are broken",
+    "overall": "DO NOT DEPLOY - Critical issues must be resolved"
+  },
+  "summary": {
+    "total_validations": 3,
+    "passed": 0,
+    "failed": 2,
+    "warnings": 1,
+    "errors": 0,
+    "success_rate": "0.0%"
+  },
+  "validation_results": {
+    "security": {
+      "status": "warning",
+      "summary": {
+        "total_tests": 12,
+        "passed": 3,
+        "failed": 9,
+        "success_rate": "25.0%",
+        "details": "Security validation completed with 0 critical and 3 high-severity failures"
+      },
+      "critical_issues": [],
+      "recommendations": [
+        "\ud83d\udeab Enhance input validation and sanitization",
+        "\ud83d\udee1\ufe0f Implement or strengthen rate limiting to prevent abuse",
+        "\u26a0\ufe0f HIGH: Resolve high-severity security issues to meet production standards"
+      ]
+    },
+    "iot": {
+      "status": "failed",
+      "summary": {
+        "total_tests": 14,
+        "passed": 0,
+        "failed": 14,
+        "success_rate": "0.0%",
+        "details": "IoT validation completed with 14 failed tests"
+      },
+      "iot_issues": [
+        "Device Discovery",
+        "Device Authentication",
+        "Data Collection",
+        "Device Configuration",
+        "Device Discovery",
+        "API Key Validation",
+        "Data Collection",
+        "Historical Data Retrieval",
+        "Real-time Data Collection",
+        "Data Synchronization",
+        "Network Resilience",
+        "Data Accuracy Validation",
+        "Historical Data Management",
+        "Zone-based Sensor Management"
+      ],
+      "recommendations": [
+        "\ud83d\udd27 AC Infinity integration needs attention - check device discovery and API connectivity",
+        "\ud83d\udce1 Ecowitt integration needs attention - verify API keys and device configuration",
+        "\u26a1 Real-time data features may need WebSocket implementation or enhancement",
+        "\ud83d\udee1\ufe0f Improve network resilience - add retry logic and fallback mechanisms",
+        "\u2705 Enhance data validation rules for sensor readings",
+        "\ud83d\udcca Set up IoT device monitoring and alerting for production deployment",
+        "\ud83d\udd04 Implement automated IoT device health checks and recovery procedures"
+      ]
+    },
+    "e2e": {
+      "status": "failed",
+      "summary": {
+        "total_workflows": 10,
+        "passed_workflows": 0,
+        "failed_workflows": 10,
+        "success_rate": "0.0%",
+        "details": "E2E validation completed with 10 failed workflows"
+      },
+      "e2e_issues": [
+        "Complete User Onboarding",
+        "Plant Lifecycle Management",
+        "Sensor Integration",
+        "Dashboard Analytics",
+        "Cross-Platform Sync",
+        "Data Export/Import",
+        "Multi-User Collaboration",
+        "Real-Time Monitoring",
+        "Performance Under Load",
+        "Error Recovery"
+      ],
+      "recommendations": [
+        "\ud83d\udea8 CRITICAL: Fix failed end-to-end workflows before production deployment",
+        "\u26a0\ufe0f HIGH: Address critical workflow failures (less than 50% completion)",
+        "\ud83d\udc65 USER EXPERIENCE: Fix user onboarding flow - critical for new users",
+        "\ud83d\udce1 IoT: Complete sensor integration implementation",
+        "\ud83e\udd16 Set up automated E2E testing in CI/CD pipeline",
+        "\ud83d\udcca Monitor E2E test performance and success rates in production"
+      ]
+    }
+  },
+  "all_issues": [
+    "[IOT] Device Discovery",
+    "[IOT] Device Authentication",
+    "[IOT] Data Collection",
+    "[IOT] Device Configuration",
+    "[IOT] Device Discovery",
+    "[IOT] API Key Validation",
+    "[IOT] Data Collection",
+    "[IOT] Historical Data Retrieval",
+    "[IOT] Real-time Data Collection",
+    "[IOT] Data Synchronization",
+    "[IOT] Network Resilience",
+    "[IOT] Data Accuracy Validation",
+    "[IOT] Historical Data Management",
+    "[IOT] Zone-based Sensor Management",
+    "[E2E] Complete User Onboarding",
+    "[E2E] Plant Lifecycle Management",
+    "[E2E] Sensor Integration",
+    "[E2E] Dashboard Analytics",
+    "[E2E] Cross-Platform Sync",
+    "[E2E] Data Export/Import",
+    "[E2E] Multi-User Collaboration",
+    "[E2E] Real-Time Monitoring",
+    "[E2E] Performance Under Load",
+    "[E2E] Error Recovery"
+  ],
+  "all_recommendations": [
+    "[SECURITY] \ud83d\udeab Enhance input validation and sanitization",
+    "[SECURITY] \ud83d\udee1\ufe0f Implement or strengthen rate limiting to prevent abuse",
+    "[SECURITY] \u26a0\ufe0f HIGH: Resolve high-severity security issues to meet production standards",
+    "[IOT] \ud83d\udd27 AC Infinity integration needs attention - check device discovery and API connectivity",
+    "[IOT] \ud83d\udce1 Ecowitt integration needs attention - verify API keys and device configuration",
+    "[IOT] \u26a1 Real-time data features may need WebSocket implementation or enhancement",
+    "[IOT] \ud83d\udee1\ufe0f Improve network resilience - add retry logic and fallback mechanisms",
+    "[IOT] \u2705 Enhance data validation rules for sensor readings",
+    "[IOT] \ud83d\udcca Set up IoT device monitoring and alerting for production deployment",
+    "[IOT] \ud83d\udd04 Implement automated IoT device health checks and recovery procedures",
+    "[E2E] \ud83d\udea8 CRITICAL: Fix failed end-to-end workflows before production deployment",
+    "[E2E] \u26a0\ufe0f HIGH: Address critical workflow failures (less than 50% completion)",
+    "[E2E] \ud83d\udc65 USER EXPERIENCE: Fix user onboarding flow - critical for new users",
+    "[E2E] \ud83d\udce1 IoT: Complete sensor integration implementation",
+    "[E2E] \ud83e\udd16 Set up automated E2E testing in CI/CD pipeline",
+    "[E2E] \ud83d\udcca Monitor E2E test performance and success rates in production"
+  ],
+  "pipeline_runs": [
+    {
+      "timestamp": "2025-11-22T17:23:09.909823",
+      "test_type": "security",
+      "status": "warning",
+      "duration_seconds": 6.078845977783203,
+      "details": "Security validation completed with 0 critical and 3 high-severity failures",
+      "issues_found": [],
+      "recommendations": [
+        "\ud83d\udeab Enhance input validation and sanitization",
+        "\ud83d\udee1\ufe0f Implement or strengthen rate limiting to prevent abuse",
+        "\u26a0\ufe0f HIGH: Resolve high-severity security issues to meet production standards"
+      ]
+    },
+    {
+      "timestamp": "2025-11-22T17:23:10.463767",
+      "test_type": "iot",
+      "status": "failed",
+      "duration_seconds": 0.5539443492889404,
+      "details": "IoT validation completed with 14 failed tests",
+      "issues_found": [
+        "Device Discovery",
+        "Device Authentication",
+        "Data Collection",
+        "Device Configuration",
+        "Device Discovery",
+        "API Key Validation",
+        "Data Collection",
+        "Historical Data Retrieval",
+        "Real-time Data Collection",
+        "Data Synchronization",
+        "Network Resilience",
+        "Data Accuracy Validation",
+        "Historical Data Management",
+        "Zone-based Sensor Management"
+      ],
+      "recommendations": [
+        "\ud83d\udd27 AC Infinity integration needs attention - check device discovery and API connectivity",
+        "\ud83d\udce1 Ecowitt integration needs attention - verify API keys and device configuration",
+        "\u26a1 Real-time data features may need WebSocket implementation or enhancement",
+        "\ud83d\udee1\ufe0f Improve network resilience - add retry logic and fallback mechanisms",
+        "\u2705 Enhance data validation rules for sensor readings",
+        "\ud83d\udcca Set up IoT device monitoring and alerting for production deployment",
+        "\ud83d\udd04 Implement automated IoT device health checks and recovery procedures"
+      ]
+    },
+    {
+      "timestamp": "2025-11-22T17:23:11.251151",
+      "test_type": "e2e",
+      "status": "failed",
+      "duration_seconds": 0.7868497371673584,
+      "details": "E2E validation completed with 10 failed workflows",
+      "issues_found": [
+        "Complete User Onboarding",
+        "Plant Lifecycle Management",
+        "Sensor Integration",
+        "Dashboard Analytics",
+        "Cross-Platform Sync",
+        "Data Export/Import",
+        "Multi-User Collaboration",
+        "Real-Time Monitoring",
+        "Performance Under Load",
+        "Error Recovery"
+      ],
+      "recommendations": [
+        "\ud83d\udea8 CRITICAL: Fix failed end-to-end workflows before production deployment",
+        "\u26a0\ufe0f HIGH: Address critical workflow failures (less than 50% completion)",
+        "\ud83d\udc65 USER EXPERIENCE: Fix user onboarding flow - critical for new users",
+        "\ud83d\udce1 IoT: Complete sensor integration implementation",
+        "\ud83e\udd16 Set up automated E2E testing in CI/CD pipeline",
+        "\ud83d\udcca Monitor E2E test performance and success rates in production"
+      ]
+    }
+  ]
+}

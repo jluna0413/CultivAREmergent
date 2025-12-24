@@ -1,0 +1,160 @@
+{
+  "timestamp": "2025-11-30T19:21:33.957164",
+  "summary": {
+    "total_validations": 8,
+    "passed": 0,
+    "failed": 5,
+    "warnings": 0,
+    "errors": 3,
+    "skipped": 0,
+    "success_rate": 0.0,
+    "total_duration": 0.17131376266479492,
+    "overall_status": "ERROR",
+    "deployment_ready": false
+  },
+  "detailed_results": [
+    {
+      "name": "security_validation",
+      "category": "security",
+      "status": "FAIL",
+      "duration_seconds": 0.02283477783203125,
+      "details": "Security tests failed: /usr/bin/python3: No module named pytest\n",
+      "issues": [
+        "Security validation failed"
+      ],
+      "recommendations": [
+        "Review security test output and fix identified issues"
+      ],
+      "timestamp": "2025-11-30T19:21:33.810335",
+      "evidence": {
+        "command": "/usr/bin/python3 -m pytest tests/security/cultivar_security_validator.py::main --url http://localhost:8000 -v",
+        "output": "",
+        "error": "/usr/bin/python3: No module named pytest\n"
+      }
+    },
+    {
+      "name": "iot_validation",
+      "category": "iot",
+      "status": "FAIL",
+      "duration_seconds": 0.02294182777404785,
+      "details": "IoT integration tests failed",
+      "issues": [
+        "IoT integration validation failed"
+      ],
+      "recommendations": [
+        "Verify AC Infinity and Ecowitt device connectivity"
+      ],
+      "timestamp": "2025-11-30T19:21:33.833327",
+      "evidence": {
+        "command": "/usr/bin/python3 -m pytest tests/iot/cultivar_iot_validator.py::main --url http://localhost:8000 -v",
+        "output": ""
+      }
+    },
+    {
+      "name": "e2e_validation",
+      "category": "e2e",
+      "status": "FAIL",
+      "duration_seconds": 0.020476341247558594,
+      "details": "Some E2E workflows failed",
+      "issues": [
+        "E2E validation failed"
+      ],
+      "recommendations": [
+        "Review failed workflows and fix user journey issues"
+      ],
+      "timestamp": "2025-11-30T19:21:33.853853",
+      "evidence": {
+        "command": "/usr/bin/python3 -m pytest tests/e2e/cultivar_e2e_validator.py::main --url http://localhost:8000 -v",
+        "output": ""
+      }
+    },
+    {
+      "name": "flutter_validation",
+      "category": "flutter",
+      "status": "ERROR",
+      "duration_seconds": 0.0032494068145751953,
+      "details": "Flutter validation error: [Errno 2] No such file or directory: 'flutter'",
+      "issues": [
+        "[Errno 2] No such file or directory: 'flutter'"
+      ],
+      "recommendations": [
+        "Check Flutter installation and project configuration"
+      ],
+      "timestamp": "2025-11-30T19:21:33.857154",
+      "evidence": null
+    },
+    {
+      "name": "performance_validation",
+      "category": "performance",
+      "status": "ERROR",
+      "duration_seconds": 0.08352398872375488,
+      "details": "No performance data collected",
+      "issues": [],
+      "recommendations": [],
+      "timestamp": "2025-11-30T19:21:33.940743",
+      "evidence": {
+        "response_times": {}
+      }
+    },
+    {
+      "name": "database_validation",
+      "category": "database",
+      "status": "ERROR",
+      "duration_seconds": 0.0009799003601074219,
+      "details": "Database validation error: [Errno 2] No such file or directory: 'python'",
+      "issues": [
+        "[Errno 2] No such file or directory: 'python'"
+      ],
+      "recommendations": [
+        "Check database configuration and migrations"
+      ],
+      "timestamp": "2025-11-30T19:21:33.941804",
+      "evidence": null
+    },
+    {
+      "name": "code_quality_validation",
+      "category": "code_quality",
+      "status": "FAIL",
+      "duration_seconds": 0.0018398761749267578,
+      "details": "Code quality issues detected (0/2)",
+      "issues": [],
+      "recommendations": [
+        "Install pylint for Python code quality checking"
+      ],
+      "timestamp": "2025-11-30T19:21:33.943669",
+      "evidence": {
+        "quality_results": {
+          "pylint": "SKIPPED",
+          "security_headers": "SKIPPED"
+        }
+      }
+    },
+    {
+      "name": "infrastructure_validation",
+      "category": "infrastructure",
+      "status": "FAIL",
+      "duration_seconds": 0.01281881332397461,
+      "details": "Infrastructure issues detected (1 failed checks)",
+      "issues": [
+        "Application health check failed"
+      ],
+      "recommendations": [
+        "Check if application is running and healthy"
+      ],
+      "timestamp": "2025-11-30T19:21:33.956519",
+      "evidence": {
+        "infra_results": {
+          "app_connectivity": "FAIL",
+          "environment_config": "SKIPPED",
+          "docker_config": "PASS"
+        }
+      }
+    }
+  ],
+  "configuration": {
+    "base_url": "http://localhost:8000",
+    "flutter_app_path": "flutter_app",
+    "output_dir": "validation_reports",
+    "verbose": false
+  }
+}

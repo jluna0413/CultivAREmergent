@@ -1,0 +1,160 @@
+{
+  "summary": {
+    "total_tests": 12,
+    "passed": 3,
+    "failed": 9,
+    "success_rate": "25.0%",
+    "critical_failures": 0,
+    "high_failures": 3,
+    "medium_failures": 6
+  },
+  "test_results": [
+    {
+      "test_name": "JTI Collision Resistance",
+      "passed": false,
+      "severity": "HIGH",
+      "details": "JTI collision detected or insufficient unique JTIs",
+      "evidence": {
+        "unique_jtis": 0,
+        "samples_tested": 100
+      },
+      "timestamp": "2025-11-22T17:23:08.950872"
+    },
+    {
+      "test_name": "Invalid Credentials Handling",
+      "passed": false,
+      "severity": "MEDIUM",
+      "details": "Response may leak information about user existence",
+      "evidence": {
+        "status_code": 401,
+        "response": {
+          "message": "Unauthorized"
+        }
+      },
+      "timestamp": "2025-11-22T17:23:09.089836"
+    },
+    {
+      "test_name": "Account Lockout Mechanism",
+      "passed": true,
+      "severity": "LOW",
+      "details": "Account lockout or rate limiting appears to be active",
+      "evidence": {
+        "failed_attempts": 10,
+        "lockout_triggered": true
+      },
+      "timestamp": "2025-11-22T17:23:09.359123"
+    },
+    {
+      "test_name": "Password Policy Enforcement",
+      "passed": false,
+      "severity": "HIGH",
+      "details": "Weak passwords accepted: 6/6",
+      "evidence": {
+        "weak_passwords_tested": 6,
+        "violations": 6
+      },
+      "timestamp": "2025-11-22T17:23:09.502539"
+    },
+    {
+      "test_name": "Unauthorized Access Prevention",
+      "passed": true,
+      "severity": "LOW",
+      "details": "All protected endpoints properly require authentication",
+      "evidence": {
+        "protected_endpoints_tested": 4,
+        "correctly_blocked": 4
+      },
+      "timestamp": "2025-11-22T17:23:09.559212"
+    },
+    {
+      "test_name": "CORS Configuration",
+      "passed": false,
+      "severity": "MEDIUM",
+      "details": "CORS allows all origins (*) - may be too permissive for production",
+      "evidence": {
+        "cors_headers": {
+          "access-control-allow-origin": "*",
+          "access-control-allow-methods": null,
+          "access-control-allow-headers": null
+        }
+      },
+      "timestamp": "2025-11-22T17:23:09.561351"
+    },
+    {
+      "test_name": "Security Headers Implementation",
+      "passed": false,
+      "severity": "MEDIUM",
+      "details": "Missing security headers",
+      "evidence": {
+        "security_headers": {
+          "x-frame-options": null,
+          "x-content-type-options": null,
+          "strict-transport-security": null,
+          "content-security-policy": null
+        },
+        "headers_present": 0
+      },
+      "timestamp": "2025-11-22T17:23:09.562955"
+    },
+    {
+      "test_name": "HTTP Method Restrictions",
+      "passed": false,
+      "severity": "MEDIUM",
+      "details": "HTTP method restrictions may be too permissive",
+      "evidence": {
+        "method": "PATCH",
+        "status_code": 401
+      },
+      "timestamp": "2025-11-22T17:23:09.564553"
+    },
+    {
+      "test_name": "SQL Injection Prevention",
+      "passed": true,
+      "severity": "LOW",
+      "details": "No SQL injection vulnerabilities detected",
+      "evidence": {
+        "payloads_tested": 4,
+        "safe_responses": 4
+      },
+      "timestamp": "2025-11-22T17:23:09.656368"
+    },
+    {
+      "test_name": "XSS Prevention",
+      "passed": false,
+      "severity": "HIGH",
+      "details": "Potential XSS vulnerabilities detected",
+      "evidence": {
+        "payloads_tested": 4,
+        "properly_sanitized": 0
+      },
+      "timestamp": "2025-11-22T17:23:09.745704"
+    },
+    {
+      "test_name": "Input Size Limits",
+      "passed": false,
+      "severity": "MEDIUM",
+      "details": "Oversized inputs may not be properly limited",
+      "evidence": {
+        "status_code": 401,
+        "input_size": 10000
+      },
+      "timestamp": "2025-11-22T17:23:09.747289"
+    },
+    {
+      "test_name": "Rate Limiting",
+      "passed": false,
+      "severity": "MEDIUM",
+      "details": "No rate limiting detected",
+      "evidence": {
+        "total_requests": 50,
+        "rate_limited": 0
+      },
+      "timestamp": "2025-11-22T17:23:09.861471"
+    }
+  ],
+  "recommendations": [
+    "\ud83d\udeab Enhance input validation and sanitization",
+    "\ud83d\udee1\ufe0f Implement or strengthen rate limiting to prevent abuse",
+    "\u26a0\ufe0f HIGH: Resolve high-severity security issues to meet production standards"
+  ]
+}

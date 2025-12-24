@@ -1,0 +1,198 @@
+{
+  "timestamp": "2025-11-30T17:14:05.309052",
+  "base_url": "http://localhost:8000",
+  "tests": {
+    "Health Check /": {
+      "status": "FAIL",
+      "message": "HTTP 401: {\n  \"message\":\"Unauthorized\"\n}",
+      "details": null,
+      "timestamp": "2025-11-30T17:14:05.398987"
+    },
+    "Health Check /health": {
+      "status": "FAIL",
+      "message": "HTTP 401: {\n  \"message\":\"Unauthorized\"\n}",
+      "details": null,
+      "timestamp": "2025-11-30T17:14:05.403401"
+    },
+    "Health Check /health/live": {
+      "status": "FAIL",
+      "message": "HTTP 401: {\n  \"message\":\"Unauthorized\"\n}",
+      "details": null,
+      "timestamp": "2025-11-30T17:14:05.407204"
+    },
+    "Health Check /health/ready": {
+      "status": "FAIL",
+      "message": "HTTP 401: {\n  \"message\":\"Unauthorized\"\n}",
+      "details": null,
+      "timestamp": "2025-11-30T17:14:05.410949"
+    },
+    "Health Check /health/metrics": {
+      "status": "FAIL",
+      "message": "HTTP 401: {\n  \"message\":\"Unauthorized\"\n}",
+      "details": null,
+      "timestamp": "2025-11-30T17:14:05.415177"
+    },
+    "Health Check /health/status": {
+      "status": "FAIL",
+      "message": "HTTP 401: {\n  \"message\":\"Unauthorized\"\n}",
+      "details": null,
+      "timestamp": "2025-11-30T17:14:05.418454"
+    },
+    "Health Check /api/v2/status": {
+      "status": "FAIL",
+      "message": "HTTP 401: {\n  \"message\":\"Unauthorized\"\n}",
+      "details": null,
+      "timestamp": "2025-11-30T17:14:05.421712"
+    },
+    "User Registration": {
+      "status": "WARN",
+      "message": "Status 401: {\n  \"message\":\"Unauthorized\"\n}",
+      "details": null,
+      "timestamp": "2025-11-30T17:14:05.424966"
+    },
+    "Authentication Security": {
+      "status": "PASS",
+      "message": "Proper 401 response for invalid credentials",
+      "details": null,
+      "timestamp": "2025-11-30T17:14:05.469707"
+    },
+    "Token Validation": {
+      "status": "PASS",
+      "message": "Proper 401 response for invalid token",
+      "details": null,
+      "timestamp": "2025-11-30T17:14:05.473610"
+    },
+    "Security Header Content-Security-Policy": {
+      "status": "WARN",
+      "message": "CSP header present - Header missing",
+      "details": null,
+      "timestamp": "2025-11-30T17:14:05.476828"
+    },
+    "Security Header Strict-Transport-Security": {
+      "status": "WARN",
+      "message": "HSTS header present - Header missing",
+      "details": null,
+      "timestamp": "2025-11-30T17:14:05.476828"
+    },
+    "Security Header X-Frame-Options": {
+      "status": "WARN",
+      "message": "Frame protection enabled - Header missing",
+      "details": null,
+      "timestamp": "2025-11-30T17:14:05.476828"
+    },
+    "Security Header X-Content-Type-Options": {
+      "status": "WARN",
+      "message": "MIME type sniffing protection - Header missing",
+      "details": null,
+      "timestamp": "2025-11-30T17:14:05.476828"
+    },
+    "Security Header Referrer-Policy": {
+      "status": "WARN",
+      "message": "Referrer policy configured - Header missing",
+      "details": null,
+      "timestamp": "2025-11-30T17:14:05.476828"
+    },
+    "Rate Limiting": {
+      "status": "WARN",
+      "message": "No rate limiting detected (may be configured differently)",
+      "details": null,
+      "timestamp": "2025-11-30T17:14:06.511756"
+    },
+    "SQL Injection Protection - ' OR '1'='1": {
+      "status": "PASS",
+      "message": "Request properly rejected",
+      "details": null,
+      "timestamp": "2025-11-30T17:14:06.515458"
+    },
+    "SQL Injection Protection - '; DROP TABLE users;": {
+      "status": "PASS",
+      "message": "Request properly rejected",
+      "details": null,
+      "timestamp": "2025-11-30T17:14:06.560144"
+    },
+    "SQL Injection Protection - admin'--": {
+      "status": "PASS",
+      "message": "Request properly rejected",
+      "details": null,
+      "timestamp": "2025-11-30T17:14:06.562376"
+    },
+    "SQL Injection Protection - ' UNION SELECT * FRO": {
+      "status": "PASS",
+      "message": "Request properly rejected",
+      "details": null,
+      "timestamp": "2025-11-30T17:14:06.607489"
+    },
+    "XSS Protection": {
+      "status": "WARN",
+      "message": "XSS payload accepted: 401",
+      "details": null,
+      "timestamp": "2025-11-30T17:14:06.610477"
+    },
+    "Protected Endpoint /api/v2/users/me": {
+      "status": "PASS",
+      "message": "Properly requires authentication",
+      "details": null,
+      "timestamp": "2025-11-30T17:14:06.656993"
+    },
+    "Protected Endpoint /api/v2/dashboard": {
+      "status": "PASS",
+      "message": "Properly requires authentication",
+      "details": null,
+      "timestamp": "2025-11-30T17:14:06.660711"
+    },
+    "Protected Endpoint /api/v2/plants": {
+      "status": "PASS",
+      "message": "Properly requires authentication",
+      "details": null,
+      "timestamp": "2025-11-30T17:14:06.662841"
+    },
+    "Protected Endpoint /api/v2/strains": {
+      "status": "PASS",
+      "message": "Properly requires authentication",
+      "details": null,
+      "timestamp": "2025-11-30T17:14:06.664986"
+    },
+    "404 Error Handling": {
+      "status": "WARN",
+      "message": "Expected 404, got 401",
+      "details": null,
+      "timestamp": "2025-11-30T17:14:06.667120"
+    },
+    "Malformed JSON Handling": {
+      "status": "WARN",
+      "message": "Expected 400/422, got 401",
+      "details": null,
+      "timestamp": "2025-11-30T17:14:06.669250"
+    },
+    "Production Readiness Check": {
+      "status": "WARN",
+      "message": "Status endpoint returned 401",
+      "details": null,
+      "timestamp": "2025-11-30T17:14:06.717866"
+    },
+    "Environment Variable DATABASE_URL": {
+      "status": "FAIL",
+      "message": "Variable is not set (required for production)",
+      "details": null,
+      "timestamp": "2025-11-30T17:14:06.717866"
+    },
+    "Environment Variable JWT_SECRET_KEY": {
+      "status": "PASS",
+      "message": "Variable is set",
+      "details": null,
+      "timestamp": "2025-11-30T17:14:06.717866"
+    },
+    "Environment Variable SECRET_KEY": {
+      "status": "FAIL",
+      "message": "Variable is not set (required for production)",
+      "details": null,
+      "timestamp": "2025-11-30T17:14:06.717866"
+    }
+  },
+  "summary": {
+    "total_tests": 31,
+    "passed": 11,
+    "failed": 9,
+    "warnings": 11
+  }
+}

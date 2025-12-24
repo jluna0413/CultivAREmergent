@@ -1,0 +1,129 @@
+{
+  "summary": {
+    "total_tests": 9,
+    "passed": 4,
+    "failed": 0,
+    "warnings": 0,
+    "skipped": 0,
+    "errors": 5,
+    "success_rate": 44.44444444444444,
+    "by_device": {
+      "ac_infinity": {
+        "PASS": 2,
+        "FAIL": 0,
+        "WARNING": 0,
+        "SKIP": 0,
+        "ERROR": 1
+      },
+      "ecowitt": {
+        "PASS": 2,
+        "FAIL": 0,
+        "WARNING": 0,
+        "SKIP": 0,
+        "ERROR": 0
+      },
+      "both": {
+        "PASS": 0,
+        "FAIL": 0,
+        "WARNING": 0,
+        "SKIP": 0,
+        "ERROR": 4
+      }
+    },
+    "performance_metrics": {
+      "sensors_count": 3.0,
+      "response_time_ms": 215.0,
+      "readings_count": 3.0,
+      "avg_battery_level": 93.33333333333333
+    },
+    "integration_score": 50.0
+  },
+  "total_tests": 9,
+  "results": [
+    {
+      "test_name": "AC Infinity Device Pairing",
+      "device_type": "ac_infinity",
+      "status": "PASS",
+      "details": "Device pairing successful",
+      "evidence": "Device ID: test_device_001",
+      "performance_metrics": null
+    },
+    {
+      "test_name": "AC Infinity Sensor Data Collection",
+      "device_type": "ac_infinity",
+      "status": "PASS",
+      "details": "Successfully retrieved 3 sensor readings",
+      "evidence": null,
+      "performance_metrics": {
+        "sensors_count": 3,
+        "data_types": [
+          "temperature",
+          "humidity",
+          "co2"
+        ],
+        "response_time_ms": 250
+      }
+    },
+    {
+      "test_name": "AC Infinity Rate Limiting",
+      "device_type": "ac_infinity",
+      "status": "ERROR",
+      "details": "Test execution error: module 'httpx' has no attribute 'exceptions'",
+      "evidence": null,
+      "performance_metrics": null
+    },
+    {
+      "test_name": "Ecowitt Device Authentication",
+      "device_type": "ecowitt",
+      "status": "PASS",
+      "details": "Device authentication successful",
+      "evidence": "Device ecowitt_device_001 is online",
+      "performance_metrics": null
+    },
+    {
+      "test_name": "Ecowitt Sensor Data Retrieval",
+      "device_type": "ecowitt",
+      "status": "PASS",
+      "details": "Retrieved 3 sensor readings",
+      "evidence": null,
+      "performance_metrics": {
+        "readings_count": 3,
+        "avg_battery_level": 93.33333333333333,
+        "response_time_ms": 180
+      }
+    },
+    {
+      "test_name": "Device Completely Offline",
+      "device_type": "both",
+      "status": "ERROR",
+      "details": "Test execution error: module 'httpx' has no attribute 'exceptions'",
+      "evidence": null,
+      "performance_metrics": null
+    },
+    {
+      "test_name": "Intermittent Connectivity",
+      "device_type": "both",
+      "status": "ERROR",
+      "details": "Test execution error: module 'httpx' has no attribute 'exceptions'",
+      "evidence": null,
+      "performance_metrics": null
+    },
+    {
+      "test_name": "Network Timeout Handling",
+      "device_type": "both",
+      "status": "ERROR",
+      "details": "Test execution error: module 'httpx' has no attribute 'exceptions'",
+      "evidence": null,
+      "performance_metrics": null
+    },
+    {
+      "test_name": "Data Synchronization",
+      "device_type": "both",
+      "status": "ERROR",
+      "details": "Test execution error: module 'httpx' has no attribute 'exceptions'",
+      "evidence": null,
+      "performance_metrics": null
+    }
+  ],
+  "timestamp": "2025-11-29T11:54:36.556239"
+}

@@ -1,0 +1,44 @@
+{
+  "timestamp": "2025-11-30T21:47:05.936069",
+  "summary": {
+    "total_validations": 1,
+    "passed": 0,
+    "failed": 1,
+    "warnings": 0,
+    "errors": 0,
+    "skipped": 0,
+    "success_rate": 0.0,
+    "total_duration": 0.01736307144165039,
+    "overall_status": "FAIL",
+    "deployment_ready": false
+  },
+  "detailed_results": [
+    {
+      "name": "infrastructure_validation",
+      "category": "infrastructure",
+      "status": "FAIL",
+      "duration_seconds": 0.016312837600708008,
+      "details": "Infrastructure issues detected (1 failed checks)",
+      "issues": [
+        "Application health check failed"
+      ],
+      "recommendations": [
+        "Check if application is running and healthy"
+      ],
+      "timestamp": "2025-11-30T21:47:05.935767",
+      "evidence": {
+        "infra_results": {
+          "app_connectivity": "FAIL",
+          "environment_config": "SKIPPED",
+          "docker_config": "PASS"
+        }
+      }
+    }
+  ],
+  "configuration": {
+    "base_url": "http://localhost:8001",
+    "flutter_app_path": "flutter_app",
+    "output_dir": "validation_reports",
+    "verbose": false
+  }
+}

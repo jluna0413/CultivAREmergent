@@ -1,0 +1,204 @@
+{
+  "timestamp": "2025-12-02T11:11:29.607360",
+  "base_url": "http://localhost:8000",
+  "tests": {
+    "Health Check /": {
+      "status": "PASS",
+      "message": "Response: 200",
+      "details": null,
+      "timestamp": "2025-12-02T11:11:33.713815"
+    },
+    "Health Check /health": {
+      "status": "FAIL",
+      "message": "HTTP 503: {\"status\":\"unhealthy\",\"timestamp\":\"2025-12-02T16:11:34.719435\",\"service\":\"Cultivar Collection Management API\",\"version\":\"2.0.0\",\"uptime_seconds\":34.691948890686035,\"checks\":{\"database\":{\"status\":\"heal",
+      "details": null,
+      "timestamp": "2025-12-02T11:11:34.721444"
+    },
+    "Health Check /health/live": {
+      "status": "PASS",
+      "message": "Response: 200",
+      "details": null,
+      "timestamp": "2025-12-02T11:11:34.724137"
+    },
+    "Health Check /health/ready": {
+      "status": "PASS",
+      "message": "Response: 200",
+      "details": null,
+      "timestamp": "2025-12-02T11:11:34.819132"
+    },
+    "Health Check /health/metrics": {
+      "status": "FAIL",
+      "message": "HTTP 500: {\"error\":\"Failed to collect metrics\",\"message\":\"argument 1 (impossible<bad format char>)\"}",
+      "details": null,
+      "timestamp": "2025-12-02T11:11:34.822353"
+    },
+    "Health Check /health/status": {
+      "status": "FAIL",
+      "message": "HTTP 500: {\"error\":\"Failed to get system status\",\"message\":\"argument 1 (impossible<bad format char>)\"}",
+      "details": null,
+      "timestamp": "2025-12-02T11:11:34.825372"
+    },
+    "Health Check /api/v2/status": {
+      "status": "PASS",
+      "message": "Response: 200",
+      "details": null,
+      "timestamp": "2025-12-02T11:11:34.828371"
+    },
+    "User Registration": {
+      "status": "WARN",
+      "message": "Status 500: {\"error\":\"HTTP Error\",\"message\":\"Internal server error during registration\",\"status_code\":500}",
+      "details": null,
+      "timestamp": "2025-12-02T11:11:34.911500"
+    },
+    "Authentication Security": {
+      "status": "FAIL",
+      "message": "Expected 401, got 500",
+      "details": null,
+      "timestamp": "2025-12-02T11:11:34.921812"
+    },
+    "Token Validation": {
+      "status": "PASS",
+      "message": "Proper 401 response for invalid token",
+      "details": null,
+      "timestamp": "2025-12-02T11:11:34.925008"
+    },
+    "Security Header Content-Security-Policy": {
+      "status": "PASS",
+      "message": "CSP header present",
+      "details": null,
+      "timestamp": "2025-12-02T11:11:34.928006"
+    },
+    "Security Header Strict-Transport-Security": {
+      "status": "PASS",
+      "message": "HSTS header present",
+      "details": null,
+      "timestamp": "2025-12-02T11:11:34.928006"
+    },
+    "Security Header X-Frame-Options": {
+      "status": "PASS",
+      "message": "Frame protection enabled",
+      "details": null,
+      "timestamp": "2025-12-02T11:11:34.928006"
+    },
+    "Security Header X-Content-Type-Options": {
+      "status": "PASS",
+      "message": "MIME type sniffing protection",
+      "details": null,
+      "timestamp": "2025-12-02T11:11:34.928006"
+    },
+    "Security Header Referrer-Policy": {
+      "status": "PASS",
+      "message": "Referrer policy configured",
+      "details": null,
+      "timestamp": "2025-12-02T11:11:34.928006"
+    },
+    "Rate Limiting": {
+      "status": "WARN",
+      "message": "No rate limiting detected (may be configured differently)",
+      "details": null,
+      "timestamp": "2025-12-02T11:11:46.020373"
+    },
+    "SQL Injection Protection - ' OR '1'='1": {
+      "status": "WARN",
+      "message": "Unexpected response: 500",
+      "details": null,
+      "timestamp": "2025-12-02T11:11:46.032314"
+    },
+    "SQL Injection Protection - '; DROP TABLE users;": {
+      "status": "WARN",
+      "message": "Unexpected response: 500",
+      "details": null,
+      "timestamp": "2025-12-02T11:11:46.044320"
+    },
+    "SQL Injection Protection - admin'--": {
+      "status": "WARN",
+      "message": "Unexpected response: 500",
+      "details": null,
+      "timestamp": "2025-12-02T11:11:46.054837"
+    },
+    "SQL Injection Protection - ' UNION SELECT * FRO": {
+      "status": "WARN",
+      "message": "Unexpected response: 500",
+      "details": null,
+      "timestamp": "2025-12-02T11:11:46.065759"
+    },
+    "XSS Protection": {
+      "status": "WARN",
+      "message": "XSS payload accepted: 500",
+      "details": null,
+      "timestamp": "2025-12-02T11:11:46.077100"
+    },
+    "Protected Endpoint /api/v2/users/me": {
+      "status": "WARN",
+      "message": "Expected 401, got 403",
+      "details": null,
+      "timestamp": "2025-12-02T11:11:46.083303"
+    },
+    "Protected Endpoint /api/v2/dashboard": {
+      "status": "WARN",
+      "message": "Expected 401, got 403",
+      "details": null,
+      "timestamp": "2025-12-02T11:11:46.091317"
+    },
+    "Protected Endpoint /api/v2/plants": {
+      "status": "WARN",
+      "message": "Expected 401, got 403",
+      "details": null,
+      "timestamp": "2025-12-02T11:11:46.099316"
+    },
+    "Protected Endpoint /api/v2/strains": {
+      "status": "WARN",
+      "message": "Expected 401, got 403",
+      "details": null,
+      "timestamp": "2025-12-02T11:11:46.106103"
+    },
+    "404 Error Handling": {
+      "status": "PASS",
+      "message": "Proper 404 response",
+      "details": null,
+      "timestamp": "2025-12-02T11:11:46.110735"
+    },
+    "Malformed JSON Handling": {
+      "status": "PASS",
+      "message": "Proper error response for malformed JSON",
+      "details": null,
+      "timestamp": "2025-12-02T11:11:46.114316"
+    },
+    "Environment Configuration": {
+      "status": "WARN",
+      "message": "Environment: development (ensure production config for deployment)",
+      "details": null,
+      "timestamp": "2025-12-02T11:11:46.119325"
+    },
+    "Rate Limiting Configuration": {
+      "status": "PASS",
+      "message": "Rate limit: 100 requests per 60s",
+      "details": null,
+      "timestamp": "2025-12-02T11:11:46.119325"
+    },
+    "Environment Variable DATABASE_URL": {
+      "status": "FAIL",
+      "message": "Variable is not set (required for production)",
+      "details": null,
+      "timestamp": "2025-12-02T11:11:46.119325"
+    },
+    "Environment Variable JWT_SECRET_KEY": {
+      "status": "PASS",
+      "message": "Variable is set",
+      "details": null,
+      "timestamp": "2025-12-02T11:11:46.119325"
+    },
+    "Environment Variable SECRET_KEY": {
+      "status": "FAIL",
+      "message": "Variable is not set (required for production)",
+      "details": null,
+      "timestamp": "2025-12-02T11:11:46.119325"
+    }
+  },
+  "summary": {
+    "total_tests": 32,
+    "passed": 14,
+    "failed": 6,
+    "warnings": 12
+  }
+}

@@ -1,0 +1,152 @@
+{
+  "timestamp": "2025-11-29T22:35:51.579463",
+  "summary": {
+    "total_validations": 7,
+    "passed": 2,
+    "failed": 5,
+    "warnings": 0,
+    "errors": 0,
+    "skipped": 0,
+    "success_rate": 28.57142857142857,
+    "total_duration": 71.25391221046448,
+    "overall_status": "FAIL",
+    "deployment_ready": false
+  },
+  "detailed_results": [
+    {
+      "name": "security_validation",
+      "category": "security",
+      "status": "FAIL",
+      "duration_seconds": 2.7310659885406494,
+      "details": "Security tests failed: ERROR: usage: __main__.py [options] [file_or_dir] [file_or_dir] [...]\n__main__.py: error: unrecognized arguments: --url http://localhost:8000\n  inifile: A:\\dev\\CultivAREmergant\\pytest.ini\n  rootdir: A:\\dev\\CultivAREmergant\n\n",
+      "issues": [
+        "Security validation failed"
+      ],
+      "recommendations": [
+        "Review security test output and fix identified issues"
+      ],
+      "timestamp": "2025-11-29T22:34:43.058729",
+      "evidence": {
+        "command": "A:\\python\\python.exe -m pytest tests/security/cultivar_security_validator.py::main --url http://localhost:8000 -v",
+        "output": "",
+        "error": "ERROR: usage: __main__.py [options] [file_or_dir] [file_or_dir] [...]\n__main__.py: error: unrecognized arguments: --url http://localhost:8000\n  inifile: A:\\dev\\CultivAREmergant\\pytest.ini\n  rootdir: A:\\dev\\CultivAREmergant\n\n"
+      }
+    },
+    {
+      "name": "iot_validation",
+      "category": "iot",
+      "status": "FAIL",
+      "duration_seconds": 2.5302481651306152,
+      "details": "IoT integration tests failed",
+      "issues": [
+        "IoT integration validation failed"
+      ],
+      "recommendations": [
+        "Verify AC Infinity and Ecowitt device connectivity"
+      ],
+      "timestamp": "2025-11-29T22:34:45.588977",
+      "evidence": {
+        "command": "A:\\python\\python.exe -m pytest tests/iot/cultivar_iot_validator.py::main --url http://localhost:8000 -v",
+        "output": ""
+      }
+    },
+    {
+      "name": "e2e_validation",
+      "category": "e2e",
+      "status": "FAIL",
+      "duration_seconds": 2.844083547592163,
+      "details": "Some E2E workflows failed",
+      "issues": [
+        "E2E validation failed"
+      ],
+      "recommendations": [
+        "Review failed workflows and fix user journey issues"
+      ],
+      "timestamp": "2025-11-29T22:34:48.433061",
+      "evidence": {
+        "command": "A:\\python\\python.exe -m pytest tests/e2e/cultivar_e2e_validator.py::main --url http://localhost:8000 -v",
+        "output": ""
+      }
+    },
+    {
+      "name": "performance_validation",
+      "category": "performance",
+      "status": "PASS",
+      "duration_seconds": 0.07648611068725586,
+      "details": "All endpoints responding quickly (avg: 0.00s)",
+      "issues": [],
+      "recommendations": [],
+      "timestamp": "2025-11-29T22:34:48.509547",
+      "evidence": {
+        "response_times": {
+          "/api/v2/health": 0.004824,
+          "/api/v2/status": 0.004664,
+          "/api/v2/auth/login": 0.005158
+        }
+      }
+    },
+    {
+      "name": "database_validation",
+      "category": "database",
+      "status": "PASS",
+      "duration_seconds": 1.030909538269043,
+      "details": "Database connectivity and initialization successful",
+      "issues": [],
+      "recommendations": [],
+      "timestamp": "2025-11-29T22:34:49.540456",
+      "evidence": {
+        "db_test_output": "Initializing async database...\nDropping all existing tables...\nCreating new tables...\nDatabase initialization complete.\nDatabase connection successful\n",
+        "db_test_error": ""
+      }
+    },
+    {
+      "name": "code_quality_validation",
+      "category": "code_quality",
+      "status": "FAIL",
+      "duration_seconds": 61.94115710258484,
+      "details": "Code quality issues detected (0/2)",
+      "issues": [
+        "Python linting issues detected",
+        "Security headers validation failed"
+      ],
+      "recommendations": [
+        "Review and fix Python code quality issues",
+        "Fix security headers configuration"
+      ],
+      "timestamp": "2025-11-29T22:35:51.481613",
+      "evidence": {
+        "quality_results": {
+          "pylint": "FAIL",
+          "security_headers": "FAIL"
+        }
+      }
+    },
+    {
+      "name": "infrastructure_validation",
+      "category": "infrastructure",
+      "status": "FAIL",
+      "duration_seconds": 0.0963437557220459,
+      "details": "Infrastructure issues detected (1 failed checks)",
+      "issues": [
+        "Application health check failed"
+      ],
+      "recommendations": [
+        "Check if application is running and healthy"
+      ],
+      "timestamp": "2025-11-29T22:35:51.577957",
+      "evidence": {
+        "infra_results": {
+          "app_connectivity": "FAIL",
+          "environment_config": "PASS",
+          "docker_config": "PASS"
+        }
+      }
+    }
+  ],
+  "configuration": {
+    "base_url": "http://localhost:8000",
+    "flutter_app_path": "flutter_app",
+    "output_dir": "validation_reports",
+    "verbose": false
+  }
+}

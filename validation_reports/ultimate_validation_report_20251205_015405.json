@@ -1,0 +1,148 @@
+{
+  "timestamp": "2025-12-05T01:54:05.906914",
+  "summary": {
+    "total_validations": 7,
+    "passed": 1,
+    "failed": 5,
+    "warnings": 0,
+    "errors": 1,
+    "skipped": 0,
+    "success_rate": 14.285714285714285,
+    "total_duration": 54.26733708381653,
+    "overall_status": "ERROR",
+    "deployment_ready": false
+  },
+  "detailed_results": [
+    {
+      "name": "security_validation",
+      "category": "security",
+      "status": "FAIL",
+      "duration_seconds": 1.1374003887176514,
+      "details": "Security tests failed: Traceback (most recent call last):\n  File \"A:\\dev\\CultivAREmergant\\tests\\security\\cultivar_security_validator.py\", line 1160, in <module>\n    asyncio.run(main())\n  File \"C:\\Users\\jonat\\Anaconda3\\Lib\\asyncio\\runners.py\", line 194, in run\n    return runner.run(main)\n           ^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\jonat\\Anaconda3\\Lib\\asyncio\\runners.py\", line 118, in run\n    return self._loop.run_until_complete(task)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\jonat\\Anaconda3\\Lib\\asyncio\\base_events.py\", line 687, in run_until_complete\n    return future.result()\n           ^^^^^^^^^^^^^^^\n  File \"A:\\dev\\CultivAREmergant\\tests\\security\\cultivar_security_validator.py\", line 1121, in main\n    print(f\"\\U0001f510 CultivAR Security Validation Suite\")\n  File \"C:\\Users\\jonat\\Anaconda3\\Lib\\encodings\\cp1252.py\", line 19, in encode\n    return codecs.charmap_encode(input,self.errors,encoding_table)[0]\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nUnicodeEncodeError: 'charmap' codec can't encode character '\\U0001f510' in position 0: character maps to <undefined>\n",
+      "issues": [
+        "Security validation failed"
+      ],
+      "recommendations": [
+        "Review security test output and fix identified issues"
+      ],
+      "timestamp": "2025-12-05T01:53:12.776979",
+      "evidence": {
+        "command": "C:\\Users\\jonat\\Anaconda3\\python.exe tests/security/cultivar_security_validator.py --url http://localhost:5000",
+        "output": "",
+        "error": "Traceback (most recent call last):\n  File \"A:\\dev\\CultivAREmergant\\tests\\security\\cultivar_security_validator.py\", line 1160, in <module>\n    asyncio.run(main())\n  File \"C:\\Users\\jonat\\Anaconda3\\Lib\\asyncio\\runners.py\", line 194, in run\n    return runner.run(main)\n           ^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\jonat\\Anaconda3\\Lib\\asyncio\\runners.py\", line 118, in run\n    return self._loop.run_until_complete(task)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\jonat\\Anaconda3\\Lib\\asyncio\\base_events.py\", line 687, in run_until_complete\n    return future.result()\n           ^^^^^^^^^^^^^^^\n  File \"A:\\dev\\CultivAREmergant\\tests\\security\\cultivar_security_validator.py\", line 1121, in main\n    print(f\"\\U0001f510 CultivAR Security Validation Suite\")\n  File \"C:\\Users\\jonat\\Anaconda3\\Lib\\encodings\\cp1252.py\", line 19, in encode\n    return codecs.charmap_encode(input,self.errors,encoding_table)[0]\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nUnicodeEncodeError: 'charmap' codec can't encode character '\\U0001f510' in position 0: character maps to <undefined>\n"
+      }
+    },
+    {
+      "name": "iot_validation",
+      "category": "iot",
+      "status": "FAIL",
+      "duration_seconds": 1.0228760242462158,
+      "details": "IoT integration tests failed",
+      "issues": [
+        "IoT integration validation failed"
+      ],
+      "recommendations": [
+        "Verify AC Infinity and Ecowitt device connectivity"
+      ],
+      "timestamp": "2025-12-05T01:53:13.799855",
+      "evidence": {
+        "command": "C:\\Users\\jonat\\Anaconda3\\python.exe tests/iot/cultivar_iot_validator.py --url http://localhost:5000",
+        "output": ""
+      }
+    },
+    {
+      "name": "e2e_validation",
+      "category": "e2e",
+      "status": "FAIL",
+      "duration_seconds": 1.0170657634735107,
+      "details": "Some E2E workflows failed",
+      "issues": [
+        "E2E validation failed"
+      ],
+      "recommendations": [
+        "Review failed workflows and fix user journey issues"
+      ],
+      "timestamp": "2025-12-05T01:53:14.816920",
+      "evidence": {
+        "command": "C:\\Users\\jonat\\Anaconda3\\python.exe tests/e2e/cultivar_e2e_validator.py --url http://localhost:5000",
+        "output": ""
+      }
+    },
+    {
+      "name": "performance_validation",
+      "category": "performance",
+      "status": "ERROR",
+      "duration_seconds": 0.03497195243835449,
+      "details": "No performance data collected",
+      "issues": [],
+      "recommendations": [],
+      "timestamp": "2025-12-05T01:53:14.851892",
+      "evidence": {
+        "response_times": {}
+      }
+    },
+    {
+      "name": "database_validation",
+      "category": "database",
+      "status": "PASS",
+      "duration_seconds": 0.9002172946929932,
+      "details": "Database connectivity and initialization successful",
+      "issues": [],
+      "recommendations": [],
+      "timestamp": "2025-12-05T01:53:15.752110",
+      "evidence": {
+        "db_test_output": "Initializing async database...\nDropping all existing tables...\nCreating new tables...\nDatabase initialization complete.\nDatabase connection successful\n",
+        "db_test_error": ""
+      }
+    },
+    {
+      "name": "code_quality_validation",
+      "category": "code_quality",
+      "status": "FAIL",
+      "duration_seconds": 50.036081075668335,
+      "details": "Code quality issues detected (0/2)",
+      "issues": [
+        "Python linting issues detected",
+        "Security headers validation failed"
+      ],
+      "recommendations": [
+        "Review and fix Python code quality issues",
+        "Fix security headers configuration"
+      ],
+      "timestamp": "2025-12-05T01:54:05.788190",
+      "evidence": {
+        "quality_results": {
+          "pylint": "FAIL",
+          "security_headers": "FAIL"
+        }
+      }
+    },
+    {
+      "name": "infrastructure_validation",
+      "category": "infrastructure",
+      "status": "FAIL",
+      "duration_seconds": 0.11572694778442383,
+      "details": "Infrastructure issues detected (1 failed checks)",
+      "issues": [
+        "Application health check failed"
+      ],
+      "recommendations": [
+        "Check if application is running and healthy"
+      ],
+      "timestamp": "2025-12-05T01:54:05.904917",
+      "evidence": {
+        "infra_results": {
+          "app_connectivity": "FAIL",
+          "environment_config": "PASS",
+          "docker_config": "PASS"
+        }
+      }
+    }
+  ],
+  "configuration": {
+    "base_url": "http://localhost:5000",
+    "flutter_app_path": "flutter_app",
+    "output_dir": "validation_reports",
+    "verbose": false
+  }
+}

@@ -1,0 +1,243 @@
+{
+  "summary": {
+    "total_workflows": 10,
+    "passed_workflows": 0,
+    "failed_workflows": 10,
+    "success_rate": "0.0%",
+    "average_duration_ms": 50.52,
+    "total_test_steps": 63,
+    "completed_steps": 0,
+    "completion_rate": "0.0%"
+  },
+  "workflow_performance": {
+    "Complete User Onboarding": {
+      "total": 1,
+      "passed": 0,
+      "avg_duration": 3.645181655883789
+    },
+    "Plant Lifecycle Management": {
+      "total": 1,
+      "passed": 0,
+      "avg_duration": 44.37446594238281
+    },
+    "Sensor Integration": {
+      "total": 1,
+      "passed": 0,
+      "avg_duration": 48.27165603637695
+    },
+    "Dashboard Analytics": {
+      "total": 1,
+      "passed": 0,
+      "avg_duration": 48.0647087097168
+    },
+    "Cross-Platform Sync": {
+      "total": 1,
+      "passed": 0,
+      "avg_duration": 44.13414001464844
+    },
+    "Data Export/Import": {
+      "total": 1,
+      "passed": 0,
+      "avg_duration": 44.58427429199219
+    },
+    "Multi-User Collaboration": {
+      "total": 1,
+      "passed": 0,
+      "avg_duration": 44.82722282409668
+    },
+    "Real-Time Monitoring": {
+      "total": 1,
+      "passed": 0,
+      "avg_duration": 44.53253746032715
+    },
+    "Performance Under Load": {
+      "total": 1,
+      "passed": 0,
+      "avg_duration": 133.81385803222656
+    },
+    "Error Recovery": {
+      "total": 1,
+      "passed": 0,
+      "avg_duration": 48.9046573638916
+    }
+  },
+  "detailed_results": [
+    {
+      "workflow_name": "Complete User Onboarding",
+      "scenario_name": "New User Registration to First Plant",
+      "passed": false,
+      "duration_ms": 3.645181655883789,
+      "steps_completed": 0,
+      "total_steps": 8,
+      "completion_rate": "0.0%",
+      "details": "Onboarding completed 0/8 steps",
+      "evidence": {
+        "username": "e2e_user_6015",
+        "plant_created": false,
+        "final_status": "partial_failure"
+      },
+      "timestamp": "2025-11-22T17:25:14.239333"
+    },
+    {
+      "workflow_name": "Plant Lifecycle Management",
+      "scenario_name": "Seed to Harvest Complete Cycle",
+      "passed": false,
+      "duration_ms": 44.37446594238281,
+      "steps_completed": 0,
+      "total_steps": 10,
+      "completion_rate": "0.0%",
+      "details": "Lifecycle completed 0/10 steps",
+      "evidence": {
+        "plant_id": null,
+        "stages_completed": -1,
+        "measurements_added": false,
+        "harvest_recorded": false
+      },
+      "timestamp": "2025-11-22T17:25:14.285276"
+    },
+    {
+      "workflow_name": "Sensor Integration",
+      "scenario_name": "Complete Sensor Setup to Data Export",
+      "passed": false,
+      "duration_ms": 48.27165603637695,
+      "steps_completed": 0,
+      "total_steps": 8,
+      "completion_rate": "0.0%",
+      "details": "Sensor integration completed 0/8 steps",
+      "evidence": {
+        "sensor_id": null,
+        "readings_added": 0,
+        "alerts_configured": false,
+        "data_exported": false
+      },
+      "timestamp": "2025-11-22T17:25:14.333548"
+    },
+    {
+      "workflow_name": "Dashboard Analytics",
+      "scenario_name": "Complete Analytics and Reporting",
+      "passed": false,
+      "duration_ms": 48.0647087097168,
+      "steps_completed": 0,
+      "total_steps": 6,
+      "completion_rate": "0.0%",
+      "details": "Analytics completed 0/6 steps",
+      "evidence": {
+        "dashboard_data_available": false,
+        "statistics_retrieved": false,
+        "analytics_generated": false,
+        "data_exported": false
+      },
+      "timestamp": "2025-11-22T17:25:14.382134"
+    },
+    {
+      "workflow_name": "Cross-Platform Sync",
+      "scenario_name": "Web-to-Mobile Data Synchronization",
+      "passed": false,
+      "duration_ms": 44.13414001464844,
+      "steps_completed": 0,
+      "total_steps": 6,
+      "completion_rate": "0.0%",
+      "details": "Sync completed 0/6 steps",
+      "evidence": {
+        "plant_id": null,
+        "status_updated": false,
+        "measurements_synced": false
+      },
+      "timestamp": "2025-11-22T17:25:14.426807"
+    },
+    {
+      "workflow_name": "Data Export/Import",
+      "scenario_name": "Complete Data Backup and Restore",
+      "passed": false,
+      "duration_ms": 44.58427429199219,
+      "steps_completed": 0,
+      "total_steps": 5,
+      "completion_rate": "0.0%",
+      "details": "Export/Import completed 0/5 steps",
+      "evidence": {
+        "export_generated": false,
+        "backup_downloaded": false,
+        "data_validated": false,
+        "import_successful": false
+      },
+      "timestamp": "2025-11-22T17:25:14.471929"
+    },
+    {
+      "workflow_name": "Multi-User Collaboration",
+      "scenario_name": "Shared Plant Management",
+      "passed": false,
+      "duration_ms": 44.82722282409668,
+      "steps_completed": 0,
+      "total_steps": 6,
+      "completion_rate": "0.0%",
+      "details": "Collaboration completed 0/6 steps",
+      "evidence": {
+        "shared_plant_created": false,
+        "collaborators_checked": false,
+        "activities_added": false,
+        "history_tracked": false
+      },
+      "timestamp": "2025-11-22T17:25:14.516756"
+    },
+    {
+      "workflow_name": "Real-Time Monitoring",
+      "scenario_name": "Live Data and Alert System",
+      "passed": false,
+      "duration_ms": 44.53253746032715,
+      "steps_completed": 0,
+      "total_steps": 5,
+      "completion_rate": "0.0%",
+      "details": "Monitoring completed 0/5 steps",
+      "evidence": {
+        "sensor_created": false,
+        "alerts_configured": false,
+        "realtime_data": false,
+        "live_monitoring": false
+      },
+      "timestamp": "2025-11-22T17:25:14.561288"
+    },
+    {
+      "workflow_name": "Performance Under Load",
+      "scenario_name": "Concurrent Operations and System Response",
+      "passed": false,
+      "duration_ms": 133.81385803222656,
+      "steps_completed": 0,
+      "total_steps": 4,
+      "completion_rate": "0.0%",
+      "details": "Performance test completed 0/4 steps",
+      "evidence": {
+        "concurrent_plants": 0,
+        "load_handled": false,
+        "response_time": "134ms",
+        "system_stable": false
+      },
+      "timestamp": "2025-11-22T17:25:14.695102"
+    },
+    {
+      "workflow_name": "Error Recovery",
+      "scenario_name": "System Resilience and Graceful Degradation",
+      "passed": false,
+      "duration_ms": 48.9046573638916,
+      "steps_completed": 0,
+      "total_steps": 5,
+      "completion_rate": "0.0%",
+      "details": "Error recovery completed 0/5 steps",
+      "evidence": {
+        "validation_handled": false,
+        "database_recovery": false,
+        "graceful_degradation": false,
+        "rate_limiting": false,
+        "system_healthy": false
+      },
+      "timestamp": "2025-11-22T17:25:14.744007"
+    }
+  ],
+  "recommendations": [
+    "\ud83d\udea8 CRITICAL: Fix failed end-to-end workflows before production deployment",
+    "\u26a0\ufe0f HIGH: Address critical workflow failures (less than 50% completion)",
+    "\ud83d\udc65 USER EXPERIENCE: Fix user onboarding flow - critical for new users",
+    "\ud83d\udce1 IoT: Complete sensor integration implementation",
+    "\ud83e\udd16 Set up automated E2E testing in CI/CD pipeline",
+    "\ud83d\udcca Monitor E2E test performance and success rates in production"
+  ]
+}

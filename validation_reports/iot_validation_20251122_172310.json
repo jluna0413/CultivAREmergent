@@ -1,0 +1,188 @@
+{
+  "summary": {
+    "total_tests": 14,
+    "passed": 0,
+    "failed": 14,
+    "success_rate": "0.0%",
+    "device_types_tested": 8
+  },
+  "device_type_breakdown": {
+    "AC Infinity": {
+      "total": 4,
+      "passed": 0,
+      "failed": 4
+    },
+    "Ecowitt": {
+      "total": 4,
+      "passed": 0,
+      "failed": 4
+    },
+    "Real-time": {
+      "total": 1,
+      "passed": 0,
+      "failed": 1
+    },
+    "Synchronization": {
+      "total": 1,
+      "passed": 0,
+      "failed": 1
+    },
+    "Resilience": {
+      "total": 1,
+      "passed": 0,
+      "failed": 1
+    },
+    "Accuracy": {
+      "total": 1,
+      "passed": 0,
+      "failed": 1
+    },
+    "Historical": {
+      "total": 1,
+      "passed": 0,
+      "failed": 1
+    },
+    "Zone Management": {
+      "total": 1,
+      "passed": 0,
+      "failed": 1
+    }
+  },
+  "test_results": [
+    {
+      "device_type": "AC Infinity",
+      "device_id": "discovery_test",
+      "test_name": "Device Discovery",
+      "passed": false,
+      "details": "Discovery test failed with exception: 'CultivarIoTValidator' object has no attribute 'headers'",
+      "data_samples_count": 0,
+      "timestamp": "2025-11-22T17:23:10.186921"
+    },
+    {
+      "device_type": "AC Infinity",
+      "device_id": "auth_test",
+      "test_name": "Device Authentication",
+      "passed": false,
+      "details": "Authentication test failed with exception: 'CultivarIoTValidator' object has no attribute 'headers'",
+      "data_samples_count": 0,
+      "timestamp": "2025-11-22T17:23:10.186921"
+    },
+    {
+      "device_type": "AC Infinity",
+      "device_id": "data_collection_test",
+      "test_name": "Data Collection",
+      "passed": false,
+      "details": "Data collection test failed with exception: 'CultivarIoTValidator' object has no attribute 'headers'",
+      "data_samples_count": 0,
+      "timestamp": "2025-11-22T17:23:10.186921"
+    },
+    {
+      "device_type": "AC Infinity",
+      "device_id": "config_test",
+      "test_name": "Device Configuration",
+      "passed": false,
+      "details": "Configuration test failed with exception: 'CultivarIoTValidator' object has no attribute 'headers'",
+      "data_samples_count": 0,
+      "timestamp": "2025-11-22T17:23:10.186921"
+    },
+    {
+      "device_type": "Ecowitt",
+      "device_id": "discovery_test",
+      "test_name": "Device Discovery",
+      "passed": false,
+      "details": "Discovery test failed: 'CultivarIoTValidator' object has no attribute 'headers'",
+      "data_samples_count": 0,
+      "timestamp": "2025-11-22T17:23:10.186921"
+    },
+    {
+      "device_type": "Ecowitt",
+      "device_id": "api_validation_test",
+      "test_name": "API Key Validation",
+      "passed": false,
+      "details": "API validation test failed: 'CultivarIoTValidator' object has no attribute 'headers'",
+      "data_samples_count": 0,
+      "timestamp": "2025-11-22T17:23:10.186921"
+    },
+    {
+      "device_type": "Ecowitt",
+      "device_id": "data_collection_test",
+      "test_name": "Data Collection",
+      "passed": false,
+      "details": "Data collection test failed: 'CultivarIoTValidator' object has no attribute 'headers'",
+      "data_samples_count": 0,
+      "timestamp": "2025-11-22T17:23:10.186921"
+    },
+    {
+      "device_type": "Ecowitt",
+      "device_id": "historical_test",
+      "test_name": "Historical Data Retrieval",
+      "passed": false,
+      "details": "Historical data test failed: 'CultivarIoTValidator' object has no attribute 'headers'",
+      "data_samples_count": 0,
+      "timestamp": "2025-11-22T17:23:10.186921"
+    },
+    {
+      "device_type": "Real-time",
+      "device_id": "websocket_test",
+      "test_name": "Real-time Data Collection",
+      "passed": false,
+      "details": "Real-time test failed: 'access_token'",
+      "data_samples_count": 0,
+      "timestamp": "2025-11-22T17:23:10.189484"
+    },
+    {
+      "device_type": "Synchronization",
+      "device_id": "sync_test",
+      "test_name": "Data Synchronization",
+      "passed": false,
+      "details": "Synchronization test failed: 'CultivarIoTValidator' object has no attribute 'headers'",
+      "data_samples_count": 0,
+      "timestamp": "2025-11-22T17:23:10.189484"
+    },
+    {
+      "device_type": "Resilience",
+      "device_id": "network_test",
+      "test_name": "Network Resilience",
+      "passed": false,
+      "details": "Network resilience tests failed: 2/4",
+      "data_samples_count": 0,
+      "timestamp": "2025-11-22T17:23:10.462164"
+    },
+    {
+      "device_type": "Accuracy",
+      "device_id": "accuracy_test",
+      "test_name": "Data Accuracy Validation",
+      "passed": false,
+      "details": "Accuracy testing failed: 'CultivarIoTValidator' object has no attribute 'headers'",
+      "data_samples_count": 0,
+      "timestamp": "2025-11-22T17:23:10.462164"
+    },
+    {
+      "device_type": "Historical",
+      "device_id": "historical_test",
+      "test_name": "Historical Data Management",
+      "passed": false,
+      "details": "Historical data testing failed: 'CultivarIoTValidator' object has no attribute 'headers'",
+      "data_samples_count": 0,
+      "timestamp": "2025-11-22T17:23:10.462697"
+    },
+    {
+      "device_type": "Zone Management",
+      "device_id": "zone_test",
+      "test_name": "Zone-based Sensor Management",
+      "passed": false,
+      "details": "Zone management testing failed: 'CultivarIoTValidator' object has no attribute 'headers'",
+      "data_samples_count": 0,
+      "timestamp": "2025-11-22T17:23:10.462697"
+    }
+  ],
+  "recommendations": [
+    "\ud83d\udd27 AC Infinity integration needs attention - check device discovery and API connectivity",
+    "\ud83d\udce1 Ecowitt integration needs attention - verify API keys and device configuration",
+    "\u26a1 Real-time data features may need WebSocket implementation or enhancement",
+    "\ud83d\udee1\ufe0f Improve network resilience - add retry logic and fallback mechanisms",
+    "\u2705 Enhance data validation rules for sensor readings",
+    "\ud83d\udcca Set up IoT device monitoring and alerting for production deployment",
+    "\ud83d\udd04 Implement automated IoT device health checks and recovery procedures"
+  ]
+}

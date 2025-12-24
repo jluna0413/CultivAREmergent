@@ -1,0 +1,41 @@
+{
+  "timestamp": "2025-11-24T17:15:22.625221",
+  "summary": {
+    "total_validations": 1,
+    "passed": 0,
+    "failed": 1,
+    "warnings": 0,
+    "errors": 0,
+    "skipped": 0,
+    "success_rate": 0.0,
+    "total_duration": 0.6646885871887207,
+    "overall_status": "FAIL",
+    "deployment_ready": false
+  },
+  "detailed_results": [
+    {
+      "name": "database_validation",
+      "category": "database",
+      "status": "FAIL",
+      "duration_seconds": 0.6646885871887207,
+      "details": "Database validation failed",
+      "issues": [
+        "Database connection failed"
+      ],
+      "recommendations": [
+        "Check database configuration and connection"
+      ],
+      "timestamp": "2025-11-24T17:15:22.625221",
+      "evidence": {
+        "db_test_output": "",
+        "db_test_error": "Traceback (most recent call last):\n  File \"<string>\", line 5, in <module>\n  File \"a:\\dev\\CultivAREmergant\\init_async_db.py\", line 13, in <module>\n    from app.models_async.blog import Base as BlogBase\nImportError: cannot import name 'Base' from 'app.models_async.blog' (a:\\dev\\CultivAREmergant\\app\\models_async\\blog.py)\n"
+      }
+    }
+  ],
+  "configuration": {
+    "base_url": "http://localhost:8000",
+    "flutter_app_path": "flutter_app",
+    "output_dir": "validation_reports",
+    "verbose": false
+  }
+}

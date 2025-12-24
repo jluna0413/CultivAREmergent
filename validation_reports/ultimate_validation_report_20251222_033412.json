@@ -1,0 +1,38 @@
+{
+  "timestamp": "2025-12-22T03:34:12.900189",
+  "summary": {
+    "total_validations": 1,
+    "passed": 0,
+    "failed": 0,
+    "warnings": 0,
+    "errors": 1,
+    "skipped": 0,
+    "success_rate": 0.0,
+    "total_duration": 0.006700038909912109,
+    "overall_status": "ERROR",
+    "deployment_ready": false
+  },
+  "detailed_results": [
+    {
+      "name": "flutter_validation",
+      "category": "flutter",
+      "status": "ERROR",
+      "duration_seconds": 0.003694295883178711,
+      "details": "Flutter validation error: [WinError 2] The system cannot find the file specified",
+      "issues": [
+        "[WinError 2] The system cannot find the file specified"
+      ],
+      "recommendations": [
+        "Check Flutter installation and project configuration"
+      ],
+      "timestamp": "2025-12-22T03:34:12.899182",
+      "evidence": null
+    }
+  ],
+  "configuration": {
+    "base_url": "http://localhost:5000",
+    "flutter_app_path": "flutter_app",
+    "output_dir": "validation_reports",
+    "verbose": false
+  }
+}

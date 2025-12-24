@@ -1,0 +1,171 @@
+{
+  "timestamp": "2025-11-24T17:14:52.472058",
+  "summary": {
+    "total_validations": 8,
+    "passed": 1,
+    "failed": 6,
+    "warnings": 0,
+    "errors": 1,
+    "skipped": 0,
+    "success_rate": 12.5,
+    "total_duration": 68.47129273414612,
+    "overall_status": "ERROR",
+    "deployment_ready": false
+  },
+  "detailed_results": [
+    {
+      "name": "security_validation",
+      "category": "security",
+      "status": "FAIL",
+      "duration_seconds": 2.5315825939178467,
+      "details": "Security tests failed: ERROR: usage: __main__.py [options] [file_or_dir] [file_or_dir] [...]\n__main__.py: error: unrecognized arguments: --url http://localhost:8000\n  inifile: A:\\dev\\CultivAREmergant\\pytest.ini\n  rootdir: A:\\dev\\CultivAREmergant\n\n",
+      "issues": [
+        "Security validation failed"
+      ],
+      "recommendations": [
+        "Review security test output and fix identified issues"
+      ],
+      "timestamp": "2025-11-24T17:13:46.533951",
+      "evidence": {
+        "command": "A:\\python\\python.exe -m pytest tests/security/cultivar_security_validator.py::main --url http://localhost:8000 -v",
+        "output": "",
+        "error": "ERROR: usage: __main__.py [options] [file_or_dir] [file_or_dir] [...]\n__main__.py: error: unrecognized arguments: --url http://localhost:8000\n  inifile: A:\\dev\\CultivAREmergant\\pytest.ini\n  rootdir: A:\\dev\\CultivAREmergant\n\n"
+      }
+    },
+    {
+      "name": "iot_validation",
+      "category": "iot",
+      "status": "FAIL",
+      "duration_seconds": 2.402416467666626,
+      "details": "IoT integration tests failed",
+      "issues": [
+        "IoT integration validation failed"
+      ],
+      "recommendations": [
+        "Verify AC Infinity and Ecowitt device connectivity"
+      ],
+      "timestamp": "2025-11-24T17:13:48.936367",
+      "evidence": {
+        "command": "A:\\python\\python.exe -m pytest tests/iot/cultivar_iot_validator.py::main --url http://localhost:8000 -v",
+        "output": ""
+      }
+    },
+    {
+      "name": "e2e_validation",
+      "category": "e2e",
+      "status": "FAIL",
+      "duration_seconds": 2.4767675399780273,
+      "details": "Some E2E workflows failed",
+      "issues": [
+        "E2E validation failed"
+      ],
+      "recommendations": [
+        "Review failed workflows and fix user journey issues"
+      ],
+      "timestamp": "2025-11-24T17:13:51.413135",
+      "evidence": {
+        "command": "A:\\python\\python.exe -m pytest tests/e2e/cultivar_e2e_validator.py::main --url http://localhost:8000 -v",
+        "output": ""
+      }
+    },
+    {
+      "name": "flutter_validation",
+      "category": "flutter",
+      "status": "ERROR",
+      "duration_seconds": 0.0030002593994140625,
+      "details": "Flutter validation error: [WinError 2] The system cannot find the file specified",
+      "issues": [
+        "[WinError 2] The system cannot find the file specified"
+      ],
+      "recommendations": [
+        "Check Flutter installation and project configuration"
+      ],
+      "timestamp": "2025-11-24T17:13:51.416135",
+      "evidence": null
+    },
+    {
+      "name": "performance_validation",
+      "category": "performance",
+      "status": "PASS",
+      "duration_seconds": 0.08248662948608398,
+      "details": "All endpoints responding quickly (avg: 0.00s)",
+      "issues": [],
+      "recommendations": [],
+      "timestamp": "2025-11-24T17:13:51.498622",
+      "evidence": {
+        "response_times": {
+          "/api/v2/health": 0.006552,
+          "/api/v2/status": 0.004216,
+          "/api/v2/auth/login": 0.004121
+        }
+      }
+    },
+    {
+      "name": "database_validation",
+      "category": "database",
+      "status": "FAIL",
+      "duration_seconds": 0.6968510150909424,
+      "details": "Database validation failed",
+      "issues": [
+        "Database connection failed"
+      ],
+      "recommendations": [
+        "Check database configuration and connection"
+      ],
+      "timestamp": "2025-11-24T17:13:52.195473",
+      "evidence": {
+        "db_test_output": "",
+        "db_test_error": "Traceback (most recent call last):\n  File \"<string>\", line 5, in <module>\n  File \"A:\\dev\\CultivAREmergant\\init_async_db.py\", line 13, in <module>\n    from app.models_async.blog import Base as BlogBase\nImportError: cannot import name 'Base' from 'app.models_async.blog' (A:\\dev\\CultivAREmergant\\app\\models_async\\blog.py)\n"
+      }
+    },
+    {
+      "name": "code_quality_validation",
+      "category": "code_quality",
+      "status": "FAIL",
+      "duration_seconds": 60.17305874824524,
+      "details": "Code quality issues detected (0/2)",
+      "issues": [
+        "Python linting issues detected",
+        "Security headers validation failed"
+      ],
+      "recommendations": [
+        "Review and fix Python code quality issues",
+        "Fix security headers configuration"
+      ],
+      "timestamp": "2025-11-24T17:14:52.368532",
+      "evidence": {
+        "quality_results": {
+          "pylint": "FAIL",
+          "security_headers": "FAIL"
+        }
+      }
+    },
+    {
+      "name": "infrastructure_validation",
+      "category": "infrastructure",
+      "status": "FAIL",
+      "duration_seconds": 0.10295486450195312,
+      "details": "Infrastructure issues detected (1 failed checks)",
+      "issues": [
+        "Application health check failed"
+      ],
+      "recommendations": [
+        "Check if application is running and healthy"
+      ],
+      "timestamp": "2025-11-24T17:14:52.471486",
+      "evidence": {
+        "infra_results": {
+          "app_connectivity": "FAIL",
+          "environment_config": "PASS",
+          "docker_config": "PASS"
+        }
+      }
+    }
+  ],
+  "configuration": {
+    "base_url": "http://localhost:8000",
+    "flutter_app_path": "flutter_app",
+    "output_dir": "validation_reports",
+    "verbose": false
+  }
+}

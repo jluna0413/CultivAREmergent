@@ -1,0 +1,151 @@
+{
+  "timestamp": "2025-12-05T05:13:58.128890",
+  "summary": {
+    "total_validations": 8,
+    "passed": 4,
+    "failed": 2,
+    "warnings": 0,
+    "errors": 2,
+    "skipped": 0,
+    "success_rate": 50.0,
+    "total_duration": 62.59333944320679,
+    "overall_status": "ERROR",
+    "deployment_ready": false
+  },
+  "detailed_results": [
+    {
+      "name": "security_validation",
+      "category": "security",
+      "status": "PASS",
+      "duration_seconds": 4.116357088088989,
+      "details": "All security tests passed",
+      "issues": [],
+      "recommendations": [],
+      "timestamp": "2025-12-05T05:12:59.654720",
+      "evidence": {
+        "command": "C:\\Users\\jonat\\Anaconda3\\python.exe tests/security/cultivar_security_validator.py --url http://localhost:5000",
+        "output": "\ud83d\udd10 CultivAR Security Validation Suite\n\ud83d\udccd Testing application at: http://localhost:5000\n\u23f0 Started at: 2025-12-05T05:12:57.272541\n------------------------------------------------------------\n\ud83d\udd10 Starting CultivAR Security Validation Suite...\n\n\ud83e\uddea Running JWT Security Tests...\n\n\ud83e\uddea Running Authentication Flow Tests...\n\n\ud83e\uddea Running API Security Tests...\n\n\ud83e\uddea Running Input Validation Tests...\n\n\ud83e\uddea Running Rate Limiting Tests...\n\n\ud83e\uddea Running Session Management Tests...\n\n\ud83d\udcca Security Test Summary:\n   Total Tests: 12\n   Passed: 2 \u2705\n   Failed: 10 \u274c\n   Success Rate: 16.7%\n   Critical Failures: 0\n   High Failures: 5\n\n\u274c Failed Tests (10):\n   - JTI Collision Resistance [HIGH]: JTI collision detected or insufficient unique JTIs\n   - Invalid Credentials Handling [HIGH]: Invalid credentials not properly rejected\n   - Account Lockout Mechanism [MEDIUM]: No clear account lockout mechanism detected\n   - Password Policy Enforcement [HIGH]: Weak passwords accepted: 6/6\n   - Unauthorized Access Prevention [HIGH]: Some endpoints accessible without authentication: 4\n   - CORS Configuration [MEDIUM]: CORS headers not properly set\n   - HTTP Method Restrictions [MEDIUM]: HTTP method restrictions may be too permissive\n   - XSS Prevention [HIGH]: Potential XSS vulnerabilities detected\n   - Input Size Limits [MEDIUM]: Oversized inputs may not be properly limited\n   - Rate Limiting [MEDIUM]: No rate limiting detected\n\n\ud83d\udca1 Recommendations:\n   \ud83d\udeab Enhance input validation and sanitization\n   \ud83d\udee1\ufe0f Implement or strengthen rate limiting to prevent abuse\n   \u26a0\ufe0f HIGH: Resolve high-severity security issues to meet production standards\n",
+        "error": "A:\\dev\\CultivAREmergant\\tests\\security\\cultivar_security_validator.py:1123: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).\n  print(f\"\u23f0 Started at: {datetime.utcnow().isoformat()}\")\nA:\\dev\\CultivAREmergant\\tests\\security\\cultivar_security_validator.py:30: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).\n  self.timestamp = datetime.utcnow().isoformat()\n"
+      }
+    },
+    {
+      "name": "iot_validation",
+      "category": "iot",
+      "status": "PASS",
+      "duration_seconds": 1.9171745777130127,
+      "details": "IoT integration tests passed",
+      "issues": [],
+      "recommendations": [],
+      "timestamp": "2025-12-05T05:13:01.572447",
+      "evidence": {
+        "command": "C:\\Users\\jonat\\Anaconda3\\python.exe tests/iot/cultivar_iot_validator.py --url http://localhost:5000",
+        "output": "\ud83d\udce1 CultivAR IoT Integration Validation Suite\n\ud83d\udccd Testing application at: http://localhost:5000\n\u23f0 Started at: 2025-12-05T05:13:00.984068\n------------------------------------------------------------\n\ud83d\udce1 Starting CultivAR IoT Integration Validation Suite...\n\n\ud83e\uddea Running AC Infinity Device Tests...\n\n\ud83e\uddea Running Ecowitt Device Tests...\n\n\ud83e\uddea Running Real-time Data Collection Tests...\n\n\ud83e\uddea Running Data Synchronization Tests...\n\n\ud83e\uddea Running Network Resilience Tests...\n\n\ud83e\uddea Running Data Accuracy Tests...\n\n\ud83e\uddea Running Historical Data Tests...\n\n\ud83e\uddea Running Zone Management Tests...\n\n\ud83d\udcca IoT Test Summary:\n   Total Tests: 14\n   Passed: 0 \u2705\n   Failed: 14 \u274c\n   Success Rate: 0.0%\n   Device Types Tested: 8\n\n\ud83d\udcf1 Device Type Breakdown:\n   AC Infinity: 0/4 (0.0%)\n   Ecowitt: 0/4 (0.0%)\n   Real-time: 0/1 (0.0%)\n   Synchronization: 0/1 (0.0%)\n   Resilience: 0/1 (0.0%)\n   Accuracy: 0/1 (0.0%)\n   Historical: 0/1 (0.0%)\n   Zone Management: 0/1 (0.0%)\n\n\u274c Failed IoT Tests (14):\n   - AC Infinity: Device Discovery - Discovery test failed with exception: 'CultivarIoTValidator' object has no attribute 'headers'\n   - AC Infinity: Device Authentication - Authentication test failed with exception: 'CultivarIoTValidator' object has no attribute 'headers'\n   - AC Infinity: Data Collection - Data collection test failed with exception: 'CultivarIoTValidator' object has no attribute 'headers'\n   - AC Infinity: Device Configuration - Configuration test failed with exception: 'CultivarIoTValidator' object has no attribute 'headers'\n   - Ecowitt: Device Discovery - Discovery test failed: 'CultivarIoTValidator' object has no attribute 'headers'\n   - Ecowitt: API Key Validation - API validation test failed: 'CultivarIoTValidator' object has no attribute 'headers'\n   - Ecowitt: Data Collection - Data collection test failed: 'CultivarIoTValidator' object has no attribute 'headers'\n   - Ecowitt: Historical Data Retrieval - Historical data test failed: 'CultivarIoTValidator' object has no attribute 'headers'\n   - Real-time: Real-time Data Collection - Real-time test failed: 'access_token'\n   - Synchronization: Data Synchronization - Synchronization test failed: 'CultivarIoTValidator' object has no attribute 'headers'\n   - Resilience: Network Resilience - Network resilience tests failed: 2/4\n   - Accuracy: Data Accuracy Validation - Accuracy testing failed: 'CultivarIoTValidator' object has no attribute 'headers'\n   - Historical: Historical Data Management - Historical data testing failed: 'CultivarIoTValidator' object has no attribute 'headers'\n   - Zone Management: Zone-based Sensor Management - Zone management testing failed: 'CultivarIoTValidator' object has no attribute 'headers'\n\n\ud83d\udca1 IoT Recommendations:\n   \ud83d\udd27 AC Infinity integration needs attention - check device discovery and API connectivity\n   \ud83d\udce1 Ecowitt integration needs attention - verify API keys and device configuration\n   \u26a1 Real-time data features may need WebSocket implementation or enhancement\n   \ud83d\udee1\ufe0f Improve network resilience - add retry logic and fallback mechanisms\n   \u2705 Enhance data validation rules for sensor readings\n   \ud83d\udcca Set up IoT device monitoring and alerting for production deployment\n   \ud83d\udd04 Implement automated IoT device health checks and recovery procedures\n"
+      }
+    },
+    {
+      "name": "e2e_validation",
+      "category": "e2e",
+      "status": "PASS",
+      "duration_seconds": 1.5265631675720215,
+      "details": "All E2E workflows completed successfully",
+      "issues": [],
+      "recommendations": [],
+      "timestamp": "2025-12-05T05:13:03.099010",
+      "evidence": {
+        "command": "C:\\Users\\jonat\\Anaconda3\\python.exe tests/e2e/cultivar_e2e_validator.py --url http://localhost:5000",
+        "output": "\ud83d\udd04 CultivAR End-to-End Validation Suite\n\ud83d\udccd Testing application at: http://localhost:5000\n\u23f0 Started at: 2025-12-05T05:13:02.860020\n------------------------------------------------------------\n\ud83d\udd04 Starting CultivAR End-to-End Validation Suite...\n\n\ud83c\udfaf Running Complete User Onboarding Workflow...\n\n\ud83c\udfaf Running Plant Lifecycle Management Workflow...\n\n\ud83c\udfaf Running Sensor Integration Workflow...\n\n\ud83c\udfaf Running Dashboard Analytics Workflow...\n\n\ud83c\udfaf Running Cross-Platform Sync Workflow...\n\n\ud83c\udfaf Running Data Export/Import Workflow...\n\n\ud83c\udfaf Running Multi-User Collaboration Workflow...\n\n\ud83c\udfaf Running Real-Time Monitoring Workflow...\n\n\ud83c\udfaf Running Performance Under Load Workflow...\n\n\ud83c\udfaf Running Error Recovery Workflow...\n\n\ud83d\udcca E2E Test Summary:\n   Total Workflows: 10\n   Passed: 0 \u2705\n   Failed: 10 \u274c\n   Success Rate: 0.0%\n   Average Duration: 14.65ms\n   Step Completion: 0.0%\n\n\ud83c\udfaf Workflow Performance:\n   Complete User Onboarding: 0/1 (0.0%) - 16ms avg\n   Plant Lifecycle Management: 0/1 (0.0%) - 13ms avg\n   Sensor Integration: 0/1 (0.0%) - 12ms avg\n   Dashboard Analytics: 0/1 (0.0%) - 12ms avg\n   Cross-Platform Sync: 0/1 (0.0%) - 13ms avg\n   Data Export/Import: 0/1 (0.0%) - 12ms avg\n   Multi-User Collaboration: 0/1 (0.0%) - 12ms avg\n   Real-Time Monitoring: 0/1 (0.0%) - 10ms avg\n   Performance Under Load: 0/1 (0.0%) - 34ms avg\n   Error Recovery: 0/1 (0.0%) - 12ms avg\n\n\u274c Failed E2E Workflows (10):\n   - Complete User Onboarding: 0.0% complete - Onboarding completed 0/8 steps\n   - Plant Lifecycle Management: 0.0% complete - Lifecycle completed 0/10 steps\n   - Sensor Integration: 0.0% complete - Sensor integration completed 0/8 steps\n   - Dashboard Analytics: 0.0% complete - Analytics completed 0/6 steps\n   - Cross-Platform Sync: 0.0% complete - Sync completed 0/6 steps\n   - Data Export/Import: 0.0% complete - Export/Import completed 0/5 steps\n   - Multi-User Collaboration: 0.0% complete - Collaboration completed 0/6 steps\n   - Real-Time Monitoring: 0.0% complete - Monitoring completed 0/5 steps\n   - Performance Under Load: 0.0% complete - Performance test completed 0/4 steps\n   - Error Recovery: 0.0% complete - Error recovery completed 0/5 steps\n\n\ud83d\udca1 E2E Recommendations:\n   \ud83d\udea8 CRITICAL: Fix failed end-to-end workflows before production deployment\n   \u26a0\ufe0f HIGH: Address critical workflow failures (less than 50% completion)\n   \ud83d\udc65 USER EXPERIENCE: Fix user onboarding flow - critical for new users\n   \ud83d\udce1 IoT: Complete sensor integration implementation\n   \ud83e\udd16 Set up automated E2E testing in CI/CD pipeline\n   \ud83d\udcca Monitor E2E test performance and success rates in production\n"
+      }
+    },
+    {
+      "name": "flutter_validation",
+      "category": "flutter",
+      "status": "ERROR",
+      "duration_seconds": 0.004512310028076172,
+      "details": "Flutter validation error: [WinError 2] The system cannot find the file specified",
+      "issues": [
+        "[WinError 2] The system cannot find the file specified"
+      ],
+      "recommendations": [
+        "Check Flutter installation and project configuration"
+      ],
+      "timestamp": "2025-12-05T05:13:03.103522",
+      "evidence": null
+    },
+    {
+      "name": "performance_validation",
+      "category": "performance",
+      "status": "ERROR",
+      "duration_seconds": 0.062459468841552734,
+      "details": "No performance data collected",
+      "issues": [],
+      "recommendations": [],
+      "timestamp": "2025-12-05T05:13:03.165982",
+      "evidence": {
+        "response_times": {}
+      }
+    },
+    {
+      "name": "database_validation",
+      "category": "database",
+      "status": "PASS",
+      "duration_seconds": 1.1591496467590332,
+      "details": "Database connectivity and initialization successful",
+      "issues": [],
+      "recommendations": [],
+      "timestamp": "2025-12-05T05:13:04.326143",
+      "evidence": {
+        "db_test_output": "Initializing async database...\nDropping all existing tables...\nCreating new tables...\nDatabase initialization complete.\nDatabase connection successful\n",
+        "db_test_error": ""
+      }
+    },
+    {
+      "name": "code_quality_validation",
+      "category": "code_quality",
+      "status": "FAIL",
+      "duration_seconds": 53.67747759819031,
+      "details": "Code quality issues detected (0/2)",
+      "issues": [
+        "Python linting issues detected",
+        "Security headers validation failed"
+      ],
+      "recommendations": [
+        "Review and fix Python code quality issues",
+        "Fix security headers configuration"
+      ],
+      "timestamp": "2025-12-05T05:13:58.003620",
+      "evidence": {
+        "quality_results": {
+          "pylint": "FAIL",
+          "security_headers": "FAIL"
+        }
+      }
+    },
+    {
+      "name": "infrastructure_validation",
+      "category": "infrastructure",
+      "status": "FAIL",
+      "duration_seconds": 0.12171649932861328,
+      "details": "Infrastructure issues detected (1 failed checks)",
+      "issues": [
+        "Application health check failed"
+      ],
+      "recommendations": [
+        "Check if application is running and healthy"
+      ],
+      "timestamp": "2025-12-05T05:13:58.127373",
+      "evidence": {
+        "infra_results": {
+          "app_connectivity": "FAIL",
+          "environment_config": "PASS",
+          "docker_config": "PASS"
+        }
+      }
+    }
+  ],
+  "configuration": {
+    "base_url": "http://localhost:5000",
+    "flutter_app_path": "flutter_app",
+    "output_dir": "validation_reports",
+    "verbose": false
+  }
+}
