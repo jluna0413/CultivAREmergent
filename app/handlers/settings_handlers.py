@@ -186,7 +186,7 @@ def update_user_password(user_id, password):
 
 def upload_logo(file):
     """
-    Upload a logo.
+    Upload a logo with security validation.
 
     Args:
         file: The logo file.
@@ -198,16 +198,57 @@ def upload_logo(file):
         if not file:
             return {"success": False, "error": "No file provided"}
 
+        # Validate file size (enforced by Flask MAX_CONTENT_LENGTH, but double-check)
+        MAX_FILE_SIZE = 5 * 1024 * 1024  # 5 MB
+        file.seek(0, 2)  # Seek to end
+        file_size = file.tell()
+        file.seek(0)  # Reset to beginning
+        
+        if file_size > MAX_FILE_SIZE:
+            return {"success": False, "error": "File size exceeds 5MB limit"}
+
+        # Validate file type
+        ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
+        ALLOWED_MIMETYPES = {
+            'image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp'
+        }
+        
+        filename = file.filename
+        if not filename:
+            return {"success": False, "error": "No filename provided"}
+            
+        file_extension = filename.rsplit('.', 1)[1].lower() if '.' in filename else ''
+        
+        if file_extension not in ALLOWED_EXTENSIONS:
+            return {"success": False, "error": "Invalid file type. Only PNG, JPG, JPEG, GIF, and WebP are allowed"}
+            
+        if file.mimetype not in ALLOWED_MIMETYPES:
+            return {"success": False, "error": "Invalid file content type"}
+
         # Create the upload folder if it doesn't exist
         upload_folder = os.path.join(Config.UPLOAD_FOLDER, "logos")
         os.makedirs(upload_folder, exist_ok=True)
 
-        # Generate a secure filename
-        filename = secure_filename(file.filename)
+        # Generate a secure filename with timestamp to prevent conflicts
+        from datetime import datetime
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        secure_name = secure_filename(filename)
+        filename = f"{timestamp}_{secure_name}"
 
         # Save the file
         file_path = os.path.join(upload_folder, filename)
         file.save(file_path)
+
+        # Validate the uploaded file is actually an image
+        try:
+            from PIL import Image
+            with Image.open(file_path) as img:
+                img.verify()  # Verify it's a valid image
+        except Exception:
+            # Remove the uploaded file if it's not a valid image
+            if os.path.exists(file_path):
+                os.remove(file_path)
+            return {"success": False, "error": "Uploaded file is not a valid image"}
 
         # Update the logo setting
         update_setting("logo", os.path.join("uploads", "logos", filename))

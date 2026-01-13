@@ -1,0 +1,111 @@
+{
+  "audit_summary": {
+    "total_tests": 16,
+    "passed_tests": 0,
+    "failed_tests": 16,
+    "success_rate": 0.0
+  },
+  "test_results": [
+    {
+      "test": "Basic route: /",
+      "result": "FAIL",
+      "details": "Error: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: / (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7ff2ffd24c20>: Failed to establish a new connection: [Errno 111] Connection refused')), Landing page",
+      "timestamp": "2025-09-10T01:21:04.890747"
+    },
+    {
+      "test": "Basic route: /health",
+      "result": "FAIL",
+      "details": "Error: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /health (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7ff2ffc06600>: Failed to establish a new connection: [Errno 111] Connection refused')), Health check endpoint",
+      "timestamp": "2025-09-10T01:21:04.891712"
+    },
+    {
+      "test": "Auth route: /auth/login",
+      "result": "FAIL",
+      "details": "Error: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /auth/login (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7ff2ffc068a0>: Failed to establish a new connection: [Errno 111] Connection refused')), Login page",
+      "timestamp": "2025-09-10T01:21:04.892423"
+    },
+    {
+      "test": "Auth route: /auth/signup",
+      "result": "FAIL",
+      "details": "Error: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /auth/signup (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7ff2fffc6510>: Failed to establish a new connection: [Errno 111] Connection refused')), Signup page",
+      "timestamp": "2025-09-10T01:21:04.893356"
+    },
+    {
+      "test": "Auth route: /auth/forgot-password",
+      "result": "FAIL",
+      "details": "Error: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /auth/forgot-password (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7ff2ffc067b0>: Failed to establish a new connection: [Errno 111] Connection refused')), Forgot password",
+      "timestamp": "2025-09-10T01:21:04.894160"
+    },
+    {
+      "test": "Dashboard route: /dashboard/",
+      "result": "FAIL",
+      "details": "Error: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /dashboard/ (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7ff2ffc06330>: Failed to establish a new connection: [Errno 111] Connection refused')), Main dashboard",
+      "timestamp": "2025-09-10T01:21:04.894848"
+    },
+    {
+      "test": "Dashboard route: /dashboard/plants",
+      "result": "FAIL",
+      "details": "Error: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /dashboard/plants (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7ff2ffc06c60>: Failed to establish a new connection: [Errno 111] Connection refused')), Plants page",
+      "timestamp": "2025-09-10T01:21:04.895592"
+    },
+    {
+      "test": "Static file: /static/css/style.css",
+      "result": "FAIL",
+      "details": "Error: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /static/css/style.css (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7ff2ffc07080>: Failed to establish a new connection: [Errno 111] Connection refused')), Main stylesheet",
+      "timestamp": "2025-09-10T01:21:04.896310"
+    },
+    {
+      "test": "Static file: /static/js/main.js",
+      "result": "FAIL",
+      "details": "Error: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /static/js/main.js (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7ff2ffc073e0>: Failed to establish a new connection: [Errno 111] Connection refused')), Main JavaScript file",
+      "timestamp": "2025-09-10T01:21:04.897027"
+    },
+    {
+      "test": "Static file: /favicon.ico",
+      "result": "FAIL",
+      "details": "Error: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /favicon.ico (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7ff2ffc07800>: Failed to establish a new connection: [Errno 111] Connection refused')), Favicon",
+      "timestamp": "2025-09-10T01:21:04.897708"
+    },
+    {
+      "test": "Market route: /market/extensions",
+      "result": "FAIL",
+      "details": "Error: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /market/extensions (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7ff2ffc07bc0>: Failed to establish a new connection: [Errno 111] Connection refused')), Market extensions",
+      "timestamp": "2025-09-10T01:21:04.898382"
+    },
+    {
+      "test": "Market route: /market/gear",
+      "result": "FAIL",
+      "details": "Error: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /market/gear (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7ff2ffc07fb0>: Failed to establish a new connection: [Errno 111] Connection refused')), Market gear",
+      "timestamp": "2025-09-10T01:21:04.899106"
+    },
+    {
+      "test": "Market route: /market/seed-bank",
+      "result": "FAIL",
+      "details": "Error: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /market/seed-bank (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7ff2ffc383e0>: Failed to establish a new connection: [Errno 111] Connection refused')), Market seed bank",
+      "timestamp": "2025-09-10T01:21:04.899903"
+    },
+    {
+      "test": "Admin route: /admin/users",
+      "result": "FAIL",
+      "details": "Error: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /admin/users (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7ff2ffc07ef0>: Failed to establish a new connection: [Errno 111] Connection refused')), Admin users page",
+      "timestamp": "2025-09-10T01:21:04.900562"
+    },
+    {
+      "test": "Admin route: /admin/export",
+      "result": "FAIL",
+      "details": "Error: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /admin/export (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7ff2ffc079b0>: Failed to establish a new connection: [Errno 111] Connection refused')), Admin data export",
+      "timestamp": "2025-09-10T01:21:04.901242"
+    },
+    {
+      "test": "JavaScript navigation check",
+      "result": "FAIL",
+      "details": "Error: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /static/js/main.js (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7ff2ffc07740>: Failed to establish a new connection: [Errno 111] Connection refused'))",
+      "timestamp": "2025-09-10T01:21:04.901892"
+    }
+  ],
+  "audit_timestamp": "2025-09-10T01:21:04.902040",
+  "environment": {
+    "base_url": "http://localhost:5000",
+    "python_version": "3.12.3 (main, Aug 14 2025, 17:47:21) [GCC 13.3.0]"
+  }
+}
